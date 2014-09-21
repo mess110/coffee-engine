@@ -77,6 +77,8 @@ Engine = (function() {
   Engine.prototype.render = function() {
     var now, tpf;
     requestAnimationFrame(this.render);
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
     now = new Date().getTime();
     tpf = (now - (this.time || now)) / 1000;
     this.time = now;

@@ -65,6 +65,26 @@ BaseModel = (function() {
     return this.visible = b;
   };
 
+  BaseModel.prototype.isPressed = function(raycaster) {
+    return raycaster.intersectObject(this.mesh).length > 0;
+  };
+
+  BaseModel.prototype.attachParticle = function(particle) {
+    if (this.mesh != null) {
+      this.particle = particle;
+      this.particle.attached = true;
+      return this.mesh.add(particle.mesh);
+    }
+  };
+
+  BaseModel.prototype.detachParticle = function() {
+    if ((this.mesh != null) && (this.particle != null)) {
+      this.mesh.remove(this.particle.mesh);
+      this.particle.attached = false;
+      return this.particle = void 0;
+    }
+  };
+
   return BaseModel;
 
 })();
