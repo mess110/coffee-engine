@@ -23,7 +23,7 @@ class Config
     toggleSound: () ->
       @soundEnabled = !@soundEnabled
 
-    toggleFullscreen: () ->
+    toggleFullScreen: () ->
       EngineUtils.toggleFullscreen()
 
   @get: () ->

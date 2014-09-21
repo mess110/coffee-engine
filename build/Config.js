@@ -34,7 +34,7 @@ Config = (function() {
       return this.soundEnabled = !this.soundEnabled;
     };
 
-    PrivateClass.prototype.toggleFullscreen = function() {
+    PrivateClass.prototype.toggleFullScreen = function() {
       return EngineUtils.toggleFullscreen();
     };
 
