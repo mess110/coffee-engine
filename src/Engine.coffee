@@ -57,6 +57,10 @@ class Engine
 
   render: =>
     requestAnimationFrame this.render
+
+    @width = window.innerWidth
+    @height = window.innerHeight
+
     now = new Date().getTime()
     tpf = (now - (@time or now)) / 1000
     @time = now
