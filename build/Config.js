@@ -35,7 +35,7 @@ Config = (function() {
     };
 
     PrivateClass.prototype.toggleFullScreen = function() {
-      return EngineUtils.toggleFullscreen();
+      return EngineUtils.toggleFullScreen();
     };
 
     return PrivateClass;

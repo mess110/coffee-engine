@@ -24,7 +24,7 @@ class Config
       @soundEnabled = !@soundEnabled
 
     toggleFullScreen: () ->
-      EngineUtils.toggleFullscreen()
+      EngineUtils.toggleFullScreen()
 
   @get: () ->
     instance ?= new PrivateClass()
