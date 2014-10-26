@@ -48,9 +48,9 @@ class Engine3D
     document.body.style.cursor = "url('#{url}'), auto"
 
   addScene: (scene) ->
-    if @sceneManager.isEmpty()
-      @sceneManager.setScene 0
     @sceneManager.addScene scene
+    if !@sceneManager.currentSceneIndex?
+      @sceneManager.setScene scene
 
   removeScene: (scene) ->
     @sceneManager.removeScene scene

@@ -13,19 +13,36 @@ class SceneManager
 
       @scenes[@currentSceneIndex]
 
+    # Adds a scene if it is not found in @scenes
     addScene: (scene) ->
-      @scenes.push scene
+      i = @scenes.indexOf(scene)
+      @scenes.push scene if i == -1
 
     removeScene: (scene) ->
-      index = @scenes.indexOf(scene)
-      if index > -1
-        array.splice(index, 1)
+      i = @scenes.indexOf(scene)
+      @removeSceneByIndex(i)
 
-    setScene: (i) ->
-      @currentSceneIndex = i
+    removeSceneByIndex: (i) ->
+      if i >= 0
+        if i == @currentSceneIndex
+          @currentSceneIndex = undefined
+        array.splice(i, 1)
+
+    setScene: (scene) ->
+      i = @scenes.indexOf(scene)
+      @setSceneByIndex(i)
+      @currentScene()
+
+    setSceneByIndex: (i) ->
+      if !@isEmpty() and @isValidIndex(i)
+        @currentSceneIndex = i
+      @currentScene()
 
     isEmpty: ->
       @scenes.length == 0
+
+    isValidIndex: (i) ->
+      0 <= i and i < @scenes.length
 
     tick: (tpf) ->
       @currentScene().tick(tpf)

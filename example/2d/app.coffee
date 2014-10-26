@@ -14,6 +14,6 @@ class GameScene extends BaseScene
 scene = new GameScene(engine)
 
 SceneManager.get().addScene(scene)
-SceneManager.get().setScene(0)
+SceneManager.get().setScene(scene)
 
 engine.render()
