@@ -1,21 +1,21 @@
 engine = undefined
 
-canvas_width = 800
-canvas_height = 480
+engine = new Engine('game', 640, 480)
 
-canvas = document.getElementById('game')
+class GameScene extends BaseScene
+  tick: (tpf) ->
+    @engine.clear()
+    @drawText(Math.round(1 / tpf) + 'fps')
 
-doKeyDown = (event) ->
-  console.log event
+  doMouseEvent: (event) ->
+    console.log event
 
-doMouseDown = (event) ->
-  console.log event
+  doKeyboardEvent: (event) ->
+    console.log event
 
-tick = (tpf) ->
-  engine.clear()
-  engine.drawText(Math.round(1 / tpf) + 'fps')
+scene = new GameScene(engine)
 
-window.onload = ->
-  engine = new Engine('game', canvas_width, canvas_height, tick,
-    doMouseDown, doKeyDown)
-  engine.start()
+SceneManager.get().addScene(scene)
+SceneManager.get().setScene(0)
+
+engine.render()
