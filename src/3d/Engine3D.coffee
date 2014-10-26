@@ -1,4 +1,4 @@
-class Engine
+class Engine3D
   constructor: () ->
     @config = Config.get()
 

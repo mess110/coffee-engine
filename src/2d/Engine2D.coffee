@@ -1,4 +1,4 @@
-class Engine
+class Engine2D
   constructor: (canvasId, width, height) ->
     @sceneManager = SceneManager.get()
 

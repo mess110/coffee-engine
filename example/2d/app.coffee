@@ -1,6 +1,4 @@
-engine = undefined
-
-engine = new Engine('game', 640, 480)
+engine = new Engine2D('game', 640, 480)
 
 class GameScene extends BaseScene
   tick: (tpf) ->
