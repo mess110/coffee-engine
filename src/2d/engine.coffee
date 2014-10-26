@@ -8,8 +8,8 @@ class Engine
     @canvas = document.getElementById(@canvasId)
     addEventListener("keydown", doKeyDown, false);
     addEventListener("keyup", doKeyDown, false);
-    @canvas.addEventListener("mousedown", this.getPosition, false);
-    @canvas.addEventListener("mouseup", this.getPosition, false);
+    @canvas.addEventListener("mousedown", @getPosition, false);
+    @canvas.addEventListener("mouseup", @getPosition, false);
 
     @canvas.setAttribute('tabindex','0');
     @canvas.width = width
@@ -28,32 +28,32 @@ class Engine
     else
       x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft
       y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop
-    x -= this.offsetLeft
-    y -= this.offsetTop
+    x -= @.offsetLeft
+    y -= @.offsetTop
 
     event.position = new Point(x, y)
     doMouseDown event
     return
 
+  getHexData: (x, y, w, h) ->
+    p = @context.getImageData(x, y, w, h).data;
+    "#" + ("000000" + Utils.rgbToHex(p[0], p[1], p[2])).slice(-6);
+
   clear: ->
     @context.fillStyle = @backgroundColor
     @context.fillRect 0, 0, @width, @height
-    return
 
   drawText: (text) ->
     @context.fillStyle = "blue"
     @context.font = "bold 16px Arial"
     @context.fillText text, 10, 30
-    return
 
   draw: ->
-    requestAnimationFrame Engine.prototype.draw
+    requestAnimationFrame Engine::draw
     now = new Date().getTime()
     tpf = (now - (@time or now)) / 1000
     @time = now
-    tick tpf
-    return
+    @tick tpf
 
   start: ->
-    this.draw()
-    return
+    @draw()
