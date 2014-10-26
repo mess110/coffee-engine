@@ -53,6 +53,9 @@ class BaseModel
   isPressed: (raycaster) ->
     raycaster.intersectObject(@mesh).length > 0
 
+  isHovered: (raycaster) ->
+    raycaster.intersectObject(@mesh).length > 0
+
   attachParticle: (particle) ->
     if @mesh?
       @particle = particle
