@@ -69,6 +69,10 @@ BaseModel = (function() {
     return raycaster.intersectObject(this.mesh).length > 0;
   };
 
+  BaseModel.prototype.isHovered = function(raycaster) {
+    return raycaster.intersectObject(this.mesh).length > 0;
+  };
+
   BaseModel.prototype.attachParticle = function(particle) {
     if (this.mesh != null) {
       this.particle = particle;
