@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>coffee-engine 3d template</title>
+  </head>
+  <body>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.js"></script>
+    <script src="threex.windowresize.js"></script>
+    <script src="threex.rendererstats.js"></script>
+    <script src="AnaglyphEffect.js"></script>
+    <script src="stats.min.js"></script>
+    <script src="Tween.js"></script>
+
+    <script>
+      // exports is used server side to require classes
+      var exports;
+      if (typeof exports === "undefined" || exports === null) {
+        exports = {};
+      }
+    </script>
+
+    <script src="/build/coffee-engine-3d.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
