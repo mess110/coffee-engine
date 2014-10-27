@@ -11,3 +11,6 @@ class BaseScene
 
   doMouseMove: (raycaster) ->
     @lastMousePosition = raycaster
+
+  doKeyboardEvent: (event) ->
+    throw 'scene.doKeyboardEvent not implemented'

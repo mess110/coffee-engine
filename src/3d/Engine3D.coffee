@@ -27,6 +27,8 @@ class Engine3D
 
     document.addEventListener "mousedown", @onDocumentMouseDown, false
     document.addEventListener "mousemove", @onDocumentMouseMove, false
+    document.addEventListener "keydown", @onDocumentKeyboardEvent, false
+    document.addEventListener "keyup", @onDocumentKeyboardEvent, false
 
     if @config.contextMenuDisabled
       document.addEventListener "contextmenu", (e) ->
@@ -43,6 +45,9 @@ class Engine3D
   onDocumentMouseDown: (event) =>
       raycaster = @_parseMouseEvent(event)
       @sceneManager.currentScene().doMouseDown(raycaster) if raycaster?
+
+  onDocumentKeyboardEvent: (event) =>
+      @sceneManager.currentScene().doKeyboardEvent(event)
 
   setCursor: (url) ->
     document.body.style.cursor = "url('#{url}'), auto"

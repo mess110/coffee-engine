@@ -25,6 +25,7 @@ class Engine2D
   onDocumentKeyboardEvent: (event) =>
       @sceneManager.currentScene().doKeyboardEvent(event)
 
+  # TODO move this in BaseScene
   clear: ->
     @context.fillStyle = @backgroundColor
     @context.fillRect 0, 0, @width, @height
