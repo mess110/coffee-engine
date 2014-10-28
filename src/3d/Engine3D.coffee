@@ -25,6 +25,7 @@ class Engine3D
     @projector = new THREE.Projector()
     @sceneManager = SceneManager.get()
 
+    document.addEventListener "mouseup", @onDocumentMouseEvent, false
     document.addEventListener "mousedown", @onDocumentMouseEvent, false
     document.addEventListener "mousemove", @onDocumentMouseEvent, false
     document.addEventListener "keydown", @onDocumentKeyboardEvent, false

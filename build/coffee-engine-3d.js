@@ -239,9 +239,10 @@ Engine3D = function() {
         document.body.appendChild(this.renderer.domElement), this.config.resize && (this.winResize = new THREEx.WindowResize(this.renderer, this.camera)), 
         this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), this.anaglyphEffect.setSize(this.width, this.height), 
         this.anaglyphEffect.setDistanceBetweenGlyphs(this.config.anaglyphDistance), this.projector = new THREE.Projector(), 
-        this.sceneManager = SceneManager.get(), document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), 
-        document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), 
-        document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
+        this.sceneManager = SceneManager.get(), document.addEventListener("mouseup", this.onDocumentMouseEvent, !1), 
+        document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), 
+        document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), 
+        this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
             return e.preventDefault();
         }, !1), this.statsManager = StatsManager.get(), this.config.showStatsOnLoad && this.statsManager.toggle();
     }
