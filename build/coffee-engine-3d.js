@@ -142,10 +142,8 @@ BaseScene = function() {
     }
     return BaseScene.prototype.tick = function() {
         throw "scene.tick not implemented";
-    }, BaseScene.prototype.doMouseDown = function() {
-        throw "scene.doMouseDown not implemented";
-    }, BaseScene.prototype.doMouseMove = function(raycaster) {
-        return this.lastMousePosition = raycaster;
+    }, BaseScene.prototype.doMouseEvent = function() {
+        throw "scene.doMouseEvent not implemented";
     }, BaseScene.prototype.doKeyboardEvent = function() {
         throw "scene.doKeyboardEvent not implemented";
     }, BaseScene;
@@ -232,27 +230,24 @@ var Engine3D, __bind = function(fn, me) {
 Engine3D = function() {
     function Engine3D() {
         this.render = __bind(this.render, this), this.onDocumentKeyboardEvent = __bind(this.onDocumentKeyboardEvent, this), 
-        this.onDocumentMouseDown = __bind(this.onDocumentMouseDown, this), this.onDocumentMouseMove = __bind(this.onDocumentMouseMove, this), 
-        this.config = Config.get(), this.width = this.config.width, this.height = this.config.height, 
-        this.time = void 0, this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, .1, 1e3), 
+        this.onDocumentMouseEvent = __bind(this.onDocumentMouseEvent, this), this.config = Config.get(), 
+        this.width = this.config.width, this.height = this.config.height, this.time = void 0, 
+        this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, .1, 1e3), 
         this.camera.position.z = 10, this.renderer = new THREE.WebGLRenderer({
             antialias: this.config.antialias
         }), this.renderer.setSize(this.width, this.height), this.renderer.setClearColor(12761757, 1), 
         document.body.appendChild(this.renderer.domElement), this.config.resize && (this.winResize = new THREEx.WindowResize(this.renderer, this.camera)), 
         this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), this.anaglyphEffect.setSize(this.width, this.height), 
         this.anaglyphEffect.setDistanceBetweenGlyphs(this.config.anaglyphDistance), this.projector = new THREE.Projector(), 
-        this.sceneManager = SceneManager.get(), document.addEventListener("mousedown", this.onDocumentMouseDown, !1), 
-        document.addEventListener("mousemove", this.onDocumentMouseMove, !1), document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), 
+        this.sceneManager = SceneManager.get(), document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), 
+        document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), 
         document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
             return e.preventDefault();
         }, !1), this.statsManager = StatsManager.get(), this.config.showStatsOnLoad && this.statsManager.toggle();
     }
-    return Engine3D.prototype.onDocumentMouseMove = function(event) {
+    return Engine3D.prototype.onDocumentMouseEvent = function(event) {
         var raycaster;
-        return raycaster = this._parseMouseEvent(event), null != raycaster ? this.sceneManager.currentScene().doMouseMove(raycaster) : void 0;
-    }, Engine3D.prototype.onDocumentMouseDown = function(event) {
-        var raycaster;
-        return raycaster = this._parseMouseEvent(event), null != raycaster ? this.sceneManager.currentScene().doMouseDown(raycaster) : void 0;
+        return raycaster = this._parseMouseEvent(event), null != raycaster ? this.sceneManager.currentScene().doMouseEvent(event, raycaster) : void 0;
     }, Engine3D.prototype.onDocumentKeyboardEvent = function(event) {
         return this.sceneManager.currentScene().doKeyboardEvent(event);
     }, Engine3D.prototype.setCursor = function(url) {

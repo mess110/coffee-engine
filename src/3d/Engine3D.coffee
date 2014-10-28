@@ -25,8 +25,8 @@ class Engine3D
     @projector = new THREE.Projector()
     @sceneManager = SceneManager.get()
 
-    document.addEventListener "mousedown", @onDocumentMouseDown, false
-    document.addEventListener "mousemove", @onDocumentMouseMove, false
+    document.addEventListener "mousedown", @onDocumentMouseEvent, false
+    document.addEventListener "mousemove", @onDocumentMouseEvent, false
     document.addEventListener "keydown", @onDocumentKeyboardEvent, false
     document.addEventListener "keyup", @onDocumentKeyboardEvent, false
 
@@ -38,13 +38,9 @@ class Engine3D
     @statsManager = StatsManager.get()
     @statsManager.toggle() if @config.showStatsOnLoad
 
-  onDocumentMouseMove: (event) =>
+  onDocumentMouseEvent: (event) =>
       raycaster = @_parseMouseEvent(event)
-      @sceneManager.currentScene().doMouseMove(raycaster) if raycaster?
-
-  onDocumentMouseDown: (event) =>
-      raycaster = @_parseMouseEvent(event)
-      @sceneManager.currentScene().doMouseDown(raycaster) if raycaster?
+      @sceneManager.currentScene().doMouseEvent(event, raycaster) if raycaster?
 
   onDocumentKeyboardEvent: (event) =>
       @sceneManager.currentScene().doKeyboardEvent(event)

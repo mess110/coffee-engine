@@ -6,11 +6,8 @@ class BaseScene
   tick: (tpf) ->
     throw 'scene.tick not implemented'
 
-  doMouseDown: (raycaster) ->
-    throw 'scene.doMouseDown not implemented'
-
-  doMouseMove: (raycaster) ->
-    @lastMousePosition = raycaster
+  doMouseEvent: (event, raycaster) ->
+    throw 'scene.doMouseEvent not implemented'
 
   doKeyboardEvent: (event) ->
     throw 'scene.doKeyboardEvent not implemented'

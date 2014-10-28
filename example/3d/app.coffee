@@ -5,9 +5,8 @@ class LoadingScene extends BaseScene
     super()
 
   tick: (tpf) ->
-    #console.log @lastMousePosition if @lastMousePosition?
 
-  doMouseDown: (raycaster) ->
+  doMouseEvent: (event, raycaster) ->
 
   doKeyboardEvent: (event) ->
 
