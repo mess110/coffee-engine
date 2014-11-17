@@ -4,11 +4,11 @@ module.exports = (grunt) ->
     "src/shared/NetworkManager.js"
     "src/shared/StatsManager.js"
     "src/shared/SoundManager.js"
+    "src/shared/EngineUtils.js"
 
     "src/3d/ResourceManager.js"
     "src/3d/BaseScene.js"
     "src/3d/BaseModel.js"
-    "src/3d/EngineUtils.js"
     "src/3d/Config.js"
     "src/3d/Engine3D.js"
   ]
