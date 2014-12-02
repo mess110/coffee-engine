@@ -13,6 +13,7 @@ class Config
       @width = 1280
       @height = 720
       @soundEnabled = false
+      @debug = false
 
     toggleAnaglyph: () ->
       @anaglyph = !@anaglyph
@@ -22,6 +23,9 @@ class Config
 
     toggleSound: () ->
       @soundEnabled = !@soundEnabled
+
+    toggleDebug: () ->
+      @debug = !@debug
 
     toggleFullScreen: () ->
       EngineUtils.toggleFullScreen()
