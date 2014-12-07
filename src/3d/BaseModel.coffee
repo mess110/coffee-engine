@@ -45,7 +45,7 @@ class BaseModel
     @mesh.position.y += y
     @mesh.position.z += z
 
-  setVisibility: (b) ->
+  setVisible: (b) ->
     @mesh.traverse (object) ->
       object.visible = b
     @visible = b

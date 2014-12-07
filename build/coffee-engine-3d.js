@@ -188,7 +188,7 @@ BaseModel = function() {
         return this.mesh.position.z = z;
     }, BaseModel.prototype.modifyPosition = function(x, y, z) {
         return this.mesh.position.x += x, this.mesh.position.y += y, this.mesh.position.z += z;
-    }, BaseModel.prototype.setVisibility = function(b) {
+    }, BaseModel.prototype.setVisible = function(b) {
         return this.mesh.traverse(function(object) {
             return object.visible = b;
         }), this.visible = b;
