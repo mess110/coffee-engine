@@ -10370,7 +10370,9 @@ Config = function() {
             this.anaglyphDistance = 600, this.resize = !1, this.width = 1280, this.height = 720, 
             this.soundEnabled = !1, this.debug = !1;
         }
-        return PrivateClass.prototype.toggleAnaglyph = function() {
+        return PrivateClass.prototype.fillWindow = function() {
+            return this.resize = !0, this.width = window.innerWidth, this.height = window.innerHeight;
+        }, PrivateClass.prototype.toggleAnaglyph = function() {
             return this.anaglyph = !this.anaglyph;
         }, PrivateClass.prototype.toggleStats = function() {
             return StatsManager.get().toggle();

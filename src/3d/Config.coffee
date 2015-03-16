@@ -15,6 +15,11 @@ class Config
       @soundEnabled = false
       @debug = false
 
+    fillWindow: () ->
+      @resize = true
+      @width = window.innerWidth
+      @height = window.innerHeight
+
     toggleAnaglyph: () ->
       @anaglyph = !@anaglyph
 
