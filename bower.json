@@ -14,5 +14,12 @@
     "test",
     "tests"
   ],
-  "homepage": "https://github.com/mess110/coffee-engine"
+  "homepage": "https://github.com/mess110/coffee-engine",
+  "devDependencies": {
+    "tweenjs": "r14",
+    "stats.js": "r11",
+    "threejs": "r68",
+    "threex.windowresize": "*",
+    "threex.rendererstats": "*"
+  }
 }

@@ -1,10 +1,21 @@
 module.exports = (grunt) ->
   files_3d = [
+    "bower_components/stats.js/src/Stats.js"
+    "bower_components/tweenjs/src/Tween.js"
+    "bower_components/threex.windowresize/threex.windowresize.js"
+    "bower_components/threex.rendererstats/threex.rendererstats.js"
+    "bower_components/threejs/build/three.js"
+
     "src/shared/SceneManager.js"
     "src/shared/NetworkManager.js"
     "src/shared/StatsManager.js"
     "src/shared/SoundManager.js"
     "src/shared/EngineUtils.js"
+
+    "src/vendor/AnaglyphEffect.js"
+
+    # This NEEDS to be in this position
+    "src/3d/Hack.js"
 
     "src/3d/ResourceManager.js"
     "src/3d/BaseScene.js"
