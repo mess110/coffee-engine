@@ -9,7 +9,7 @@ class Config
       @antialias = true
       @anaglyph = false
       @anaglyphDistance = 600
-      @resize = true
+      @resize = false
       @width = 1280
       @height = 720
       @soundEnabled = false

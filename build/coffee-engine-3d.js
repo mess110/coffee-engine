@@ -213,7 +213,7 @@ Config = function() {
     return instance = null, PrivateClass = function() {
         function PrivateClass() {
             this.showStatsOnLoad = !1, this.contextMenuDisabled = !0, this.antialias = !0, this.anaglyph = !1, 
-            this.anaglyphDistance = 600, this.resize = !0, this.width = 1280, this.height = 720, 
+            this.anaglyphDistance = 600, this.resize = !1, this.width = 1280, this.height = 720, 
             this.soundEnabled = !1, this.debug = !1;
         }
         return PrivateClass.prototype.toggleAnaglyph = function() {
