@@ -10397,19 +10397,19 @@ var Engine3D, __bind = function(fn, me) {
 Engine3D = function() {
     function Engine3D() {
         this.render = __bind(this.render, this), this.onDocumentKeyboardEvent = __bind(this.onDocumentKeyboardEvent, this), 
-        this.onDocumentMouseEvent = __bind(this.onDocumentMouseEvent, this), this.config = Config.get(), 
-        this.width = this.config.width, this.height = this.config.height, this.time = void 0, 
-        this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, .1, 1e3), 
-        this.camera.position.z = 10, this.renderer = new THREE.WebGLRenderer({
+        this.onDocumentMouseEvent = __bind(this.onDocumentMouseEvent, this);
+        var camera;
+        this.config = Config.get(), this.width = this.config.width, this.height = this.config.height, 
+        this.time = void 0, this.renderer = new THREE.WebGLRenderer({
             antialias: this.config.antialias
         }), this.renderer.setSize(this.width, this.height), this.renderer.setClearColor(12761757, 1), 
-        document.body.appendChild(this.renderer.domElement), this.config.resize && (this.winResize = new THREEx.WindowResize(this.renderer, this.camera)), 
-        this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), this.anaglyphEffect.setSize(this.width, this.height), 
-        this.anaglyphEffect.setDistanceBetweenGlyphs(this.config.anaglyphDistance), this.projector = new THREE.Projector(), 
-        this.sceneManager = SceneManager.get(), document.addEventListener("mouseup", this.onDocumentMouseEvent, !1), 
-        document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), 
-        document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), 
-        this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
+        document.body.appendChild(this.renderer.domElement), camera = new THREE.PerspectiveCamera(75, this.width / this.height, .1, 1e3), 
+        this.setCamera(camera), this.camera.position.z = 10, this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), 
+        this.anaglyphEffect.setSize(this.width, this.height), this.anaglyphEffect.setDistanceBetweenGlyphs(this.config.anaglyphDistance), 
+        this.projector = new THREE.Projector(), this.sceneManager = SceneManager.get(), 
+        document.addEventListener("mouseup", this.onDocumentMouseEvent, !1), document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), 
+        document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), 
+        document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
             return e.preventDefault();
         }, !1), this.statsManager = StatsManager.get(), this.config.showStatsOnLoad && this.statsManager.toggle();
     }
@@ -10420,6 +10420,8 @@ Engine3D = function() {
         return this.sceneManager.currentScene().doKeyboardEvent(event);
     }, Engine3D.prototype.setCursor = function(url) {
         return document.body.style.cursor = "url('" + url + "'), auto";
+    }, Engine3D.prototype.setCamera = function(camera) {
+        return this.camera = camera, this.config.resize ? this.winResize = new THREEx.WindowResize(this.renderer, this.camera) : void 0;
     }, Engine3D.prototype.addScene = function(scene) {
         return this.sceneManager.addScene(scene), null == this.sceneManager.currentSceneIndex ? this.sceneManager.setScene(scene) : void 0;
     }, Engine3D.prototype.removeScene = function(scene) {

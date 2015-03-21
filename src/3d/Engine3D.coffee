@@ -6,16 +6,14 @@ class Engine3D
     @height = @config.height
     @time = undefined
 
-    @camera = new THREE.PerspectiveCamera(75, @width / @height, 0.1, 1000)
-    @camera.position.z = 10
-
     @renderer = new THREE.WebGLRenderer({antialias: @config.antialias})
     @renderer.setSize @width, @height
     @renderer.setClearColor(0xc2ba9d, 1)
     document.body.appendChild @renderer.domElement
 
-    if @config.resize
-      @winResize = new THREEx.WindowResize(@renderer, @camera)
+    camera = new THREE.PerspectiveCamera(75, @width / @height, 0.1, 1000)
+    @setCamera(camera)
+    @camera.position.z = 10
 
     # TODO find out if anaglyph not supported - what happens?
     @anaglyphEffect = new THREE.AnaglyphEffect(@renderer)
@@ -48,6 +46,11 @@ class Engine3D
 
   setCursor: (url) ->
     document.body.style.cursor = "url('#{url}'), auto"
+
+  setCamera: (camera) ->
+    @camera = camera
+    if @config.resize
+      @winResize = new THREEx.WindowResize(@renderer, @camera)
 
   addScene: (scene) ->
     @sceneManager.addScene scene
