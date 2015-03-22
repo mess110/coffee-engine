@@ -10201,6 +10201,11 @@ SoundManager = function() {
             source.src = url, audio.appendChild(source), this.sounds[key] = audio;
         }, PrivateClass.prototype.play = function(key) {
             return key in this.sounds ? this.sounds[key].play() : console.log("Sound with key: " + key + " not found!");
+        }, PrivateClass.prototype.updateGlobalVolume = function(i) {
+            var key;
+            0 > i && (i = 0), i > 1 && (i = 1);
+            for (key in this.sounds) this.sounds[key].volume = i;
+            return i;
         }, PrivateClass;
     }(), SoundManager.get = function() {
         return null != instance ? instance : instance = new PrivateClass();
@@ -10342,6 +10347,8 @@ BaseModel = function() {
         return this.mesh.position.z = z;
     }, BaseModel.prototype.modifyPosition = function(x, y, z) {
         return this.mesh.position.x += x, this.mesh.position.y += y, this.mesh.position.z += z;
+    }, BaseModel.prototype.setScale = function(i) {
+        return this.mesh.scale.set(i, i, i);
     }, BaseModel.prototype.setVisible = function(b) {
         return this.mesh.traverse(function(object) {
             return object.visible = b;
