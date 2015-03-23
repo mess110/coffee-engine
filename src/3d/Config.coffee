@@ -14,6 +14,7 @@ class Config
       @height = 720
       @soundEnabled = false
       @debug = false
+      @preventDefaultMouseEvents = true
 
     fillWindow: () ->
       @resize = true

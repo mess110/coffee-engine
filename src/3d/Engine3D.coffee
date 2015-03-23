@@ -78,7 +78,7 @@ class Engine3D
       @anaglyphEffect.render @sceneManager.currentScene().scene, @camera
 
   _parseMouseEvent: (event) ->
-    event.preventDefault()
+    event.preventDefault() if @config.preventDefaultMouseEvents
     if event.target is @renderer.domElement
       # could need event.clientX or event.clientY
       mouseX = (event.layerX / @width) * 2 - 1

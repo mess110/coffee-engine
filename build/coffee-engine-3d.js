@@ -10375,7 +10375,7 @@ Config = function() {
         function PrivateClass() {
             this.showStatsOnLoad = !1, this.contextMenuDisabled = !0, this.antialias = !0, this.anaglyph = !1, 
             this.anaglyphDistance = 600, this.resize = !1, this.width = 1280, this.height = 720, 
-            this.soundEnabled = !1, this.debug = !1;
+            this.soundEnabled = !1, this.debug = !1, this.preventDefaultMouseEvents = !0;
         }
         return PrivateClass.prototype.fillWindow = function() {
             return this.resize = !0, this.width = window.innerWidth, this.height = window.innerHeight;
@@ -10441,7 +10441,7 @@ Engine3D = function() {
         this.renderer.render(this.sceneManager.currentScene().scene, this.camera), this.config.anaglyph ? this.anaglyphEffect.render(this.sceneManager.currentScene().scene, this.camera) : void 0;
     }, Engine3D.prototype._parseMouseEvent = function(event) {
         var mouseX, mouseY, vector;
-        return event.preventDefault(), event.target === this.renderer.domElement ? (mouseX = event.layerX / this.width * 2 - 1, 
+        return this.config.preventDefaultMouseEvents && event.preventDefault(), event.target === this.renderer.domElement ? (mouseX = event.layerX / this.width * 2 - 1, 
         mouseY = 2 * -(event.layerY / this.height) + 1, vector = new THREE.Vector3(mouseX, mouseY, .5), 
         this.projector.unprojectVector(vector, this.camera), new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize())) : void 0;
     }, Engine3D;
