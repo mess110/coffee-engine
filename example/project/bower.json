@@ -13,6 +13,6 @@
     "tests"
   ],
   "devDependencies": {
-    "coffee-engine": "~0.0.21"
+    "coffee-engine": "~0.0.25"
   }
 }
