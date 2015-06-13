@@ -54,11 +54,11 @@ BaseScene = function() {
     function BaseScene(engine) {
         this.engine = engine, this.context = this.engine.context;
     }
-    return BaseScene.prototype.tick = function() {
+    return BaseScene.prototype.tick = function(tpf) {
         throw "scene.tick not implemented";
-    }, BaseScene.prototype.doMouseEvent = function() {
+    }, BaseScene.prototype.doMouseEvent = function(event) {
         throw "scene.doMouseEvent not implemented";
-    }, BaseScene.prototype.doKeyboardEvent = function() {
+    }, BaseScene.prototype.doKeyboardEvent = function(event) {
         throw "scene.doKeyboardEvent not implemented";
     }, BaseScene.prototype.drawText = function(text) {
         return this.context.fillStyle = "blue", this.context.font = "bold 16px Arial", this.context.fillText(text, 10, 30);
@@ -68,24 +68,31 @@ BaseScene = function() {
     }, BaseScene;
 }();
 
-var Engine2D, __bind = function(fn, me) {
+var Engine2D, bind = function(fn, me) {
     return function() {
         return fn.apply(me, arguments);
     };
 };
 
 Engine2D = function() {
-    function Engine2D(canvasId, width, height) {
-        this.render = __bind(this.render, this), this.onDocumentKeyboardEvent = __bind(this.onDocumentKeyboardEvent, this), 
-        this.onDocumentMouseEvent = __bind(this.onDocumentMouseEvent, this), this.sceneManager = SceneManager.get(), 
-        this.time = void 0, this.width = width, this.height = height, this.backgroundColor = "#FFFFFF", 
-        this.canvasId = canvasId, document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), 
-        document.addEventListener("mouseup", this.onDocumentMouseEvent, !1), document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), 
-        document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), 
-        this.canvas = document.getElementById(this.canvasId), this.canvas.width = width, 
-        this.canvas.height = height, this.context = this.canvas.getContext("2d");
+    function Engine2D(canvasId, width, height, windowResize) {
+        null == windowResize && (windowResize = !1), this.render = bind(this.render, this), 
+        this.onDocumentKeyboardEvent = bind(this.onDocumentKeyboardEvent, this), this.onDocumentMouseEvent = bind(this.onDocumentMouseEvent, this), 
+        this.sceneManager = SceneManager.get(), this.time = void 0, this.width = width, 
+        this.height = height, this.backgroundColor = "#FFFFFF", this.canvasId = canvasId, 
+        document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), document.addEventListener("mouseup", this.onDocumentMouseEvent, !1), 
+        document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), 
+        document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), this.canvas = document.getElementById(this.canvasId), 
+        this.canvas.width = width, this.canvas.height = height, this.context = this.canvas.getContext("2d"), 
+        windowResize && (window.addEventListener("resize", this.resize, !1), this.resize());
     }
-    return Engine2D.prototype.onDocumentMouseEvent = function(event) {
+    return Engine2D.prototype.resize = function() {
+        var canvasRatio, height, width, windowRatio;
+        return canvasRatio = this.canvas.height / this.canvas.width, windowRatio = window.innerHeight / window.innerWidth, 
+        width = void 0, height = void 0, canvasRatio > windowRatio ? (height = window.innerHeight, 
+        width = height / canvasRatio) : (width = window.innerWidth, height = width * canvasRatio), 
+        this.canvas.style.width = width + "px", this.canvas.style.height = height + "px";
+    }, Engine2D.prototype.onDocumentMouseEvent = function(event) {
         return this.sceneManager.currentScene().doMouseEvent(event);
     }, Engine2D.prototype.onDocumentKeyboardEvent = function(event) {
         return this.sceneManager.currentScene().doKeyboardEvent(event);

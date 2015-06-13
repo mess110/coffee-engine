@@ -1,5 +1,5 @@
 class Engine2D
-  constructor: (canvasId, width, height) ->
+  constructor: (canvasId, width, height, windowResize = false) ->
     @sceneManager = SceneManager.get()
 
     @time = undefined
@@ -18,6 +18,24 @@ class Engine2D
     @canvas.width = width
     @canvas.height = height
     @context = @canvas.getContext("2d");
+
+    if windowResize
+      window.addEventListener 'resize', @resize, false
+      @resize()
+
+  resize: ->
+    canvasRatio = @canvas.height / @canvas.width
+    windowRatio = window.innerHeight / window.innerWidth
+    width = undefined
+    height = undefined
+    if windowRatio < canvasRatio
+      height = window.innerHeight
+      width = height / canvasRatio
+    else
+      width = window.innerWidth
+      height = width * canvasRatio
+    @canvas.style.width = width + 'px'
+    @canvas.style.height = height + 'px'
 
   onDocumentMouseEvent: (event) =>
       @sceneManager.currentScene().doMouseEvent(event)
