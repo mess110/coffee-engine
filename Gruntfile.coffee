@@ -30,6 +30,7 @@ module.exports = (grunt) ->
     "bower_components/tweenjs/src/Tween.js"
 
     "src/shared/SceneManager.js"
+    "src/shared/EngineUtils.js"
 
     "src/2d/Utils.js"
     "src/2d/BaseScene.js"

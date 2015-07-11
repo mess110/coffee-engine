@@ -12,8 +12,8 @@ end
 
 `bower install`
 `grunt release`
-`git add bower.json README.md build/`
 `git rm \`git ls-files --deleted\``
+`git add .`
 `git commit -m "release version #{version}"`
 `git tag #{version}`
 `git push --tags`
