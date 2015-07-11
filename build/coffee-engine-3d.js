@@ -10208,6 +10208,11 @@ EngineUtils = function() {
     function EngineUtils() {}
     return EngineUtils.toggleFullScreen = function() {
         document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    }, EngineUtils.guid = function() {
+        var s4;
+        return s4 = function() {
+            return Math.floor(65536 * (1 + Math.random())).toString(16).substring(1);
+        }, s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
     }, EngineUtils;
 }(), THREE.AnaglyphEffect = function(renderer, width, height) {
     var _aspect, _camera, _cameraL, _cameraR, _far, _fov, _material, _near, _params, _renderTargetL, _renderTargetR, _scene, distanceBetweenGlyhs, eyeLeft, eyeRight, focalLength, mesh;
