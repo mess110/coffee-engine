@@ -413,6 +413,25 @@ BaseScene = function() {
     }, BaseScene;
 }();
 
+var BaseModel;
+
+BaseModel = function() {
+    function BaseModel(options) {
+        if (options.position || (options.position = {}), this.loaded = !1, this.position = {
+            x: options.position.x || 0,
+            y: options.position.y || 0
+        }, null == options.url) throw "missing url";
+        this.image = new Image(), this.image.src = options.url, this.image.onload = function(_this) {
+            return function() {
+                return _this.width = _this.image.width, _this.height = _this.image.height, _this.loaded = !0;
+            };
+        }(this);
+    }
+    return BaseModel.prototype.render = function(context) {
+        return this.loaded ? context.drawImage(this.image, this.position.x, this.position.y, this.width, this.height) : void 0;
+    }, BaseModel;
+}();
+
 var Engine2D, bind = function(fn, me) {
     return function() {
         return fn.apply(me, arguments);

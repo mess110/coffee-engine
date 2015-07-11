@@ -34,6 +34,7 @@ module.exports = (grunt) ->
 
     "src/2d/Utils.js"
     "src/2d/BaseScene.js"
+    "src/2d/BaseModel.js"
     "src/2d/Engine2D.js"
   ]
 
