@@ -9,3 +9,9 @@ Has 2 modes:
 ```
 grunt dev
 ```
+
+To release a new version:
+
+```
+ruby release.rb
+```

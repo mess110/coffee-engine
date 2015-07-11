@@ -6,9 +6,14 @@ require 'json'
 bower = JSON.parse(File.read("bower.json"))
 version = bower['version']
 
-`coffee --output build/ -b -c src/`
-`git add bower.json`
-`git add build/`
+if `git diff bower.json | grep version`.empty?
+  fail 'bower.json version not incremented'
+end
+
+`bower install`
+`grunt release`
+`git add bower.json README.md build/`
+`git rm \`git ls-files --deleted\``
 `git commit -m "release version #{version}"`
 `git tag #{version}`
 `git push --tags`
