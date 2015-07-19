@@ -8,7 +8,6 @@ class Engine3D
 
     @renderer = new THREE.WebGLRenderer({antialias: @config.antialias})
     @renderer.setSize @width, @height
-    @renderer.setClearColor(0xc2ba9d, 1)
     document.body.appendChild @renderer.domElement
 
     camera = new THREE.PerspectiveCamera(75, @width / @height, 0.1, 1000)
@@ -20,7 +19,6 @@ class Engine3D
     @anaglyphEffect.setSize(@width, @height)
     @anaglyphEffect.setDistanceBetweenGlyphs(@config.anaglyphDistance)
 
-    @projector = new THREE.Projector()
     @sceneManager = SceneManager.get()
 
     document.addEventListener "mouseup", @onDocumentMouseEvent, false
@@ -84,5 +82,5 @@ class Engine3D
       mouseX = (event.layerX / @width) * 2 - 1
       mouseY = -(event.layerY / @height) * 2 + 1
       vector = new THREE.Vector3(mouseX, mouseY, 0.5)
-      @projector.unprojectVector vector, @camera
+      vector.unproject @camera
       return new THREE.Raycaster(@camera.position, vector.sub(@camera.position).normalize())
