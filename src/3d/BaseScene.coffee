@@ -2,6 +2,7 @@ class BaseScene
   constructor: ->
     @scene = new THREE.Scene()
     @lastMousePosition = undefined
+    @loaded = false
 
   tick: (tpf) ->
     throw 'scene.tick not implemented'
