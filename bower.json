@@ -20,6 +20,7 @@
     "stats.js": "r11",
     "threejs": "r71",
     "threex.windowresize": "*",
-    "threex.rendererstats": "*"
+    "threex.rendererstats": "*",
+    "threex.universalloader": "*"
   }
 }
