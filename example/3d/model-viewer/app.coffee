@@ -2,38 +2,61 @@ config = Config.get()
 config.fillWindow()
 
 engine = new Engine3D()
+engine.camera.position.set 0, 30, 190
 
 class ModelViewer extends BaseScene
   constructor: ->
     super()
 
+    @scene.add Helper.light()
+    # Helper.fancyShadows(engine.renderer)
 
-    # JsonLoader
-    # @model = @testCube()
+    @testCube()
     @testJson()
 
   tick: (tpf) ->
     return unless @model?
 
-    @model.rotation.y += 2 * tpf
+    @model.rotation.y += 1 * tpf
 
   doMouseEvent: (event, raycaster) ->
 
   doKeyboardEvent: (event) ->
 
   testCube: ->
-    geometry = new (THREE.BoxGeometry)(1, 1, 1)
-    material = new (THREE.MeshBasicMaterial)(color: 0x00ff00)
-    @model = new (THREE.Mesh)(geometry, material)
+    @model = Helper.cube()
     @scene.add @model
 
   testJson: ->
     loader = new (THREE.JSONLoader)
-    # load a resource
-    loader.load 'models/plate.js', (geometry, materials) =>
-      material = new (THREE.MeshFaceMaterial)(materials)
-      @model = new (THREE.Mesh)(geometry, material)
-      @scene.add @model
+    mesh = undefined
+    loader.load 'models/car.js', (geometry, materials) ->
+      material = new (THREE.MeshLambertMaterial)(
+        map: THREE.ImageUtils.loadTexture('models/gtare.jpg')
+        colorAmbient: [
+          0.480000026226044
+          0.480000026226044
+          0.480000026226044
+        ]
+        colorDiffuse: [
+          0.480000026226044
+          0.480000026226044
+          0.480000026226044
+        ]
+        colorSpecular: [
+          0.8999999761581421
+          0.8999999761581421
+          0.8999999761581421
+        ])
+      mesh = new (THREE.Mesh)(geometry, material)
+      mesh.receiveShadow = true
+      mesh.castShadow = true
+      mesh.rotation.y = -Math.PI / 5
+      scene = engine.sceneManager.currentScene()
+      scene.scene.add mesh
+      scene.model = mesh
+
+    loader = new (THREE.JSONLoader)
 
   testStl: ->
     url = 'models/plate.stl'

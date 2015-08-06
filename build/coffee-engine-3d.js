@@ -10542,6 +10542,33 @@ Config = function() {
     }, Config;
 }(), exports.Config = Config;
 
+var Helper;
+
+Helper = function() {
+    function Helper() {}
+    return Helper.camera = function(options) {
+        var config;
+        return null == options && (options = {}), config = Config.get(), null == options.view_angle && (options.view_angle = 45), 
+        null == options.aspect && (options.aspect = config.width / config.height), null == options.near && (options.near = 1), 
+        null == options.far && (options.far = 1e4), new THREE.PerspectiveCamera(options.view_angle, options.aspect, options.near, options.far);
+    }, Helper.light = function() {
+        var light;
+        return light = new THREE.DirectionalLight(16777215), light.position.set(0, 100, 60), 
+        light.castShadow = !0, light.shadowCameraLeft = -60, light.shadowCameraTop = -60, 
+        light.shadowCameraRight = 60, light.shadowCameraBottom = 60, light.shadowCameraNear = 1, 
+        light.shadowCameraFar = 1e3, light.shadowBias = -1e-4, light.shadowMapWidth = light.shadowMapHeight = 1024, 
+        light.shadowDarkness = .7, light;
+    }, Helper.cube = function() {
+        var box, cube, mat;
+        return box = new THREE.BoxGeometry(10, 10, 10), mat = new THREE.MeshLambertMaterial({
+            color: 16711680
+        }), cube = new THREE.Mesh(box, mat);
+    }, Helper.fancyShadows = function(renderer) {
+        return renderer.shadowMapEnabled = !0, renderer.shadowMapSoft = !0, renderer.shadowMapType = THREE.PCFShadowMap, 
+        renderer.shadowMapAutoUpdate = !0;
+    }, Helper;
+}();
+
 var Engine3D, bind = function(fn, me) {
     return function() {
         return fn.apply(me, arguments);
