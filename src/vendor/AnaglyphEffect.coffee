@@ -59,7 +59,7 @@ THREE.AnaglyphEffect = (renderer, width, height) ->
       "}"
     ].join("\n")
   )
-  mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), _material)
+  mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), _material)
   _scene.add mesh
 
   @setSize = (width, height) ->
