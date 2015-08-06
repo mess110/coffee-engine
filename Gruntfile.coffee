@@ -40,6 +40,10 @@ module.exports = (grunt) ->
     "src/2d/Engine2D.js"
   ]
 
+  extras = [
+    "src/shared/SyntaxSugar.js"
+  ]
+
   grunt.initConfig
     pkg: grunt.file.readJSON("package.json")
     shell:
@@ -56,6 +60,7 @@ module.exports = (grunt) ->
         files: [
           "build/coffee-engine-3d.min.js": files_3d
           "build/coffee-engine-2d.min.js": files_2d
+          "build/extras.min.js": extras
         ]
       engine:
         options:
@@ -64,6 +69,7 @@ module.exports = (grunt) ->
         files: [
           "build/coffee-engine-3d.js": files_3d
           "build/coffee-engine-2d.js": files_2d
+          "build/extras.js": extras
         ]
 
   grunt.registerTask "compile:coffee:watch", ["shell:compile-coffee-watch"]

@@ -11,7 +11,7 @@ class ModelViewer extends BaseScene
     @scene.add Helper.light()
     # Helper.fancyShadows(engine.renderer)
 
-    @testCube()
+    # @testCube()
     @testJson()
 
   tick: (tpf) ->
