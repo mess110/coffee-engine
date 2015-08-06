@@ -10212,6 +10212,34 @@ THREE.MorphBlendMesh.prototype.createAnimation = function(name, start, end, fps)
     }
 };
 
+var THREEx = THREEx || {};
+
+THREEx.UniversalLoader = function() {}, THREEx.UniversalLoader.prototype.load = function(urls, onLoad) {
+    return "string" == typeof urls && (urls = [ urls ]), urls[0].match(/\.stl$/i) && 1 === urls.length ? (this.loader = new THREE.STLLoader(), 
+    this.loader.addEventListener("load", function(event) {
+        var geometry = event.content, material = new THREE.MeshPhongMaterial(), object3d = new THREE.Mesh(geometry, material);
+        onLoad(object3d);
+    }), void this.loader.load(urls[0])) : urls[0].match(/\.dae$/i) && 1 === urls.length ? (this.loader = new THREE.ColladaLoader(), 
+    this.loader.options.convertUpAxis = !0, void this.loader.load(urls[0], function(collada) {
+        var object3d = collada.scene;
+        onLoad(object3d);
+    })) : urls[0].match(/\.js$/i) && 1 === urls.length ? (this.loader = new THREE.JSONLoader(), 
+    void this.loader.load(urls[0], function(geometry, materials) {
+        if (materials.length > 1) var material = new THREE.MeshFaceMaterial(materials); else var material = materials[0];
+        var object3d = new THREE.Mesh(geometry, material);
+        onLoad(object3d);
+    })) : urls[0].match(/\.obj$/i) && 1 === urls.length ? (this.loader = new THREE.OBJLoader(), 
+    void this.loader.load(urls[0], function(object3d) {
+        onLoad(object3d);
+    })) : 2 === urls.length && urls[0].match(/\.mtl$/i) && urls[1].match(/\.obj$/i) ? (this.loader = new THREE.OBJMTLLoader(), 
+    void this.loader.load(urls[1], urls[0], function(object3d) {
+        onLoad(object3d);
+    })) : 2 === urls.length && urls[0].match(/\.obj$/i) && urls[1].match(/\.mtl$/i) ? (this.loader = new THREE.OBJMTLLoader(), 
+    void this.loader.load(urls[0], urls[1], function(object3d) {
+        onLoad(object3d);
+    })) : void console.assert(!1);
+};
+
 var SceneManager;
 
 SceneManager = function() {
@@ -10362,7 +10390,7 @@ EngineUtils = function() {
         },
         vertexShader: [ "varying vec2 vUv;", "void main() {", "	vUv = vec2( uv.x, uv.y );", "	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
         fragmentShader: [ "uniform sampler2D mapLeft;", "uniform sampler2D mapRight;", "varying vec2 vUv;", "void main() {", "	vec4 colorL, colorR;", "	vec2 uv = vUv;", "	colorL = texture2D( mapLeft, uv );", "	colorR = texture2D( mapRight, uv );", "	gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;", "}" ].join("\n")
-    }), mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), _material), _scene.add(mesh), 
+    }), mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), _material), _scene.add(mesh), 
     this.setSize = function(width, height) {
         return _renderTargetL = new THREE.WebGLRenderTarget(width, height, _params), _renderTargetR = new THREE.WebGLRenderTarget(width, height, _params), 
         _material.uniforms.mapLeft.value = _renderTargetL, _material.uniforms.mapRight.value = _renderTargetR, 
@@ -10425,7 +10453,7 @@ var BaseScene;
 
 BaseScene = function() {
     function BaseScene() {
-        this.scene = new THREE.Scene(), this.lastMousePosition = void 0;
+        this.scene = new THREE.Scene(), this.lastMousePosition = void 0, this.loaded = !1;
     }
     return BaseScene.prototype.tick = function(tpf) {
         throw "scene.tick not implemented";
