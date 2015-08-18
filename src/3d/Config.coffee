@@ -15,6 +15,7 @@ class Config
       @soundEnabled = false
       @debug = false
       @preventDefaultMouseEvents = true
+      @animate = true
 
     fillWindow: () ->
       @resize = true

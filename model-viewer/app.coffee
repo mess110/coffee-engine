@@ -1,5 +1,4 @@
 config = Config.get()
-config.modelsDirPath = '~/pr0n/blender'
 config.fillWindow()
 
 engine = new Engine3D()
@@ -7,16 +6,31 @@ engine.camera.position.set 0, 5, 10
 engine.renderer.setClearColor( 0xFFFFFF )
 
 app = angular.module('app', [])
-app.controller 'MainController', ($scope) ->
-  exec = require('child_process').exec
-  cmd = "./list_models.rb #{config.modelsDirPath}"
-  exec cmd, (error, stdout, stderr) =>
-    # TODO: error handling
-    json = JSON.parse(stdout)
 
-    $scope.files = json.files
-    $scope.$apply()
-    return
+
+app.directive 'customOnChange', ->
+  {
+    restrict: 'A'
+    link: (scope, element, attrs) ->
+      onChangeHandler = scope.$eval(attrs.customOnChange)
+      element.bind 'change', onChangeHandler
+      return
+
+  }
+
+app.controller 'MainController', ($scope) ->
+
+  $scope.loadDir = (event) ->
+    s = event.target.files[0].path
+    exec = require('child_process').exec
+    cmd = "./list_models.rb #{s}"
+    exec cmd, (error, stdout, stderr) =>
+      # TODO: error handling
+      json = JSON.parse(stdout)
+
+      $scope.files = json.files
+      $scope.$apply()
+      return
 
   $scope.viewModel = (path) ->
     modelViwerScene.viewModel($scope.nameFromPath(path), path)

@@ -19,6 +19,7 @@ module.exports = (grunt) ->
     # This NEEDS to be in this position
     "src/3d/Hack.js"
 
+    "src/3d/JsonModelManager.js"
     "src/3d/ResourceManager.js"
     "src/3d/BaseScene.js"
     "src/3d/BaseModel.js"

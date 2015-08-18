@@ -68,6 +68,7 @@ class Engine3D
     tpf = (now - (@time or now)) / 1000
     @time = now
     @sceneManager.tick(tpf)
+    THREE.AnimationHandler.update(tpf) if @config.animate
     @statsManager.update(@renderer)
     TWEEN.update()
     @renderer.render @sceneManager.currentScene().scene, @camera
