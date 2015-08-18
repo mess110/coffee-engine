@@ -10422,6 +10422,35 @@ var exports;
 
 exports = void 0, ("undefined" == typeof exports || null === exports) && (exports = {});
 
+var JsonModelManager;
+
+JsonModelManager = function() {
+    function JsonModelManager() {}
+    var PrivateClass, instance;
+    return instance = null, PrivateClass = function() {
+        function PrivateClass() {
+            this.loader = new THREE.JSONLoader(), this.models = {}, this.loadCount = 0;
+        }
+        return PrivateClass.prototype.load = function(key, url, callback) {
+            return this.loadCount += 1, this.loader.load(url, function(geometry, materials) {
+                var anim, animation, i, j, len, mat, material, mesh, ref;
+                for (mesh = new THREE.SkinnedMesh(geometry, new THREE.MeshFaceMaterial(materials)), 
+                material = mesh.material.materials, i = 0; i < materials.length; ) mat = materials[i], 
+                mat.skinning = !0, i++;
+                if (null != mesh.animations) throw "mesh already has animations. not overwriting default behaviour";
+                for (mesh.animations = [], ref = mesh.geometry.animations, j = 0, len = ref.length; len > j; j++) anim = ref[j], 
+                animation = new THREE.Animation(mesh, anim, THREE.AnimationHandler.CATMULLROM), 
+                mesh.animations.push(animation);
+                return JsonModelManager.get().models[key] = mesh, callback(mesh);
+            });
+        }, PrivateClass.prototype.hasFinishedLoading = function() {
+            return this.loadCount === Object.keys(this.models).size();
+        }, PrivateClass;
+    }(), JsonModelManager.get = function() {
+        return null != instance ? instance : instance = new PrivateClass();
+    }, JsonModelManager;
+}();
+
 var ResourceManager;
 
 ResourceManager = function() {
@@ -10522,7 +10551,7 @@ Config = function() {
         function PrivateClass() {
             this.showStatsOnLoad = !1, this.contextMenuDisabled = !0, this.antialias = !0, this.anaglyph = !1, 
             this.anaglyphDistance = 600, this.resize = !1, this.width = 1280, this.height = 720, 
-            this.soundEnabled = !1, this.debug = !1, this.preventDefaultMouseEvents = !0;
+            this.soundEnabled = !1, this.debug = !1, this.preventDefaultMouseEvents = !0, this.animate = !0;
         }
         return PrivateClass.prototype.fillWindow = function() {
             return this.resize = !0, this.width = window.innerWidth, this.height = window.innerHeight;
@@ -10558,11 +10587,13 @@ Helper = function() {
         light.shadowCameraRight = 60, light.shadowCameraBottom = 60, light.shadowCameraNear = 1, 
         light.shadowCameraFar = 1e3, light.shadowBias = -1e-4, light.shadowMapWidth = light.shadowMapHeight = 1024, 
         light.shadowDarkness = .7, light;
+    }, Helper.ambientLight = function() {
+        return new THREE.AmbientLight(4210752);
     }, Helper.cube = function() {
-        var box, cube, mat;
+        var box, mat;
         return box = new THREE.BoxGeometry(10, 10, 10), mat = new THREE.MeshLambertMaterial({
             color: 16711680
-        }), cube = new THREE.Mesh(box, mat);
+        }), new THREE.Mesh(box, mat);
     }, Helper.fancyShadows = function(renderer) {
         return renderer.shadowMapEnabled = !0, renderer.shadowMapSoft = !0, renderer.shadowMapType = THREE.PCFShadowMap, 
         renderer.shadowMapAutoUpdate = !0;
@@ -10611,8 +10642,9 @@ Engine3D = function() {
         var now, tpf;
         return requestAnimationFrame(this.render), this.width = window.innerWidth, this.height = window.innerHeight, 
         now = new Date().getTime(), tpf = (now - (this.time || now)) / 1e3, this.time = now, 
-        this.sceneManager.tick(tpf), this.statsManager.update(this.renderer), TWEEN.update(), 
-        this.renderer.render(this.sceneManager.currentScene().scene, this.camera), this.config.anaglyph ? this.anaglyphEffect.render(this.sceneManager.currentScene().scene, this.camera) : void 0;
+        this.sceneManager.tick(tpf), this.config.animate && THREE.AnimationHandler.update(tpf), 
+        this.statsManager.update(this.renderer), TWEEN.update(), this.renderer.render(this.sceneManager.currentScene().scene, this.camera), 
+        this.config.anaglyph ? this.anaglyphEffect.render(this.sceneManager.currentScene().scene, this.camera) : void 0;
     }, Engine3D.prototype._parseMouseEvent = function(event) {
         var mouseX, mouseY, vector;
         return this.config.preventDefaultMouseEvents && event.preventDefault(), event.target === this.renderer.domElement ? (mouseX = event.layerX / this.width * 2 - 1, 
