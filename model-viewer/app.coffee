@@ -48,12 +48,43 @@ app.controller 'MainController', ($scope) ->
   $scope.nameFromPath = (path) ->
     path.split('/').last().split('.json').first()
 
+THREEx = THREEx or {}
+
+###*
+# build a classic 3 points lighting
+# @return {THREE.Object3D} container for the 3 lights
+###
+
+THREEx.ThreePointsLighting = ->
+  container = new (THREE.Object3D)
+  object3d = new (THREE.AmbientLight)('#111111')
+  object3d.name = 'Ambient light'
+  container.add object3d
+  object3d = new (THREE.DirectionalLight)('white', 0.225)
+  object3d.position.set 2.6, 1, 3
+  object3d.name = 'Back light'
+  container.add object3d
+  object3d = new (THREE.DirectionalLight)('white', 0.375)
+  object3d.position.set -2, -1, 0
+  object3d.name = 'Key light'
+  container.add object3d
+  object3d = new (THREE.DirectionalLight)('white', 0.75)
+  object3d.position.set 3, 3, 2
+  object3d.name = 'Fill light'
+  container.add object3d
+  container
+
 class ModelViwerScene extends BaseScene
   constructor: ->
     super()
 
-    @scene.add Helper.light()
-    @scene.add Helper.ambientLight()
+    light = new THREEx.ThreePointsLighting()
+    light.position.set 0, 0, 5
+    @scene.add light
+
+    light = new THREEx.ThreePointsLighting()
+    light.position.set 0, 0, -5
+    @scene.add light
 
     @controls = new (THREE.OrbitControls)(engine.camera)
     @controls.damping = 0.2
