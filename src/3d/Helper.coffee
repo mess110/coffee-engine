@@ -24,10 +24,13 @@ class Helper
     light.shadowDarkness = .7
     light
 
+  @ambientLight: ->
+    new (THREE.AmbientLight)(0x404040)
+
   @cube: ->
     box = new (THREE.BoxGeometry)(10, 10, 10)
     mat = new (THREE.MeshLambertMaterial)(color: 0xff0000)
-    cube = new (THREE.Mesh)(box, mat)
+    new (THREE.Mesh)(box, mat)
 
   @fancyShadows: (renderer) ->
     renderer.shadowMapEnabled = true
