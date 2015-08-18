@@ -1,0 +1,36 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0px;
+  padding: 0px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #000;
+}
+
+.file-browser {
+  position: absolute;
+  width: 20%;
+  height: 100%;
+  z-index: 100;
+  border-right: dashed 1px black;
+}
+
+.animation-browser {
+  position: absolute;
+  width: 20%;
+  height: 100%;
+  right: 0px;
+  z-index: 100;
+  border-left: dashed 1px black;
+}
+
+canvas {
+  position: absolute;
+  z-index: 0;
+}
+
+p {
+  text-align: center;
+}

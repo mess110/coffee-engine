@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html lang="en" ng-app="app">
+  <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>coffee-engine model-viewer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body ng-controller="MainController">
+    <div class="file-browser">
+      <p ng-click="viewModel(file)" ng-repeat="file in files">{{nameFromPath(file)}}</p>
+    </div>
+
+    <div class="animation-browser">
+      <p ng-click="animate($index)" ng-repeat="animation in animations track by $index">{{animation}}</p>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <script src="../build/coffee-engine-3d.js"></script>
+    <script src="../build/extras.js"></script>
+    <script src="OrbitControls.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
