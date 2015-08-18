@@ -12,7 +12,7 @@ class ModelViewer extends BaseScene
     # Helper.fancyShadows(engine.renderer)
 
     # @testCube()
-    @testJson()
+    @testJson2()
 
   tick: (tpf) ->
     return unless @model?
@@ -56,7 +56,13 @@ class ModelViewer extends BaseScene
       scene.scene.add mesh
       scene.model = mesh
 
+  testJson2: ->
     loader = new (THREE.JSONLoader)
+    mesh = undefined
+    loader.load 'models/tree_trunk.json', (geometry, materials) ->
+      scene = engine.sceneManager.currentScene()
+      scene.scene.add mesh
+      scene.model = mesh
 
   testStl: ->
     url = 'models/plate.stl'
