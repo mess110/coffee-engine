@@ -6,7 +6,10 @@ class Engine3D
     @height = @config.height
     @time = undefined
 
-    @renderer = new THREE.WebGLRenderer({antialias: @config.antialias})
+    @renderer = new THREE.WebGLRenderer(
+      antialias: @config.antialias
+      alpha: @config.transparentBackground
+    )
     @renderer.setSize @width, @height
     document.body.appendChild @renderer.domElement
 

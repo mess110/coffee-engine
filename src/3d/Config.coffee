@@ -16,6 +16,7 @@ class Config
       @debug = false
       @preventDefaultMouseEvents = true
       @animate = true
+      @transparentBackground = false
 
     fillWindow: () ->
       @resize = true

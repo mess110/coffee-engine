@@ -10551,7 +10551,8 @@ Config = function() {
         function PrivateClass() {
             this.showStatsOnLoad = !1, this.contextMenuDisabled = !0, this.antialias = !0, this.anaglyph = !1, 
             this.anaglyphDistance = 600, this.resize = !1, this.width = 1280, this.height = 720, 
-            this.soundEnabled = !1, this.debug = !1, this.preventDefaultMouseEvents = !0, this.animate = !0;
+            this.soundEnabled = !1, this.debug = !1, this.preventDefaultMouseEvents = !0, this.animate = !0, 
+            this.transparentBackground = !1;
         }
         return PrivateClass.prototype.fillWindow = function() {
             return this.resize = !0, this.width = window.innerWidth, this.height = window.innerHeight;
@@ -10613,7 +10614,8 @@ Engine3D = function() {
         var camera;
         this.config = Config.get(), this.width = this.config.width, this.height = this.config.height, 
         this.time = void 0, this.renderer = new THREE.WebGLRenderer({
-            antialias: this.config.antialias
+            antialias: this.config.antialias,
+            alpha: this.config.transparentBackground
         }), this.renderer.setSize(this.width, this.height), document.body.appendChild(this.renderer.domElement), 
         camera = new THREE.PerspectiveCamera(75, this.width / this.height, .1, 1e3), this.setCamera(camera), 
         this.camera.position.z = 10, this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), 
