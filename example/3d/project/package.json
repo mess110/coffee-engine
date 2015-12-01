@@ -1,0 +1,14 @@
+{
+  "name": "coffee-engine-template-3d",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "install": "bower install",
+    "coffee": "coffee --output . -b -c -w .",
+    "server": "python -m SimpleHTTPServer",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
