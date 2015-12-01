@@ -1,3 +1,5 @@
+glob = require('glob')
+
 config = Config.get()
 config.fillWindow()
 
@@ -22,15 +24,11 @@ app.controller 'MainController', ($scope) ->
 
   $scope.loadDir = (event) ->
     s = event.target.files[0].path
-    exec = require('child_process').exec
-    cmd = "./list_models.rb #{s}"
-    exec cmd, (error, stdout, stderr) =>
-      # TODO: error handling
-      json = JSON.parse(stdout)
 
-      $scope.files = json.files
+    glob("#{s}/**/*.json", {}, (er, files) ->
+      $scope.files = files
       $scope.$apply()
-      return
+    )
 
   $scope.viewModel = (path) ->
     modelViwerScene.viewModel($scope.nameFromPath(path), path)

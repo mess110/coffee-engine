@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "main": "index.html",
   "dependencies": {
+    "glob": "^6.0.1",
     "nw": "^0.12.3"
   }
 }
