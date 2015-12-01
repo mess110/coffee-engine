@@ -5,10 +5,23 @@
   "main": "app.js",
   "scripts": {
     "install": "bower install",
-    "coffee": "coffee --output . -b -c -w .",
+
+    "sass": "./node_modules/node-sass/bin/node-sass css/app.sass css/app.css",
+    "sass-watch": "nodemon -e sass -x \"npm run sass\"",
+
+    "coffee": "coffee --output . -b -c .",
+    "coffee-watch": "nodemon -e coffee -x \"npm run coffee\"",
+
     "server": "python -m SimpleHTTPServer",
-    "test": "echo \"Error: no test specified\" && exit 1"
+
+    "test": "echo \"Error: no test specified\" && exit 1",
+
+    "compile": "npm run coffee && npm run sass"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "node-sass": "^3.4.2",
+    "nodemon": "^1.8.1"
+  }
 }
