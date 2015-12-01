@@ -18,3 +18,7 @@ loadingScene = new LoadingScene()
 engine.addScene(loadingScene)
 
 engine.render()
+
+app = angular.module('app', [])
+
+app.controller 'MainController', ($scope) ->

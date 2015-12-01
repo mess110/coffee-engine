@@ -13,6 +13,7 @@
   ],
   "devDependencies": {},
   "dependencies": {
-    "coffee-engine": "~0.0.38"
+    "coffee-engine": "~0.0.38",
+    "angular": "~1.4.8"
   }
 }
