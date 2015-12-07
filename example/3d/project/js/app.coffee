@@ -23,7 +23,6 @@ class LoadingScene extends BaseScene
     @cube.rotation.y += 1 * tpf
 
   doMouseEvent: (event, raycaster) ->
-    console.log 'asd'
 
   doKeyboardEvent: (event) ->
 
