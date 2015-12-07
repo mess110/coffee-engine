@@ -23,9 +23,10 @@ class JsonModelManager
         throw 'mesh already has animations. not overwriting default behaviour' if mesh.animations?
 
         mesh.animations = []
-        for anim in mesh.geometry.animations
-          animation = new THREE.Animation(mesh, anim, THREE.AnimationHandler.CATMULLROM)
-          mesh.animations.push animation
+        if mesh.geometry.animations?
+          for anim in mesh.geometry.animations
+            animation = new THREE.Animation(mesh, anim, THREE.AnimationHandler.CATMULLROM)
+            mesh.animations.push animation
 
         JsonModelManager.get().models[key] = mesh
         callback(mesh)
