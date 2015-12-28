@@ -10,7 +10,7 @@
     "sass-watch": "nodemon -e sass -x \"npm run sass\"",
 
     "coffee": "coffee --output . -b -c .",
-    "coffee-watch": "nodemon -e coffee -x \"npm run coffee\"",
+    "coffee-watch": "coffee --output . -b -c -w .",
 
     "server": "python -m SimpleHTTPServer",
 
