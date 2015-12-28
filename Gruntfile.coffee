@@ -3,9 +3,10 @@ module.exports = (grunt) ->
     "bower_components/stats.js/src/Stats.js"
     "bower_components/tweenjs/src/Tween.js"
 
+    "bower_components/threejs/build/three.js"
+
     "bower_components/threex.windowresize/threex.windowresize.js"
     "bower_components/threex.rendererstats/threex.rendererstats.js"
-    "bower_components/threejs/build/three.js"
     "bower_components/threex.universalloader/threex.universalloader.js"
 
     "src/shared/SceneManager.js"
