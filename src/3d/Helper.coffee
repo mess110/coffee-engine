@@ -38,7 +38,7 @@ class Helper
     renderer.shadowMapType = THREE.PCFShadowMap
     renderer.shadowMapAutoUpdate = true
 
-  @skybox: (imgUrl, radius=1.5, segments=32)->
+  @skybox: (imgUrl, radius=90, segments=64)->
     geom = new (THREE.SphereGeometry)(radius, segments, segments)
     mat = new (THREE.MeshBasicMaterial)(
       map: THREE.ImageUtils.loadTexture(imgUrl)
