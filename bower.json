@@ -1,6 +1,6 @@
 {
   "name": "coffee-engine",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "authors": [
     "Cristian Mircea Messel <mess110@gmail.com>"
   ],
@@ -18,7 +18,7 @@
   "devDependencies": {
     "tweenjs": "r14",
     "stats.js": "r11",
-    "threejs": "r71",
+    "threejs": "r73",
     "threex.windowresize": "*",
     "threex.rendererstats": "*",
     "threex.universalloader": "*"

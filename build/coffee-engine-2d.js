@@ -253,17 +253,17 @@ TWEEN.Tween = function(object) {
         In: function(k) {
             var s, a = .1, p = .4;
             return 0 === k ? 0 : 1 === k ? 1 : (!a || 1 > a ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
-            -(a * Math.pow(2, 10 * (k -= 1)) * Math.sin(2 * (k - s) * Math.PI / p)));
+            -(a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p)));
         },
         Out: function(k) {
             var s, a = .1, p = .4;
             return 0 === k ? 0 : 1 === k ? 1 : (!a || 1 > a ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
-            a * Math.pow(2, -10 * k) * Math.sin(2 * (k - s) * Math.PI / p) + 1);
+            a * Math.pow(2, -10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
         },
         InOut: function(k) {
             var s, a = .1, p = .4;
             return 0 === k ? 0 : 1 === k ? 1 : (!a || 1 > a ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
-            (k *= 2) < 1 ? -.5 * a * Math.pow(2, 10 * (k -= 1)) * Math.sin(2 * (k - s) * Math.PI / p) : a * Math.pow(2, -10 * (k -= 1)) * Math.sin(2 * (k - s) * Math.PI / p) * .5 + 1);
+            (k *= 2) < 1 ? -.5 * (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p)) : a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * .5 + 1);
         }
     },
     Back: {
@@ -277,7 +277,7 @@ TWEEN.Tween = function(object) {
         },
         InOut: function(k) {
             var s = 2.5949095;
-            return (k *= 2) < 1 ? .5 * k * k * ((s + 1) * k - s) : .5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
+            return (k *= 2) < 1 ? .5 * (k * k * ((s + 1) * k - s)) : .5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
         }
     },
     Bounce: {
