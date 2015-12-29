@@ -1,29 +1,31 @@
 coffee-engine
 =============
 
-Has 3 modules:
+* 3d engine ~ thin layer over three.js in coffeescript
+* 2d engine
+* 3d model-viewer (built with nw.js)
 
-1. 3d engine ~ thin layer over three.js in coffeescript
-2. 2d engine
-3. 3d model-viewer (built with nw.js)
-
-development
------------
+Helpful commands
+----------------
 
 ```
 grunt dev
 ```
 
-To release a new version:
+```
+grunt doc
+```
 
 ```
-ruby release.rb
+grunt release # compiles files for release
+```
+
+```
+./release.rb # requires ruby
 ```
 
 model-viewer
 ------------
-
-Remember to edit modelsDirPath
 
 ```
 cd model-viewer/

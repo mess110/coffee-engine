@@ -53,6 +53,8 @@ module.exports = (grunt) ->
         command: "coffee --output . -b -c -w ."
       "compile-coffee":
         command: "coffee --output . -b -c ."
+      "doc":
+        command: "./node_modules/.bin/codo -r README.md src"
 
     uglify:
       engine_min:
@@ -79,6 +81,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask "release", ["compile:coffee", "uglify:engine", "uglify:engine_min"]
   grunt.registerTask "dev", ["compile:coffee:watch"]
+
+  grunt.registerTask "doc", ["shell:doc"]
 
   grunt.registerTask "default", ["dev"]
 
