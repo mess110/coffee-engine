@@ -4,9 +4,9 @@ class StatsManager
   instance = null
 
   class PrivateStatsManager
-    constructor: () ->
-      @statsVisible = false
+    statsVisible: false
 
+    constructor: () ->
       @stats = new Stats()
       @stats.domElement.style.position = 'absolute'
       @stats.domElement.style.top = '0px'

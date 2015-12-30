@@ -7,9 +7,8 @@ class SceneManager
   #
   # Can be accessed through the singleton class SceneManager
   class PrivateSceneManager
-    constructor: () ->
-      @scenes = []
-      @currentSceneIndex = undefined
+    scenes: []
+    currentSceneIndex: undefined
 
     currentScene: ->
       throw 'SceneManager.setScene not called' if @currentSceneIndex == undefined

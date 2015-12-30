@@ -3,10 +3,9 @@ class JsonModelManager
   instance = null
 
   class PrivateJsonModelManager
-    constructor: () ->
-      @loader = new (THREE.JSONLoader)
-      @models = {}
-      @loadCount = 0
+    loader: new (THREE.JSONLoader)
+    models: {}
+    loadCount: 0
 
     load: (key, url, callback) ->
       @loadCount += 1

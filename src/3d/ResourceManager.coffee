@@ -4,10 +4,9 @@ class ResourceManager
   instance = null
 
   class PrivateResourceManager
-    constructor: () ->
-      @loadedImages = 0
-      @totalImages = 0
-      @images = {}
+    loadedImages: 0
+    totalImages: 0
+    images: {}
 
     addImage: (key, url) ->
       @totalImages += 1

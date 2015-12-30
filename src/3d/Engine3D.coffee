@@ -1,12 +1,12 @@
 # The 3d Engine
 class Engine3D
-  constructor: () ->
-    @config = Config.get()
+  time: undefined
+  uptime: 0
+  config: Config.get()
 
+  constructor: () ->
     @width = @config.width
     @height = @config.height
-    @time = undefined
-    @uptime = 0
 
     @renderer = new THREE.WebGLRenderer(
       antialias: @config.antialias

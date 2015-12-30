@@ -1,10 +1,9 @@
 class BaseScene
-  constructor: ->
-    @scene = new THREE.Scene()
-    @lastMousePosition = undefined
-    @keyboard = new THREEx.KeyboardState()
-    @loaded = false
-    @uptime = 0
+  scene: new THREE.Scene()
+  lastMousePosition: undefined
+  keyboard: new THREEx.KeyboardState()
+  loaded: false
+  uptime: 0
 
   fullTick: (tpf) ->
     @uptime += tpf

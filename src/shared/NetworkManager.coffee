@@ -4,8 +4,7 @@ class NetworkManager
   instance = null
 
   class PrivateNetworkManager
-    constructor: () ->
-      @socket = undefined
+    socket: undefined
 
     connect: (namespace) ->
       namespace = '/' unless namespace?

@@ -7,8 +7,7 @@ class SoundManager
   #
   # Can be accessed through the singleton class SoundManager
   class PrivateSoundManager
-    constructor: () ->
-      @sounds = {}
+    sounds: {}
 
     add: (key, url) ->
       audio = document.createElement('audio')
