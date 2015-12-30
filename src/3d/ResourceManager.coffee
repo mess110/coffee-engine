@@ -1,8 +1,9 @@
+# @nodoc
 class ResourceManager
 
   instance = null
 
-  class PrivateClass
+  class PrivateResourceManager
     constructor: () ->
       @loadedImages = 0
       @totalImages = 0
@@ -28,4 +29,4 @@ class ResourceManager
 
 
   @get: () ->
-    instance ?= new PrivateClass()
+    instance ?= new PrivateResourceManager()

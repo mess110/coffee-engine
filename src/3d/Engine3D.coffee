@@ -1,3 +1,4 @@
+# The 3d Engine
 class Engine3D
   constructor: () ->
     @config = Config.get()
@@ -20,7 +21,6 @@ class Engine3D
     # TODO find out if anaglyph not supported - what happens?
     @anaglyphEffect = new THREE.AnaglyphEffect(@renderer)
     @anaglyphEffect.setSize(@width, @height)
-    @anaglyphEffect.setDistanceBetweenGlyphs(@config.anaglyphDistance)
 
     @sceneManager = SceneManager.get()
 

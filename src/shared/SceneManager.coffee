@@ -1,8 +1,12 @@
+# @nodoc
 class SceneManager
 
   instance = null
 
-  class PrivateClass
+  # Class used to manage scenes
+  #
+  # Can be accessed through the singleton class SceneManager
+  class PrivateSceneManager
     constructor: () ->
       @scenes = []
       @currentSceneIndex = undefined
@@ -48,4 +52,4 @@ class SceneManager
       @currentScene().tick(tpf)
 
   @get: () ->
-    instance ?= new PrivateClass()
+    instance ?= new PrivateSceneManager()

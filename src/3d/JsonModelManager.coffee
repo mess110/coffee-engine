@@ -1,7 +1,8 @@
+# @nodoc
 class JsonModelManager
   instance = null
 
-  class PrivateClass
+  class PrivateJsonModelManager
     constructor: () ->
       @loader = new (THREE.JSONLoader)
       @models = {}
@@ -35,4 +36,4 @@ class JsonModelManager
       @loadCount == Object.keys(@models).size()
 
   @get: () ->
-    instance ?= new PrivateClass()
+    instance ?= new PrivateJsonModelManager()

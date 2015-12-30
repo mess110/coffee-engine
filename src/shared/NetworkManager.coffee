@@ -1,8 +1,9 @@
+# @nodoc
 class NetworkManager
 
   instance = null
 
-  class PrivateClass
+  class PrivateNetworkManager
     constructor: () ->
       @socket = undefined
 
@@ -22,4 +23,4 @@ class NetworkManager
       @socket.emit(event, params)
 
   @get: () ->
-    instance ?= new PrivateClass()
+    instance ?= new PrivateNetworkManager()

@@ -1,3 +1,5 @@
+# Helpers to get you started
+#
 # http://blog.romanliutikov.com/post/58322336872/setup-scene-in-threejs
 class Helper
 

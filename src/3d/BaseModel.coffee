@@ -1,7 +1,7 @@
 class BaseModel
-  constructor: ->
-    @mesh = undefined
-    @visible = true
+
+  visible: true
+  mesh: undefined
 
   setRotation: (x, y, z) ->
     @mesh.rotation.x = x

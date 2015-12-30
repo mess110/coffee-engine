@@ -1,22 +1,29 @@
+# @nodoc
 class Config
 
   instance = null
 
-  class PrivateClass
-    constructor: () ->
-      @showStatsOnLoad = false
-      @contextMenuDisabled = true
-      @antialias = true
-      @anaglyph = false
-      @anaglyphDistance = 600
-      @resize = false
-      @width = 1280
-      @height = 720
-      @soundEnabled = false
-      @debug = false
-      @preventDefaultMouseEvents = true
-      @animate = true
-      @transparentBackground = false
+  # Holds config variables
+  #
+  # Can be accessed through the singleton class Config
+  #
+  # @example How to access config object
+  #   config = Config.get()
+  #   console.log config
+  class PrivateConfig
+
+    showStatsOnLoad: true
+    contextMenuDisabled: true
+    antialias: true
+    anaglyph: false
+    resize: false
+    width: 1280
+    height: 1024
+    soundEnabled: false
+    debug: false
+    preventDefaultMouseEvents: true
+    animate: true
+    transparentBackground: false
 
     fillWindow: () ->
       @resize = true
@@ -35,10 +42,11 @@ class Config
     toggleDebug: () ->
       @debug = !@debug
 
+    # @see EngineUtils.toggleFullScreen
     toggleFullScreen: () ->
       EngineUtils.toggleFullScreen()
 
   @get: () ->
-    instance ?= new PrivateClass()
+    instance ?= new PrivateConfig()
 
 exports.Config = Config

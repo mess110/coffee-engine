@@ -1,8 +1,12 @@
+# @nodoc
 class SoundManager
 
   instance = null
 
-  class PrivateClass
+  # Class used to manage sounds
+  #
+  # Can be accessed through the singleton class SoundManager
+  class PrivateSoundManager
     constructor: () ->
       @sounds = {}
 
@@ -30,4 +34,4 @@ class SoundManager
       i
 
   @get: () ->
-    instance ?= new PrivateClass()
+    instance ?= new PrivateSoundManager()

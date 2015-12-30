@@ -1,4 +1,8 @@
+# Shared methods between all engines
 class EngineUtils
+  # Requires a user action like pressing a button. Does not work if placed in
+  # document ready or something similar.
+  #
   # https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode
   @toggleFullScreen: ->
     if not document.fullscreenElement and not document.mozFullScreenElement and not document.webkitFullscreenElement and not document.msFullscreenElement # current working methods
@@ -19,6 +23,8 @@ class EngineUtils
       else document.webkitExitFullscreen()  if document.webkitExitFullscreen
     return
 
+  # Generate a random GUID
+  #
   # https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
   @guid: ->
     s4 = ->

@@ -1,8 +1,9 @@
+# @nodoc
 class StatsManager
 
   instance = null
 
-  class PrivateClass
+  class PrivateStatsManager
     constructor: () ->
       @statsVisible = false
 
@@ -30,4 +31,4 @@ class StatsManager
       @rendererStats.update(renderer)
 
   @get: () ->
-    instance ?= new PrivateClass()
+    instance ?= new PrivateStatsManager()
