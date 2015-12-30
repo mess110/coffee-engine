@@ -5,7 +5,37 @@
     <title>coffee-engine 3d template</title>
   </head>
   <body>
-    <script src="/build/coffee-engine-3d.js"></script>
+    <!-- this needs to be kept in sync with files_3d from Gruntfile -->
+    <script src="/bower_components/stats.js/src/Stats.js"></script>
+    <script src="/bower_components/tweenjs/src/Tween.js"></script>
+
+    <script src="/bower_components/threejs/build/three.js"></script>
+
+    <script src="/bower_components/threejs/examples/js/effects/AnaglyphEffect.js"></script>
+
+    <script src="/bower_components/threex.windowresize/threex.windowresize.js"></script>
+    <script src="/bower_components/threex.rendererstats/threex.rendererstats.js"></script>
+    <script src="/bower_components/threex.universalloader/threex.universalloader.js"></script>
+    <script src="/bower_components/threex.keyboardstate/threex.keyboardstate.js"></script>
+
+    <script src="/src/shared/SceneManager.js"></script>
+    <script src="/src/shared/NetworkManager.js"></script>
+    <script src="/src/shared/StatsManager.js"></script>
+    <script src="/src/shared/SoundManager.js"></script>
+    <script src="/src/shared/EngineUtils.js"></script>
+
+    <script src="/src/3d/Hack.js"></script>
+
+    <script src="/src/3d/JsonModelManager.js"></script>
+    <script src="/src/3d/ResourceManager.js"></script>
+    <script src="/src/3d/BaseScene.js"></script>
+    <script src="/src/3d/BaseModel.js"></script>
+    <script src="/src/3d/Config.js"></script>
+    <script src="/src/3d/Helper.js"></script>
+    <script src="/src/3d/Engine3D.js"></script>
+
+    <script src="/src/shared/SyntaxSugar.js"></script>
+
     <script src="app.js"></script>
   </body>
 </html>

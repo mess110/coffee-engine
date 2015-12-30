@@ -18,8 +18,6 @@ module.exports = (grunt) ->
     "src/shared/SoundManager.js"
     "src/shared/EngineUtils.js"
 
-    "src/vendor/AnaglyphEffect.js"
-
     # This NEEDS to be in this position
     "src/3d/Hack.js"
 

@@ -6,17 +6,17 @@
   "scripts": {
     "install": "bower install",
 
-    "sass": "./node_modules/node-sass/bin/node-sass css/app.sass css/app.css",
-    "sass-watch": "nodemon -e sass -x \"npm run sass\"",
+    "sass-no-watch": "./node_modules/node-sass/bin/node-sass css/app.sass css/app.css",
+    "sass": "nodemon -e sass -x \"npm run sass\"",
 
-    "coffee": "coffee --output . -b -c .",
-    "coffee-watch": "coffee --output . -b -c -w .",
+    "coffee-no-watch": "coffee --output . -b -c .",
+    "coffee": "coffee --output . -b -c -w .",
 
     "server": "python -m SimpleHTTPServer",
 
     "test": "echo \"Error: no test specified\" && exit 1",
 
-    "compile": "npm run coffee && npm run sass"
+    "compile": "npm run coffee-no-watch && npm run sass-no-watch"
   },
   "author": "",
   "license": "ISC",
