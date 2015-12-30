@@ -31,4 +31,6 @@ class Water extends BaseModel
     @speed = 1
 
   tick: (tpf) ->
+    # @water.render()
+    # @water.material.uniforms.time.value += 1.0 / 60.0
     @water.material.uniforms.time.value += tpf * @speed
