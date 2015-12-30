@@ -47,3 +47,7 @@ p {
 input[type=file] {
   display: none;
 }
+
+.menu {
+  padding: 5px;
+}

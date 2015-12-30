@@ -46,7 +46,6 @@ class TerrainGeneratorScene extends BaseScene
     @scene.remove(@terrain.mesh) if @terrain?
     Terrain.heightmap_blocking(options)
 
-
   tick: (tpf) ->
     return unless @loaded
 
