@@ -38,10 +38,12 @@ class Engine3D
     @statsManager = StatsManager.get()
     @statsManager.toggle() if @config.showStatsOnLoad
 
+  # @nodoc
   onDocumentMouseEvent: (event) =>
       raycaster = @_parseMouseEvent(event)
       @sceneManager.currentScene().doMouseEvent(event, raycaster) if raycaster?
 
+  # @nodoc
   onDocumentKeyboardEvent: (event) =>
       @sceneManager.currentScene().doKeyboardEvent(event)
 
@@ -79,6 +81,7 @@ class Engine3D
     if @config.anaglyph
       @anaglyphEffect.render @sceneManager.currentScene().scene, @camera
 
+  # @nodoc
   _parseMouseEvent: (event) ->
     event.preventDefault() if @config.preventDefaultMouseEvents
     if event.target is @renderer.domElement
