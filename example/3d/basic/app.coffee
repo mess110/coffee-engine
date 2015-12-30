@@ -1,5 +1,5 @@
 engine = new Engine3D()
-engine.camera.position.z = 40
+engine.camera.position.z = 110
 
 class LoadingScene extends BaseScene
   constructor: ->
@@ -10,6 +10,11 @@ class LoadingScene extends BaseScene
 
     @light = Helper.ambientLight()
     @scene.add @light
+
+    # @water = new Water('/bower_components/ocean/assets/img/waternormals.jpg', engine, @)
+    # @water.mesh.position.y = -5
+    # @scene.add @water.mesh
+    # @water.tick(tpf)
 
     @loaded = true
 
@@ -25,5 +30,4 @@ class LoadingScene extends BaseScene
 
 loadingScene = new LoadingScene()
 engine.addScene(loadingScene)
-
 engine.render()

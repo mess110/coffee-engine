@@ -22,6 +22,7 @@
     "threex.windowresize": "*",
     "threex.rendererstats": "*",
     "threex.universalloader": "*",
-    "threex.keyboardstate": "*"
+    "threex.keyboardstate": "*",
+    "ocean": "git@github.com:jbouny/ocean.git"
   }
 }

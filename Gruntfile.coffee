@@ -11,6 +11,7 @@ module.exports = (grunt) ->
     "bower_components/threex.rendererstats/threex.rendererstats.js"
     "bower_components/threex.universalloader/threex.universalloader.js"
     "bower_components/threex.keyboardstate/threex.keyboardstate.js"
+    "bower_components/ocean/water-material.js"
 
     "src/shared/SceneManager.js"
     "src/shared/NetworkManager.js"
@@ -27,6 +28,8 @@ module.exports = (grunt) ->
     "src/3d/BaseModel.js"
     "src/3d/Config.js"
     "src/3d/Helper.js"
+    "src/3d/Water.js"
+
     "src/3d/Engine3D.js"
   ]
 
