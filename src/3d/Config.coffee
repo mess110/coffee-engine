@@ -12,7 +12,7 @@ class Config
   #   console.log config
   class PrivateConfig
 
-    showStatsOnLoad: true
+    showStatsOnLoad: false
     contextMenuDisabled: true
     antialias: true
     anaglyph: false

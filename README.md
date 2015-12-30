@@ -27,6 +27,12 @@ grunt release # compiles files for release
 model-viewer
 ------------
 
+A nw.js desktop app which allows you to view models and animations from
+json models exported for three.js
+
+The models I am using are created in blender and exported with the official
+three.js blender plugin.
+
 ```
 cd model-viewer/
 ./model-viewer
