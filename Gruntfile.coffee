@@ -59,29 +59,19 @@ module.exports = (grunt) ->
         command: "./node_modules/.bin/codo -r README.md src"
 
     uglify:
-      engine_min:
-        options:
-          mangle: false
-          beautify: false
-        files: [
-          "build/coffee-engine-3d.min.js": files_3d
-          "build/coffee-engine-2d.min.js": files_2d
-          "build/extras.min.js": extras
-        ]
       engine:
         options:
           mangle: false
           beautify: true
         files: [
-          "build/coffee-engine-3d.js": files_3d
-          "build/coffee-engine-2d.js": files_2d
-          "build/extras.js": extras
+          "build/coffee-engine-2d.js": files_2d.concat(extras)
+          "build/coffee-engine-3d.js": files_3d.concat(extras)
         ]
 
   grunt.registerTask "compile:coffee:watch", ["shell:compile-coffee-watch"]
   grunt.registerTask "compile:coffee", ["shell:compile-coffee"]
 
-  grunt.registerTask "release", ["compile:coffee", "uglify:engine", "uglify:engine_min"]
+  grunt.registerTask "release", ["compile:coffee", "uglify:engine"]
   grunt.registerTask "dev", ["compile:coffee:watch"]
 
   grunt.registerTask "doc", ["shell:doc"]

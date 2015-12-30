@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "",
   "private": true,
+  "scripts": {
+    "postinstall": "./node_modules/.bin/bower install && grunt doc"
+  },
   "devDependencies": {
     "bower": "^1.3.5",
     "codo": "^2.0.11",
