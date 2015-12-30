@@ -49,7 +49,7 @@ class SceneManager
       0 <= i and i < @scenes.length
 
     tick: (tpf) ->
-      @currentScene().tick(tpf)
+      @currentScene().fullTick(tpf)
 
   @get: () ->
     instance ?= new PrivateSceneManager()

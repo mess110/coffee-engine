@@ -6,6 +6,7 @@ class Engine3D
     @width = @config.width
     @height = @config.height
     @time = undefined
+    @uptime = 0
 
     @renderer = new THREE.WebGLRenderer(
       antialias: @config.antialias
@@ -69,6 +70,7 @@ class Engine3D
     now = new Date().getTime()
     tpf = (now - (@time or now)) / 1000
     @time = now
+    @uptime += tpf
     @sceneManager.tick(tpf)
     THREE.AnimationHandler.update(tpf) if @config.animate
     @statsManager.update(@renderer)
