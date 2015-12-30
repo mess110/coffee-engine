@@ -47,9 +47,6 @@ class Engine3D
   onDocumentKeyboardEvent: (event) =>
       @sceneManager.currentScene().doKeyboardEvent(event)
 
-  setCursor: (url) ->
-    document.body.style.cursor = "url('#{url}'), auto"
-
   setCamera: (camera) ->
     @camera = camera
     if @config.resize
