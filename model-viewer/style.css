@@ -6,7 +6,14 @@ body {
   margin: 0px;
   padding: 0px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-color: #000;
+}
+
+div h3 {
+  text-align: center;
+}
+
+.ctrl-panel {
+  text-align: center;
 }
 
 .file-browser {
@@ -33,4 +40,8 @@ canvas {
 
 p {
   text-align: center;
+}
+
+input[type=file] {
+  display: none;
 }

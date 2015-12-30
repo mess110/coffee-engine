@@ -16,6 +16,7 @@ app.controller 'MainController', ($scope) ->
 
   $scope.loadDir = (event) ->
     s = event.target.files[0].path
+    $scope.loadedPath = s
 
     glob("#{s}/**/*.json", {}, (er, files) ->
       $scope.files = files
@@ -37,6 +38,9 @@ app.controller 'MainController', ($scope) ->
 
   $scope.nameFromPath = (path) ->
     path.split('/').last().split('.json').first()
+
+  $scope.toggleStats = ->
+    config.toggleStats()
 
 
 

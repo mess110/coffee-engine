@@ -6,12 +6,19 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body ng-controller="MainController">
+    <div class="ctrl-panel">
+      <input type="button" ng-click="toggleStats()" value="toggle stats" />
+      <input id="selectedFile" type="file" webkitdirectory directory custom-on-change="loadDir"/>
+      <input type="button" value="model directory" onclick="document.getElementById('selectedFile').click();" />
+      <span>{{loadedPath}}</span>
+    </div>
     <div class="file-browser">
-      <input type="file" webkitdirectory directory custom-on-change="loadDir"/>
+      <h3>Models</h3>
       <p ng-click="viewModel(file)" ng-repeat="file in files">{{nameFromPath(file)}}</p>
     </div>
 
     <div class="animation-browser">
+      <h3>Animations</h3>
       <p ng-click="animate($index)" ng-repeat="animation in animations track by $index">{{animation}}</p>
     </div>
 
