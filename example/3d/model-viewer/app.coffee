@@ -24,12 +24,12 @@ app.controller 'MainController', ($scope) ->
     )
 
   $scope.viewModel = (path) ->
-    modelViwerScene.viewModel($scope.nameFromPath(path), path)
+    modelViewerScene.viewModel($scope.nameFromPath(path), path)
 
   $scope.animate = (animationIndex) ->
-    for animation in modelViwerScene.mesh.animations
+    for animation in modelViewerScene.mesh.animations
       animation.stop()
-    modelViwerScene.mesh.animations[animationIndex].play()
+    modelViewerScene.mesh.animations[animationIndex].play()
 
   $scope.updateAnimations = (animations) ->
     $scope.animations = []
@@ -44,7 +44,7 @@ app.controller 'MainController', ($scope) ->
 
 
 
-class ModelViwerScene extends BaseScene
+class ModelViewerScene extends BaseScene
   constructor: ->
     super()
 
@@ -81,6 +81,6 @@ engine = new Engine3D()
 engine.camera.position.set 0, 5, 10
 engine.renderer.setClearColor( 0xFFFFFF )
 
-modelViwerScene = new ModelViwerScene()
-engine.addScene(modelViwerScene)
+modelViewerScene = new ModelViewerScene()
+engine.addScene(modelViewerScene)
 engine.render()

@@ -61,6 +61,8 @@ module.exports = (grunt) ->
         command: "coffee --output . -b -c ."
       "doc":
         command: "./node_modules/.bin/codo -r README.md src"
+      "tools":
+        command: "npm run start"
 
     uglify:
       engine:
@@ -79,6 +81,7 @@ module.exports = (grunt) ->
   grunt.registerTask "dev", ["compile:coffee:watch"]
 
   grunt.registerTask "doc", ["shell:doc"]
+  grunt.registerTask "tools", ["shell:tools"]
 
   grunt.registerTask "default", ["dev"]
 
