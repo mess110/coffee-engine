@@ -59,14 +59,6 @@ class BaseModel
   isHovered: (raycaster) ->
     raycaster.intersectObject(@mesh).length > 0
 
-  attachParticle: (particle) ->
-    if @mesh?
-      @particle = particle
-      @particle.attached = true
-      @mesh.add particle.mesh
-
-  detachParticle: ->
-    if @mesh? and @particle?
-      @mesh.remove @particle.mesh
-      @particle.attached = false
-      @particle = undefined
+  toggleWireframe: ->
+    return unless @mesh? or @mesh.material?
+    @mesh.material.wireframe = !@mesh.material.wireframe

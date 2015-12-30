@@ -8,13 +8,8 @@ class LoadingScene extends BaseScene
     @cube = Helper.cube()
     @scene.add @cube
 
-    @light = Helper.ambientLight()
-    @scene.add @light
-
-    # @water = new Water('/bower_components/ocean/assets/img/waternormals.jpg', engine, @)
-    # @water.mesh.position.y = -5
-    # @scene.add @water.mesh
-    # @water.tick(tpf)
+    @scene.add Helper.ambientLight()
+    @scene.add Helper.ambientLight()
 
     @loaded = true
 

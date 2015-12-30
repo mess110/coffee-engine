@@ -28,7 +28,9 @@ module.exports = (grunt) ->
     "src/3d/BaseModel.js"
     "src/3d/Config.js"
     "src/3d/Helper.js"
+
     "src/3d/Water.js"
+    "src/3d/Terrain.js"
 
     "src/3d/Engine3D.js"
   ]

@@ -26,6 +26,5 @@ class ResourceManager
     _inc: () ->
       ResourceManager.get().loadedImages += 1
 
-
   @get: () ->
     instance ?= new PrivateResourceManager()
