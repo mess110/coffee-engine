@@ -29,8 +29,8 @@ class Helper
   @ambientLight: ->
     new (THREE.AmbientLight)(0x404040)
 
-  @cube: ->
-    box = new (THREE.BoxGeometry)(10, 10, 10)
+  @cube: (size) ->
+    box = new (THREE.BoxGeometry)(size, size, size)
     mat = new (THREE.MeshLambertMaterial)(color: 0xff0000)
     new (THREE.Mesh)(box, mat)
 
@@ -40,10 +40,32 @@ class Helper
     renderer.shadowMapType = THREE.PCFShadowMap
     renderer.shadowMapAutoUpdate = true
 
-  @skybox: (imgUrl, radius=90, segments=64)->
+  @skySphere: (imgUrl, radius=450000, segments=64)->
     geom = new (THREE.SphereGeometry)(radius, segments, segments)
     mat = new (THREE.MeshBasicMaterial)(
       map: THREE.ImageUtils.loadTexture(imgUrl)
       side: THREE.BackSide
     )
     new (THREE.Mesh)(geom, mat)
+
+  # [
+  #   '/assets/px.jpg'
+  #   '/assets/nx.jpg'
+  #   '/assets/py.jpg'
+  #   '/assets/ny.jpg'
+  #   '/assets/pz.jpg'
+  #   '/assets/nz.jpg'
+  # ]
+  @skyBox = (imgUrls, size=900000) ->
+    # TODO: check for imgUrls existance
+    aCubeMap = THREE.ImageUtils.loadTextureCube(imgUrls)
+    aCubeMap.format = THREE.RGBFormat
+    aShader = THREE.ShaderLib['cube']
+    aShader.uniforms['tCube'].value = aCubeMap
+    aSkyBoxMaterial = new (THREE.ShaderMaterial)(
+      fragmentShader: aShader.fragmentShader
+      vertexShader: aShader.vertexShader
+      uniforms: aShader.uniforms
+      depthWrite: false
+      side: THREE.BackSide)
+    new (THREE.Mesh)(new (THREE.BoxGeometry)(size, size, size), aSkyBoxMaterial)
