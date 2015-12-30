@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-if [ ! -d "node_modules" ]; then
-  npm install
-fi
-
-./node_modules/nw/bin/nw
