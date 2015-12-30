@@ -4,27 +4,23 @@ class ResourceManager
   instance = null
 
   class PrivateResourceManager
-    loadedImages: 0
-    totalImages: 0
-    images: {}
+    loadedTexturesCount: 0
+    textures: {}
 
-    addImage: (key, url) ->
-      @totalImages += 1
-      material = new THREE.MeshBasicMaterial
-        transparent: true
-        map: THREE.ImageUtils.loadTexture(url, {}, @_inc)
-      @images[key] = material
+    addTexture: (key, url) ->
+      texture = THREE.ImageUtils.loadTexture(url, {}, @_inc)
+      @textures[key] = texture
       this
 
-    image: (key) ->
-      @images[key]
+    texture: (key) ->
+      @textures[key]
 
     hasFinishedLoading: ->
-      @loadedImages == @totalImages
+      @loadedTexturesCount == Object.keys(textures).length
 
     # TODO fix haxor
     _inc: () ->
-      ResourceManager.get().loadedImages += 1
+      ResourceManager.get().loadedTexturesCount += 1
 
   @get: () ->
     instance ?= new PrivateResourceManager()

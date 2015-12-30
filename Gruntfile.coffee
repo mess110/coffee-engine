@@ -6,6 +6,7 @@ module.exports = (grunt) ->
     "bower_components/threejs/build/three.js"
 
     "bower_components/threejs/examples/js/effects/AnaglyphEffect.js"
+    "bower_components/threejs/examples/js/controls/OrbitControls.js"
 
     "bower_components/threex.windowresize/threex.windowresize.js"
     "bower_components/threex.rendererstats/threex.rendererstats.js"
