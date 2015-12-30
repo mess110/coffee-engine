@@ -32,6 +32,18 @@ class Terrain extends BaseModel
       scene.scene.add terrain.mesh
     )
 
+  @heightmap_blocking: (options) ->
+    hm = THREE.ImageUtils.loadTexture(options.heightmapUrl)
+    hm.heightData = Terrain.getHeightData(hm.image, options.scale)
+
+    terrain = new Terrain(options.textureUrl, options.width, options.height, options.wSegments, options.hSegments)
+    terrain.applyHeightmap(hm.heightData)
+
+    scene = SceneManager.get().currentScene() unless scene?
+
+    scene.terrain = terrain
+    scene.scene.add terrain.mesh
+
   @getHeightData: (img, scale = 1) ->
     canvas = document.createElement('canvas')
     canvas.width = img.width

@@ -35,6 +35,8 @@ div h3 {
 
 canvas {
   position: absolute;
+  top: 0px;
+  right: 0px;
   z-index: 0;
 }
 

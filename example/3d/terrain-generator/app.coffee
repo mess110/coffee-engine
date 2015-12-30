@@ -3,6 +3,9 @@ DEFAULT_OPTIONS =
   height: 20
   wSegments: 5
   hSegments: 5
+  scale: 1
+  textureUrl: 'heightmap.png'
+  heightmapUrl: 'heightmap.png'
 
 app = angular.module('app', [])
 
@@ -19,8 +22,7 @@ app.controller 'MainController', ($scope) ->
 
   $scope.options = DEFAULT_OPTIONS
 
-  $scope.$watch 'options.width', (newValue, oldValue) ->
-    return unless oldValue?
+  $scope.updateTerrain = ->
     terrainGeneratorScene.updateTerrain($scope.options)
 
   $scope.toggleStats = ->
@@ -37,12 +39,13 @@ class TerrainGeneratorScene extends BaseScene
     @scene.add Helper.ambientLight()
 
     @controls = new (THREE.OrbitControls)(engine.camera, engine.renderer.domElement)
-
-    @updateTerrain(DEFAULT_OPTIONS)
+    options = DEFAULT_OPTIONS
+    Terrain.heightmap(options.heightmapUrl, options.heightmapUrl, options.width, options.height, options.wSegments, options.hSegments, options.scale)
 
   updateTerrain: (options) ->
     @scene.remove(@terrain.mesh) if @terrain?
-    Terrain.heightmap('heightmap.png', 'heightmap.png', options.width, options.height, options.wSegments, options.hSegments)
+    Terrain.heightmap_blocking(options)
+
 
   tick: (tpf) ->
     return unless @loaded
@@ -55,6 +58,7 @@ config = Config.get()
 config.preventDefaultMouseEvents = false
 config.fillWindow()
 config.width = config.width / 2
+config.resize = false
 
 engine = new Engine3D()
 engine.camera.position.set 0, 15, 100

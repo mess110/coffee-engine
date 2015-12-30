@@ -6,10 +6,51 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body ng-controller="MainController">
-    <input type="number" ng-model="options.width" />
+    <input type="number" ng-model="options.width" /><br />
+    <input type="number" ng-model="options.height" /><br />
+    <input type="number" ng-model="options.wSegments" /><br />
+    <input type="number" ng-model="options.hSegments" /><br />
+    <input type="number" ng-model="options.scale" /><br />
+    <input type="button" ng-click="updateTerrain()" value="update terrain" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
-    <script src="../../../build/coffee-engine-3d.js"></script>
+
+    <!-- this needs to be kept in sync with files_3d from Gruntfile -->
+    <script src="/bower_components/stats.js/src/Stats.js"></script>
+    <script src="/bower_components/tweenjs/src/Tween.js"></script>
+
+    <script src="/bower_components/threejs/build/three.js"></script>
+
+    <script src="/bower_components/threejs/examples/js/effects/AnaglyphEffect.js"></script>
+
+    <script src="/bower_components/threex.windowresize/threex.windowresize.js"></script>
+    <script src="/bower_components/threex.rendererstats/threex.rendererstats.js"></script>
+    <script src="/bower_components/threex.universalloader/threex.universalloader.js"></script>
+    <script src="/bower_components/threex.keyboardstate/threex.keyboardstate.js"></script>
+    <script src="/bower_components/ocean/water-material.js"></script>
+
+    <script src="/src/shared/SceneManager.js"></script>
+    <script src="/src/shared/NetworkManager.js"></script>
+    <script src="/src/shared/StatsManager.js"></script>
+    <script src="/src/shared/SoundManager.js"></script>
+    <script src="/src/shared/EngineUtils.js"></script>
+
+    <script src="/src/3d/Hack.js"></script>
+
+    <script src="/src/3d/JsonModelManager.js"></script>
+    <script src="/src/3d/ResourceManager.js"></script>
+    <script src="/src/3d/BaseScene.js"></script>
+    <script src="/src/3d/BaseModel.js"></script>
+    <script src="/src/3d/Config.js"></script>
+    <script src="/src/3d/Helper.js"></script>
+
+    <script src="/src/3d/Water.js"></script>
+    <script src="/src/3d/Terrain.js"></script>
+
+    <script src="/src/3d/Engine3D.js"></script>
+
+    <script src="/src/shared/SyntaxSugar.js"></script>
+
     <script src="../../../bower_components/threejs/examples/js/controls/OrbitControls.js"></script>
     <script src="app.js"></script>
   </body>
