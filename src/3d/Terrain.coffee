@@ -24,7 +24,7 @@ class Terrain extends BaseModel
   applyHeightmap: (imageData) ->
     i = 0
     for vertice in @mesh.geometry.vertices
-      vertice.z = imageData[i] / 10
+      vertice.z = imageData[i]
       i++
 
   @heightmap: (textureUrl, heightmapUrl, width, height, wSegments, hSegments, scale=1, scene) ->
