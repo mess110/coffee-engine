@@ -3,6 +3,14 @@
 # @example
 #
 #   Terrain.heightmap('/bower_components/ocean/assets/img/waternormals.jpg', 'heightmap.png', 20, 20, 5, 5)
+#
+# @example
+#
+#   hm = THREE.ImageUtils.loadTexture(options.heightmapUrl)
+#   hm.heightData = Terrain.getHeightData(hm.image, options.scale)
+#   terrain = new Terrain(options.textureUrl, options.width, options.height, options.wSegments, options.hSegments)
+#   terrain.applyHeightmap(hm.heightData)
+#
 class Terrain extends BaseModel
 
   constructor: (textureUrl, width, height, wSegments, hSegments)->
