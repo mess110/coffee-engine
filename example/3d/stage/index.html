@@ -17,10 +17,28 @@
       * {
         cursor: none;
       }
+
+      iframe {
+        display: none;
+      }
+
+      #score {
+        position: absolute;
+        background-color: white;
+        left: 0px;
+        top: 0px;
+        padding: 10px;
+      }
     </style>
   </head>
   <body>
-    <script src="/build/coffee-engine-3d.js"></script>
+    <div id="score">
+      <span id="count">0</span>
+    </div>
+    <!-- Too awesome not to include, this game is not for profit. -->
+    <iframe width="420" height="345" src="//www.youtube.com/embed/meECq9NvPpc?autoplay=1" frameborder="0" allowfullscreen></iframe>
+
+    <script src="../../../build/coffee-engine-3d.js"></script>
 
     <script src="app.js"></script>
   </body>

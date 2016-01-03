@@ -14,6 +14,8 @@ class SoundManager
       source = document.createElement('source')
       source.src = url
       audio.appendChild(source)
+      audio.playbackRate = 1
+      # audio.volume
 
       @sounds[key] = audio
 

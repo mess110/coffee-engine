@@ -10825,7 +10825,7 @@ SoundManager = function() {
         return PrivateSoundManager.prototype.sounds = {}, PrivateSoundManager.prototype.add = function(key, url) {
             var audio, source;
             return audio = document.createElement("audio"), source = document.createElement("source"), 
-            source.src = url, audio.appendChild(source), this.sounds[key] = audio;
+            source.src = url, audio.appendChild(source), audio.playbackRate = 1, this.sounds[key] = audio;
         }, PrivateSoundManager.prototype.play = function(key) {
             return key in this.sounds ? this.sounds[key].play() : console.log("Sound with key: " + key + " not found!");
         }, PrivateSoundManager.prototype.updateGlobalVolume = function(i) {
@@ -11004,7 +11004,7 @@ var Helper;
 
 Helper = function() {
     function Helper() {}
-    return Helper.camera = function(options) {
+    return Helper.zero = new THREE.Vector3(0, 0, 0), Helper.camera = function(options) {
         var config;
         return null == options && (options = {}), config = Config.get(), null == options.view_angle && (options.view_angle = 45), 
         null == options.aspect && (options.aspect = config.width / config.height), null == options.near && (options.near = 1), 

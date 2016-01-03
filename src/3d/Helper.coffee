@@ -3,6 +3,8 @@
 # http://blog.romanliutikov.com/post/58322336872/setup-scene-in-threejs
 class Helper
 
+  @zero: new THREE.Vector3(0, 0, 0)
+
   @camera: (options={}) ->
     config = Config.get()
     options.view_angle = 45 unless options.view_angle?
