@@ -10155,7 +10155,285 @@ THREE.MorphBlendMesh.prototype.createAnimation = function(name, start, end, fps)
             this.morphTargetInfluences[animation.lastFrame] = (1 - mix) * weight;
         }
     }
-};
+}, THREE.AnaglyphEffect = function(renderer, width, height) {
+    var _aspect, _near, _far, _fov, eyeRight = new THREE.Matrix4(), eyeLeft = new THREE.Matrix4(), focalLength = 125, _cameraL = new THREE.PerspectiveCamera();
+    _cameraL.matrixAutoUpdate = !1;
+    var _cameraR = new THREE.PerspectiveCamera();
+    _cameraR.matrixAutoUpdate = !1;
+    var _camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), _scene = new THREE.Scene(), _params = {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.NearestFilter,
+        format: THREE.RGBAFormat
+    };
+    void 0 === width && (width = 512), void 0 === height && (height = 512);
+    var _renderTargetL = new THREE.WebGLRenderTarget(width, height, _params), _renderTargetR = new THREE.WebGLRenderTarget(width, height, _params), _material = new THREE.ShaderMaterial({
+        uniforms: {
+            mapLeft: {
+                type: "t",
+                value: _renderTargetL
+            },
+            mapRight: {
+                type: "t",
+                value: _renderTargetR
+            }
+        },
+        vertexShader: [ "varying vec2 vUv;", "void main() {", "	vUv = vec2( uv.x, uv.y );", "	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
+        fragmentShader: [ "uniform sampler2D mapLeft;", "uniform sampler2D mapRight;", "varying vec2 vUv;", "void main() {", "	vec4 colorL, colorR;", "	vec2 uv = vUv;", "	colorL = texture2D( mapLeft, uv );", "	colorR = texture2D( mapRight, uv );", "	gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;", "}" ].join("\n")
+    }), mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), _material);
+    _scene.add(mesh), this.setSize = function(width, height) {
+        _renderTargetL && _renderTargetL.dispose(), _renderTargetR && _renderTargetR.dispose(), 
+        _renderTargetL = new THREE.WebGLRenderTarget(width, height, _params), _renderTargetR = new THREE.WebGLRenderTarget(width, height, _params), 
+        _material.uniforms.mapLeft.value = _renderTargetL, _material.uniforms.mapRight.value = _renderTargetR, 
+        renderer.setSize(width, height);
+    }, this.render = function(scene, camera) {
+        scene.updateMatrixWorld(), void 0 === camera.parent && camera.updateMatrixWorld();
+        var hasCameraChanged = _aspect !== camera.aspect || _near !== camera.near || _far !== camera.far || _fov !== camera.fov;
+        if (hasCameraChanged) {
+            _aspect = camera.aspect, _near = camera.near, _far = camera.far, _fov = camera.fov;
+            var xmin, xmax, projectionMatrix = camera.projectionMatrix.clone(), eyeSep = focalLength / 30 * .5, eyeSepOnProjection = eyeSep * _near / focalLength, ymax = _near * Math.tan(THREE.Math.degToRad(.5 * _fov));
+            eyeRight.elements[12] = eyeSep, eyeLeft.elements[12] = -eyeSep, xmin = -ymax * _aspect + eyeSepOnProjection, 
+            xmax = ymax * _aspect + eyeSepOnProjection, projectionMatrix.elements[0] = 2 * _near / (xmax - xmin), 
+            projectionMatrix.elements[8] = (xmax + xmin) / (xmax - xmin), _cameraL.projectionMatrix.copy(projectionMatrix), 
+            xmin = -ymax * _aspect - eyeSepOnProjection, xmax = ymax * _aspect - eyeSepOnProjection, 
+            projectionMatrix.elements[0] = 2 * _near / (xmax - xmin), projectionMatrix.elements[8] = (xmax + xmin) / (xmax - xmin), 
+            _cameraR.projectionMatrix.copy(projectionMatrix);
+        }
+        _cameraL.matrixWorld.copy(camera.matrixWorld).multiply(eyeLeft), _cameraL.position.copy(camera.position), 
+        _cameraL.near = camera.near, _cameraL.far = camera.far, renderer.render(scene, _cameraL, _renderTargetL, !0), 
+        _cameraR.matrixWorld.copy(camera.matrixWorld).multiply(eyeRight), _cameraR.position.copy(camera.position), 
+        _cameraR.near = camera.near, _cameraR.far = camera.far, renderer.render(scene, _cameraR, _renderTargetR, !0), 
+        renderer.render(_scene, _camera);
+    }, this.dispose = function() {
+        _renderTargetL && _renderTargetL.dispose(), _renderTargetR && _renderTargetR.dispose();
+    };
+}, THREE.OrbitControls = function(object, domElement) {
+    function getAutoRotationAngle() {
+        return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
+    }
+    function getZoomScale() {
+        return Math.pow(.95, scope.zoomSpeed);
+    }
+    function onMouseDown(event) {
+        if (scope.enabled !== !1) {
+            if (event.preventDefault(), event.button === scope.mouseButtons.ORBIT) {
+                if (scope.noRotate === !0) return;
+                state = STATE.ROTATE, rotateStart.set(event.clientX, event.clientY);
+            } else if (event.button === scope.mouseButtons.ZOOM) {
+                if (scope.noZoom === !0) return;
+                state = STATE.DOLLY, dollyStart.set(event.clientX, event.clientY);
+            } else if (event.button === scope.mouseButtons.PAN) {
+                if (scope.noPan === !0) return;
+                state = STATE.PAN, panStart.set(event.clientX, event.clientY);
+            }
+            state !== STATE.NONE && (document.addEventListener("mousemove", onMouseMove, !1), 
+            document.addEventListener("mouseup", onMouseUp, !1), scope.dispatchEvent(startEvent));
+        }
+    }
+    function onMouseMove(event) {
+        if (scope.enabled !== !1) {
+            event.preventDefault();
+            var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+            if (state === STATE.ROTATE) {
+                if (scope.noRotate === !0) return;
+                rotateEnd.set(event.clientX, event.clientY), rotateDelta.subVectors(rotateEnd, rotateStart), 
+                scope.rotateLeft(2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed), 
+                scope.rotateUp(2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed), 
+                rotateStart.copy(rotateEnd);
+            } else if (state === STATE.DOLLY) {
+                if (scope.noZoom === !0) return;
+                dollyEnd.set(event.clientX, event.clientY), dollyDelta.subVectors(dollyEnd, dollyStart), 
+                dollyDelta.y > 0 ? scope.dollyIn() : dollyDelta.y < 0 && scope.dollyOut(), dollyStart.copy(dollyEnd);
+            } else if (state === STATE.PAN) {
+                if (scope.noPan === !0) return;
+                panEnd.set(event.clientX, event.clientY), panDelta.subVectors(panEnd, panStart), 
+                scope.pan(panDelta.x, panDelta.y), panStart.copy(panEnd);
+            }
+            state !== STATE.NONE && scope.update();
+        }
+    }
+    function onMouseUp() {
+        scope.enabled !== !1 && (document.removeEventListener("mousemove", onMouseMove, !1), 
+        document.removeEventListener("mouseup", onMouseUp, !1), scope.dispatchEvent(endEvent), 
+        state = STATE.NONE);
+    }
+    function onMouseWheel(event) {
+        if (scope.enabled !== !1 && scope.noZoom !== !0 && state === STATE.NONE) {
+            event.preventDefault(), event.stopPropagation();
+            var delta = 0;
+            void 0 !== event.wheelDelta ? delta = event.wheelDelta : void 0 !== event.detail && (delta = -event.detail), 
+            delta > 0 ? scope.dollyOut() : 0 > delta && scope.dollyIn(), scope.update(), scope.dispatchEvent(startEvent), 
+            scope.dispatchEvent(endEvent);
+        }
+    }
+    function onKeyDown(event) {
+        if (scope.enabled !== !1 && scope.noKeys !== !0 && scope.noPan !== !0) switch (event.keyCode) {
+          case scope.keys.UP:
+            scope.pan(0, scope.keyPanSpeed), scope.update();
+            break;
+
+          case scope.keys.BOTTOM:
+            scope.pan(0, -scope.keyPanSpeed), scope.update();
+            break;
+
+          case scope.keys.LEFT:
+            scope.pan(scope.keyPanSpeed, 0), scope.update();
+            break;
+
+          case scope.keys.RIGHT:
+            scope.pan(-scope.keyPanSpeed, 0), scope.update();
+        }
+    }
+    function touchstart(event) {
+        if (scope.enabled !== !1) {
+            switch (event.touches.length) {
+              case 1:
+                if (scope.noRotate === !0) return;
+                state = STATE.TOUCH_ROTATE, rotateStart.set(event.touches[0].pageX, event.touches[0].pageY);
+                break;
+
+              case 2:
+                if (scope.noZoom === !0) return;
+                state = STATE.TOUCH_DOLLY;
+                var dx = event.touches[0].pageX - event.touches[1].pageX, dy = event.touches[0].pageY - event.touches[1].pageY, distance = Math.sqrt(dx * dx + dy * dy);
+                dollyStart.set(0, distance);
+                break;
+
+              case 3:
+                if (scope.noPan === !0) return;
+                state = STATE.TOUCH_PAN, panStart.set(event.touches[0].pageX, event.touches[0].pageY);
+                break;
+
+              default:
+                state = STATE.NONE;
+            }
+            state !== STATE.NONE && scope.dispatchEvent(startEvent);
+        }
+    }
+    function touchmove(event) {
+        if (scope.enabled !== !1) {
+            event.preventDefault(), event.stopPropagation();
+            var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+            switch (event.touches.length) {
+              case 1:
+                if (scope.noRotate === !0) return;
+                if (state !== STATE.TOUCH_ROTATE) return;
+                rotateEnd.set(event.touches[0].pageX, event.touches[0].pageY), rotateDelta.subVectors(rotateEnd, rotateStart), 
+                scope.rotateLeft(2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed), 
+                scope.rotateUp(2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed), 
+                rotateStart.copy(rotateEnd), scope.update();
+                break;
+
+              case 2:
+                if (scope.noZoom === !0) return;
+                if (state !== STATE.TOUCH_DOLLY) return;
+                var dx = event.touches[0].pageX - event.touches[1].pageX, dy = event.touches[0].pageY - event.touches[1].pageY, distance = Math.sqrt(dx * dx + dy * dy);
+                dollyEnd.set(0, distance), dollyDelta.subVectors(dollyEnd, dollyStart), dollyDelta.y > 0 ? scope.dollyOut() : dollyDelta.y < 0 && scope.dollyIn(), 
+                dollyStart.copy(dollyEnd), scope.update();
+                break;
+
+              case 3:
+                if (scope.noPan === !0) return;
+                if (state !== STATE.TOUCH_PAN) return;
+                panEnd.set(event.touches[0].pageX, event.touches[0].pageY), panDelta.subVectors(panEnd, panStart), 
+                scope.pan(panDelta.x, panDelta.y), panStart.copy(panEnd), scope.update();
+                break;
+
+              default:
+                state = STATE.NONE;
+            }
+        }
+    }
+    function touchend() {
+        scope.enabled !== !1 && (scope.dispatchEvent(endEvent), state = STATE.NONE);
+    }
+    this.object = object, this.domElement = void 0 !== domElement ? domElement : document, 
+    this.enabled = !0, this.target = new THREE.Vector3(), this.center = this.target, 
+    this.noZoom = !1, this.zoomSpeed = 1, this.minDistance = 0, this.maxDistance = 1 / 0, 
+    this.minZoom = 0, this.maxZoom = 1 / 0, this.noRotate = !1, this.rotateSpeed = 1, 
+    this.noPan = !1, this.keyPanSpeed = 7, this.autoRotate = !1, this.autoRotateSpeed = 2, 
+    this.minPolarAngle = 0, this.maxPolarAngle = Math.PI, this.minAzimuthAngle = -(1 / 0), 
+    this.maxAzimuthAngle = 1 / 0, this.noKeys = !1, this.keys = {
+        LEFT: 37,
+        UP: 38,
+        RIGHT: 39,
+        BOTTOM: 40
+    }, this.mouseButtons = {
+        ORBIT: THREE.MOUSE.LEFT,
+        ZOOM: THREE.MOUSE.MIDDLE,
+        PAN: THREE.MOUSE.RIGHT
+    };
+    var theta, phi, scope = this, EPS = 1e-6, rotateStart = new THREE.Vector2(), rotateEnd = new THREE.Vector2(), rotateDelta = new THREE.Vector2(), panStart = new THREE.Vector2(), panEnd = new THREE.Vector2(), panDelta = new THREE.Vector2(), panOffset = new THREE.Vector3(), offset = new THREE.Vector3(), dollyStart = new THREE.Vector2(), dollyEnd = new THREE.Vector2(), dollyDelta = new THREE.Vector2(), phiDelta = 0, thetaDelta = 0, scale = 1, pan = new THREE.Vector3(), lastPosition = new THREE.Vector3(), lastQuaternion = new THREE.Quaternion(), STATE = {
+        NONE: -1,
+        ROTATE: 0,
+        DOLLY: 1,
+        PAN: 2,
+        TOUCH_ROTATE: 3,
+        TOUCH_DOLLY: 4,
+        TOUCH_PAN: 5
+    }, state = STATE.NONE;
+    this.target0 = this.target.clone(), this.position0 = this.object.position.clone(), 
+    this.zoom0 = this.object.zoom;
+    var quat = new THREE.Quaternion().setFromUnitVectors(object.up, new THREE.Vector3(0, 1, 0)), quatInverse = quat.clone().inverse(), changeEvent = {
+        type: "change"
+    }, startEvent = {
+        type: "start"
+    }, endEvent = {
+        type: "end"
+    };
+    this.rotateLeft = function(angle) {
+        void 0 === angle && (angle = getAutoRotationAngle()), thetaDelta -= angle;
+    }, this.rotateUp = function(angle) {
+        void 0 === angle && (angle = getAutoRotationAngle()), phiDelta -= angle;
+    }, this.panLeft = function(distance) {
+        var te = this.object.matrix.elements;
+        panOffset.set(te[0], te[1], te[2]), panOffset.multiplyScalar(-distance), pan.add(panOffset);
+    }, this.panUp = function(distance) {
+        var te = this.object.matrix.elements;
+        panOffset.set(te[4], te[5], te[6]), panOffset.multiplyScalar(distance), pan.add(panOffset);
+    }, this.pan = function(deltaX, deltaY) {
+        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+        if (scope.object instanceof THREE.PerspectiveCamera) {
+            var position = scope.object.position, offset = position.clone().sub(scope.target), targetDistance = offset.length();
+            targetDistance *= Math.tan(scope.object.fov / 2 * Math.PI / 180), scope.panLeft(2 * deltaX * targetDistance / element.clientHeight), 
+            scope.panUp(2 * deltaY * targetDistance / element.clientHeight);
+        } else scope.object instanceof THREE.OrthographicCamera ? (scope.panLeft(deltaX * (scope.object.right - scope.object.left) / element.clientWidth), 
+        scope.panUp(deltaY * (scope.object.top - scope.object.bottom) / element.clientHeight)) : console.warn("WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.");
+    }, this.dollyIn = function(dollyScale) {
+        void 0 === dollyScale && (dollyScale = getZoomScale()), scope.object instanceof THREE.PerspectiveCamera ? scale /= dollyScale : scope.object instanceof THREE.OrthographicCamera ? (scope.object.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.object.zoom * dollyScale)), 
+        scope.object.updateProjectionMatrix(), scope.dispatchEvent(changeEvent)) : console.warn("WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.");
+    }, this.dollyOut = function(dollyScale) {
+        void 0 === dollyScale && (dollyScale = getZoomScale()), scope.object instanceof THREE.PerspectiveCamera ? scale *= dollyScale : scope.object instanceof THREE.OrthographicCamera ? (scope.object.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.object.zoom / dollyScale)), 
+        scope.object.updateProjectionMatrix(), scope.dispatchEvent(changeEvent)) : console.warn("WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.");
+    }, this.update = function() {
+        var position = this.object.position;
+        offset.copy(position).sub(this.target), offset.applyQuaternion(quat), theta = Math.atan2(offset.x, offset.z), 
+        phi = Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y), 
+        this.autoRotate && state === STATE.NONE && this.rotateLeft(getAutoRotationAngle()), 
+        theta += thetaDelta, phi += phiDelta, theta = Math.max(this.minAzimuthAngle, Math.min(this.maxAzimuthAngle, theta)), 
+        phi = Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, phi)), phi = Math.max(EPS, Math.min(Math.PI - EPS, phi));
+        var radius = offset.length() * scale;
+        radius = Math.max(this.minDistance, Math.min(this.maxDistance, radius)), this.target.add(pan), 
+        offset.x = radius * Math.sin(phi) * Math.sin(theta), offset.y = radius * Math.cos(phi), 
+        offset.z = radius * Math.sin(phi) * Math.cos(theta), offset.applyQuaternion(quatInverse), 
+        position.copy(this.target).add(offset), this.object.lookAt(this.target), thetaDelta = 0, 
+        phiDelta = 0, scale = 1, pan.set(0, 0, 0), (lastPosition.distanceToSquared(this.object.position) > EPS || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS) && (this.dispatchEvent(changeEvent), 
+        lastPosition.copy(this.object.position), lastQuaternion.copy(this.object.quaternion));
+    }, this.reset = function() {
+        state = STATE.NONE, this.target.copy(this.target0), this.object.position.copy(this.position0), 
+        this.object.zoom = this.zoom0, this.object.updateProjectionMatrix(), this.dispatchEvent(changeEvent), 
+        this.update();
+    }, this.getPolarAngle = function() {
+        return phi;
+    }, this.getAzimuthalAngle = function() {
+        return theta;
+    }, this.domElement.addEventListener("contextmenu", function(event) {
+        event.preventDefault();
+    }, !1), this.domElement.addEventListener("mousedown", onMouseDown, !1), this.domElement.addEventListener("mousewheel", onMouseWheel, !1), 
+    this.domElement.addEventListener("DOMMouseScroll", onMouseWheel, !1), this.domElement.addEventListener("touchstart", touchstart, !1), 
+    this.domElement.addEventListener("touchend", touchend, !1), this.domElement.addEventListener("touchmove", touchmove, !1), 
+    window.addEventListener("keydown", onKeyDown, !1), this.update();
+}, THREE.OrbitControls.prototype = Object.create(THREE.EventDispatcher.prototype), 
+THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;
 
 var THREEx = THREEx || {};
 
@@ -10240,43 +10518,225 @@ THREEx.UniversalLoader = function() {}, THREEx.UniversalLoader.prototype.load = 
     })) : void console.assert(!1);
 };
 
+var THREEx = THREEx || {};
+
+THREEx.KeyboardState = function(domElement) {
+    this.domElement = domElement || document, this.keyCodes = {}, this.modifiers = {};
+    var _this = this;
+    this._onKeyDown = function(event) {
+        _this._onKeyChange(event);
+    }, this._onKeyUp = function(event) {
+        _this._onKeyChange(event);
+    }, this.domElement.addEventListener("keydown", this._onKeyDown, !1), this.domElement.addEventListener("keyup", this._onKeyUp, !1), 
+    this._onBlur = function() {
+        for (var prop in _this.keyCodes) _this.keyCodes[prop] = !1;
+        for (var prop in _this.modifiers) _this.modifiers[prop] = !1;
+    }, window.addEventListener("blur", this._onBlur, !1);
+}, THREEx.KeyboardState.prototype.destroy = function() {
+    this.domElement.removeEventListener("keydown", this._onKeyDown, !1), this.domElement.removeEventListener("keyup", this._onKeyUp, !1), 
+    window.removeEventListener("blur", this._onBlur, !1);
+}, THREEx.KeyboardState.MODIFIERS = [ "shift", "ctrl", "alt", "meta" ], THREEx.KeyboardState.ALIAS = {
+    left: 37,
+    up: 38,
+    right: 39,
+    down: 40,
+    space: 32,
+    pageup: 33,
+    pagedown: 34,
+    tab: 9,
+    escape: 27
+}, THREEx.KeyboardState.prototype._onKeyChange = function(event) {
+    var keyCode = event.keyCode, pressed = "keydown" === event.type ? !0 : !1;
+    this.keyCodes[keyCode] = pressed, this.modifiers.shift = event.shiftKey, this.modifiers.ctrl = event.ctrlKey, 
+    this.modifiers.alt = event.altKey, this.modifiers.meta = event.metaKey;
+}, THREEx.KeyboardState.prototype.pressed = function(keyDesc) {
+    for (var keys = keyDesc.split("+"), i = 0; i < keys.length; i++) {
+        var key = keys[i], pressed = !1;
+        if (pressed = -1 !== THREEx.KeyboardState.MODIFIERS.indexOf(key) ? this.modifiers[key] : -1 != Object.keys(THREEx.KeyboardState.ALIAS).indexOf(key) ? this.keyCodes[THREEx.KeyboardState.ALIAS[key]] : this.keyCodes[key.toUpperCase().charCodeAt(0)], 
+        !pressed) return !1;
+    }
+    return !0;
+}, THREEx.KeyboardState.prototype.eventMatches = function(event, keyDesc) {
+    for (var aliases = THREEx.KeyboardState.ALIAS, aliasKeys = Object.keys(aliases), keys = keyDesc.split("+"), i = 0; i < keys.length; i++) {
+        var key = keys[i], pressed = !1;
+        if ("shift" === key ? pressed = event.shiftKey ? !0 : !1 : "ctrl" === key ? pressed = event.ctrlKey ? !0 : !1 : "alt" === key ? pressed = event.altKey ? !0 : !1 : "meta" === key ? pressed = event.metaKey ? !0 : !1 : -1 !== aliasKeys.indexOf(key) ? pressed = event.keyCode === aliases[key] ? !0 : !1 : event.keyCode === key.toUpperCase().charCodeAt(0) && (pressed = !0), 
+        !pressed) return !1;
+    }
+    return !0;
+}, THREE.ShaderLib.water = {
+    uniforms: THREE.UniformsUtils.merge([ THREE.UniformsLib.fog, {
+        normalSampler: {
+            type: "t",
+            value: null
+        },
+        mirrorSampler: {
+            type: "t",
+            value: null
+        },
+        alpha: {
+            type: "f",
+            value: 1
+        },
+        time: {
+            type: "f",
+            value: 0
+        },
+        distortionScale: {
+            type: "f",
+            value: 20
+        },
+        noiseScale: {
+            type: "f",
+            value: 1
+        },
+        textureMatrix: {
+            type: "m4",
+            value: new THREE.Matrix4()
+        },
+        sunColor: {
+            type: "c",
+            value: new THREE.Color(8355711)
+        },
+        sunDirection: {
+            type: "v3",
+            value: new THREE.Vector3(.70707, .70707, 0)
+        },
+        eye: {
+            type: "v3",
+            value: new THREE.Vector3(0, 0, 0)
+        },
+        waterColor: {
+            type: "c",
+            value: new THREE.Color(5592405)
+        }
+    } ]),
+    vertexShader: [ "uniform mat4 textureMatrix;", "uniform float time;", "varying vec4 mirrorCoord;", "varying vec3 worldPosition;", "varying vec3 modelPosition;", "varying vec3 surfaceX;", "varying vec3 surfaceY;", "varying vec3 surfaceZ;", "void main()", "{", "  mirrorCoord = modelMatrix * vec4(position, 1.0);", "  worldPosition = mirrorCoord.xyz;", "  modelPosition = position;", "  surfaceX = vec3( modelMatrix[0][0], modelMatrix[0][1], modelMatrix[0][2]);", "  surfaceY = vec3( modelMatrix[1][0], modelMatrix[1][1], modelMatrix[1][2]);", "  surfaceZ = vec3( modelMatrix[2][0], modelMatrix[2][1], modelMatrix[2][2]);", "  mirrorCoord = textureMatrix * mirrorCoord;", "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);", "}" ].join("\n"),
+    fragmentShader: [ "uniform sampler2D mirrorSampler;", "uniform float alpha;", "uniform float time;", "uniform float distortionScale;", "uniform float noiseScale;", "uniform sampler2D normalSampler;", "uniform vec3 sunColor;", "uniform vec3 sunDirection;", "uniform vec3 eye;", "uniform vec3 waterColor;", "varying vec4 mirrorCoord;", "varying vec3 worldPosition;", "varying vec3 modelPosition;", "varying vec3 surfaceX;", "varying vec3 surfaceY;", "varying vec3 surfaceZ;", "void sunLight(const vec3 surfaceNormal, const vec3 eyeDirection, in float shiny, in float spec, in float diffuse, inout vec3 diffuseColor, inout vec3 specularColor)", "{", "  vec3 reflection = normalize(reflect(-sunDirection, surfaceNormal));", "  float direction = max(0.0, dot(eyeDirection, reflection));", "  specularColor += pow(direction, shiny) * sunColor * spec;", "  diffuseColor += max(dot(sunDirection, surfaceNormal), 0.0) * sunColor * diffuse;", "}", "vec3 getNoise(in vec2 uv)", "{", "  vec2 uv0 = uv / (103.0 * noiseScale) + vec2(time / 17.0, time / 29.0);", "  vec2 uv1 = uv / (107.0 * noiseScale) - vec2(time / -19.0, time / 31.0);", "  vec2 uv2 = uv / (vec2(8907.0, 9803.0) * noiseScale) + vec2(time / 101.0, time /   97.0);", "  vec2 uv3 = uv / (vec2(1091.0, 1027.0) * noiseScale) - vec2(time / 109.0, time / -113.0);", "  vec4 noise = texture2D(normalSampler, uv0) +", "    texture2D(normalSampler, uv1) +", "    texture2D(normalSampler, uv2) +", "    texture2D(normalSampler, uv3);", "  return noise.xyz * 0.5 - 1.0;", "}", THREE.ShaderChunk.common, THREE.ShaderChunk.fog_pars_fragment, "void main()", "{", "  vec3 worldToEye = eye - worldPosition;", "  vec3 eyeDirection = normalize(worldToEye);", "  vec3 noise = getNoise(modelPosition.xy * 1.0);", "  vec3 distordCoord = noise.x * surfaceX + noise.y * surfaceY;", "  vec3 distordNormal = distordCoord + surfaceZ;", "  if(dot(eyeDirection, surfaceZ) < 0.0)", "    distordNormal = distordNormal * -1.0;", "  vec3 diffuseLight = vec3(0.0);", "  vec3 specularLight = vec3(0.0);", "  sunLight(distordNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight);", "  float distance = length(worldToEye);", "  vec2 distortion = distordCoord.xy * distortionScale * sqrt(distance) * 0.07;", " vec3 mirrorDistord = mirrorCoord.xyz + vec3(distortion.x, distortion.y, 1.0);", " vec3 reflectionSample = texture2DProj(mirrorSampler, mirrorDistord).xyz;", "  float theta = max(dot(eyeDirection, distordNormal), 0.0);", "  float reflectance = 0.3 + (1.0 - 0.3) * pow((1.0 - theta), 3.0);", "  vec3 scatter = max(0.0, dot(distordNormal, eyeDirection)) * waterColor;", "  vec3 albedo = mix(sunColor * diffuseLight * 0.3 + scatter, (vec3(0.1) + reflectionSample * 0.9 + reflectionSample * specularLight), reflectance);", " vec3 outgoingLight = albedo;", THREE.ShaderChunk.fog_fragment, " gl_FragColor = vec4( outgoingLight, alpha );", "}" ].join("\n")
+}, THREE.Water = function(renderer, camera, scene, options) {
+    function optionalParameter(value, defaultValue) {
+        return void 0 !== value ? value : defaultValue;
+    }
+    THREE.Object3D.call(this), this.name = "water_" + this.id, options = options || {}, 
+    this.matrixNeedsUpdate = !0;
+    var width = optionalParameter(options.textureWidth, 512), height = optionalParameter(options.textureHeight, 512);
+    this.clipBias = optionalParameter(options.clipBias, -1e-4), this.alpha = optionalParameter(options.alpha, 1), 
+    this.time = optionalParameter(options.time, 0), this.normalSampler = optionalParameter(options.waterNormals, null), 
+    this.sunDirection = optionalParameter(options.sunDirection, new THREE.Vector3(.70707, .70707, 0)), 
+    this.sunColor = new THREE.Color(optionalParameter(options.sunColor, 16777215)), 
+    this.waterColor = new THREE.Color(optionalParameter(options.waterColor, 8355711)), 
+    this.eye = optionalParameter(options.eye, new THREE.Vector3(0, 0, 0)), this.distortionScale = optionalParameter(options.distortionScale, 20), 
+    this.noiseScale = optionalParameter(options.noiseScale, 1), this.side = optionalParameter(options.side, THREE.FrontSide), 
+    this.fog = optionalParameter(options.fog, !1), this.renderer = renderer, this.scene = scene, 
+    this.mirrorPlane = new THREE.Plane(), this.normal = new THREE.Vector3(0, 0, 1), 
+    this.cameraWorldPosition = new THREE.Vector3(), this.rotationMatrix = new THREE.Matrix4(), 
+    this.lookAtPosition = new THREE.Vector3(0, 0, -1), this.clipPlane = new THREE.Vector4(), 
+    camera instanceof THREE.PerspectiveCamera ? this.camera = camera : (this.camera = new THREE.PerspectiveCamera(), 
+    console.log(this.name + ": camera is not a Perspective Camera!")), this.textureMatrix = new THREE.Matrix4(), 
+    this.mirrorCamera = this.camera.clone(), this.texture = new THREE.WebGLRenderTarget(width, height), 
+    this.tempTexture = new THREE.WebGLRenderTarget(width, height);
+    var mirrorShader = THREE.ShaderLib.water, mirrorUniforms = THREE.UniformsUtils.clone(mirrorShader.uniforms);
+    this.material = new THREE.ShaderMaterial({
+        fragmentShader: mirrorShader.fragmentShader,
+        vertexShader: mirrorShader.vertexShader,
+        uniforms: mirrorUniforms,
+        transparent: !0,
+        side: this.side,
+        fog: this.fog
+    }), this.mesh = new THREE.Object3D(), this.material.uniforms.mirrorSampler.value = this.texture, 
+    this.material.uniforms.textureMatrix.value = this.textureMatrix, this.material.uniforms.alpha.value = this.alpha, 
+    this.material.uniforms.time.value = this.time, this.material.uniforms.normalSampler.value = this.normalSampler, 
+    this.material.uniforms.sunColor.value = this.sunColor, this.material.uniforms.waterColor.value = this.waterColor, 
+    this.material.uniforms.sunDirection.value = this.sunDirection, this.material.uniforms.distortionScale.value = this.distortionScale, 
+    this.material.uniforms.noiseScale.value = this.noiseScale, this.material.uniforms.eye.value = this.eye, 
+    THREE.Math.isPowerOfTwo(width) && THREE.Math.isPowerOfTwo(height) || (this.texture.generateMipmaps = !1, 
+    this.tempTexture.generateMipmaps = !1);
+}, THREE.Water.prototype = Object.create(THREE.Object3D.prototype), THREE.Water.prototype.renderWithMirror = function(otherMirror) {
+    this.updateTextureMatrix(), this.matrixNeedsUpdate = !1;
+    var tempCamera = otherMirror.camera;
+    otherMirror.camera = this.mirrorCamera, otherMirror.render(!0), this.render(), this.matrixNeedsUpdate = !0, 
+    otherMirror.camera = tempCamera, otherMirror.updateTextureMatrix();
+}, THREE.Water.prototype.updateTextureMatrix = function() {
+    function sign(x) {
+        return x ? 0 > x ? -1 : 1 : 0;
+    }
+    void 0 !== this.parent && (this.mesh = this.parent), this.updateMatrixWorld(), this.camera.updateMatrixWorld(), 
+    this.cameraWorldPosition.setFromMatrixPosition(this.camera.matrixWorld), this.rotationMatrix.extractRotation(this.matrixWorld), 
+    this.normal = new THREE.Vector3(0, 0, 1).applyEuler(this.mesh.rotation);
+    var cameraPosition = this.camera.position.clone().sub(this.mesh.position);
+    if (this.normal.dot(cameraPosition) < 0) {
+        var meshNormal = new THREE.Vector3(0, 0, 1).applyEuler(this.mesh.rotation);
+        this.normal.reflect(meshNormal);
+    }
+    var view = this.mesh.position.clone().sub(this.cameraWorldPosition);
+    view.reflect(this.normal).negate(), view.add(this.mesh.position), this.rotationMatrix.extractRotation(this.camera.matrixWorld), 
+    this.lookAtPosition.set(0, 0, -1), this.lookAtPosition.applyMatrix4(this.rotationMatrix), 
+    this.lookAtPosition.add(this.cameraWorldPosition);
+    var target = this.mesh.position.clone().sub(this.lookAtPosition);
+    target.reflect(this.normal).negate(), target.add(this.mesh.position), this.up.set(0, -1, 0), 
+    this.up.applyMatrix4(this.rotationMatrix), this.up.reflect(this.normal).negate(), 
+    this.mirrorCamera.position.copy(view), this.mirrorCamera.up = this.up, this.mirrorCamera.lookAt(target), 
+    this.mirrorCamera.aspect = this.camera.aspect, this.mirrorCamera.updateProjectionMatrix(), 
+    this.mirrorCamera.updateMatrixWorld(), this.mirrorCamera.matrixWorldInverse.getInverse(this.mirrorCamera.matrixWorld), 
+    this.textureMatrix.set(.5, 0, 0, .5, 0, .5, 0, .5, 0, 0, .5, .5, 0, 0, 0, 1), this.textureMatrix.multiply(this.mirrorCamera.projectionMatrix), 
+    this.textureMatrix.multiply(this.mirrorCamera.matrixWorldInverse), this.mirrorPlane.setFromNormalAndCoplanarPoint(this.normal, this.mesh.position), 
+    this.mirrorPlane.applyMatrix4(this.mirrorCamera.matrixWorldInverse), this.clipPlane.set(this.mirrorPlane.normal.x, this.mirrorPlane.normal.y, this.mirrorPlane.normal.z, this.mirrorPlane.constant);
+    var q = new THREE.Vector4(), projectionMatrix = this.mirrorCamera.projectionMatrix;
+    q.x = (sign(this.clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0], 
+    q.y = (sign(this.clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5], 
+    q.z = -1, q.w = (1 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
+    var c = new THREE.Vector4();
+    c = this.clipPlane.multiplyScalar(2 / this.clipPlane.dot(q)), projectionMatrix.elements[2] = c.x, 
+    projectionMatrix.elements[6] = c.y, projectionMatrix.elements[10] = c.z + 1 - this.clipBias, 
+    projectionMatrix.elements[14] = c.w;
+    var worldCoordinates = new THREE.Vector3();
+    worldCoordinates.setFromMatrixPosition(this.camera.matrixWorld), this.eye = worldCoordinates, 
+    this.material.uniforms.eye.value = this.eye;
+}, THREE.Water.prototype.render = function(isTempTexture) {
+    if (this.matrixNeedsUpdate && this.updateTextureMatrix(), this.matrixNeedsUpdate = !0, 
+    void 0 !== this.scene && this.scene instanceof THREE.Scene) {
+        this.material.visible = !1;
+        var renderTexture = void 0 !== isTempTexture && isTempTexture ? this.tempTexture : this.texture;
+        this.renderer.render(this.scene, this.mirrorCamera, renderTexture, !0), this.material.visible = !0, 
+        this.material.uniforms.mirrorSampler.value = renderTexture;
+    }
+};
+
 var SceneManager;
 
 SceneManager = function() {
     function SceneManager() {}
-    var PrivateClass, instance;
-    return instance = null, PrivateClass = function() {
-        function PrivateClass() {
-            this.scenes = [], this.currentSceneIndex = void 0;
-        }
-        return PrivateClass.prototype.currentScene = function() {
+    var PrivateSceneManager, instance;
+    return instance = null, PrivateSceneManager = function() {
+        function PrivateSceneManager() {}
+        return PrivateSceneManager.prototype.scenes = [], PrivateSceneManager.prototype.currentSceneIndex = void 0, 
+        PrivateSceneManager.prototype.currentScene = function() {
             if (void 0 === this.currentSceneIndex) throw "SceneManager.setScene not called";
             if (0 === this.scenes.length) throw "Requires at least one scene";
             return this.scenes[this.currentSceneIndex];
-        }, PrivateClass.prototype.addScene = function(scene) {
+        }, PrivateSceneManager.prototype.addScene = function(scene) {
             var i;
             return i = this.scenes.indexOf(scene), -1 === i ? this.scenes.push(scene) : void 0;
-        }, PrivateClass.prototype.removeScene = function(scene) {
+        }, PrivateSceneManager.prototype.removeScene = function(scene) {
             var i;
             return i = this.scenes.indexOf(scene), this.removeSceneByIndex(i);
-        }, PrivateClass.prototype.removeSceneByIndex = function(i) {
+        }, PrivateSceneManager.prototype.removeSceneByIndex = function(i) {
             return i >= 0 ? (i === this.currentSceneIndex && (this.currentSceneIndex = void 0), 
             array.splice(i, 1)) : void 0;
-        }, PrivateClass.prototype.setScene = function(scene) {
+        }, PrivateSceneManager.prototype.setScene = function(scene) {
             var i;
             return i = this.scenes.indexOf(scene), this.setSceneByIndex(i), this.currentScene();
-        }, PrivateClass.prototype.setSceneByIndex = function(i) {
+        }, PrivateSceneManager.prototype.setSceneByIndex = function(i) {
             return !this.isEmpty() && this.isValidIndex(i) && (this.currentSceneIndex = i), 
             this.currentScene();
-        }, PrivateClass.prototype.isEmpty = function() {
+        }, PrivateSceneManager.prototype.isEmpty = function() {
             return 0 === this.scenes.length;
-        }, PrivateClass.prototype.isValidIndex = function(i) {
+        }, PrivateSceneManager.prototype.isValidIndex = function(i) {
             return i >= 0 && i < this.scenes.length;
-        }, PrivateClass.prototype.tick = function(tpf) {
-            return this.currentScene().tick(tpf);
-        }, PrivateClass;
+        }, PrivateSceneManager.prototype.tick = function(tpf) {
+            return this.currentScene().fullTick(tpf);
+        }, PrivateSceneManager;
     }(), SceneManager.get = function() {
-        return null != instance ? instance : instance = new PrivateClass();
+        return null != instance ? instance : instance = new PrivateSceneManager();
     }, SceneManager;
 }();
 
@@ -10284,23 +10744,21 @@ var NetworkManager;
 
 NetworkManager = function() {
     function NetworkManager() {}
-    var PrivateClass, instance;
-    return instance = null, PrivateClass = function() {
-        function PrivateClass() {
-            this.socket = void 0;
-        }
-        return PrivateClass.prototype.connect = function(namespace) {
+    var PrivateNetworkManager, instance;
+    return instance = null, PrivateNetworkManager = function() {
+        function PrivateNetworkManager() {}
+        return PrivateNetworkManager.prototype.socket = void 0, PrivateNetworkManager.prototype.connect = function(namespace) {
             return null == namespace && (namespace = "/"), this.socket = io.connect(namespace), 
             this.socket.on("error", function(err) {
                 return console.error(err);
             }), this.socket.on("message", function(msg) {
                 return console.log(msg);
             });
-        }, PrivateClass.prototype.emit = function(event, params) {
+        }, PrivateNetworkManager.prototype.emit = function(event, params) {
             return params.timestamp = new Date().getTime(), this.socket.emit(event, params);
-        }, PrivateClass;
+        }, PrivateNetworkManager;
     }(), NetworkManager.get = function() {
-        return null != instance ? instance : instance = new PrivateClass();
+        return null != instance ? instance : instance = new PrivateNetworkManager();
     }, NetworkManager;
 }();
 
@@ -10308,23 +10766,22 @@ var StatsManager;
 
 StatsManager = function() {
     function StatsManager() {}
-    var PrivateClass, instance;
-    return instance = null, PrivateClass = function() {
-        function PrivateClass() {
-            this.statsVisible = !1, this.stats = new Stats(), this.stats.domElement.style.position = "absolute", 
-            this.stats.domElement.style.top = "0px", this.rendererStats = new THREEx.RendererStats(), 
-            this.rendererStats.domElement.style.position = "absolute", this.rendererStats.domElement.style.left = "0px", 
-            this.rendererStats.domElement.style.bottom = "0px";
+    var PrivateStatsManager, instance;
+    return instance = null, PrivateStatsManager = function() {
+        function PrivateStatsManager() {
+            this.stats = new Stats(), this.stats.domElement.style.position = "absolute", this.stats.domElement.style.top = "0px", 
+            this.rendererStats = new THREEx.RendererStats(), this.rendererStats.domElement.style.position = "absolute", 
+            this.rendererStats.domElement.style.left = "0px", this.rendererStats.domElement.style.bottom = "0px";
         }
-        return PrivateClass.prototype.toggle = function() {
+        return PrivateStatsManager.prototype.statsVisible = !1, PrivateStatsManager.prototype.toggle = function() {
             return this.statsVisible = !this.statsVisible, this.statsVisible ? (document.body.appendChild(this.stats.domElement), 
             document.body.appendChild(this.rendererStats.domElement)) : (document.body.removeChild(this.stats.domElement), 
             document.body.removeChild(this.rendererStats.domElement)), this.statsVisible;
-        }, PrivateClass.prototype.update = function(renderer) {
+        }, PrivateStatsManager.prototype.update = function(renderer) {
             return this.stats.update(), this.rendererStats.update(renderer);
-        }, PrivateClass;
+        }, PrivateStatsManager;
     }(), StatsManager.get = function() {
-        return null != instance ? instance : instance = new PrivateClass();
+        return null != instance ? instance : instance = new PrivateStatsManager();
     }, StatsManager;
 }();
 
@@ -10332,25 +10789,23 @@ var SoundManager;
 
 SoundManager = function() {
     function SoundManager() {}
-    var PrivateClass, instance;
-    return instance = null, PrivateClass = function() {
-        function PrivateClass() {
-            this.sounds = {};
-        }
-        return PrivateClass.prototype.add = function(key, url) {
+    var PrivateSoundManager, instance;
+    return instance = null, PrivateSoundManager = function() {
+        function PrivateSoundManager() {}
+        return PrivateSoundManager.prototype.sounds = {}, PrivateSoundManager.prototype.add = function(key, url) {
             var audio, source;
             return audio = document.createElement("audio"), source = document.createElement("source"), 
             source.src = url, audio.appendChild(source), this.sounds[key] = audio;
-        }, PrivateClass.prototype.play = function(key) {
+        }, PrivateSoundManager.prototype.play = function(key) {
             return key in this.sounds ? this.sounds[key].play() : console.log("Sound with key: " + key + " not found!");
-        }, PrivateClass.prototype.updateGlobalVolume = function(i) {
+        }, PrivateSoundManager.prototype.updateGlobalVolume = function(i) {
             var key;
             0 > i && (i = 0), i > 1 && (i = 1);
             for (key in this.sounds) this.sounds[key].volume = i;
             return i;
-        }, PrivateClass;
+        }, PrivateSoundManager;
     }(), SoundManager.get = function() {
-        return null != instance ? instance : instance = new PrivateClass();
+        return null != instance ? instance : instance = new PrivateSoundManager();
     }, SoundManager;
 }();
 
@@ -10365,58 +10820,10 @@ EngineUtils = function() {
         return s4 = function() {
             return Math.floor(65536 * (1 + Math.random())).toString(16).substring(1);
         }, s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
+    }, EngineUtils.setCursor = function(url) {
+        return document.body.style.cursor = "url('" + url + "'), auto";
     }, EngineUtils;
-}(), THREE.AnaglyphEffect = function(renderer, width, height) {
-    var _aspect, _camera, _cameraL, _cameraR, _far, _fov, _material, _near, _params, _renderTargetL, _renderTargetR, _scene, distanceBetweenGlyhs, eyeLeft, eyeRight, focalLength, mesh;
-    eyeRight = new THREE.Matrix4(), eyeLeft = new THREE.Matrix4(), distanceBetweenGlyhs = 30, 
-    focalLength = 125, _aspect = void 0, _near = void 0, _far = void 0, _fov = void 0, 
-    _cameraL = new THREE.PerspectiveCamera(), _cameraL.matrixAutoUpdate = !1, _cameraR = new THREE.PerspectiveCamera(), 
-    _cameraR.matrixAutoUpdate = !1, _camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), 
-    _scene = new THREE.Scene(), _params = {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.NearestFilter,
-        format: THREE.RGBAFormat
-    }, void 0 === width && (width = 512), void 0 === height && (height = 512), _renderTargetL = new THREE.WebGLRenderTarget(width, height, _params), 
-    _renderTargetR = new THREE.WebGLRenderTarget(width, height, _params), _material = new THREE.ShaderMaterial({
-        uniforms: {
-            mapLeft: {
-                type: "t",
-                value: _renderTargetL
-            },
-            mapRight: {
-                type: "t",
-                value: _renderTargetR
-            }
-        },
-        vertexShader: [ "varying vec2 vUv;", "void main() {", "	vUv = vec2( uv.x, uv.y );", "	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
-        fragmentShader: [ "uniform sampler2D mapLeft;", "uniform sampler2D mapRight;", "varying vec2 vUv;", "void main() {", "	vec4 colorL, colorR;", "	vec2 uv = vUv;", "	colorL = texture2D( mapLeft, uv );", "	colorR = texture2D( mapRight, uv );", "	gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;", "}" ].join("\n")
-    }), mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), _material), _scene.add(mesh), 
-    this.setSize = function(width, height) {
-        return _renderTargetL = new THREE.WebGLRenderTarget(width, height, _params), _renderTargetR = new THREE.WebGLRenderTarget(width, height, _params), 
-        _material.uniforms.mapLeft.value = _renderTargetL, _material.uniforms.mapRight.value = _renderTargetR, 
-        renderer.setSize(width, height);
-    }, this.setDistanceBetweenGlyphs = function(dist) {
-        return distanceBetweenGlyhs = dist;
-    }, this.render = function(scene, camera) {
-        var eyeSep, eyeSepOnProjection, hasCameraChanged, projectionMatrix, xmax, xmin, ymax;
-        scene.updateMatrixWorld(), void 0 === camera.parent && camera.updateMatrixWorld(), 
-        hasCameraChanged = _aspect !== camera.aspect || _near !== camera.near || _far !== camera.far || _fov !== camera.fov, 
-        hasCameraChanged && (_aspect = camera.aspect, _near = camera.near, _far = camera.far, 
-        _fov = camera.fov, projectionMatrix = camera.projectionMatrix.clone(), eyeSep = focalLength / distanceBetweenGlyhs * .5, 
-        eyeSepOnProjection = eyeSep * _near / focalLength, ymax = _near * Math.tan(THREE.Math.degToRad(.5 * _fov)), 
-        xmin = void 0, xmax = void 0, eyeRight.elements[12] = eyeSep, eyeLeft.elements[12] = -eyeSep, 
-        xmin = -ymax * _aspect + eyeSepOnProjection, xmax = ymax * _aspect + eyeSepOnProjection, 
-        projectionMatrix.elements[0] = 2 * _near / (xmax - xmin), projectionMatrix.elements[8] = (xmax + xmin) / (xmax - xmin), 
-        _cameraL.projectionMatrix.copy(projectionMatrix), xmin = -ymax * _aspect - eyeSepOnProjection, 
-        xmax = ymax * _aspect - eyeSepOnProjection, projectionMatrix.elements[0] = 2 * _near / (xmax - xmin), 
-        projectionMatrix.elements[8] = (xmax + xmin) / (xmax - xmin), _cameraR.projectionMatrix.copy(projectionMatrix)), 
-        _cameraL.matrixWorld.copy(camera.matrixWorld).multiply(eyeLeft), _cameraL.position.copy(camera.position), 
-        _cameraL.near = camera.near, _cameraL.far = camera.far, renderer.render(scene, _cameraL, _renderTargetL, !0), 
-        _cameraR.matrixWorld.copy(camera.matrixWorld).multiply(eyeRight), _cameraR.position.copy(camera.position), 
-        _cameraR.near = camera.near, _cameraR.far = camera.far, renderer.render(scene, _cameraR, _renderTargetR, !0), 
-        renderer.render(_scene, _camera);
-    };
-};
+}();
 
 var exports;
 
@@ -10426,12 +10833,11 @@ var JsonModelManager;
 
 JsonModelManager = function() {
     function JsonModelManager() {}
-    var PrivateClass, instance;
-    return instance = null, PrivateClass = function() {
-        function PrivateClass() {
-            this.loader = new THREE.JSONLoader(), this.models = {}, this.loadCount = 0;
-        }
-        return PrivateClass.prototype.load = function(key, url, callback) {
+    var PrivateJsonModelManager, instance;
+    return instance = null, PrivateJsonModelManager = function() {
+        function PrivateJsonModelManager() {}
+        return PrivateJsonModelManager.prototype.loader = new THREE.JSONLoader(), PrivateJsonModelManager.prototype.models = {}, 
+        PrivateJsonModelManager.prototype.loadCount = 0, PrivateJsonModelManager.prototype.load = function(key, url, callback) {
             return this.loadCount += 1, this.loader.load(url, function(geometry, materials) {
                 var anim, animation, i, j, len, mat, material, mesh, ref;
                 for (mesh = new THREE.SkinnedMesh(geometry, new THREE.MeshFaceMaterial(materials)), 
@@ -10443,11 +10849,11 @@ JsonModelManager = function() {
                 mesh.animations.push(animation);
                 return JsonModelManager.get().models[key] = mesh, callback(mesh);
             });
-        }, PrivateClass.prototype.hasFinishedLoading = function() {
+        }, PrivateJsonModelManager.prototype.hasFinishedLoading = function() {
             return this.loadCount === Object.keys(this.models).size();
-        }, PrivateClass;
+        }, PrivateJsonModelManager;
     }(), JsonModelManager.get = function() {
-        return null != instance ? instance : instance = new PrivateClass();
+        return null != instance ? instance : instance = new PrivateJsonModelManager();
     }, JsonModelManager;
 }();
 
@@ -10455,58 +10861,62 @@ var ResourceManager;
 
 ResourceManager = function() {
     function ResourceManager() {}
-    var PrivateClass, instance;
-    return instance = null, PrivateClass = function() {
-        function PrivateClass() {
-            this.loadedImages = 0, this.totalImages = 0, this.images = {};
-        }
-        return PrivateClass.prototype.addImage = function(key, url) {
-            var material;
-            return this.totalImages += 1, material = new THREE.MeshBasicMaterial({
-                transparent: !0,
-                map: THREE.ImageUtils.loadTexture(url, {}, this._inc)
-            }), this.images[key] = material, this;
-        }, PrivateClass.prototype.image = function(key) {
-            return this.images[key];
-        }, PrivateClass.prototype.hasFinishedLoading = function() {
-            return this.loadedImages === this.totalImages;
-        }, PrivateClass.prototype._inc = function() {
-            return ResourceManager.get().loadedImages += 1;
-        }, PrivateClass;
+    var PrivateResourceManager, instance;
+    return instance = null, PrivateResourceManager = function() {
+        function PrivateResourceManager() {}
+        return PrivateResourceManager.prototype.loadedTexturesCount = 0, PrivateResourceManager.prototype.textures = {}, 
+        PrivateResourceManager.prototype.addTexture = function(key, url) {
+            var texture;
+            return texture = THREE.ImageUtils.loadTexture(url, {}, this._inc), this.textures[key] = texture, 
+            this;
+        }, PrivateResourceManager.prototype.texture = function(key) {
+            return this.textures[key];
+        }, PrivateResourceManager.prototype.hasFinishedLoading = function() {
+            return this.loadedTexturesCount === Object.keys(textures).length;
+        }, PrivateResourceManager.prototype._inc = function() {
+            return ResourceManager.get().loadedTexturesCount += 1;
+        }, PrivateResourceManager;
     }(), ResourceManager.get = function() {
-        return null != instance ? instance : instance = new PrivateClass();
+        return null != instance ? instance : instance = new PrivateResourceManager();
     }, ResourceManager;
 }();
 
 var BaseScene;
 
 BaseScene = function() {
-    function BaseScene() {
-        this.scene = new THREE.Scene(), this.lastMousePosition = void 0, this.loaded = !1;
-    }
-    return BaseScene.prototype.tick = function(tpf) {
+    function BaseScene() {}
+    return BaseScene.prototype.scene = new THREE.Scene(), BaseScene.prototype.lastMousePosition = void 0, 
+    BaseScene.prototype.keyboard = new THREEx.KeyboardState(), BaseScene.prototype.loaded = !1, 
+    BaseScene.prototype.uptime = 0, BaseScene.prototype.fullTick = function(tpf) {
+        return this.uptime += tpf, this.tick(tpf);
+    }, BaseScene.prototype.tick = function(tpf) {
         throw "scene.tick not implemented";
     }, BaseScene.prototype.doMouseEvent = function(event, raycaster) {
         throw "scene.doMouseEvent not implemented";
     }, BaseScene.prototype.doKeyboardEvent = function(event) {
         throw "scene.doKeyboardEvent not implemented";
+    }, BaseScene.prototype.tweenLookAt = function(object, camera, duration, easing) {
+        var endRotation, startRotation, tween;
+        return null == duration && (duration = 1e3), null == easing && (easing = TWEEN.Easing.Cubic.InOut), 
+        startRotation = camera.rotation.clone(), camera.lookAt(object.position), endRotation = camera.rotation.clone(), 
+        camera.rotation.set(startRotation.x, startRotation.y, startRotation.z), tween = new TWEEN.Tween(startRotation).to(endRotation, duration).onUpdate(function() {
+            camera.rotation.set(this.x, this.y, this.z);
+        }).easing(easing).start();
+    }, BaseScene.prototype.tweenMoveTo = function(object, camera, duration, easing) {
+        var endPosition, startPosition, tween;
+        return null == duration && (duration = 1e3), null == easing && (easing = TWEEN.Easing.Cubic.InOut), 
+        startPosition = camera.position.clone(), endPosition = object.position.clone(), 
+        tween = new TWEEN.Tween(camera.position).to(endPosition, duration).onUpdate(function() {
+            camera.position.set(this.x, this.y, this.z);
+        }).easing(easing).start();
     }, BaseScene;
 }();
 
 var BaseModel;
 
 BaseModel = function() {
-    function BaseModel() {
-        this.mesh = void 0, this.visible = !0;
-    }
-    return BaseModel.prototype.setRotation = function(x, y, z) {
-        return this.mesh.rotation.x = x, this.mesh.rotation.y = y, this.mesh.rotation.z = z;
-    }, BaseModel.prototype.setPosition = function(x, y, z) {
-        return null != y ? (this.mesh.position.x = x, this.mesh.position.y = y, this.mesh.position.z = z) : (this.mesh.position.x = null != x.x ? x.x : 0, 
-        this.mesh.position.y = null != x.y ? x.y : 0, this.mesh.position.z = null != x.z ? x.z : 0, 
-        this.mesh.rotation.x = null != x.rX ? x.rX : 0, this.mesh.rotation.y = null != x.rY ? x.rY : 0, 
-        this.mesh.rotation.z = null != x.rZ ? x.rZ : 0);
-    }, BaseModel.prototype.getTweenFromPosition = function() {
+    function BaseModel() {}
+    return BaseModel.prototype.visible = !0, BaseModel.prototype.mesh = void 0, BaseModel.prototype.getTweenFromPosition = function() {
         return {
             x: this.mesh.position.x,
             y: this.mesh.position.y,
@@ -10515,13 +10925,7 @@ BaseModel = function() {
             rY: this.mesh.rotation.y,
             rZ: this.mesh.rotation.z
         };
-    }, BaseModel.prototype.setPositionX = function(x) {
-        return this.mesh.position.x = x;
-    }, BaseModel.prototype.setPositionY = function(y) {
-        return this.mesh.position.y = y;
-    }, BaseModel.prototype.setPositionZ = function(z) {
-        return this.mesh.position.z = z;
-    }, BaseModel.prototype.modifyPosition = function(x, y, z) {
+    }, BaseModel.prototype.addToPosition = function(x, y, z) {
         return this.mesh.position.x += x, this.mesh.position.y += y, this.mesh.position.z += z;
     }, BaseModel.prototype.setScale = function(i) {
         return this.mesh.scale.set(i, i, i);
@@ -10529,16 +10933,10 @@ BaseModel = function() {
         return this.mesh.traverse(function(object) {
             return object.visible = b;
         }), this.visible = b;
-    }, BaseModel.prototype.isPressed = function(raycaster) {
-        return raycaster.intersectObject(this.mesh).length > 0;
+    }, BaseModel.prototype.toggleWireframe = function() {
+        return null != this.mesh || null != this.mesh.material ? this.mesh.material.wireframe = !this.mesh.material.wireframe : void 0;
     }, BaseModel.prototype.isHovered = function(raycaster) {
         return raycaster.intersectObject(this.mesh).length > 0;
-    }, BaseModel.prototype.attachParticle = function(particle) {
-        return null != this.mesh ? (this.particle = particle, this.particle.attached = !0, 
-        this.mesh.add(particle.mesh)) : void 0;
-    }, BaseModel.prototype.detachParticle = function() {
-        return null != this.mesh && null != this.particle ? (this.mesh.remove(this.particle.mesh), 
-        this.particle.attached = !1, this.particle = void 0) : void 0;
     }, BaseModel;
 }();
 
@@ -10546,29 +10944,29 @@ var Config;
 
 Config = function() {
     function Config() {}
-    var PrivateClass, instance;
-    return instance = null, PrivateClass = function() {
-        function PrivateClass() {
-            this.showStatsOnLoad = !1, this.contextMenuDisabled = !0, this.antialias = !0, this.anaglyph = !1, 
-            this.anaglyphDistance = 600, this.resize = !1, this.width = 1280, this.height = 720, 
-            this.soundEnabled = !1, this.debug = !1, this.preventDefaultMouseEvents = !0, this.animate = !0, 
-            this.transparentBackground = !1;
-        }
-        return PrivateClass.prototype.fillWindow = function() {
+    var PrivateConfig, instance;
+    return instance = null, PrivateConfig = function() {
+        function PrivateConfig() {}
+        return PrivateConfig.prototype.showStatsOnLoad = !1, PrivateConfig.prototype.contextMenuDisabled = !0, 
+        PrivateConfig.prototype.antialias = !0, PrivateConfig.prototype.anaglyph = !1, PrivateConfig.prototype.resize = !1, 
+        PrivateConfig.prototype.width = 1280, PrivateConfig.prototype.height = 1024, PrivateConfig.prototype.soundEnabled = !1, 
+        PrivateConfig.prototype.debug = !1, PrivateConfig.prototype.preventDefaultMouseEvents = !0, 
+        PrivateConfig.prototype.animate = !0, PrivateConfig.prototype.transparentBackground = !1, 
+        PrivateConfig.prototype.fillWindow = function() {
             return this.resize = !0, this.width = window.innerWidth, this.height = window.innerHeight;
-        }, PrivateClass.prototype.toggleAnaglyph = function() {
+        }, PrivateConfig.prototype.toggleAnaglyph = function() {
             return this.anaglyph = !this.anaglyph;
-        }, PrivateClass.prototype.toggleStats = function() {
+        }, PrivateConfig.prototype.toggleStats = function() {
             return StatsManager.get().toggle();
-        }, PrivateClass.prototype.toggleSound = function() {
+        }, PrivateConfig.prototype.toggleSound = function() {
             return this.soundEnabled = !this.soundEnabled;
-        }, PrivateClass.prototype.toggleDebug = function() {
+        }, PrivateConfig.prototype.toggleDebug = function() {
             return this.debug = !this.debug;
-        }, PrivateClass.prototype.toggleFullScreen = function() {
+        }, PrivateConfig.prototype.toggleFullScreen = function() {
             return EngineUtils.toggleFullScreen();
-        }, PrivateClass;
+        }, PrivateConfig;
     }(), Config.get = function() {
-        return null != instance ? instance : instance = new PrivateClass();
+        return null != instance ? instance : instance = new PrivateConfig();
     }, Config;
 }(), exports.Config = Config;
 
@@ -10590,23 +10988,115 @@ Helper = function() {
         light.shadowDarkness = .7, light;
     }, Helper.ambientLight = function() {
         return new THREE.AmbientLight(4210752);
-    }, Helper.cube = function() {
+    }, Helper.cube = function(size) {
         var box, mat;
-        return box = new THREE.BoxGeometry(10, 10, 10), mat = new THREE.MeshLambertMaterial({
+        return box = new THREE.BoxGeometry(size, size, size), mat = new THREE.MeshLambertMaterial({
             color: 16711680
         }), new THREE.Mesh(box, mat);
     }, Helper.fancyShadows = function(renderer) {
         return renderer.shadowMapEnabled = !0, renderer.shadowMapSoft = !0, renderer.shadowMapType = THREE.PCFShadowMap, 
         renderer.shadowMapAutoUpdate = !0;
-    }, Helper.skybox = function(imgUrl, radius, segments) {
+    }, Helper.skySphere = function(imgUrl, radius, segments) {
         var geom, mat;
-        return null == radius && (radius = 1.5), null == segments && (segments = 32), geom = new THREE.SphereGeometry(radius, segments, segments), 
+        return null == radius && (radius = 45e4), null == segments && (segments = 64), geom = new THREE.SphereGeometry(radius, segments, segments), 
         mat = new THREE.MeshBasicMaterial({
             map: THREE.ImageUtils.loadTexture(imgUrl),
             side: THREE.BackSide
         }), new THREE.Mesh(geom, mat);
+    }, Helper.skyBox = function(imgUrls, size) {
+        var aCubeMap, aShader, aSkyBoxMaterial;
+        return null == size && (size = 9e5), aCubeMap = THREE.ImageUtils.loadTextureCube(imgUrls), 
+        aCubeMap.format = THREE.RGBFormat, aShader = THREE.ShaderLib.cube, aShader.uniforms.tCube.value = aCubeMap, 
+        aSkyBoxMaterial = new THREE.ShaderMaterial({
+            fragmentShader: aShader.fragmentShader,
+            vertexShader: aShader.vertexShader,
+            uniforms: aShader.uniforms,
+            depthWrite: !1,
+            side: THREE.BackSide
+        }), new THREE.Mesh(new THREE.BoxGeometry(size, size, size), aSkyBoxMaterial);
     }, Helper;
 }();
+
+var Water, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+Water = function(superClass) {
+    function Water(waterNormalsUrl, engine, scene, size, segments) {
+        var waterNormals;
+        waterNormals = new THREE.ImageUtils.loadTexture("/bower_components/ocean/assets/img/waternormals.jpg"), 
+        waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping, this.water = new THREE.Water(engine.renderer, engine.camera, scene, {
+            textureWidth: 256,
+            textureHeight: 256,
+            waterNormals: waterNormals,
+            alpha: 1,
+            sunColor: 16777215,
+            waterColor: 7695,
+            betaVersion: 0,
+            side: THREE.DoubleSide
+        }), this.mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(size, size, segments, segments), this.water.material), 
+        this.mesh.add(this.water), this.mesh.rotation.x = .5 * -Math.PI, this.speed = 1;
+    }
+    return extend(Water, superClass), Water.prototype.tick = function(tpf) {
+        return this.water.material.uniforms.time.value += tpf * this.speed, this.water.render();
+    }, Water;
+}(BaseModel);
+
+var Terrain, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+Terrain = function(superClass) {
+    function Terrain(textureUrl, width, height, wSegments, hSegments) {
+        var geom, mat;
+        mat = new THREE.MeshLambertMaterial({
+            map: THREE.ImageUtils.loadTexture(textureUrl)
+        }), geom = new THREE.PlaneGeometry(width, height, wSegments, hSegments), this.mesh = new THREE.Mesh(geom, mat), 
+        this.mesh.rotation.x -= Math.PI / 2;
+    }
+    return extend(Terrain, superClass), Terrain.prototype.applyHeightmap = function(imageData) {
+        var i, k, len, ref, results, vertice;
+        for (i = 0, ref = this.mesh.geometry.vertices, results = [], k = 0, len = ref.length; len > k; k++) vertice = ref[k], 
+        vertice.z = imageData[i], results.push(i++);
+        return results;
+    }, Terrain.heightmap = function(textureUrl, heightmapUrl, width, height, wSegments, hSegments, scale, scene) {
+        var hm;
+        return null == scale && (scale = 1), hm = THREE.ImageUtils.loadTexture(heightmapUrl, THREE.UVMapping, function(_this) {
+            return function() {
+                var terrain;
+                return hm.heightData = Terrain.getHeightData(hm.image, scale), terrain = new Terrain(textureUrl, width, height, wSegments, hSegments), 
+                terrain.applyHeightmap(hm.heightData), null == scene && (scene = SceneManager.get().currentScene()), 
+                scene.terrain = terrain, scene.scene.add(terrain.mesh);
+            };
+        }(this));
+    }, Terrain.heightmap_blocking = function(options) {
+        var hm, scene, terrain;
+        return hm = THREE.ImageUtils.loadTexture(options.heightmapUrl), hm.heightData = Terrain.getHeightData(hm.image, options.scale), 
+        terrain = new Terrain(options.textureUrl, options.width, options.height, options.wSegments, options.hSegments), 
+        terrain.applyHeightmap(hm.heightData), ("undefined" == typeof scene || null === scene) && (scene = SceneManager.get().currentScene()), 
+        scene.terrain = terrain, scene.scene.add(terrain.mesh);
+    }, Terrain.getHeightData = function(img, scale) {
+        var all, canvas, context, data, i, imgd, j, pix, size;
+        for (null == scale && (scale = 1), canvas = document.createElement("canvas"), canvas.width = img.width, 
+        canvas.height = img.height, context = canvas.getContext("2d"), size = img.width * img.height, 
+        data = new Float32Array(size), context.drawImage(img, 0, 0), i = 0; size > i; ) data[i] = 0, 
+        i++;
+        for (imgd = context.getImageData(0, 0, img.width, img.height), pix = imgd.data, 
+        j = 0, i = 0; i < pix.length; ) all = pix[i] + pix[i + 1] + pix[i + 2], data[j++] = all / (12 * scale), 
+        i += 4;
+        return data;
+    }, Terrain;
+}(BaseModel);
 
 var Engine3D, bind = function(fn, me) {
     return function() {
@@ -10619,28 +11109,25 @@ Engine3D = function() {
         this.render = bind(this.render, this), this.onDocumentKeyboardEvent = bind(this.onDocumentKeyboardEvent, this), 
         this.onDocumentMouseEvent = bind(this.onDocumentMouseEvent, this);
         var camera;
-        this.config = Config.get(), this.width = this.config.width, this.height = this.config.height, 
-        this.time = void 0, this.renderer = new THREE.WebGLRenderer({
+        this.width = this.config.width, this.height = this.config.height, this.renderer = new THREE.WebGLRenderer({
             antialias: this.config.antialias,
             alpha: this.config.transparentBackground
         }), this.renderer.setSize(this.width, this.height), document.body.appendChild(this.renderer.domElement), 
-        camera = new THREE.PerspectiveCamera(75, this.width / this.height, .1, 1e3), this.setCamera(camera), 
+        camera = new THREE.PerspectiveCamera(45, this.width / this.height, .5, 1e6), this.setCamera(camera), 
         this.camera.position.z = 10, this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), 
-        this.anaglyphEffect.setSize(this.width, this.height), this.anaglyphEffect.setDistanceBetweenGlyphs(this.config.anaglyphDistance), 
-        this.sceneManager = SceneManager.get(), document.addEventListener("mouseup", this.onDocumentMouseEvent, !1), 
-        document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), 
-        document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), 
-        this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
+        this.anaglyphEffect.setSize(this.width, this.height), this.sceneManager = SceneManager.get(), 
+        document.addEventListener("mouseup", this.onDocumentMouseEvent, !1), document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), 
+        document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), 
+        document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
             return e.preventDefault();
         }, !1), this.statsManager = StatsManager.get(), this.config.showStatsOnLoad && this.statsManager.toggle();
     }
-    return Engine3D.prototype.onDocumentMouseEvent = function(event) {
+    return Engine3D.prototype.time = void 0, Engine3D.prototype.uptime = 0, Engine3D.prototype.config = Config.get(), 
+    Engine3D.prototype.onDocumentMouseEvent = function(event) {
         var raycaster;
         return raycaster = this._parseMouseEvent(event), null != raycaster ? this.sceneManager.currentScene().doMouseEvent(event, raycaster) : void 0;
     }, Engine3D.prototype.onDocumentKeyboardEvent = function(event) {
         return this.sceneManager.currentScene().doKeyboardEvent(event);
-    }, Engine3D.prototype.setCursor = function(url) {
-        return document.body.style.cursor = "url('" + url + "'), auto";
     }, Engine3D.prototype.setCamera = function(camera) {
         return this.camera = camera, this.config.resize ? this.winResize = new THREEx.WindowResize(this.renderer, this.camera) : void 0;
     }, Engine3D.prototype.addScene = function(scene) {
@@ -10651,7 +11138,7 @@ Engine3D = function() {
         var now, tpf;
         return requestAnimationFrame(this.render), this.width = window.innerWidth, this.height = window.innerHeight, 
         now = new Date().getTime(), tpf = (now - (this.time || now)) / 1e3, this.time = now, 
-        this.sceneManager.tick(tpf), this.config.animate && THREE.AnimationHandler.update(tpf), 
+        this.uptime += tpf, this.sceneManager.tick(tpf), this.config.animate && THREE.AnimationHandler.update(tpf), 
         this.statsManager.update(this.renderer), TWEEN.update(), this.renderer.render(this.sceneManager.currentScene().scene, this.camera), 
         this.config.anaglyph ? this.anaglyphEffect.render(this.sceneManager.currentScene().scene, this.camera) : void 0;
     }, Engine3D.prototype._parseMouseEvent = function(event) {
@@ -10660,4 +11147,59 @@ Engine3D = function() {
         mouseY = 2 * -(event.layerY / this.height) + 1, vector = new THREE.Vector3(mouseX, mouseY, .5), 
         vector.unproject(this.camera), new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize())) : void 0;
     }, Engine3D;
-}();
+}(), Array.prototype.isEmpty = function() {
+    return 0 === this.length;
+}, Array.prototype.any = function() {
+    return !this.isEmpty();
+}, Array.prototype.clear = function() {
+    var results;
+    for (results = []; this.any(); ) results.push(this.pop());
+    return results;
+}, Array.prototype.last = function() {
+    return this[this.length - 1];
+}, Array.prototype.first = function() {
+    return this[0];
+}, Array.prototype.size = function() {
+    return this.length;
+}, Array.prototype.includes = function(e) {
+    return -1 !== this.indexOf(e);
+}, Array.prototype.shuffle = function() {
+    var array, i, m, t;
+    for (array = this, m = array.length, t = void 0, i = void 0; m; ) i = Math.floor(Math.random() * m--), 
+    t = array[m], array[m] = array[i], array[i] = t;
+    return array;
+}, Array.prototype.equalsArray = function(a) {
+    var eq, i, j, ref;
+    for (eq = !0, i = j = 0, ref = a.size(); ref >= 0 ? ref >= j : j >= ref; i = ref >= 0 ? ++j : --j) if (a[i] !== this[i]) {
+        eq = !1;
+        break;
+    }
+    return eq;
+}, Array.prototype.diff = function(a) {
+    return this.filter(function(i) {
+        return a.indexOf(i) < 0;
+    });
+}, Array.prototype.remove = function(e) {
+    var pos;
+    return pos = this.indexOf(e), pos > -1 && this.splice(pos, 1), pos > -1 ? e : null;
+}, Array.prototype.findById = function(id) {
+    return this.filter(function(i) {
+        return i.id === id;
+    });
+}, Array.prototype.sum = function() {
+    var e, j, len, sum;
+    for (sum = 0, j = 0, len = this.length; len > j; j++) e = this[j], sum += e;
+    return sum;
+}, String.prototype.size = function(s) {
+    return this.length;
+}, String.prototype.startsWith = function(s) {
+    return 0 === this.indexOf(s);
+}, String.prototype.isEmpty = function() {
+    return 0 === this.size();
+}, String.prototype.contains = function(s) {
+    return -1 !== this.indexOf(s);
+}, String.prototype.isPresent = function() {
+    return "undefined" != typeof this && null !== this && !this.isEmpty();
+}, String.prototype.capitalizeFirstLetter = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+};

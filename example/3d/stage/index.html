@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>coffee-engine 3d template</title>
+    <style type="text/css" media="all">
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        margin: 0px;
+        padding: 0px;
+        font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+      }
+
+      * {
+        cursor: none;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="/build/coffee-engine-3d.js"></script>
+    <!-- this needs to be kept in sync with files_3d from Gruntfile -->
+    <script src="/bower_components/threejs/examples/js/controls/OrbitControls.js"></script>
+    <script src="bower_components/threex.volumetricspotlight/threex.volumetricspotlightmaterial.js"></script>
+
+    <script src="SpotLight.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
