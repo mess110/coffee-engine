@@ -1,46 +1,77 @@
 config = Config.get()
-# config.transparentBackground = true
 config.fillWindow()
 
 camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000)
 engine = new Engine3D()
 engine.setCamera(camera)
-engine.camera.position.set 0, 20, 27
+camera.position.set 0, 20, 27
+camera.lookAt(new (THREE.Vector3)(0, 0, 0))
 
-# engine.renderer.setClearColor "black", 0
+SoundManager.get().add('shotgun', 'shotgun.wav')
+SoundManager.get().add('hit', 'hit.wav')
+
 engine.renderer.shadowMapEnabled = true
 
 class LoadingScene extends BaseScene
+
+  getRandomArbitrary: (min, max) ->
+    Math.random() * (max - min) + min
+
   spawnBunny: ->
     JsonModelManager.get().load('bunny', 'models/bunny_all.json', (mesh) =>
       mesh.receiveShadow = true
       mesh.castShadow = true
       @bunny = mesh
-      @bunny.position.set (Math.random() - 0.5) * 40, 0, (Math.random() - 0.5) * 40
+      @bunny.position.copy @getBunnySpawnPoint()
       @bunny.scale.set 0.5, 0.5, 0.5
       @bunny.animations[1].play()
       @bunny.speed = 3
+      @bunny.dead = false
 
       @bunnies.push @bunny
       @scene.add @bunny
     )
 
+  cameraPosition: (i = 0) ->
+    e = [
+      { x: 0, y: 20, z: 27 }
+      { x: 0, y: 33, z: 0 }
+    ][i]
+
+    @tweenMoveTo({ position: new (THREE.Vector3)(e.x, e.y, e.z) }, camera, 500)
+    setTimeout =>
+      @tweenLookAt({ position: new (THREE.Vector3)(0, 0, 0) }, camera, 500)
+    , 501
+
+  getBunnySpawnPoint: () ->
+    angle = Math.random()*Math.PI*2
+    radius = @getRandomArbitrary(20, 30)
+
+    {
+      x: Math.cos(angle) * radius
+      y: 0
+      z: Math.sin(angle) * radius
+    }
+
   constructor: ->
     super()
 
+    @score = 0
     @ambientLights = [Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight()]
 
     box = new (THREE.BoxGeometry)(1, 1, 1)
     mat = new (THREE.MeshPhongMaterial)(color: 0xff0000)
     # @scene.fog = new THREE.FogExp2( 0x000000, 0.07 )
 
-    @controls = new (THREE.OrbitControls)(engine.camera)
+    # @controls = new (THREE.OrbitControls)(engine.camera)
 
     @lightCtrl = new LightCtrl()
     @lightCtrl.addAllToScene(@scene)
 
     @bunnies = []
+    @started = false
 
+    # for i in [1..40]
     @spawnBunny()
 
     JsonModelManager.get().load('bear', 'models/bear_all.json', (mesh) =>
@@ -52,6 +83,7 @@ class LoadingScene extends BaseScene
       @bear.speed = 5
       @scene.add @bear
       @lightCtrl.lookAt(@bear) if @bear?
+      @cameraPosition(0)
 
       JsonModelManager.get().load('shotgun', 'models/shotgun.json', (mesh) =>
         mesh.receiveShadow = true
@@ -64,7 +96,6 @@ class LoadingScene extends BaseScene
         @bear.add @shotgun
       )
     )
-
 
     JsonModelManager.get().load('drapes', 'models/drapes.json', (mesh) =>
       mesh.receiveShadow = true
@@ -104,7 +135,8 @@ class LoadingScene extends BaseScene
       # side: THREE.DoubleSide
       reflectivity: 0.00)
 
-    geometry = new (THREE.PlaneBufferGeometry)(80, 80, 32)
+
+    geometry = new (THREE.PlaneGeometry)(80, 80, 32)
     material = new (THREE.MeshBasicMaterial)(
       color: 0xffff00
       side: THREE.DoubleSide)
@@ -127,6 +159,7 @@ class LoadingScene extends BaseScene
 
   tick: (tpf) ->
     return unless @loaded
+    return if @gameOver
 
     @mask.castShadow = !@drapes.opened if @mask and @drapes
 
@@ -136,6 +169,12 @@ class LoadingScene extends BaseScene
 
       if @keyboard.pressed(' ') and !@shotgun.animations[1].isPlaying
         @shotgun.animations[1].play()
+        snd = SoundManager.get().sounds['shotgun']
+        snd.volume = 0.4
+        snd.playbackRate = 1.3
+        snd.play('shotgun')
+
+        return if not @started
 
         matrix = new (THREE.Matrix4)
         matrix.extractRotation @bear.matrix
@@ -145,20 +184,30 @@ class LoadingScene extends BaseScene
         @raycaster.set(@bear.position, direction)
         intersects = @raycaster.intersectObjects(@bunnies)
         if intersects.any()
+          geometry = new (THREE.Geometry)
+          geometry.vertices.push @bear.position
+          geometry.vertices.push intersects[0].point
+          @scene.remove @line
+          @line = new (THREE.Line)(geometry, new (THREE.LineBasicMaterial)(color: 'black'))
+          @scene.add @line
+
+          SoundManager.get().play('hit')
+          @score += 1
+          document.getElementById('count').innerHTML = @score
           intersected = intersects.first().object
-          asd =
-            x: (Math.random() - 0.5) * 40
-            y: 0
-            z: (Math.random() - 0.5) * 40
-          bar =
-            x: intersected.position.x
-            y: intersected.position.y
-            z: intersected.position.z
+          asd = @getBunnySpawnPoint()
+          bar = intersected.position.clone()
+
+          intersected.dead = true
 
           tween = new (TWEEN.Tween)(bar).to(asd, 1000).onUpdate(->
             intersected.position.set @x, @y, @z
+            intersected.rotation.y += 0.1
             return
           ).easing(TWEEN.Easing.Cubic.InOut).start()
+          setTimeout =>
+            intersected.dead = false
+          , 1000
 
           @spawnBunny()
       if @keyboard.pressed('w')
@@ -185,9 +234,10 @@ class LoadingScene extends BaseScene
         @bear.animations[1].stop()
 
       for bunny in @bunnies
-        bunny.lookAt(@bear.position)
+        bunny.lookAt(@bear.position) if not bunny.dead
         bunny.translateZ(tpf * bunny.speed) if @moving
-        if bunny.position.distanceTo(@bear.position) < 3
+        if bunny.position.distanceTo(@bear.position) < 3 and not bunny.dead
+          @gameOver = true
           location.reload()
 
         if bunny.animations[0].isPlaying and @moving
@@ -198,35 +248,28 @@ class LoadingScene extends BaseScene
           bunny.animations[0].play()
           bunny.animations[1].stop()
 
-    # if @lastMousePosition?
-      # @lightCtrl.lookAt(position: @lastMousePosition)
-    # if @keyboard.pressed("l")
-    # else
-      # @lightCtrl.randomize(tpf)
-    # @bear.translateZ(tpf * 3) if @bear?
+  toggleDrapes: ->
+    return if @drapes.animations[0].isPlaying
+    @started = true
+    @drapes.animations[0].play()
+    setTimeout =>
+      @drapes.opened = !@drapes.opened
+    , if @drapes.opened then (@drapes.animations[0].data.length * 1000 - 100) / 3 else (@drapes.animations[0].data.length * 1000 - 100) / 4 * 3 - 150
+    setTimeout =>
+      @drapes.animations[0].stop()
+      @drapes.animations[0].timeScale *= -1
+    , @drapes.animations[0].data.length * 1000 - 100
 
   doMouseEvent: (event, raycaster) ->
-    if event.type == 'mousemove'
-      asd = raycaster.intersectObject(@plane)
-      if asd.length > 0
-        @lastMousePosition = asd[0].point
-
-    # @tweenLookAt(@mask, camera) if @mask?
-    # @tweenMoveTo(@mask, camera)
 
   doKeyboardEvent: (event) ->
+    return unless event.type == 'keyup'
     return unless @drapes?
 
-    if event.type == 'keyup' and event.which == 13
-      return if @drapes.animations[0].isPlaying
-      @drapes.animations[0].play()
-      setTimeout =>
-        @drapes.opened = !@drapes.opened
-      , if @drapes.opened then (@drapes.animations[0].data.length * 1000 - 100) / 3 else (@drapes.animations[0].data.length * 1000 - 100) / 4 * 3 - 150
-      setTimeout =>
-        @drapes.animations[0].stop()
-        @drapes.animations[0].timeScale *= -1
-      , @drapes.animations[0].data.length * 1000 - 100
+    @cameraPosition(0) if event.which == 49
+    @cameraPosition(1) if event.which == 50
+
+    @toggleDrapes() if event.which == 32 and not @started
 
 loadingScene = new LoadingScene()
 engine.addScene(loadingScene)

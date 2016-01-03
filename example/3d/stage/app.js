@@ -13,12 +13,22 @@ engine = new Engine3D();
 
 engine.setCamera(camera);
 
-engine.camera.position.set(0, 20, 27);
+camera.position.set(0, 20, 27);
+
+camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+SoundManager.get().add('shotgun', 'shotgun.wav');
+
+SoundManager.get().add('hit', 'hit.wav');
 
 engine.renderer.shadowMapEnabled = true;
 
 LoadingScene = (function(superClass) {
   extend(LoadingScene, superClass);
+
+  LoadingScene.prototype.getRandomArbitrary = function(min, max) {
+    return Math.random() * (max - min) + min;
+  };
 
   LoadingScene.prototype.spawnBunny = function() {
     return JsonModelManager.get().load('bunny', 'models/bunny_all.json', (function(_this) {
@@ -26,28 +36,69 @@ LoadingScene = (function(superClass) {
         mesh.receiveShadow = true;
         mesh.castShadow = true;
         _this.bunny = mesh;
-        _this.bunny.position.set((Math.random() - 0.5) * 40, 0, (Math.random() - 0.5) * 40);
+        _this.bunny.position.copy(_this.getBunnySpawnPoint());
         _this.bunny.scale.set(0.5, 0.5, 0.5);
         _this.bunny.animations[1].play();
         _this.bunny.speed = 3;
+        _this.bunny.dead = false;
         _this.bunnies.push(_this.bunny);
         return _this.scene.add(_this.bunny);
       };
     })(this));
   };
 
+  LoadingScene.prototype.cameraPosition = function(i) {
+    var e;
+    if (i == null) {
+      i = 0;
+    }
+    e = [
+      {
+        x: 0,
+        y: 20,
+        z: 27
+      }, {
+        x: 0,
+        y: 33,
+        z: 0
+      }
+    ][i];
+    this.tweenMoveTo({
+      position: new THREE.Vector3(e.x, e.y, e.z)
+    }, camera, 500);
+    return setTimeout((function(_this) {
+      return function() {
+        return _this.tweenLookAt({
+          position: new THREE.Vector3(0, 0, 0)
+        }, camera, 500);
+      };
+    })(this), 501);
+  };
+
+  LoadingScene.prototype.getBunnySpawnPoint = function() {
+    var angle, radius;
+    angle = Math.random() * Math.PI * 2;
+    radius = this.getRandomArbitrary(20, 30);
+    return {
+      x: Math.cos(angle) * radius,
+      y: 0,
+      z: Math.sin(angle) * radius
+    };
+  };
+
   function LoadingScene() {
     var box, geometry, mat, material, texture;
     LoadingScene.__super__.constructor.call(this);
+    this.score = 0;
     this.ambientLights = [Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight()];
     box = new THREE.BoxGeometry(1, 1, 1);
     mat = new THREE.MeshPhongMaterial({
       color: 0xff0000
     });
-    this.controls = new THREE.OrbitControls(engine.camera);
     this.lightCtrl = new LightCtrl();
     this.lightCtrl.addAllToScene(this.scene);
     this.bunnies = [];
+    this.started = false;
     this.spawnBunny();
     JsonModelManager.get().load('bear', 'models/bear_all.json', (function(_this) {
       return function(mesh) {
@@ -61,6 +112,7 @@ LoadingScene = (function(superClass) {
         if (_this.bear != null) {
           _this.lightCtrl.lookAt(_this.bear);
         }
+        _this.cameraPosition(0);
         return JsonModelManager.get().load('shotgun', 'models/shotgun.json', function(mesh) {
           mesh.receiveShadow = true;
           mesh.castShadow = true;
@@ -111,7 +163,7 @@ LoadingScene = (function(superClass) {
       combine: THREE.MixOperation,
       reflectivity: 0.00
     });
-    geometry = new THREE.PlaneBufferGeometry(80, 80, 32);
+    geometry = new THREE.PlaneGeometry(80, 80, 32);
     material = new THREE.MeshBasicMaterial({
       color: 0xffff00,
       side: THREE.DoubleSide
@@ -127,19 +179,22 @@ LoadingScene = (function(superClass) {
   }
 
   LoadingScene.prototype.toggleLights = function() {
-    var action, i, len, light, ref;
+    var action, j, len, light, ref;
     action = this.lights ? 'remove' : 'add';
     ref = this.ambientLights;
-    for (i = 0, len = ref.length; i < len; i++) {
-      light = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      light = ref[j];
       this.scene[action](light);
     }
     return this.lights = !this.lights;
   };
 
   LoadingScene.prototype.tick = function(tpf) {
-    var asd, bar, bunny, direction, i, intersected, intersects, len, matrix, ref, results, tween;
+    var asd, bar, bunny, direction, geometry, intersected, intersects, j, len, matrix, ref, results, snd, tween;
     if (!this.loaded) {
+      return;
+    }
+    if (this.gameOver) {
       return;
     }
     if (this.mask && this.drapes) {
@@ -149,6 +204,13 @@ LoadingScene = (function(superClass) {
       this.moving = false;
       if (this.keyboard.pressed(' ') && !this.shotgun.animations[1].isPlaying) {
         this.shotgun.animations[1].play();
+        snd = SoundManager.get().sounds['shotgun'];
+        snd.volume = 0.4;
+        snd.playbackRate = 1.3;
+        snd.play('shotgun');
+        if (!this.started) {
+          return;
+        }
         matrix = new THREE.Matrix4;
         matrix.extractRotation(this.bear.matrix);
         direction = new THREE.Vector3(0, 0, 1);
@@ -156,20 +218,30 @@ LoadingScene = (function(superClass) {
         this.raycaster.set(this.bear.position, direction);
         intersects = this.raycaster.intersectObjects(this.bunnies);
         if (intersects.any()) {
+          geometry = new THREE.Geometry;
+          geometry.vertices.push(this.bear.position);
+          geometry.vertices.push(intersects[0].point);
+          this.scene.remove(this.line);
+          this.line = new THREE.Line(geometry, new THREE.LineBasicMaterial({
+            color: 'black'
+          }));
+          this.scene.add(this.line);
+          SoundManager.get().play('hit');
+          this.score += 1;
+          document.getElementById('count').innerHTML = this.score;
           intersected = intersects.first().object;
-          asd = {
-            x: (Math.random() - 0.5) * 40,
-            y: 0,
-            z: (Math.random() - 0.5) * 40
-          };
-          bar = {
-            x: intersected.position.x,
-            y: intersected.position.y,
-            z: intersected.position.z
-          };
+          asd = this.getBunnySpawnPoint();
+          bar = intersected.position.clone();
+          intersected.dead = true;
           tween = new TWEEN.Tween(bar).to(asd, 1000).onUpdate(function() {
             intersected.position.set(this.x, this.y, this.z);
+            intersected.rotation.y += 0.1;
           }).easing(TWEEN.Easing.Cubic.InOut).start();
+          setTimeout((function(_this) {
+            return function() {
+              return intersected.dead = false;
+            };
+          })(this), 1000);
           this.spawnBunny();
         }
       }
@@ -200,13 +272,16 @@ LoadingScene = (function(superClass) {
       }
       ref = this.bunnies;
       results = [];
-      for (i = 0, len = ref.length; i < len; i++) {
-        bunny = ref[i];
-        bunny.lookAt(this.bear.position);
+      for (j = 0, len = ref.length; j < len; j++) {
+        bunny = ref[j];
+        if (!bunny.dead) {
+          bunny.lookAt(this.bear.position);
+        }
         if (this.moving) {
           bunny.translateZ(tpf * bunny.speed);
         }
-        if (bunny.position.distanceTo(this.bear.position) < 3) {
+        if (bunny.position.distanceTo(this.bear.position) < 3 && !bunny.dead) {
+          this.gameOver = true;
           location.reload();
         }
         if (bunny.animations[0].isPlaying && this.moving) {
@@ -224,36 +299,42 @@ LoadingScene = (function(superClass) {
     }
   };
 
-  LoadingScene.prototype.doMouseEvent = function(event, raycaster) {
-    var asd;
-    if (event.type === 'mousemove') {
-      asd = raycaster.intersectObject(this.plane);
-      if (asd.length > 0) {
-        return this.lastMousePosition = asd[0].point;
-      }
+  LoadingScene.prototype.toggleDrapes = function() {
+    if (this.drapes.animations[0].isPlaying) {
+      return;
     }
+    this.started = true;
+    this.drapes.animations[0].play();
+    setTimeout((function(_this) {
+      return function() {
+        return _this.drapes.opened = !_this.drapes.opened;
+      };
+    })(this), this.drapes.opened ? (this.drapes.animations[0].data.length * 1000 - 100) / 3 : (this.drapes.animations[0].data.length * 1000 - 100) / 4 * 3 - 150);
+    return setTimeout((function(_this) {
+      return function() {
+        _this.drapes.animations[0].stop();
+        return _this.drapes.animations[0].timeScale *= -1;
+      };
+    })(this), this.drapes.animations[0].data.length * 1000 - 100);
   };
 
+  LoadingScene.prototype.doMouseEvent = function(event, raycaster) {};
+
   LoadingScene.prototype.doKeyboardEvent = function(event) {
+    if (event.type !== 'keyup') {
+      return;
+    }
     if (this.drapes == null) {
       return;
     }
-    if (event.type === 'keyup' && event.which === 13) {
-      if (this.drapes.animations[0].isPlaying) {
-        return;
-      }
-      this.drapes.animations[0].play();
-      setTimeout((function(_this) {
-        return function() {
-          return _this.drapes.opened = !_this.drapes.opened;
-        };
-      })(this), this.drapes.opened ? (this.drapes.animations[0].data.length * 1000 - 100) / 3 : (this.drapes.animations[0].data.length * 1000 - 100) / 4 * 3 - 150);
-      return setTimeout((function(_this) {
-        return function() {
-          _this.drapes.animations[0].stop();
-          return _this.drapes.animations[0].timeScale *= -1;
-        };
-      })(this), this.drapes.animations[0].data.length * 1000 - 100);
+    if (event.which === 49) {
+      this.cameraPosition(0);
+    }
+    if (event.which === 50) {
+      this.cameraPosition(1);
+    }
+    if (event.which === 32 && !this.started) {
+      return this.toggleDrapes();
     }
   };
 
