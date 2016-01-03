@@ -10563,6 +10563,36 @@ THREEx.KeyboardState = function(domElement) {
         !pressed) return !1;
     }
     return !0;
+};
+
+var THREEx = THREEx || {};
+
+THREEx.VolumetricSpotLightMaterial = function() {
+    var vertexShader = [ "varying vec3 vNormal;", "varying vec3 vWorldPosition;", "void main(){", "// compute intensity", "vNormal		= normalize( normalMatrix * normal );", "vec4 worldPosition	= modelMatrix * vec4( position, 1.0 );", "vWorldPosition		= worldPosition.xyz;", "// set gl_Position", "gl_Position	= projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"), fragmentShader = [ "varying vec3		vNormal;", "varying vec3		vWorldPosition;", "uniform vec3		lightColor;", "uniform vec3		spotPosition;", "uniform float		attenuation;", "uniform float		anglePower;", "void main(){", "float intensity;", "intensity	= distance(vWorldPosition, spotPosition)/attenuation;", "intensity	= 1.0 - clamp(intensity, 0.0, 1.0);", "vec3 normal	= vec3(vNormal.x, vNormal.y, abs(vNormal.z));", "float angleIntensity	= pow( dot(normal, vec3(0.0, 0.0, 1.0)), anglePower );", "intensity	= intensity * angleIntensity;", "gl_FragColor	= vec4( lightColor, intensity);", "}" ].join("\n"), material = new THREE.ShaderMaterial({
+        uniforms: {
+            attenuation: {
+                type: "f",
+                value: 5
+            },
+            anglePower: {
+                type: "f",
+                value: 1.2
+            },
+            spotPosition: {
+                type: "v3",
+                value: new THREE.Vector3(0, 0, 0)
+            },
+            lightColor: {
+                type: "c",
+                value: new THREE.Color("cyan")
+            }
+        },
+        vertexShader: vertexShader,
+        fragmentShader: fragmentShader,
+        transparent: !0,
+        depthWrite: !1
+    });
+    return material;
 }, THREE.ShaderLib.water = {
     uniforms: THREE.UniformsUtils.merge([ THREE.UniformsLib.fog, {
         normalSampler: {
@@ -11097,6 +11127,54 @@ Terrain = function(superClass) {
         return data;
     }, Terrain;
 }(BaseModel);
+
+var LightCtrl, SpotLight;
+
+SpotLight = function() {
+    function SpotLight(x, y, z) {
+        var geometry;
+        geometry = new THREE.CylinderGeometry(.1, 2.5, 5, 64, 40, !0), geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, -geometry.parameters.height / 2, 0)), 
+        geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2)), this.material = new THREEx.VolumetricSpotLightMaterial(), 
+        this.mesh = new THREE.Mesh(geometry, this.material), this.mesh.position.set(x, y, z), 
+        this.mesh.lookAt(new THREE.Vector3(0, 0, 0)), this.material.uniforms.lightColor.value.set("white"), 
+        this.material.uniforms.spotPosition.value = this.mesh.position, this.spotLight = new THREE.SpotLight(), 
+        this.spotLight.position.copy(this.mesh.position), this.spotLight.color = this.mesh.material.uniforms.lightColor.value, 
+        this.spotLight.exponent = 30, this.spotLight.angle = Math.PI / 3, this.spotLight.intensity = 3, 
+        this.spotLight.castShadow = !0, this.spotLight.shadowCameraNear = .01, this.spotLight.shadowCameraFar = 100, 
+        this.spotLight.shadowCameraFov = 45, this.spotLight.shadowCameraLeft = -8, this.spotLight.shadowCameraRight = 8, 
+        this.spotLight.shadowCameraTop = 8, this.spotLight.shadowCameraBottom = -8, this.spotLight.shadowBias = 0, 
+        this.spotLight.shadowDarkness = .5, this.spotLight.shadowMapWidth = 1024, this.spotLight.shadowMapHeight = 1024, 
+        this.direction = new THREE.Vector3(0, 0, 0), this.lastDir = 0;
+    }
+    return SpotLight.prototype.lookAt = function(node) {
+        var target;
+        return target = node.position, this.mesh.lookAt(target), this.spotLight.target.position.copy(target);
+    }, SpotLight;
+}(), LightCtrl = function() {
+    function LightCtrl() {
+        this.spotLight1 = new SpotLight(-5, 30, 25), this.spotLight2 = new SpotLight(0, 30, 25), 
+        this.spotLight3 = new SpotLight(5, 30, 25);
+    }
+    return LightCtrl.prototype.addAllToScene = function(scene) {
+        return scene.add(this.spotLight2.mesh), scene.add(this.spotLight2.spotLight), scene.add(this.spotLight2.spotLight.target);
+    }, LightCtrl.prototype.lookAt = function(node) {
+        return this.spotLight2.lookAt(node);
+    }, LightCtrl.prototype.randomize = function(tpf) {
+        return this._foo(this.spotLight2, tpf);
+    }, LightCtrl.prototype._foo = function(spotLight, tpf) {
+        var asd, p, pp, rX, rZ;
+        return spotLight.lastDir += tpf, spotLight.lastDir > 1 && (spotLight.lastDir = 0, 
+        rX = Math.random() - .5, rZ = Math.random() - .5, asd = spotLight.spotLight.target.position, 
+        asd.x < -5 && (rX = .1), asd.x > 5 && (rX = -.1), asd.z < -5 && (rZ = .1), asd.z > 5 && (rZ = -.1), 
+        spotLight.direction.set(rX, 0, rZ)), pp = spotLight.spotLight.target.position, p = {
+            x: pp.x,
+            y: pp.y,
+            z: pp.z
+        }, p.x += spotLight.direction.x, p.y += spotLight.direction.z, spotLight.lookAt({
+            position: p
+        });
+    }, LightCtrl;
+}();
 
 var Engine3D, bind = function(fn, me) {
     return function() {

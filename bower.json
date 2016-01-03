@@ -23,6 +23,7 @@
     "threex.rendererstats": "*",
     "threex.universalloader": "*",
     "threex.keyboardstate": "*",
-    "ocean": "git@github.com:jbouny/ocean.git"
+    "ocean": "git@github.com:jbouny/ocean.git",
+    "threex.volumetricspotlight": "*"
   }
 }
