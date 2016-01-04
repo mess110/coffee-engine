@@ -3,7 +3,6 @@ http://opengameart.org/content/33-metal-clang-sounds-cast-iron-pans
 
 TODO:
 
-shotgun skinning
 app name
 instructions
 score

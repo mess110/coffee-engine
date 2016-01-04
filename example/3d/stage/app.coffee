@@ -149,16 +149,17 @@ class LoadingScene extends BaseScene
 
     @splatElevation = 0
 
-    splatTexture = THREE.ImageUtils.loadTexture('imgs/splatter.png')
-    @splatMat = new (THREE.MeshPhongMaterial)(
-      map: splatTexture
-      transparent: true
-    )
+    @splatTexture = THREE.ImageUtils.loadTexture('imgs/splatter.png')
 
     @loaded = true
 
   mkSplat: (pos) ->
     @splatElevation += 0.0002
+    @splatMat = new (THREE.MeshPhongMaterial)(
+      map: @splatTexture
+      transparent: true
+      opacity: 0.0
+    )
     splatGeometry = new (THREE.PlaneBufferGeometry)(5, 5)
     splat = new (THREE.Mesh)(splatGeometry, @splatMat)
     splat.receiveShadow = true
@@ -269,6 +270,10 @@ class LoadingScene extends BaseScene
       if @bear.animations[1].isPlaying and !@moving
         @bear.animations[0].play()
         @bear.animations[1].stop()
+
+      for splat in @splats
+        if splat.material.opacity < 0.5
+          splat.material.opacity += tpf
 
       for bunny in @bunnies
         bunny.lookAt(@bear.position) if not bunny.dead

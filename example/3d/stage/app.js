@@ -61,7 +61,7 @@ LoadingScene = (function(superClass) {
   extend(LoadingScene, superClass);
 
   function LoadingScene() {
-    var box, geometry, mat, material, splatTexture, texture;
+    var box, geometry, mat, material, texture;
     LoadingScene.__super__.constructor.call(this);
     this.particle2 = new BloodParticle('imgs/splatter_particle.png');
     this.particle2.emitter.disable();
@@ -159,17 +159,18 @@ LoadingScene = (function(superClass) {
     this.scene.add(this.plane);
     this.raycaster = new THREE.Raycaster();
     this.splatElevation = 0;
-    splatTexture = THREE.ImageUtils.loadTexture('imgs/splatter.png');
-    this.splatMat = new THREE.MeshPhongMaterial({
-      map: splatTexture,
-      transparent: true
-    });
+    this.splatTexture = THREE.ImageUtils.loadTexture('imgs/splatter.png');
     this.loaded = true;
   }
 
   LoadingScene.prototype.mkSplat = function(pos) {
     var splat, splatGeometry;
     this.splatElevation += 0.0002;
+    this.splatMat = new THREE.MeshPhongMaterial({
+      map: this.splatTexture,
+      transparent: true,
+      opacity: 0.0
+    });
     splatGeometry = new THREE.PlaneBufferGeometry(5, 5);
     splat = new THREE.Mesh(splatGeometry, this.splatMat);
     splat.receiveShadow = true;
@@ -191,7 +192,7 @@ LoadingScene = (function(superClass) {
   };
 
   LoadingScene.prototype.tick = function(tpf) {
-    var asd, bar, bunny, direction, geometry, intersected, intersects, j, len, matrix, pnt, ref, results, snd;
+    var asd, bar, bunny, direction, geometry, intersected, intersects, j, k, len, len1, matrix, pnt, ref, ref1, results, snd, splat;
     if (!this.loaded) {
       return;
     }
@@ -293,10 +294,17 @@ LoadingScene = (function(superClass) {
         this.bear.animations[0].play();
         this.bear.animations[1].stop();
       }
-      ref = this.bunnies;
-      results = [];
+      ref = this.splats;
       for (j = 0, len = ref.length; j < len; j++) {
-        bunny = ref[j];
+        splat = ref[j];
+        if (splat.material.opacity < 0.5) {
+          splat.material.opacity += tpf;
+        }
+      }
+      ref1 = this.bunnies;
+      results = [];
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        bunny = ref1[k];
         if (!bunny.dead) {
           bunny.lookAt(this.bear.position);
         }
