@@ -1,10 +1,16 @@
-# Helpers to get you started
+# Helpers to get you started.
 #
-# http://blog.romanliutikov.com/post/58322336872/setup-scene-in-threejs
+# Contains useful things like Helper.zero and Helper.one which are quite
+# commonly used vectors in 3d programming. Just remember to clone them :)
+#
+# @see http://threejs.org/docs/#Reference/Math/Vector3
+# @see http://blog.romanliutikov.com/post/58322336872/setup-scene-in-threejs
 class Helper
 
   @zero: new THREE.Vector3(0, 0, 0)
+  @one: new THREE.Vector3(1, 1, 1)
 
+  # Create a camera
   @camera: (options={}) ->
     config = Config.get()
     options.view_angle = 45 unless options.view_angle?
@@ -13,6 +19,7 @@ class Helper
     options.far = 10000 unless options.far?
     new THREE.PerspectiveCamera(options.view_angle, options.aspect, options.near, options.far)
 
+  # Create lights
   @light: ->
     light = new (THREE.DirectionalLight)(0xffffff)
     light.position.set 0, 100, 60
@@ -28,20 +35,24 @@ class Helper
     light.shadowDarkness = .7
     light
 
+  # Create ambient lights
   @ambientLight: ->
     new (THREE.AmbientLight)(0x404040)
 
+  # Create cubes with lambert material
   @cube: (size) ->
     box = new (THREE.BoxGeometry)(size, size, size)
     mat = new (THREE.MeshLambertMaterial)(color: 0xff0000)
     new (THREE.Mesh)(box, mat)
 
+  # Enable shadows
   @fancyShadows: (renderer) ->
     renderer.shadowMapEnabled = true
     renderer.shadowMapSoft = true
     renderer.shadowMapType = THREE.PCFShadowMap
     renderer.shadowMapAutoUpdate = true
 
+  # Add a sky sphere
   @skySphere: (imgUrl, radius=450000, segments=64)->
     geom = new (THREE.SphereGeometry)(radius, segments, segments)
     mat = new (THREE.MeshBasicMaterial)(
@@ -50,6 +61,8 @@ class Helper
     )
     new (THREE.Mesh)(geom, mat)
 
+  # Add a skybox
+  #
   # [
   #   '/assets/px.jpg'
   #   '/assets/nx.jpg'

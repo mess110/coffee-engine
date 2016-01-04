@@ -1,3 +1,4 @@
+# A base class for holding meshes.
 class BaseModel
 
   visible: true

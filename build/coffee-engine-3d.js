@@ -10731,6 +10731,703 @@ THREEx.VolumetricSpotLightMaterial = function() {
     }
 };
 
+var SPE = SPE || {};
+
+SPE.utils = {
+    randomVector3: function(base, spread) {
+        var v = new THREE.Vector3();
+        return this.randomizeExistingVector3(v, base, spread), v;
+    },
+    randomColor: function(base, spread) {
+        var v = new THREE.Color();
+        return this.randomizeExistingColor(v, base, spread), v;
+    },
+    randomFloat: function(base, spread) {
+        return base + spread * (Math.random() - .5);
+    },
+    randomVector3OnSphere: function(base, radius, radiusSpread, radiusScale, radiusSpreadClamp) {
+        var v = new THREE.Vector3();
+        return this.randomizeExistingVector3OnSphere(v, base, radius, radiusSpread, radiusScale, radiusSpreadClamp), 
+        v;
+    },
+    randomVector3OnDisk: function(base, radius, radiusSpread, radiusScale, radiusSpreadClamp) {
+        var v = new THREE.Vector3();
+        return this.randomizeExistingVector3OnDisk(v, base, radius, radiusSpread, radiusScale, radiusSpreadClamp), 
+        v;
+    },
+    randomVelocityVector3OnSphere: function(base, position, speed, speedSpread, scale) {
+        var direction = new THREE.Vector3();
+        return this.randomizeExistingVelocityVector3OnSphere(direction, base, position, speed, speedSpread), 
+        scale && direction.multiply(scale), direction;
+    },
+    randomizeExistingVector3: function(v, base, spread) {
+        v.copy(base), v.x += Math.random() * spread.x - spread.x / 2, v.y += Math.random() * spread.y - spread.y / 2, 
+        v.z += Math.random() * spread.z - spread.z / 2;
+    },
+    randomizeExistingColor: function(v, base, spread) {
+        v.copy(base), v.r += Math.random() * spread.x - spread.x / 2, v.g += Math.random() * spread.y - spread.y / 2, 
+        v.b += Math.random() * spread.z - spread.z / 2, v.r = Math.max(0, Math.min(v.r, 1)), 
+        v.g = Math.max(0, Math.min(v.g, 1)), v.b = Math.max(0, Math.min(v.b, 1));
+    },
+    randomizeExistingVector3OnSphere: function(v, base, radius, radiusSpread, radiusScale, radiusSpreadClamp) {
+        var z = 2 * Math.random() - 1, t = 6.2832 * Math.random(), r = Math.sqrt(1 - z * z), rand = this.randomFloat(radius, radiusSpread);
+        radiusSpreadClamp && (rand = Math.round(rand / radiusSpreadClamp) * radiusSpreadClamp), 
+        v.set(r * Math.cos(t) * rand, r * Math.sin(t) * rand, z * rand).multiply(radiusScale), 
+        v.add(base);
+    },
+    randomizeExistingVector3OnDisk: function(v, base, radius, radiusSpread, radiusScale, radiusSpreadClamp) {
+        var t = 6.2832 * Math.random(), rand = Math.abs(this.randomFloat(radius, radiusSpread));
+        radiusSpreadClamp && (rand = Math.round(rand / radiusSpreadClamp) * radiusSpreadClamp), 
+        v.set(Math.cos(t), Math.sin(t), 0).multiplyScalar(rand), radiusScale && v.multiply(radiusScale), 
+        v.add(base);
+    },
+    randomizeExistingVelocityVector3OnSphere: function(v, base, position, speed, speedSpread) {
+        v.copy(position).sub(base).normalize().multiplyScalar(Math.abs(this.randomFloat(speed, speedSpread)));
+    },
+    generateID: function() {
+        var str = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
+        return str = str.replace(/[xy]/g, function(c) {
+            var rand = Math.random(), r = 16 * rand | 0, v = "x" === c ? r : 3 & r | 8;
+            return v.toString(16);
+        });
+    }
+};
+
+var SPE = SPE || {};
+
+SPE.Group = function(options) {
+    var that = this;
+    that.fixedTimeStep = parseFloat("number" == typeof options.fixedTimeStep ? options.fixedTimeStep : .016), 
+    that.maxAge = parseFloat(options.maxAge || 3), that.texture = options.texture || null, 
+    that.hasPerspective = "boolean" == typeof options.hasPerspective ? options.hasPerspective : "number" == typeof options.hasPerspective ? !!options.hasPerspective : !0, 
+    that.colorize = "boolean" == typeof options.colorize ? options.colorize : "number" == typeof options.colorize ? !!options.colorize : !0, 
+    that.blending = "number" == typeof options.blending ? options.blending : THREE.AdditiveBlending, 
+    that.transparent = "boolean" == typeof options.transparent ? options.transparent : !0, 
+    that.alphaTest = "number" == typeof options.alphaTest ? options.alphaTest : .5, 
+    that.depthWrite = "boolean" == typeof options.depthWrite ? options.depthWrite : !1, 
+    that.depthTest = "boolean" == typeof options.depthTest ? options.depthTest : !0, 
+    that.fog = "boolean" == typeof options.fog ? options.fog : !0, that.uniforms = {
+        duration: {
+            type: "f",
+            value: that.maxAge
+        },
+        texture: {
+            type: "t",
+            value: that.texture
+        },
+        fogColor: {
+            type: "c",
+            value: new THREE.Color()
+        },
+        fogNear: {
+            type: "f",
+            value: 10
+        },
+        fogFar: {
+            type: "f",
+            value: 200
+        },
+        fogDensity: {
+            type: "f",
+            value: .5
+        }
+    }, that.attributes = {
+        acceleration: {
+            type: "v3",
+            value: []
+        },
+        velocity: {
+            type: "v3",
+            value: []
+        },
+        alive: {
+            type: "f",
+            value: []
+        },
+        age: {
+            type: "f",
+            value: []
+        },
+        size: {
+            type: "v3",
+            value: []
+        },
+        angle: {
+            type: "v4",
+            value: []
+        },
+        colorStart: {
+            type: "c",
+            value: []
+        },
+        colorMiddle: {
+            type: "c",
+            value: []
+        },
+        colorEnd: {
+            type: "c",
+            value: []
+        },
+        opacity: {
+            type: "v3",
+            value: []
+        },
+        pos: {
+            type: "v3",
+            value: []
+        }
+    }, that.defines = {
+        HAS_PERSPECTIVE: that.hasPerspective,
+        COLORIZE: that.colorize
+    }, that.emitters = [], that._pool = [], that._poolCreationSettings = null, that._createNewWhenPoolEmpty = 0, 
+    that.maxAgeMilliseconds = 1e3 * that.maxAge, that.geometry = new THREE.Geometry(), 
+    that.material = new THREE.ShaderMaterial({
+        uniforms: that.uniforms,
+        attributes: that.attributes,
+        vertexShader: SPE.shaders.vertex,
+        fragmentShader: SPE.shaders.fragment,
+        blending: that.blending,
+        transparent: that.transparent,
+        alphaTest: that.alphaTest,
+        depthWrite: that.depthWrite,
+        depthTest: that.depthTest,
+        defines: that.defines,
+        fog: that.fog
+    }), that.mesh = new THREE.PointCloud(that.geometry, that.material), that.mesh.dynamic = !0;
+}, SPE.Group.prototype = {
+    _flagUpdate: function() {
+        var that = this;
+        return that.attributes.age.needsUpdate = !0, that.attributes.alive.needsUpdate = !0, 
+        that.attributes.pos.needsUpdate = !0, that;
+    },
+    addEmitter: function(emitter) {
+        var that = this;
+        emitter.duration ? emitter.particlesPerSecond = emitter.particleCount / (that.maxAge < emitter.duration ? that.maxAge : emitter.duration) | 0 : emitter.particlesPerSecond = emitter.particleCount / that.maxAge | 0;
+        var vertices = that.geometry.vertices, start = vertices.length, end = emitter.particleCount + start, a = that.attributes, acceleration = a.acceleration.value, velocity = a.velocity.value, alive = a.alive.value, age = a.age.value, size = a.size.value, angle = a.angle.value, colorStart = a.colorStart.value, colorMiddle = a.colorMiddle.value, colorEnd = a.colorEnd.value, opacity = a.opacity.value, pos = a.pos.value, basePos = new THREE.Vector3();
+        emitter.particleIndex = parseFloat(start);
+        for (var i = start; end > i; ++i) "sphere" === emitter.type ? (vertices[i] = basePos, 
+        pos[i] = that.randomVector3OnSphere(emitter._position, emitter._radius, emitter._radiusSpread, emitter._radiusScale, emitter._radiusSpreadClamp), 
+        velocity[i] = that.randomVelocityVector3OnSphere(pos[i], emitter._position, emitter._speed, emitter._speedSpread)) : "disk" === emitter.type ? (vertices[i] = basePos, 
+        pos[i] = that.randomVector3OnDisk(emitter._position, emitter._radius, emitter._radiusSpread, emitter._radiusScale, emitter._radiusSpreadClamp), 
+        velocity[i] = that.randomVelocityVector3OnSphere(pos[i], emitter._position, emitter._speed, emitter._speedSpread)) : (vertices[i] = basePos, 
+        pos[i] = that.randomVector3(emitter._position, emitter._positionSpread), velocity[i] = that.randomVector3(emitter._velocity, emitter._velocitySpread)), 
+        acceleration[i] = that.randomVector3(emitter._acceleration, emitter._accelerationSpread), 
+        size[i] = new THREE.Vector3(Math.abs(that.randomFloat(emitter._sizeStart, emitter._sizeStartSpread)), Math.abs(that.randomFloat(emitter._sizeMiddle, emitter._sizeMiddleSpread)), Math.abs(that.randomFloat(emitter._sizeEnd, emitter._sizeEndSpread))), 
+        angle[i] = new THREE.Vector4(that.randomFloat(emitter._angleStart, emitter._angleStartSpread), that.randomFloat(emitter._angleMiddle, emitter._angleMiddleSpread), that.randomFloat(emitter._angleEnd, emitter._angleEndSpread), emitter.angleAlignVelocity ? 1 : 0), 
+        age[i] = 0, alive[i] = emitter.isStatic ? 1 : 0, colorStart[i] = that.randomColor(emitter._colorStart, emitter._colorStartSpread), 
+        colorMiddle[i] = that.randomColor(emitter._colorMiddle, emitter._colorMiddleSpread), 
+        colorEnd[i] = that.randomColor(emitter._colorEnd, emitter._colorEndSpread), opacity[i] = new THREE.Vector3(Math.abs(that.randomFloat(emitter._opacityStart, emitter._opacityStartSpread)), Math.abs(that.randomFloat(emitter._opacityMiddle, emitter._opacityMiddleSpread)), Math.abs(that.randomFloat(emitter._opacityEnd, emitter._opacityEndSpread)));
+        return emitter.verticesIndex = parseFloat(start), emitter.attributes = a, emitter.vertices = that.geometry.vertices, 
+        emitter.geometry = that.geometry, emitter.maxAge = that.maxAge, emitter.__id = that.generateID(), 
+        emitter.isStatic || that.emitters.push(emitter), that;
+    },
+    removeEmitter: function(emitter) {
+        var id, emitters = this.emitters;
+        if (emitter instanceof SPE.Emitter) id = emitter.__id; else {
+            if ("string" != typeof emitter) return void console.warn("Invalid emitter or emitter ID passed to SPE.Group#removeEmitter.");
+            id = emitter;
+        }
+        for (var i = 0, il = emitters.length; il > i; ++i) if (emitters[i].__id === id) {
+            emitters.splice(i, 1);
+            break;
+        }
+    },
+    tick: function(dt) {
+        var that = this, emitters = that.emitters, numEmitters = emitters.length;
+        if (dt = dt || that.fixedTimeStep, 0 !== numEmitters) {
+            for (var i = 0; numEmitters > i; ++i) emitters[i].tick(dt);
+            return that._flagUpdate(), that;
+        }
+    },
+    getFromPool: function() {
+        var that = this, pool = that._pool, createNew = that._createNewWhenPoolEmpty;
+        return pool.length ? pool.pop() : createNew ? new SPE.Emitter(that._poolCreationSettings) : null;
+    },
+    releaseIntoPool: function(emitter) {
+        return emitter instanceof SPE.Emitter ? (emitter.reset(), this._pool.unshift(emitter), 
+        this) : void console.error("Will not add non-emitter to particle group pool:", emitter);
+    },
+    getPool: function() {
+        return this._pool;
+    },
+    addPool: function(numEmitters, emitterSettings, createNew) {
+        var emitter, that = this;
+        that._poolCreationSettings = emitterSettings, that._createNewWhenPoolEmpty = !!createNew;
+        for (var i = 0; numEmitters > i; ++i) emitter = new SPE.Emitter(emitterSettings), 
+        that.addEmitter(emitter), that.releaseIntoPool(emitter);
+        return that;
+    },
+    _triggerSingleEmitter: function(pos) {
+        var that = this, emitter = that.getFromPool();
+        return null === emitter ? void console.log("SPE.Group pool ran out.") : (pos instanceof THREE.Vector3 && emitter._position.copy(pos), 
+        emitter.enable(), setTimeout(function() {
+            emitter.disable(), that.releaseIntoPool(emitter);
+        }, that.maxAgeMilliseconds), that);
+    },
+    triggerPoolEmitter: function(numEmitters, position) {
+        var that = this;
+        if ("number" == typeof numEmitters && numEmitters > 1) for (var i = 0; numEmitters > i; ++i) that._triggerSingleEmitter(position); else that._triggerSingleEmitter(position);
+        return that;
+    }
+};
+
+for (var i in SPE.utils) SPE.Group.prototype[i] = SPE.utils[i];
+
+SPE.shaders = {
+    vertex: [ "uniform float duration;", "uniform float scale;", "attribute vec3 colorStart;", "attribute vec3 colorMiddle;", "attribute vec3 colorEnd;", "attribute vec3 opacity;", "attribute vec3 acceleration;", "attribute vec3 velocity;", "attribute float alive;", "attribute float age;", "attribute vec3 size;", "attribute vec4 angle;", "attribute vec3 pos;", "varying vec4 vColor;", "varying float vAngle;", THREE.ShaderChunk.common, THREE.ShaderChunk.logdepthbuf_pars_vertex, "vec4 GetPos() {", "   vec3 newPos = vec3( pos );", "   vec3 a = acceleration * age;", "   vec3 v = velocity * age;", "   v = v + (a * age);", "   newPos = newPos + v;", "   vec4 mvPosition = modelViewMatrix * vec4( newPos, 1.0 );", "   return mvPosition;", "}", "void main() {", "   float positionInTime = (age / duration);", "   float halfDuration = 0.5 * duration;", "   float lerpAmount = 0.0;", "   float pointSize = 0.0;", "   float deadPos = 1000000000.0;", "   vAngle = 0.0;", "   if( alive == 1.0 ) {", "       vec4 currentPos = GetPos();", "       if( positionInTime < 0.5 ) {", "           lerpAmount = age / halfDuration;", "           vColor = vec4( mix( colorStart, colorMiddle, lerpAmount ), mix( opacity.x, opacity.y, lerpAmount ) );", "           pointSize = mix( size.x, size.y, lerpAmount );", "           vAngle = mix( angle.x, angle.y, lerpAmount );", "       }", "       else {", "           lerpAmount = ( age - halfDuration ) / halfDuration;", "           vColor = vec4( mix( colorMiddle, colorEnd, lerpAmount ), mix( opacity.y, opacity.z, lerpAmount ) );", "           pointSize = mix( size.y, size.z, lerpAmount );", "           vAngle = mix( angle.y, angle.z, lerpAmount );", "       }", "       if( angle.w == 1.0 ) {", "           vAngle = -atan( currentPos.y, currentPos.x );", "       }", "       #ifdef HAS_PERSPECTIVE", "           pointSize = pointSize * ( 300.0 / length( currentPos.xyz ) );", "       #endif", "       gl_PointSize = pointSize;", "       gl_Position = projectionMatrix * currentPos;", "   }", "   else {", "       vColor = vec4( 0.0 );", "       gl_Position = vec4( deadPos, deadPos, deadPos, 0.0 );", "   }", THREE.ShaderChunk.logdepthbuf_vertex, "}" ].join("\n"),
+    fragment: [ "uniform sampler2D texture;", THREE.ShaderChunk.common, THREE.ShaderChunk.fog_pars_fragment, THREE.ShaderChunk.logdepthbuf_pars_fragment, "varying vec4 vColor;", "varying float vAngle;", "void main() {", "   vec3 outgoingLight = vColor.xyz;", "   float c = cos( vAngle );", "   float s = sin( vAngle );", "   float x = gl_PointCoord.x - 0.5;", "   float y = gl_PointCoord.y - 0.5;", "   vec2 rotatedUV = vec2( c * x + s * y + 0.5, c * y - s * x + 0.5 );", "   vec4 rotatedTexture = texture2D( texture, rotatedUV );", THREE.ShaderChunk.logdepthbuf_fragment, "   #ifdef COLORIZE", "      outgoingLight = vColor.xyz * rotatedTexture.xyz;", "   #else", "      outgoingLight = vec3( rotatedTexture.xyz );", "   #endif", THREE.ShaderChunk.fog_fragment, "   gl_FragColor = vec4( outgoingLight.xyz, rotatedTexture.w * vColor.w );", "}" ].join("\n")
+};
+
+var SPE = SPE || {};
+
+SPE.Emitter = function(options) {
+    options = options || {};
+    var that = this;
+    that._updateFlags = {}, that._updateCounts = {}, that._particleCount = 100, that._type = "cube", 
+    that._position = new THREE.Vector3(), that._positionSpread = new THREE.Vector3(), 
+    that._radius = 10, that._radiusSpread = 0, that._radiusScale = new THREE.Vector3(1, 1, 1), 
+    that._radiusSpreadClamp = 0, that._acceleration = new THREE.Vector3(), that._accelerationSpread = new THREE.Vector3(), 
+    that._velocity = new THREE.Vector3(), that._velocitySpread = new THREE.Vector3(), 
+    that._speed = 0, that._speedSpread = 0, that._sizeStart = 1, that._sizeStartSpread = 0, 
+    that._sizeEnd = 1, that._sizeEndSpread = 0, that._sizeMiddle = Math.abs(that._sizeEnd + that._sizeStart) / 2, 
+    that._sizeMiddleSpread = 0, that._angleStart = 0, that._angleStartSpread = 0, that._angleMiddle = 0, 
+    that._angleMiddleSpread = 0, that._angleEnd = 0, that._angleEndSpread = 0, that._angleAlignVelocity = !1, 
+    that._colorStart = new THREE.Color("white"), that._colorStartSpread = new THREE.Vector3(), 
+    that._colorEnd = that._colorStart.clone(), that._colorEndSpread = new THREE.Vector3(), 
+    that._colorMiddle = new THREE.Color().addColors(that._colorStart, that._colorEnd).multiplyScalar(.5), 
+    that._colorMiddleSpread = new THREE.Vector3(), that._opacityStart = 1, that._opacityStartSpread = 0, 
+    that._opacityEnd = 0, that._opacityEndSpread = 0, that._opacityMiddle = Math.abs(that._opacityEnd + that._opacityStart) / 2, 
+    that._opacityMiddleSpread = 0;
+    var optionKeys = Object.keys(options), hasSizeMiddle = !!~optionKeys.indexOf("sizeMiddle"), hasAngleMiddle = !!~optionKeys.indexOf("angleMiddle"), hasColorMiddle = !!~optionKeys.indexOf("colorMiddle"), hasOpacityMiddle = !!~optionKeys.indexOf("opacityMiddle");
+    for (var i in options) that.hasOwnProperty("_" + i) && (that[i] = options[i]);
+    hasSizeMiddle || (that.sizeMiddle = Math.abs(that._sizeEnd + that._sizeStart) / 2), 
+    hasAngleMiddle || (that.angleMiddle = Math.abs(that._angleEnd + that._angleStart) / 2), 
+    hasColorMiddle || (that.colorMiddle = Math.abs(that._colorEnd + that._colorStart) / 2), 
+    hasOpacityMiddle || (that.opacityMiddle = Math.abs(that._opacityEnd + that._opacityStart) / 2), 
+    that.duration = "number" == typeof options.duration ? options.duration : null, that.alive = parseFloat("number" == typeof options.alive ? options.alive : 1), 
+    that.isStatic = "number" == typeof options.isStatic ? !!options.isStatic : "boolean" == typeof options.isStatic ? options.isStatic : !1, 
+    that.onParticleSpawn = "function" == typeof options.onParticleSpawn ? options.onParticleSpawn : null, 
+    that.particlesPerSecond = 0, that.attributes = null, that.vertices = null, that.verticesIndex = 0, 
+    that.age = 0, that.maxAge = 0, that.particleIndex = 0, that.hasRendered = !1, that.attributesNeedUpdate = !1, 
+    that.__id = null, that.userData = {};
+}, SPE.Emitter.prototype = {
+    _resetParticle: function(i) {
+        var that = this, type = that._type, spread = that.positionSpread, a = that.attributes, particlePosition = a.pos.value[i], particleVelocity = a.velocity.value[i], particleAcceleration = a.acceleration.value[i], vSpread = that.velocitySpread, aSpread = that.accelerationSpread;
+        "cube" === type && 0 === spread.x && 0 === spread.y && 0 === spread.z || "sphere" === type && 0 === that.radius || "disk" === type && 0 === that.radius ? (particlePosition.copy(that._position), 
+        that.randomizeExistingVector3(particleVelocity, that._velocity, vSpread), a.velocity.needsUpdate = !0, 
+        "cube" === type && (that.randomizeExistingVector3(particleAcceleration, that.acceleration, aSpread), 
+        a.acceleration.needsUpdate = !0)) : "cube" === type ? (that.randomizeExistingVector3(particlePosition, that._position, spread), 
+        that.randomizeExistingVector3(particleVelocity, that._velocity, vSpread), that.randomizeExistingVector3(particleAcceleration, that.acceleration, aSpread), 
+        a.velocity.needsUpdate = !0, a.acceleration.needsUpdate = !0) : "sphere" === type ? (that.randomizeExistingVector3OnSphere(particlePosition, that._position, that._radius, that._radiusSpread, that._radiusScale, that._radiusSpreadClamp), 
+        that.randomizeExistingVelocityVector3OnSphere(particleVelocity, that._position, particlePosition, that._speed, that._speedSpread), 
+        that.randomizeExistingVector3(particleAcceleration, that.acceleration, aSpread), 
+        a.velocity.needsUpdate = !0, a.acceleration.needsUpdate = !0) : "disk" === type && (that.randomizeExistingVector3OnDisk(particlePosition, that._position, that._radius, that._radiusSpread, that._radiusScale, that._radiusSpreadClamp), 
+        that.randomizeExistingVelocityVector3OnSphere(particleVelocity, that.position, particlePosition, that._speed, that._speedSpread), 
+        that.randomizeExistingVector3(particleAcceleration, that.acceleration, aSpread), 
+        a.velocity.needsUpdate = !0, a.acceleration.needsUpdate = !0), that._updateParticlesFromFlags(i), 
+        "function" == typeof that.onParticleSpawn && that.onParticleSpawn(a, i);
+    },
+    _updateParticlesFromFlags: function(particleIndex) {
+        if (this.hasRendered) {
+            var that = this, flags = that._updateFlags, counts = that._updateCounts, numParticles = that._particleCount, attributes = that.attributes, needsUpdate = that.attributesNeedUpdate, start = that.verticesIndex, end = start + numParticles, pos = attributes.pos.value, type = that.type;
+            if (flags.position === !0 && needsUpdate === !0) {
+                if ("cube" === type && 0 === that._positionSpread.x && 0 === that._positionSpread.y && 0 === that._positionSpread.z || "sphere" === type && 0 === that._radius || "disk" === type && 0 === that._radius) for (var i = start, p = that.position; end > i; ++i) pos[i].copy(p); else if ("cube" === type) for (var i = start, p = that._position; end > i; ++i) that.randomizeExistingVector3(pos[i], p, that._positionSpread); else if ("sphere" === type) for (var i = start, p = that._position; end > i; ++i) that.randomizeExistingVector3OnSphere(pos[i], that._position, that._radius, that._radiusSpread, that._radiusScale, that._radiusSpreadClamp); else if ("disk" === type) for (var i = start, p = that._position; end > i; ++i) that.randomizeExistingVector3OnDisk(pos[i], that._position, that._radius, that._radiusSpread, that._radiusScale, that._radiusSpreadClamp);
+                flags.position = !1;
+            }
+            if (flags.velocity === !0 && needsUpdate === !0) {
+                if ("cube" === type) for (var i = start; end > i; ++i) that.randomizeExistingVector3(attributes.velocity.value[i], that._velocity, that._velocitySpread); else if ("sphere" === type || "disk" === type) for (var i = start, p = that.position; end > i; ++i) that.randomizeExistingVelocityVector3OnSphere(attributes.velocity.value[i], p, pos[i], that._speed, that._speedSpread);
+                attributes.velocity.needsUpdate = !0, flags.velocity = !1;
+            }
+            if (flags.acceleration === !0 && needsUpdate === !0 && "cube" === type) {
+                for (var i = start, a = attributes.acceleration.value; end > i; ++i) that.randomizeExistingVector3(a[i], that._acceleration, that._accelerationSpread);
+                attributes.acceleration.needsUpdate = !0, flags.acceleration = !1;
+            }
+            if (flags.sizeStart === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.size.value; end > i; ++i) v[i].x = Math.abs(that.randomFloat(that._sizeStart, that._sizeStartSpread)); else attributes.size.value[particleIndex].x = Math.abs(that.randomFloat(that._sizeStart, that._sizeStartSpread));
+                attributes.size.needsUpdate = !0, ++counts.sizeStart === numParticles && (counts.sizeStart = 0, 
+                flags.sizeStart = !1);
+            }
+            if (flags.sizeMiddle === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.size.value; end > i; ++i) v[i].y = Math.abs(that.randomFloat(that._sizeMiddle, that._sizeMiddleSpread)); else attributes.size.value[particleIndex].y = Math.abs(that.randomFloat(that._sizeMiddle, that._sizeMiddleSpread));
+                attributes.size.needsUpdate = !0, ++counts.sizeMiddle === numParticles && (counts.sizeMiddle = 0, 
+                flags.sizeMiddle = !1);
+            }
+            if (flags.sizeEnd === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.size.value; end > i; ++i) v[i].z = Math.abs(that.randomFloat(that._sizeEnd, that._sizeEndSpread)); else attributes.size.value[particleIndex].z = Math.abs(that.randomFloat(that._sizeEnd, that._sizeEndSpread));
+                attributes.size.needsUpdate = !0, ++counts.sizeEnd === numParticles && (counts.sizeEnd = 0, 
+                flags.sizeEnd = !1);
+            }
+            if (flags.colorStart === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.colorStart.value; end > i; ++i) that.randomizeExistingColor(v[i], that._colorStart, that._colorStartSpread); else that.randomizeExistingColor(attributes.colorStart.value[particleIndex], that._colorStart, that._colorStartSpread);
+                attributes.colorStart.needsUpdate = !0, ++counts.colorStart === numParticles && (counts.colorStart = 0, 
+                flags.colorStart = !1);
+            }
+            if (flags.colorMiddle === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.colorMiddle.value; end > i; ++i) that.randomizeExistingColor(v[i], that._colorMiddle, that._colorMiddleSpread); else that.randomizeExistingColor(attributes.colorMiddle.value[particleIndex], that._colorMiddle, that._colorMiddleSpread);
+                attributes.colorMiddle.needsUpdate = !0, ++counts.colorMiddle === numParticles && (counts.colorMiddle = 0, 
+                flags.colorMiddle = !1);
+            }
+            if (flags.colorEnd === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.colorEnd.value; end > i; ++i) that.randomizeExistingColor(v[i], that._colorEnd, that._colorEndSpread); else that.randomizeExistingColor(attributes.colorEnd.value[particleIndex], that._colorEnd, that._colorEndSpread);
+                attributes.colorEnd.needsUpdate = !0, ++counts.colorEnd === numParticles && (counts.colorEnd = 0, 
+                flags.colorEnd = !1);
+            }
+            if (flags.opacityStart === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.opacity.value; end > i; ++i) v[i].x = Math.abs(that.randomFloat(that._opacityStart, that._opacityStartSpread)); else attributes.opacity.value[particleIndex].x = Math.abs(that.randomFloat(that._opacityStart, that._opacityStartSpread));
+                attributes.opacity.needsUpdate = !0, ++counts.opacityStart === numParticles && (counts.opacityStart = 0, 
+                flags.opacityStart = !1);
+            }
+            if (flags.opacityMiddle === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.opacity.value; end > i; ++i) v[i].y = Math.abs(that.randomFloat(that._opacityMiddle, that._opacityMiddleSpread)); else attributes.opacity.value[particleIndex].y = Math.abs(that.randomFloat(that._opacityMiddle, that._opacityMiddleSpread));
+                attributes.opacity.needsUpdate = !0, ++counts.opacityMiddle === numParticles && (counts.opacityMiddle = 0, 
+                flags.opacityMiddle = !1);
+            }
+            if (flags.opacityEnd === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.opacity.value; end > i; ++i) v[i].z = Math.abs(that.randomFloat(that._opacityEnd, that._opacityEndSpread)); else attributes.opacity.value[particleIndex].z = Math.abs(that.randomFloat(that._opacityEnd, that._opacityEndSpread));
+                attributes.opacity.needsUpdate = !0, ++counts.opacityEnd === numParticles && (counts.opacityEnd = 0, 
+                flags.opacityEnd = !1);
+            }
+            if (flags.angleStart === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.angle.value; end > i; ++i) v[i].x = Math.abs(that.randomFloat(that._angleStart, that._angleStartSpread)); else attributes.angle.value[particleIndex].x = Math.abs(that.randomFloat(that._angleStart, that._angleStartSpread));
+                attributes.angle.needsUpdate = !0, ++counts.angleStart === numParticles && (counts.angleStart = 0, 
+                flags.angleStart = !1);
+            }
+            if (flags.angleMiddle === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.angle.value; end > i; ++i) v[i].y = Math.abs(that.randomFloat(that._angleMiddle, that._angleMiddleSpread)); else attributes.angle.value[particleIndex].y = Math.abs(that.randomFloat(that._angleMiddle, that._angleMiddleSpread));
+                attributes.angle.needsUpdate = !0, ++counts.angleMiddle === numParticles && (counts.angleMiddle = 0, 
+                flags.angleMiddle = !1);
+            }
+            if (flags.angleEnd === !0) {
+                if (needsUpdate === !0) for (var i = start, v = attributes.angle.value; end > i; ++i) v[i].z = Math.abs(that.randomFloat(that._angleEnd, that._angleEndSpread)); else attributes.angle.value[particleIndex].z = Math.abs(that.randomFloat(that._angleEnd, that._angleEndSpread));
+                attributes.angle.needsUpdate = !0, ++counts.angleEnd === numParticles && (counts.angleEnd = 0, 
+                flags.angleEnd = !1);
+            }
+            that.attributesNeedUpdate = !1;
+        }
+    },
+    tick: function(dt) {
+        if (this.hasRendered = !0, this.isStatic !== !0) {
+            for (var that = this, a = that.attributes, alive = a.alive.value, age = a.age.value, start = that.verticesIndex, particleCount = that._particleCount, end = start + particleCount, pps = that.particlesPerSecond * that.alive, ppsdt = pps * dt, m = that.maxAge, emitterAge = that.age, duration = that.duration, pIndex = that.particleIndex, i = start; end > i; ++i) 1 === alive[i] && (age[i] += dt), 
+            age[i] >= m && (age[i] = 0, alive[i] = 0);
+            if (0 === that.alive) return void (that.age = 0);
+            if ("number" == typeof duration && emitterAge > duration) return that.alive = 0, 
+            void (that.age = 0);
+            var dtInc, n = Math.max(Math.min(end, pIndex + ppsdt), 0), count = 0, index = 0, pIndexFloor = 0 | pIndex;
+            for (i = pIndexFloor; n > i; ++i) 1 !== alive[i] && ++count;
+            if (0 !== count) for (dtInc = dt / count, i = pIndexFloor; n > i; ++i, ++index) 1 !== alive[i] && (alive[i] = 1, 
+            age[i] = dtInc * index, that._resetParticle(i));
+            that.particleIndex += ppsdt, that.particleIndex < 0 && (that.particleIndex = 0), 
+            pIndex >= start + particleCount && (that.particleIndex = parseFloat(start)), that.age += dt, 
+            that.age < 0 && (that.age = 0);
+        }
+    },
+    reset: function(force) {
+        var that = this;
+        if (that.age = 0, that.alive = 0, force) for (var start = that.verticesIndex, end = that.verticesIndex + that._particleCount, a = that.attributes, alive = a.alive.value, age = a.age.value, i = start; end > i; ++i) alive[i] = 0, 
+        age[i] = 0;
+        return that;
+    },
+    enable: function() {
+        this.alive = 1;
+    },
+    disable: function() {
+        this.alive = 0;
+    }
+}, Object.defineProperty(SPE.Emitter.prototype, "type", {
+    get: function() {
+        return this._type;
+    },
+    set: function(value) {
+        "cube" === value || "sphere" === value || "disk" === value ? (this._type = value, 
+        this._updateFlags.type = !0) : console.warn("Invalid emitter type: " + value + '. Emitter type not changed from "' + this._type + '"');
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "particleCount", {
+    get: function() {
+        return this._particleCount;
+    },
+    set: function(value) {
+        "number" == typeof value && value >= 1 ? this._particleCount = Math.round(value) : console.warn("Invalid particleCount specified: " + value + ". Must be a number >= 1. ParticleCount remains at: " + this._particleCount);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "position", {
+    get: function() {
+        return this._position;
+    },
+    set: function(value) {
+        value instanceof THREE.Vector3 ? (this._position = value, this._updateFlags.position = !0) : console.warn("Invalid position specified. Must be instance of THREE.Vector3.");
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "positionSpread", {
+    get: function() {
+        return this._positionSpread;
+    },
+    set: function(value) {
+        value instanceof THREE.Vector3 ? (this._positionSpread = value, this._updateFlags.position = !0) : console.warn("Invalid positionSpread specified. Must be instance of THREE.Vector3.");
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "radius", {
+    get: function() {
+        return this._radius;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._radius = value, this._updateFlags.position = !0) : console.warn("Invalid radius specified: " + value + ". Must be a number. radius remains at: " + this._radius);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "radiusSpread", {
+    get: function() {
+        return this._radiusSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._radiusSpread = value, this._updateFlags.position = !0) : console.warn("Invalid radiusSpread specified: " + value + ". Must be a number. radiusSpread remains at: " + this._radiusSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "radiusScale", {
+    get: function() {
+        return this._radiusScale;
+    },
+    set: function(value) {
+        value instanceof THREE.Vector3 ? (this._radiusScale = value, this._updateFlags.position = !0) : console.warn("Invalid radiusScale specified. Must be instance of THREE.Vector3.");
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "radiusSpreadClamp", {
+    get: function() {
+        return this._radiusSpreadClamp;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._radiusSpreadClamp = value, this._updateFlags.position = !0) : console.warn("Invalid radiusSpreadClamp specified: " + value + ". Must be a number. radiusSpreadClamp remains at: " + this._radiusSpreadClamp);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "acceleration", {
+    get: function() {
+        return this._acceleration;
+    },
+    set: function(value) {
+        value instanceof THREE.Vector3 ? (this._acceleration = value, this._updateFlags.acceleration = !0) : console.warn("Invalid acceleration specified. Must be instance of THREE.Vector3.");
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "accelerationSpread", {
+    get: function() {
+        return this._accelerationSpread;
+    },
+    set: function(value) {
+        value instanceof THREE.Vector3 ? (this._accelerationSpread = value, this._updateFlags.acceleration = !0) : console.warn("Invalid accelerationSpread specified. Must be instance of THREE.Vector3.");
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "velocity", {
+    get: function() {
+        return this._velocity;
+    },
+    set: function(value) {
+        value instanceof THREE.Vector3 ? (this._velocity = value, this._updateFlags.velocity = !0) : console.warn("Invalid velocity specified. Must be instance of THREE.Vector3.");
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "velocitySpread", {
+    get: function() {
+        return this._velocitySpread;
+    },
+    set: function(value) {
+        value instanceof THREE.Vector3 ? (this._velocitySpread = value, this._updateFlags.velocity = !0) : console.warn("Invalid velocitySpread specified. Must be instance of THREE.Vector3.");
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "speed", {
+    get: function() {
+        return this._speed;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._speed = value, this._updateFlags.velocity = !0) : console.warn("Invalid speed specified: " + value + ". Must be a number. speed remains at: " + this._speed);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "speedSpread", {
+    get: function() {
+        return this._speedSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._speedSpread = value, this._updateFlags.velocity = !0) : console.warn("Invalid speedSpread specified: " + value + ". Must be a number. speedSpread remains at: " + this._speedSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "sizeStart", {
+    get: function() {
+        return this._sizeStart;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._sizeStart = value, this._updateFlags.sizeStart = !0, 
+        this._updateCounts.sizeStart = 0) : console.warn("Invalid sizeStart specified: " + value + ". Must be a number. sizeStart remains at: " + this._sizeStart);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "sizeStartSpread", {
+    get: function() {
+        return this._sizeStartSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._sizeStartSpread = value, this._updateFlags.sizeStart = !0, 
+        this._updateCounts.sizeStart = 0) : console.warn("Invalid sizeStartSpread specified: " + value + ". Must be a number. sizeStartSpread remains at: " + this._sizeStartSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "sizeMiddle", {
+    get: function() {
+        return this._sizeMiddle;
+    },
+    set: function(value) {
+        "number" == typeof value ? this._sizeMiddle = value : this._sizeMiddle = Math.abs(this._sizeEnd + this._sizeStart), 
+        this._updateFlags.sizeMiddle = !0, this._updateCounts.sizeMiddle = 0;
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "sizeMiddleSpread", {
+    get: function() {
+        return this._sizeMiddleSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._sizeMiddleSpread = value, this._updateFlags.sizeMiddle = !0, 
+        this._updateCounts.sizeMiddle = 0) : console.warn("Invalid sizeMiddleSpread specified: " + value + ". Must be a number. sizeMiddleSpread remains at: " + this._sizeMiddleSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "sizeEnd", {
+    get: function() {
+        return this._sizeEnd;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._sizeEnd = value, this._updateFlags.sizeEnd = !0, 
+        this._updateCounts.sizeEnd = 0) : console.warn("Invalid sizeEnd specified: " + value + ". Must be a number. sizeEnd remains at: " + this._sizeEnd);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "sizeEndSpread", {
+    get: function() {
+        return this._sizeEndSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._sizeEndSpread = value, this._updateFlags.sizeEnd = !0, 
+        this._updateCounts.sizeEnd = 0) : console.warn("Invalid sizeEndSpread specified: " + value + ". Must be a number. sizeEndSpread remains at: " + this._sizeEndSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "colorStart", {
+    get: function() {
+        return this._colorStart;
+    },
+    set: function(value) {
+        value instanceof THREE.Color ? (this._colorStart = value, this._updateFlags.colorStart = !0, 
+        this._updateCounts.colorStart = 0) : console.warn("Invalid colorStart specified: " + value + ". Must be instance of THREE.Color. colorStart remains at: " + this._colorStart);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "colorStartSpread", {
+    get: function() {
+        return this._colorStartSpread;
+    },
+    set: function(value) {
+        value instanceof THREE.Vector3 ? (this._colorStartSpread = value, this._updateFlags.colorStart = !0, 
+        this._updateCounts.colorStart = 0) : console.warn("Invalid colorStartSpread specified: " + value + ". Must be instance of THREE.Vector3. colorStartSpread remains at: " + this._colorStartSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "colorMiddle", {
+    get: function() {
+        return this._colorMiddle;
+    },
+    set: function(value) {
+        value instanceof THREE.Color == !1 ? value = this._colorMiddle.addColors(this._colorStart, this._colorEnd).multiplyScalar(.5) : value instanceof THREE.Color && (this._colorMiddle = value), 
+        this._updateFlags.colorMiddle = !0, this._updateCounts.colorMiddle = 0;
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "colorMiddleSpread", {
+    get: function() {
+        return this._colorMiddleSpread;
+    },
+    set: function(value) {
+        value instanceof THREE.Vector3 ? (this._colorMiddleSpread = value, this._updateFlags.colorMiddle = !0, 
+        this._updateCounts.colorMiddle = 0) : console.warn("Invalid colorMiddleSpread specified: " + value + ". Must be a number. colorMiddleSpread remains at: " + this._colorMiddleSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "colorEnd", {
+    get: function() {
+        return this._colorEnd;
+    },
+    set: function(value) {
+        value instanceof THREE.Color ? (this._colorEnd = value, this._updateFlags.colorEnd = !0, 
+        this._updateCounts.colorEnd = 0) : console.warn("Invalid colorEnd specified: " + value + ". Must be instance of THREE.Color. colorEnd remains at: " + this._colorEnd);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "colorEndSpread", {
+    get: function() {
+        return this._colorEndSpread;
+    },
+    set: function(value) {
+        value instanceof THREE.Vector3 ? (this._colorEndSpread = value, this._updateFlags.colorEnd = !0, 
+        this._updateCounts.colorEnd = 0) : console.warn("Invalid colorEndSpread specified: " + value + ". Must be instance of THREE.Vector3. colorEndSpread remains at: " + this._colorEndSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "opacityStart", {
+    get: function() {
+        return this._opacityStart;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._opacityStart = value, this._updateFlags.opacityStart = !0, 
+        this._updateCounts.opacityStart = 0) : console.warn("Invalid opacityStart specified: " + value + ". Must be a number. opacityStart remains at: " + this._opacityStart);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "opacityStartSpread", {
+    get: function() {
+        return this._opacityStartSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._opacityStartSpread = value, this._updateFlags.opacityStart = !0, 
+        this._updateCounts.opacityStart = 0) : console.warn("Invalid opacityStartSpread specified: " + value + ". Must be a number. opacityStartSpread remains at: " + this._opacityStartSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "opacityMiddle", {
+    get: function() {
+        return this._opacityMiddle;
+    },
+    set: function(value) {
+        "number" == typeof value ? this._opacityMiddle = value : this._opacityMiddle = Math.abs(this._opacityEnd + this._opacityStart), 
+        this._updateFlags.opacityMiddle = !0, this._updateCounts.opacityMiddle = 0;
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "opacityMiddleSpread", {
+    get: function() {
+        return this._opacityMiddleSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._opacityMiddleSpread = value, this._updateFlags.opacityMiddle = !0, 
+        this._updateCounts.opacityMiddle = 0) : console.warn("Invalid opacityMiddleSpread specified: " + value + ". Must be a number. opacityMiddleSpread remains at: " + this._opacityMiddleSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "opacityEnd", {
+    get: function() {
+        return this._opacityEnd;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._opacityEnd = value, this._updateFlags.opacityEnd = !0, 
+        this._updateCounts.opacityEnd = 0) : console.warn("Invalid opacityEnd specified: " + value + ". Must be a number. opacityEnd remains at: " + this._opacityEnd);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "opacityEndSpread", {
+    get: function() {
+        return this._opacityEndSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._opacityEndSpread = value, this._updateFlags.opacityEnd = !0, 
+        this._updateCounts.opacityEnd = 0) : console.warn("Invalid opacityEndSpread specified: " + value + ". Must be a number. opacityEndSpread remains at: " + this._opacityEndSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "angleStart", {
+    get: function() {
+        return this._angleStart;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._angleStart = value, this._updateFlags.angleStart = !0, 
+        this._updateCounts.angleStart = 0) : console.warn("Invalid angleStart specified: " + value + ". Must be a number. angleStart remains at: " + this._angleStart);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "angleStartSpread", {
+    get: function() {
+        return this._angleStartSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._angleStartSpread = value, this._updateFlags.angleStart = !0, 
+        this._updateCounts.angleStart = 0) : console.warn("Invalid angleStartSpread specified: " + value + ". Must be a number. angleStartSpread remains at: " + this._angleStartSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "angleMiddle", {
+    get: function() {
+        return this._angleMiddle;
+    },
+    set: function(value) {
+        "number" == typeof value ? this._angleMiddle = value : this._angleMiddle = Math.abs(this._angleEnd + this._angleStart), 
+        this._updateFlags.angleMiddle = !0, this._updateCounts.angleMiddle = 0;
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "angleMiddleSpread", {
+    get: function() {
+        return this._angleMiddleSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._angleMiddleSpread = value, this._updateFlags.angleMiddle = !0, 
+        this._updateCounts.angleMiddle = 0) : console.warn("Invalid angleMiddleSpread specified: " + value + ". Must be a number. angleMiddleSpread remains at: " + this._angleMiddleSpread);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "angleEnd", {
+    get: function() {
+        return this._angleEnd;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._angleEnd = value, this._updateFlags.angleEnd = !0, 
+        this._updateCounts.angleEnd = 0) : console.warn("Invalid angleEnd specified: " + value + ". Must be a number. angleEnd remains at: " + this._angleEnd);
+    }
+}), Object.defineProperty(SPE.Emitter.prototype, "angleEndSpread", {
+    get: function() {
+        return this._angleEndSpread;
+    },
+    set: function(value) {
+        "number" == typeof value ? (this._angleEndSpread = value, this._updateFlags.angleEndSpread = !0, 
+        this._updateCounts.angleEndSpread = 0) : console.warn("Invalid angleEndSpread specified: " + value + ". Must be a number. angleEndSpread remains at: " + this._angleEndSpread);
+    }
+});
+
+for (var i in SPE.utils) SPE.Emitter.prototype[i] = SPE.utils[i];
+
 var SceneManager;
 
 SceneManager = function() {
@@ -10970,6 +11667,41 @@ BaseModel = function() {
     }, BaseModel;
 }();
 
+var BaseParticle, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+BaseParticle = function(superClass) {
+    function BaseParticle(texturePath) {
+        this.particleGroup = new SPE.Group({
+            texture: THREE.ImageUtils.loadTexture(texturePath),
+            maxAge: .2,
+            hasPerspective: !0,
+            colorize: !0
+        }), this.emitter = new SPE.Emitter({
+            position: new THREE.Vector3(0, 0, 0),
+            positionSpread: new THREE.Vector3(0, 0, 0),
+            acceleration: new THREE.Vector3(0, -10, 0),
+            accelerationSpread: new THREE.Vector3(10, 0, 10),
+            velocity: new THREE.Vector3(0, 25, 0),
+            velocitySpread: new THREE.Vector3(10, 7.5, 10),
+            colorStart: new THREE.Color("white"),
+            colorEnd: new THREE.Color("red"),
+            sizeStart: 1,
+            sizeEnd: 1,
+            particleCount: 2e3
+        }), this.particleGroup.addEmitter(this.emitter), this.mesh = this.particleGroup.mesh;
+    }
+    return extend(BaseParticle, superClass), BaseParticle.prototype.tick = function(tpf) {
+        return this.particleGroup.tick(tpf);
+    }, BaseParticle;
+}(BaseModel);
+
 var Config;
 
 Config = function() {
@@ -11004,7 +11736,8 @@ var Helper;
 
 Helper = function() {
     function Helper() {}
-    return Helper.zero = new THREE.Vector3(0, 0, 0), Helper.camera = function(options) {
+    return Helper.zero = new THREE.Vector3(0, 0, 0), Helper.one = new THREE.Vector3(1, 1, 1), 
+    Helper.camera = function(options) {
         var config;
         return null == options && (options = {}), config = Config.get(), null == options.view_angle && (options.view_angle = 45), 
         null == options.aspect && (options.aspect = config.width / config.height), null == options.near && (options.near = 1), 
@@ -11128,9 +11861,16 @@ Terrain = function(superClass) {
     }, Terrain;
 }(BaseModel);
 
-var LightCtrl, SpotLight;
+var SpotLight, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
 
-SpotLight = function() {
+SpotLight = function(superClass) {
     function SpotLight(x, y, z) {
         var geometry;
         geometry = new THREE.CylinderGeometry(.1, 2.5, 5, 64, 40, !0), geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, -geometry.parameters.height / 2, 0)), 
@@ -11146,35 +11886,13 @@ SpotLight = function() {
         this.spotLight.shadowDarkness = .5, this.spotLight.shadowMapWidth = 1024, this.spotLight.shadowMapHeight = 1024, 
         this.direction = new THREE.Vector3(0, 0, 0), this.lastDir = 0;
     }
-    return SpotLight.prototype.lookAt = function(node) {
+    return extend(SpotLight, superClass), SpotLight.prototype.lookAt = function(node) {
         var target;
         return target = node.position, this.mesh.lookAt(target), this.spotLight.target.position.copy(target);
+    }, SpotLight.prototype.addToScene = function(scene) {
+        return scene.add(this.mesh), scene.add(this.spotLight), scene.add(this.spotLight.target);
     }, SpotLight;
-}(), LightCtrl = function() {
-    function LightCtrl() {
-        this.spotLight1 = new SpotLight(-5, 30, 25), this.spotLight2 = new SpotLight(0, 30, 25), 
-        this.spotLight3 = new SpotLight(5, 30, 25);
-    }
-    return LightCtrl.prototype.addAllToScene = function(scene) {
-        return scene.add(this.spotLight2.mesh), scene.add(this.spotLight2.spotLight), scene.add(this.spotLight2.spotLight.target);
-    }, LightCtrl.prototype.lookAt = function(node) {
-        return this.spotLight2.lookAt(node);
-    }, LightCtrl.prototype.randomize = function(tpf) {
-        return this._foo(this.spotLight2, tpf);
-    }, LightCtrl.prototype._foo = function(spotLight, tpf) {
-        var asd, p, pp, rX, rZ;
-        return spotLight.lastDir += tpf, spotLight.lastDir > 1 && (spotLight.lastDir = 0, 
-        rX = Math.random() - .5, rZ = Math.random() - .5, asd = spotLight.spotLight.target.position, 
-        asd.x < -5 && (rX = .1), asd.x > 5 && (rX = -.1), asd.z < -5 && (rZ = .1), asd.z > 5 && (rZ = -.1), 
-        spotLight.direction.set(rX, 0, rZ)), pp = spotLight.spotLight.target.position, p = {
-            x: pp.x,
-            y: pp.y,
-            z: pp.z
-        }, p.x += spotLight.direction.x, p.y += spotLight.direction.z, spotLight.lookAt({
-            position: p
-        });
-    }, LightCtrl;
-}();
+}(BaseModel);
 
 var Engine3D, bind = function(fn, me) {
     return function() {
