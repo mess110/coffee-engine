@@ -296,6 +296,7 @@ class LoadingScene extends BaseScene
             bunny.animations[2].stop()
 
   resetScene: ->
+    @cameraPosition(0)
     setTimeout =>
       @bear.position.set 0, 0, 0
       @bear.rotation.set 0, 0, 0

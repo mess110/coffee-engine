@@ -333,6 +333,7 @@ LoadingScene = (function(superClass) {
   };
 
   LoadingScene.prototype.resetScene = function() {
+    this.cameraPosition(0);
     return setTimeout((function(_this) {
       return function() {
         var bunny, j, k, len, len1, ref, ref1, splat;
