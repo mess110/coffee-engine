@@ -77,7 +77,7 @@ LoadingScene = (function(superClass) {
     });
     this.spotLight = new SpotLight(0, 30, 25);
     this.spotLight.addToScene(this.scene);
-    this.spawnBunny();
+    this.spawnBunny(true);
     JsonModelManager.get().load('bear', 'models/bear_all.json', (function(_this) {
       return function(mesh) {
         mesh.receiveShadow = true;
@@ -354,7 +354,7 @@ LoadingScene = (function(superClass) {
         _this.splatElevation = 0;
         _this.started = false;
         _this.gameOver = false;
-        return _this.spawnBunny();
+        return _this.spawnBunny(true);
       };
     })(this), 1000);
   };
@@ -363,13 +363,20 @@ LoadingScene = (function(superClass) {
     return Math.random() * (max - min) + min;
   };
 
-  LoadingScene.prototype.spawnBunny = function() {
+  LoadingScene.prototype.spawnBunny = function(first) {
+    if (first == null) {
+      first = false;
+    }
     return JsonModelManager.get().load('bunny', 'models/bunny_all.json', (function(_this) {
       return function(mesh) {
         mesh.receiveShadow = true;
         mesh.castShadow = true;
         _this.bunny = mesh;
-        _this.bunny.position.copy(_this.getBunnySpawnPoint());
+        if (first) {
+          _this.bunny.position.set(20, 0, 0);
+        } else {
+          _this.bunny.position.copy(_this.getBunnySpawnPoint());
+        }
         _this.bunny.scale.set(0.5, 0.5, 0.5);
         _this.bunny.animations[1].play();
         _this.bunny.animations[2].loop = false;

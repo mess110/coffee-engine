@@ -65,8 +65,7 @@ class LoadingScene extends BaseScene
     @spotLight = new SpotLight(0, 30, 25)
     @spotLight.addToScene(@scene)
 
-    # for i in [1..40]
-    @spawnBunny()
+    @spawnBunny(true)
 
     JsonModelManager.get().load('bear', 'models/bear_all.json', (mesh) =>
       mesh.receiveShadow = true
@@ -309,18 +308,21 @@ class LoadingScene extends BaseScene
       @splatElevation = 0
       @started = false
       @gameOver = false
-      @spawnBunny()
+      @spawnBunny(true)
     , 1000
 
   getRandomArbitrary: (min, max) ->
     Math.random() * (max - min) + min
 
-  spawnBunny: ->
+  spawnBunny: (first = false)->
     JsonModelManager.get().load('bunny', 'models/bunny_all.json', (mesh) =>
       mesh.receiveShadow = true
       mesh.castShadow = true
       @bunny = mesh
-      @bunny.position.copy @getBunnySpawnPoint()
+      if first
+        @bunny.position.set 20, 0, 0
+      else
+        @bunny.position.copy @getBunnySpawnPoint()
       @bunny.scale.set 0.5, 0.5, 0.5
       @bunny.animations[1].play()
       @bunny.animations[2].loop = false
