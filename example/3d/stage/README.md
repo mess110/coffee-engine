@@ -3,11 +3,11 @@ http://opengameart.org/content/33-metal-clang-sounds-cast-iron-pans
 
 TODO:
 
-border
+score
+shotgun hits so hard bunnies jump in the air
 fix shooting raycasting
-blood
+splatter on screen
 slow motion
 bunnies merge
 weapon switch
-fix fur texture
-fix bunny eyes
+theater font

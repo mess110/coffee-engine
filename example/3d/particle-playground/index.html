@@ -1,0 +1,181 @@
+<!DOCTYPE HTML>
+<html lang="en" ng-app="app">
+  <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>coffee-engine particle-playground</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body ng-controller="MainController">
+    <div class="menu">
+      <h3>Settings</h3>
+      <p>
+        <input type="button" ng-click="toggleStats()" value="toggle stats" />
+      </p>
+      <p>
+        <input type="color" ng-model="options.clearColor"></input>
+        engine clear color
+      </p>
+      <hr />
+      <p>
+        maxAge <input type="number" ng-model="particle.particleGroup.maxAge">
+      </p>
+      <p>
+        colorize <input type="checkbox" ng-model="particle.particleGroup.colorize">
+        has persepective <input type="checkbox" ng-model="particle.particleGroup.hasPerspective">
+      </p>
+      <p>
+        <select ng-model="particle.particleGroup.blending">
+          <option value=0>NoBlending</option>
+          <option value=1>NormalBlending</option>
+          <option value=2>AdditiveBlending</option>
+          <option value=3>SubtractiveBlending</option>
+          <option value=4>MultiplyBlending</option>
+        </select>
+        blending
+      </p>
+      <p>
+        transparent <input type="checkbox" ng-model="particle.particleGroup.transparent">
+      </p>
+      <p>
+        alphaTest <input type="number" ng-model="particle.particleGroup.alphaTest">
+      </p>
+      <hr />
+      <p>
+        <select ng-model="particle.emitter.type">
+          <option value="cube">cube</option>
+          <option value="sphere">sphere</option>
+        </select>
+        emitter type
+      </p>
+      <p>
+        emitter position<br />
+        x <input type="number" ng-model="particle.emitter.position.x">
+        y <input type="number" ng-model="particle.emitter.position.y">
+        z <input type="number" ng-model="particle.emitter.position.z">
+      </p>
+      <p>
+        emitter position spread<br />
+        x <input type="number" ng-model="particle.emitter.positionSpread.x">
+        y <input type="number" ng-model="particle.emitter.positionSpread.y">
+        z <input type="number" ng-model="particle.emitter.positionSpread.z">
+      </p>
+      <p>
+        emitter acceleration<br />
+        x <input type="number" ng-model="particle.emitter.acceleration.x">
+        y <input type="number" ng-model="particle.emitter.acceleration.y">
+        z <input type="number" ng-model="particle.emitter.acceleration.z">
+      </p>
+      <p>
+        emitter acceleration spread<br />
+        x <input type="number" ng-model="particle.emitter.accelerationSpread.x">
+        y <input type="number" ng-model="particle.emitter.accelerationSpread.y">
+        z <input type="number" ng-model="particle.emitter.accelerationSpread.z">
+      </p>
+      <p>
+        emitter velocity<br />
+        x <input type="number" ng-model="particle.emitter.velocity.x">
+        y <input type="number" ng-model="particle.emitter.velocity.y">
+        z <input type="number" ng-model="particle.emitter.velocity.z">
+      </p>
+      <p>
+        emitter velocity spread<br />
+        x <input type="number" ng-model="particle.emitter.velocitySpread.x">
+        y <input type="number" ng-model="particle.emitter.velocitySpread.y">
+        z <input type="number" ng-model="particle.emitter.velocitySpread.z">
+      </p>
+      <p ng-show="particle.emitter.type == 'sphere'">
+        speed spread <input type="number" ng-model="particle.emitter.speedSpread"><br />
+        speed <input type="number" ng-model="particle.emitter.speed">
+        radius <input type="number" ng-model="particle.emitter.radius">
+      </p>
+      <p ng-show="particle.emitter.type == 'sphere'">
+        emitter radius scale<br />
+        x <input type="number" ng-model="particle.emitter.radiusScale.x">
+        y <input type="number" ng-model="particle.emitter.radiusScale.y">
+        z <input type="number" ng-model="particle.emitter.radiusScale.z">
+      </p>
+      <p>
+        size start <input type="number" ng-model="particle.emitter.sizeStart">
+        spread <input type="number" ng-model="particle.emitter.sizeStartSpread">
+      </p>
+      <p>
+        size middle <input type="number" ng-model="particle.emitter.sizeMiddle">
+        spread <input type="number" ng-model="particle.emitter.sizeEndSpread">
+      </p>
+      <p>
+        size end <input type="number" ng-model="particle.emitter.sizeEnd">
+        spread <input type="number" ng-model="particle.emitter.sizeEndSpread">
+      </p>
+      <p>
+        angle start <input type="number" ng-model="particle.emitter.angleStart">
+        spread <input type="number" ng-model="particle.emitter.angleStartSpread">
+      </p>
+      <p>
+        angle middle <input type="number" ng-model="particle.emitter.angleMiddle">
+        spread <input type="number" ng-model="particle.emitter.angleEndSpread">
+      </p>
+      <p>
+        angle end <input type="number" ng-model="particle.emitter.angleEnd">
+        spread <input type="number" ng-model="particle.emitter.angleEndSpread">
+      </p>
+      <p ng-show="false">
+        angleAlignVelocity?
+      </p>
+      <p>
+        color start <input type="color" ng-model="options.emitter.colorStart"></input>
+      </p>
+      <p>
+        emitter colorStart spread<br />
+        x <input type="number" ng-model="particle.emitter.colorStartSpread.x">
+        y <input type="number" ng-model="particle.emitter.colorStartSpread.y">
+        z <input type="number" ng-model="particle.emitter.colorStartSpread.z">
+      </p>
+      <p>
+        color middle <input type="color" ng-model="options.emitter.colorMiddle"></input>
+      </p>
+      <p>
+        emitter colorMiddle spread<br />
+        x <input type="number" ng-model="particle.emitter.colorMiddleSpread.x">
+        y <input type="number" ng-model="particle.emitter.colorMiddleSpread.y">
+        z <input type="number" ng-model="particle.emitter.colorMiddleSpread.z">
+      </p>
+      <p>
+        color end <input type="color" ng-model="options.emitter.colorEnd"></input>
+      </p>
+      <p>
+        emitter colorEnd spread<br />
+        x <input type="number" ng-model="particle.emitter.colorEndSpread.x">
+        y <input type="number" ng-model="particle.emitter.colorEndSpread.y">
+        z <input type="number" ng-model="particle.emitter.colorEndSpread.z">
+      </p>
+      <p>
+        opacity start <input type="number" ng-model="particle.emitter.opacityStart">
+        spread <input type="number" ng-model="particle.emitter.opacityStartSpread">
+      </p>
+      <p>
+        opacity middle <input type="number" ng-model="particle.emitter.opacityMiddle">
+        spread <input type="number" ng-model="particle.emitter.opacityEndSpread">
+      </p>
+      <p>
+        opacity end <input type="number" ng-model="particle.emitter.opacityEnd">
+        spread <input type="number" ng-model="particle.emitter.opacityEndSpread">
+      </p>
+      <p>
+        particles per sec <input type="number" ng-model="particle.emitter.particlesPerSecond">
+      </p>
+      <p>
+        emitterDuration <input type="number" ng-model="particle.emitter.emitterDuration">
+      </p>
+      <p>
+        alive <input type="number" ng-model="particle.emitter.alive">
+      </p>
+      <p ng-show="false">
+        isStatic
+      </p>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <script src="../../../build/coffee-engine-3d.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

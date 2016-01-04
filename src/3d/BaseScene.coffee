@@ -1,3 +1,12 @@
+# The engine renders scenes which extend this class.
+#
+# It keeps track of time, loaded state and facilitates
+# user input.
+#
+# Common use cases include having a LoadingScene,
+# MenuScene, GameScene etc.
+#
+# The engine can switch between these scenes.
 class BaseScene
   scene: new THREE.Scene()
   lastMousePosition: undefined

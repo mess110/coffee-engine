@@ -14,6 +14,7 @@ module.exports = (grunt) ->
     "bower_components/threex.keyboardstate/threex.keyboardstate.js"
     "bower_components/threex.volumetricspotlight/threex.volumetricspotlightmaterial.js"
     "bower_components/ocean/water-material.js"
+    "bower_components/ShaderParticleEngine/build/ShaderParticles.js"
 
     "src/shared/SceneManager.js"
     "src/shared/NetworkManager.js"
@@ -28,6 +29,7 @@ module.exports = (grunt) ->
     "src/3d/ResourceManager.js"
     "src/3d/BaseScene.js"
     "src/3d/BaseModel.js"
+    "src/3d/BaseParticle.js"
     "src/3d/Config.js"
     "src/3d/Helper.js"
 
@@ -62,8 +64,10 @@ module.exports = (grunt) ->
         command: "coffee --output . -b -c -w ."
       "compile-coffee":
         command: "coffee --output . -b -c ."
-      "doc":
-        command: "./node_modules/.bin/codo -r README.md src"
+      "doc-3d":
+        command: "./node_modules/.bin/codo -o ./doc/3d/ -r README.md src/3d/ src/shared/"
+      "doc-2d":
+        command: "./node_modules/.bin/codo -o ./doc/2d/ -r README.md src/2d/ src/shared/"
       "tools":
         command: "npm run start"
 
@@ -83,7 +87,7 @@ module.exports = (grunt) ->
   grunt.registerTask "release", ["compile:coffee", "uglify:engine"]
   grunt.registerTask "dev", ["compile:coffee:watch"]
 
-  grunt.registerTask "doc", ["shell:doc"]
+  grunt.registerTask "doc", ["shell:doc-3d", "shell:doc-2d"]
   grunt.registerTask "tools", ["shell:tools"]
 
   grunt.registerTask "default", ["dev"]
