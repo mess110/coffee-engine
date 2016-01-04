@@ -61,7 +61,7 @@ LoadingScene = (function(superClass) {
   extend(LoadingScene, superClass);
 
   function LoadingScene() {
-    var box, geometry, mat, material, splatTexture, texture;
+    var box, geometry, mat, material, texture;
     LoadingScene.__super__.constructor.call(this);
     this.particle2 = new BloodParticle('imgs/splatter_particle.png');
     this.particle2.emitter.disable();
@@ -77,7 +77,7 @@ LoadingScene = (function(superClass) {
     });
     this.spotLight = new SpotLight(0, 30, 25);
     this.spotLight.addToScene(this.scene);
-    this.spawnBunny();
+    this.spawnBunny(true);
     JsonModelManager.get().load('bear', 'models/bear_all.json', (function(_this) {
       return function(mesh) {
         mesh.receiveShadow = true;
@@ -159,17 +159,18 @@ LoadingScene = (function(superClass) {
     this.scene.add(this.plane);
     this.raycaster = new THREE.Raycaster();
     this.splatElevation = 0;
-    splatTexture = THREE.ImageUtils.loadTexture('imgs/splatter.png');
-    this.splatMat = new THREE.MeshPhongMaterial({
-      map: splatTexture,
-      transparent: true
-    });
+    this.splatTexture = THREE.ImageUtils.loadTexture('imgs/splatter.png');
     this.loaded = true;
   }
 
   LoadingScene.prototype.mkSplat = function(pos) {
     var splat, splatGeometry;
     this.splatElevation += 0.0002;
+    this.splatMat = new THREE.MeshPhongMaterial({
+      map: this.splatTexture,
+      transparent: true,
+      opacity: 0.0
+    });
     splatGeometry = new THREE.PlaneBufferGeometry(5, 5);
     splat = new THREE.Mesh(splatGeometry, this.splatMat);
     splat.receiveShadow = true;
@@ -191,7 +192,7 @@ LoadingScene = (function(superClass) {
   };
 
   LoadingScene.prototype.tick = function(tpf) {
-    var asd, bar, bunny, direction, geometry, intersected, intersects, j, len, matrix, pnt, ref, results, snd;
+    var asd, bar, bunny, direction, geometry, intersected, intersects, j, k, len, len1, matrix, pnt, ref, ref1, results, snd, splat;
     if (!this.loaded) {
       return;
     }
@@ -257,7 +258,6 @@ LoadingScene = (function(superClass) {
               _this.mkSplat(pnt);
               tween = new TWEEN.Tween(bar).to(asd, 1000).onUpdate(function() {
                 intersected.position.set(this.x, this.y, this.z);
-                intersected.rotation.y += 0.1;
               }).easing(TWEEN.Easing.Cubic.InOut).start();
               setTimeout(function() {
                 intersected.dead = false;
@@ -269,19 +269,19 @@ LoadingScene = (function(superClass) {
           })(this), 350);
         }
       }
-      if (this.keyboard.pressed('w')) {
+      if (this.keyboard.pressed('w') || this.keyboard.pressed('up')) {
         this.moving = true;
         this.bear.translateZ(tpf * this.bear.speed);
       }
-      if (this.keyboard.pressed('s')) {
+      if (this.keyboard.pressed('s') || this.keyboard.pressed('down')) {
         this.moving = true;
         this.bear.translateZ(-tpf * this.bear.speed);
       }
-      if (this.keyboard.pressed('a')) {
+      if (this.keyboard.pressed('a') || this.keyboard.pressed('left')) {
         this.moving = true;
         this.bear.rotation.y += tpf * this.bear.speed / 2;
       }
-      if (this.keyboard.pressed('d')) {
+      if (this.keyboard.pressed('d') || this.keyboard.pressed('right')) {
         this.moving = true;
         this.bear.rotation.y -= tpf * this.bear.speed / 2;
       }
@@ -293,10 +293,17 @@ LoadingScene = (function(superClass) {
         this.bear.animations[0].play();
         this.bear.animations[1].stop();
       }
-      ref = this.bunnies;
-      results = [];
+      ref = this.splats;
       for (j = 0, len = ref.length; j < len; j++) {
-        bunny = ref[j];
+        splat = ref[j];
+        if (splat.material.opacity < 0.5) {
+          splat.material.opacity += tpf;
+        }
+      }
+      ref1 = this.bunnies;
+      results = [];
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        bunny = ref1[k];
         if (!bunny.dead) {
           bunny.lookAt(this.bear.position);
         }
@@ -354,7 +361,7 @@ LoadingScene = (function(superClass) {
         _this.splatElevation = 0;
         _this.started = false;
         _this.gameOver = false;
-        return _this.spawnBunny();
+        return _this.spawnBunny(true);
       };
     })(this), 1000);
   };
@@ -363,13 +370,20 @@ LoadingScene = (function(superClass) {
     return Math.random() * (max - min) + min;
   };
 
-  LoadingScene.prototype.spawnBunny = function() {
+  LoadingScene.prototype.spawnBunny = function(first) {
+    if (first == null) {
+      first = false;
+    }
     return JsonModelManager.get().load('bunny', 'models/bunny_all.json', (function(_this) {
       return function(mesh) {
         mesh.receiveShadow = true;
         mesh.castShadow = true;
         _this.bunny = mesh;
-        _this.bunny.position.copy(_this.getBunnySpawnPoint());
+        if (first) {
+          _this.bunny.position.set(20, 0, 0);
+        } else {
+          _this.bunny.position.copy(_this.getBunnySpawnPoint());
+        }
         _this.bunny.scale.set(0.5, 0.5, 0.5);
         _this.bunny.animations[1].play();
         _this.bunny.animations[2].loop = false;
@@ -421,12 +435,23 @@ LoadingScene = (function(superClass) {
   };
 
   LoadingScene.prototype.toggleDrapes = function() {
+    var count, help, menu, score;
     if (this.drapes.animations[0].isPlaying) {
       return;
     }
+    count = document.getElementById('count');
+    menu = document.getElementById('menu');
+    help = document.getElementById('help');
+    score = document.getElementById('score');
     if (this.started === false) {
       this.score = 0;
-      document.getElementById('count').innerHTML = this.score;
+      count.innerHTML = this.score;
+      menu.className = 'hidden';
+      help.className = 'hidden';
+      score.className = 'visible';
+    } else {
+      menu.className = 'visible';
+      help.className = 'visible';
     }
     this.started = true;
     this.drapes.animations[0].play();

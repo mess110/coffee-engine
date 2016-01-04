@@ -65,8 +65,7 @@ class LoadingScene extends BaseScene
     @spotLight = new SpotLight(0, 30, 25)
     @spotLight.addToScene(@scene)
 
-    # for i in [1..40]
-    @spawnBunny()
+    @spawnBunny(true)
 
     JsonModelManager.get().load('bear', 'models/bear_all.json', (mesh) =>
       mesh.receiveShadow = true
@@ -150,16 +149,17 @@ class LoadingScene extends BaseScene
 
     @splatElevation = 0
 
-    splatTexture = THREE.ImageUtils.loadTexture('imgs/splatter.png')
-    @splatMat = new (THREE.MeshPhongMaterial)(
-      map: splatTexture
-      transparent: true
-    )
+    @splatTexture = THREE.ImageUtils.loadTexture('imgs/splatter.png')
 
     @loaded = true
 
   mkSplat: (pos) ->
     @splatElevation += 0.0002
+    @splatMat = new (THREE.MeshPhongMaterial)(
+      map: @splatTexture
+      transparent: true
+      opacity: 0.0
+    )
     splatGeometry = new (THREE.PlaneBufferGeometry)(5, 5)
     splat = new (THREE.Mesh)(splatGeometry, @splatMat)
     splat.receiveShadow = true
@@ -224,8 +224,8 @@ class LoadingScene extends BaseScene
 
           SoundManager.get().play('hit')
           @score += 1
-
           document.getElementById('count').innerHTML = @score
+
           intersected = intersects.first().object
           asd = @getBunnySpawnPoint()
           bar = intersected.position.clone()
@@ -238,7 +238,6 @@ class LoadingScene extends BaseScene
 
             tween = new (TWEEN.Tween)(bar).to(asd, 1000).onUpdate(->
               intersected.position.set @x, @y, @z
-              intersected.rotation.y += 0.1
               return
             ).easing(TWEEN.Easing.Cubic.InOut).start()
             setTimeout =>
@@ -249,17 +248,17 @@ class LoadingScene extends BaseScene
 
             @spawnBunny()
           , 350
-      if @keyboard.pressed('w')
+      if @keyboard.pressed('w') or @keyboard.pressed('up')
         @moving = true
         @bear.translateZ(tpf * @bear.speed)
-      if @keyboard.pressed('s')
+      if @keyboard.pressed('s') or @keyboard.pressed('down')
         @moving = true
         @bear.translateZ(-tpf * @bear.speed)
 
-      if @keyboard.pressed('a')
+      if @keyboard.pressed('a') or @keyboard.pressed('left')
         @moving = true
         @bear.rotation.y += tpf * @bear.speed / 2
-      if @keyboard.pressed('d')
+      if @keyboard.pressed('d') or @keyboard.pressed('right')
         @moving = true
         @bear.rotation.y -= tpf * @bear.speed / 2
 
@@ -270,6 +269,10 @@ class LoadingScene extends BaseScene
       if @bear.animations[1].isPlaying and !@moving
         @bear.animations[0].play()
         @bear.animations[1].stop()
+
+      for splat in @splats
+        if splat.material.opacity < 0.5
+          splat.material.opacity += tpf
 
       for bunny in @bunnies
         bunny.lookAt(@bear.position) if not bunny.dead
@@ -309,18 +312,21 @@ class LoadingScene extends BaseScene
       @splatElevation = 0
       @started = false
       @gameOver = false
-      @spawnBunny()
+      @spawnBunny(true)
     , 1000
 
   getRandomArbitrary: (min, max) ->
     Math.random() * (max - min) + min
 
-  spawnBunny: ->
+  spawnBunny: (first = false)->
     JsonModelManager.get().load('bunny', 'models/bunny_all.json', (mesh) =>
       mesh.receiveShadow = true
       mesh.castShadow = true
       @bunny = mesh
-      @bunny.position.copy @getBunnySpawnPoint()
+      if first
+        @bunny.position.set 20, 0, 0
+      else
+        @bunny.position.copy @getBunnySpawnPoint()
       @bunny.scale.set 0.5, 0.5, 0.5
       @bunny.animations[1].play()
       @bunny.animations[2].loop = false
@@ -354,9 +360,20 @@ class LoadingScene extends BaseScene
 
   toggleDrapes: ->
     return if @drapes.animations[0].isPlaying
+    count = document.getElementById('count')
+    menu = document.getElementById('menu')
+    help = document.getElementById('help')
+    score = document.getElementById('score')
+
     if @started == false
       @score = 0
-      document.getElementById('count').innerHTML = @score
+      count.innerHTML = @score
+      menu.className = 'hidden'
+      help.className = 'hidden'
+      score.className = 'visible'
+    else
+      menu.className = 'visible'
+      help.className = 'visible'
     @started = true
     @drapes.animations[0].play()
     setTimeout =>
