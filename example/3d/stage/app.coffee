@@ -224,8 +224,8 @@ class LoadingScene extends BaseScene
 
           SoundManager.get().play('hit')
           @score += 1
-
           document.getElementById('count').innerHTML = @score
+
           intersected = intersects.first().object
           asd = @getBunnySpawnPoint()
           bar = intersected.position.clone()
@@ -238,7 +238,6 @@ class LoadingScene extends BaseScene
 
             tween = new (TWEEN.Tween)(bar).to(asd, 1000).onUpdate(->
               intersected.position.set @x, @y, @z
-              intersected.rotation.y += 0.1
               return
             ).easing(TWEEN.Easing.Cubic.InOut).start()
             setTimeout =>
@@ -249,17 +248,17 @@ class LoadingScene extends BaseScene
 
             @spawnBunny()
           , 350
-      if @keyboard.pressed('w')
+      if @keyboard.pressed('w') or @keyboard.pressed('up')
         @moving = true
         @bear.translateZ(tpf * @bear.speed)
-      if @keyboard.pressed('s')
+      if @keyboard.pressed('s') or @keyboard.pressed('down')
         @moving = true
         @bear.translateZ(-tpf * @bear.speed)
 
-      if @keyboard.pressed('a')
+      if @keyboard.pressed('a') or @keyboard.pressed('left')
         @moving = true
         @bear.rotation.y += tpf * @bear.speed / 2
-      if @keyboard.pressed('d')
+      if @keyboard.pressed('d') or @keyboard.pressed('right')
         @moving = true
         @bear.rotation.y -= tpf * @bear.speed / 2
 
@@ -361,9 +360,16 @@ class LoadingScene extends BaseScene
 
   toggleDrapes: ->
     return if @drapes.animations[0].isPlaying
+    menu = document.getElementById('menu')
+    score = document.getElementById('count')
+
     if @started == false
       @score = 0
-      document.getElementById('count').innerHTML = @score
+      score.innerHTML = @score
+      score.className = 'visible'
+      menu.className = 'hidden'
+    else
+      menu.className = 'visible'
     @started = true
     @drapes.animations[0].play()
     setTimeout =>

@@ -258,7 +258,6 @@ LoadingScene = (function(superClass) {
               _this.mkSplat(pnt);
               tween = new TWEEN.Tween(bar).to(asd, 1000).onUpdate(function() {
                 intersected.position.set(this.x, this.y, this.z);
-                intersected.rotation.y += 0.1;
               }).easing(TWEEN.Easing.Cubic.InOut).start();
               setTimeout(function() {
                 intersected.dead = false;
@@ -270,19 +269,19 @@ LoadingScene = (function(superClass) {
           })(this), 350);
         }
       }
-      if (this.keyboard.pressed('w')) {
+      if (this.keyboard.pressed('w') || this.keyboard.pressed('up')) {
         this.moving = true;
         this.bear.translateZ(tpf * this.bear.speed);
       }
-      if (this.keyboard.pressed('s')) {
+      if (this.keyboard.pressed('s') || this.keyboard.pressed('down')) {
         this.moving = true;
         this.bear.translateZ(-tpf * this.bear.speed);
       }
-      if (this.keyboard.pressed('a')) {
+      if (this.keyboard.pressed('a') || this.keyboard.pressed('left')) {
         this.moving = true;
         this.bear.rotation.y += tpf * this.bear.speed / 2;
       }
-      if (this.keyboard.pressed('d')) {
+      if (this.keyboard.pressed('d') || this.keyboard.pressed('right')) {
         this.moving = true;
         this.bear.rotation.y -= tpf * this.bear.speed / 2;
       }
@@ -436,12 +435,19 @@ LoadingScene = (function(superClass) {
   };
 
   LoadingScene.prototype.toggleDrapes = function() {
+    var menu, score;
     if (this.drapes.animations[0].isPlaying) {
       return;
     }
+    menu = document.getElementById('menu');
+    score = document.getElementById('count');
     if (this.started === false) {
       this.score = 0;
-      document.getElementById('count').innerHTML = this.score;
+      score.innerHTML = this.score;
+      score.className = 'visible';
+      menu.className = 'hidden';
+    } else {
+      menu.className = 'visible';
     }
     this.started = true;
     this.drapes.animations[0].play();
