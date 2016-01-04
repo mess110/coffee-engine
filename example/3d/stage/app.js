@@ -435,19 +435,23 @@ LoadingScene = (function(superClass) {
   };
 
   LoadingScene.prototype.toggleDrapes = function() {
-    var menu, score;
+    var count, help, menu, score;
     if (this.drapes.animations[0].isPlaying) {
       return;
     }
+    count = document.getElementById('count');
     menu = document.getElementById('menu');
-    score = document.getElementById('count');
+    help = document.getElementById('help');
+    score = document.getElementById('score');
     if (this.started === false) {
       this.score = 0;
-      score.innerHTML = this.score;
-      score.className = 'visible';
+      count.innerHTML = this.score;
       menu.className = 'hidden';
+      help.className = 'hidden';
+      score.className = 'visible';
     } else {
       menu.className = 'visible';
+      help.className = 'visible';
     }
     this.started = true;
     this.drapes.animations[0].play();

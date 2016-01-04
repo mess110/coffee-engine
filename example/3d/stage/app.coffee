@@ -360,16 +360,20 @@ class LoadingScene extends BaseScene
 
   toggleDrapes: ->
     return if @drapes.animations[0].isPlaying
+    count = document.getElementById('count')
     menu = document.getElementById('menu')
-    score = document.getElementById('count')
+    help = document.getElementById('help')
+    score = document.getElementById('score')
 
     if @started == false
       @score = 0
-      score.innerHTML = @score
-      score.className = 'visible'
+      count.innerHTML = @score
       menu.className = 'hidden'
+      help.className = 'hidden'
+      score.className = 'visible'
     else
       menu.className = 'visible'
+      help.className = 'visible'
     @started = true
     @drapes.animations[0].play()
     setTimeout =>

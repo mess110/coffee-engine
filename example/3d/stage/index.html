@@ -35,7 +35,31 @@
         position: absolute;
         left: 0px;
         top: 0px;
-        padding-left: 60px;
+        padding-left: 55px;
+        font-size: 64px;
+      }
+
+      #score img {
+        width: 32px;
+        height: 32px;
+      }
+
+      #help {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        padding-right: 30px;
+        text-align: right;
+        font-size: 24px;
+      }
+
+      #help p:nth-child(2) {
+        position: relative;
+        top: -15px;
+      }
+
+      p {
+        margin: 0px;
       }
 
       #menu {
@@ -103,12 +127,19 @@
     </style>
   </head>
   <body>
-    <div id="score">
-      <span id="count" class="hidden">0</span>
+    <div id="score" class="hidden">
+      <img src="imgs/coin.png" />
+      <span id="count">
+        0
+      </span>
     </div>
     <div id="menu">
       <p>Act I</p>
       <p id="push-to-start" class="objblink">- shoot to start -</p>
+    </div>
+    <div id="help">
+      <p>arrow keys - move</p>
+      <p>space - shoot</p>
     </div>
     <!-- Too awesome not to include, this game is not for profit. -->
     <iframe width="420" height="345" src="//www.youtube.com/embed/meECq9NvPpc?autoplay=1" frameborder="0" allowfullscreen></iframe>
