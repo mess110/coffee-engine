@@ -1,0 +1,202 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Forum', cursive;
+  font-size: 24px;
+  color: #fefefe;
+  text-align: center;
+}
+
+* {
+  cursor: none;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+p {
+  margin: 0px;
+}
+
+iframe {
+  display: none;
+}
+
+#score {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  padding: 32px;
+  min-width: 400px;
+  text-align: left;
+}
+
+#score img {
+  width: 32px;
+  height: 32px;
+  padding-right: 10px;
+}
+
+#highscore {
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  text-align: left;
+  padding: 32px;
+}
+
+#highscore p {
+  font-size: 36px;
+  text-decoration: underline;
+}
+
+.highlight {
+  color: #666;
+}
+
+#help {
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  padding: 32px;
+  text-align: right;
+}
+
+#help p {
+  font-size: 36px;
+  text-decoration: underline;
+}
+
+#count {
+  position: relative;
+  top: -4px;
+  font-size: 36px;
+}
+
+#menu {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
+
+#menu p {
+  font-size: 64px;
+}
+
+#menu p.objblink {
+  font-size: 32px;
+}
+
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 1s, opacity 1s ease-in-out;
+}
+
+.visible {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+}
+
+@-webkit-keyframes blink {
+  0% {
+    opacity:1;
+  }
+  50% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+@-moz-keyframes blink {
+  0% {
+    opacity:1;
+  }
+  50% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+
+.objblink {
+  -webkit-transition: blink 1s ease-in-out;
+  -moz-transition: blink 1s ease-in-out;
+  -o-transition: blink 1s ease-in-out;
+  -ms-transition: blink 1s ease-in-out;
+  transition: blink 1s ease-in-out;
+
+  -webkit-animation-direction: normal;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-name: blink;
+  -webkit-animation-timing-function: ease-in-out;
+
+  -moz-animation-direction: normal;
+  -moz-animation-duration: 2s;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-name: blink;
+  -moz-animation-timing-function: ease-in-out;
+}
+
+@-webkit-keyframes score-change {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(15deg) scale(1.3);
+  }
+  75% {
+    transform: rotate(-15deg) scale(1.3);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+@-moz-keyframes score-change {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(15deg) scale(1.3);
+  }
+  75% {
+    transform: rotate(-15deg) scale(1.3);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+.more-points {
+  -webkit-transition: score-change 0.7s ease-in-out;
+  -moz-transition: score-change 0.7s ease-in-out;
+  -o-transition: score-change 0.7s ease-in-out;
+  -ms-transition: score-change 0.7s ease-in-out;
+  transition: score-change 0.7s ease-in-out;
+
+  -webkit-animation-direction: normal;
+  -webkit-animation-duration: 0.7s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-name: score-change;
+  -webkit-animation-timing-function: ease-in-out;
+
+  -moz-animation-direction: normal;
+  -moz-animation-duration: 0.7s;
+  -moz-animation-iteration-count: 1;
+  -moz-animation-name: score-change;
+  -moz-animation-timing-function: ease-in-out;
+}

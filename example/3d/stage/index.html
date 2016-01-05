@@ -3,133 +3,8 @@
   <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>coffee-engine 3d template</title>
-    <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
-
-    <style type="text/css" media="all">
-      html,
-      body {
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
-        margin: 0px;
-        padding: 0px;
-        font-family: 'Pacifico', cursive;
-        font-size: 72px;
-        color: #fefefe;
-        text-align: center;
-      }
-
-      * {
-        cursor: none;
-      }
-
-      #push-to-start {
-        font-size: 32px;
-      }
-
-      iframe {
-        display: none;
-      }
-
-      #score {
-        position: absolute;
-        left: 0px;
-        top: 0px;
-        padding-left: 55px;
-        font-size: 64px;
-      }
-
-      #score img {
-        width: 32px;
-        height: 32px;
-      }
-
-      #help {
-        position: absolute;
-        right: 0px;
-        bottom: -14px;
-        padding-right: 30px;
-        text-align: right;
-        font-size: 24px;
-      }
-
-      #help p:nth-child(2) {
-        position: relative;
-        top: -15px;
-      }
-
-      #help p:nth-child(3) {
-        position: relative;
-        top: -30px;
-      }
-
-      p {
-        margin: 0px;
-      }
-
-      #menu {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        /* bring your own prefixes */
-        transform: translate(-50%, -50%);
-      }
-
-      @-webkit-keyframes blink {
-        0% {
-          opacity:1;
-        }
-        50% {
-          opacity:0;
-        }
-        100% {
-          opacity:1;
-        }
-      }
-      @-moz-keyframes blink {
-        0% {
-          opacity:1;
-        }
-        50% {
-          opacity:0;
-        }
-        100% {
-          opacity:1;
-        }
-      }
-
-      .hidden {
-        visibility: hidden;
-        opacity: 0;
-        transition: visibility 0s 1s, opacity 1s ease-in-out;
-      }
-
-      .visible {
-        visibility: visible;
-        opacity: 1;
-        transition: opacity 1s ease-in-out;
-      }
-
-      .objblink {
-        -webkit-transition: all 1s ease-in-out;
-        -moz-transition: all 1s ease-in-out;
-        -o-transition: all 1s ease-in-out;
-        -ms-transition: all 1s ease-in-out;
-        transition: all 1s ease-in-out;
-
-        -webkit-animation-direction: normal;
-        -webkit-animation-duration: 2s;
-        -webkit-animation-iteration-count: infinite;
-        -webkit-animation-name: blink;
-        -webkit-animation-timing-function: ease-in-out;
-
-        -moz-animation-direction: normal;
-        -moz-animation-duration: 2s;
-        -moz-animation-iteration-count: infinite;
-        -moz-animation-name: blink;
-        -moz-animation-timing-function: ease-in-out;
-      }
-    </style>
+    <link href='https://fonts.googleapis.com/css?family=Forum' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="style.css" type="text/css" />
   </head>
   <body>
     <div id="score" class="hidden">
@@ -138,20 +13,29 @@
         0
       </span>
     </div>
+    <div id="highscore" class="hidden">
+      <p>High<span class="highlight">scores</span></p>
+      <ul id="highscoreList"></ul>
+    </div>
     <div id="menu">
       <p>Act I</p>
-      <p id="push-to-start" class="objblink">- shoot to start -</p>
+      <p class="objblink">- shoot to start -</p>
     </div>
     <div id="help">
-      <p>arrow keys - move</p>
-      <p>space - shoot</p>
-      <p>c - toggle camera</p>
+      <p>Instruc<span class="highlight">tions</span></p>
+      <ul>
+        <li>arrow keys <span class="highlight">move</span></li>
+        <li>space <span class="highlight">shoot</span></li>
+        <li>c <span class="highlight">camera</span></li>
+      </ul>
     </div>
     <!-- Too awesome not to include, this game is not for profit. -->
     <iframe width="420" height="345" src="//www.youtube.com/embed/meECq9NvPpc?autoplay=1" frameborder="0" allowfullscreen></iframe>
 
     <script src="../../../build/coffee-engine-3d.js"></script>
+    <script src="rainbowvis.js" type="text/javascript"></script>
 
+    <script src="jnorthpole.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

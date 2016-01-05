@@ -13,7 +13,7 @@ class SpotLight extends BaseModel
     @mesh = new (THREE.Mesh)(geometry, @material)
     @mesh.position.set x, y, z
     @mesh.lookAt new (THREE.Vector3)(0, 0, 0)
-    @material.uniforms.lightColor.value.set 'white'
+    @setColor('white')
     @material.uniforms.spotPosition.value = @mesh.position
 
     @spotLight = new (THREE.SpotLight)
@@ -51,3 +51,6 @@ class SpotLight extends BaseModel
     scene.add @mesh
     scene.add @spotLight
     scene.add @spotLight.target
+
+  setColor: (color) ->
+    @material.uniforms.lightColor.value.set color
