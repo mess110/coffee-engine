@@ -54,6 +54,7 @@ class LoadingScene extends BaseScene
     @started = false
     @score = 0
     @ambientLights = [Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight()]
+    @killingSpree = 0
 
     box = new (THREE.BoxGeometry)(1, 1, 1)
     mat = new (THREE.MeshPhongMaterial)(color: 0xff0000)
@@ -66,6 +67,16 @@ class LoadingScene extends BaseScene
     @spotLight.addToScene(@scene)
 
     @spawnBunny(true)
+
+
+    @dynamicTexture  = new THREEx.DynamicTexture(256,256)
+    @dynamicTexture.context.font = "48px 'Pacifico' cursive"
+    @dynamicTexture.drawText('')
+    dgeometry = new (THREE.PlaneBufferGeometry)(10, 10)
+    @dmaterial = new (THREE.MeshBasicMaterial)(map: @dynamicTexture.texture, transparent: true, opacity: 0)
+    @floatingCombatText = new (THREE.Mesh)(dgeometry, @dmaterial)
+    # @floatingCombatText.position.y = 100
+    @scene.add @floatingCombatText
 
     JsonModelManager.get().load('bear', 'models/bear_all.json', (mesh) =>
       mesh.receiveShadow = true
@@ -182,6 +193,12 @@ class LoadingScene extends BaseScene
 
     @mask.castShadow = !@drapes.opened if @mask and @drapes
 
+    @floatingCombatText.position.y += tpf
+    if @dmaterial.opacity - tpf <= 0
+      @dmaterial.opacity = 0
+    else
+      @dmaterial.opacity -= tpf
+
     if @bear? and @shotgun? and @bunnies.any()
       @spotLight.lookAt(@bear)
       @moving = false
@@ -209,6 +226,7 @@ class LoadingScene extends BaseScene
         @raycaster.set(@bear.position, direction)
         intersects = @raycaster.intersectObjects(@bunnies)
         if intersects.any()
+          @killingSpree += 1 if @killingSpree <= 8
           pnt = intersects[0].point
 
           @particle2.mesh.position.set pnt.x, pnt.y + 2, pnt.z
@@ -219,11 +237,19 @@ class LoadingScene extends BaseScene
           geometry.vertices.push @bear.position
           geometry.vertices.push pnt
           @scene.remove @line
-          @line = new (THREE.Line)(geometry, new (THREE.LineBasicMaterial)(color: 'black'))
+          @line = new (THREE.Line)(geometry, new (THREE.LineBasicMaterial)(color: 'gold'))
           # @scene.add @line
 
           SoundManager.get().play('hit')
-          @score += 1
+          # hit = Math.floor(@killingSpree * pnt.distanceTo(@bear.position) / 3)
+          hit = @killingSpree
+          hit = 1 if hit < 1
+          @score += hit
+          @dynamicTexture.clear()
+          @dynamicTexture.drawText("+#{hit}", 32, 64, '#fefefe')
+          @dmaterial.opacity = 1
+          @floatingCombatText.lookAt(camera.position)
+          @floatingCombatText.position.copy(pnt)
           document.getElementById('count').innerHTML = @score
 
           intersected = intersects.first().object
@@ -248,6 +274,8 @@ class LoadingScene extends BaseScene
 
             @spawnBunny()
           , 350
+        else
+          @killingSpree = 0
       if @keyboard.pressed('w') or @keyboard.pressed('up')
         @moving = true
         @bear.translateZ(tpf * @bear.speed)
@@ -312,6 +340,9 @@ class LoadingScene extends BaseScene
       @splatElevation = 0
       @started = false
       @gameOver = false
+      @killingSpree = 0
+      @scene.remove @line
+      @floatingCombatText.position.y = 100
       @spawnBunny(true)
     , 1000
 
@@ -342,11 +373,16 @@ class LoadingScene extends BaseScene
       { x: 0, y: 20, z: 27 }
       { x: 0, y: 33, z: 0 }
     ][i]
+    @selectedCameraPosition = i
 
     @tweenMoveTo({ position: new (THREE.Vector3)(e.x, e.y, e.z) }, camera, 500)
     setTimeout =>
       @tweenLookAt({ position: new (THREE.Vector3)(0, 0, 0) }, camera, 500)
     , 501
+
+  toggleCamera: ->
+    i = if @selectedCameraPosition == 0 then 1 else 0
+    @cameraPosition(i)
 
   getBunnySpawnPoint: () ->
     angle = Math.random()*Math.PI*2
@@ -392,6 +428,7 @@ class LoadingScene extends BaseScene
 
     @cameraPosition(0) if event.which == 49
     @cameraPosition(1) if event.which == 50
+    @toggleCamera() if event.which == 67
 
     @toggleDrapes() if event.which == 32 and not @started
 

@@ -25,6 +25,7 @@
     "threex.keyboardstate": "*",
     "ocean": "git@github.com:jbouny/ocean.git",
     "threex.volumetricspotlight": "*",
-    "ShaderParticleEngine": "git@github.com:squarefeet/ShaderParticleEngine.git#Release-0.8.1"
+    "ShaderParticleEngine": "git@github.com:squarefeet/ShaderParticleEngine.git#Release-0.8.1",
+    "threex.dynamictexture": "*"
   }
 }

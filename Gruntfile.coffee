@@ -15,6 +15,7 @@ module.exports = (grunt) ->
     "bower_components/threex.volumetricspotlight/threex.volumetricspotlightmaterial.js"
     "bower_components/ocean/water-material.js"
     "bower_components/ShaderParticleEngine/build/ShaderParticles.js"
+    "bower_components/threex.dynamictexture/threex.dynamictexture.js"
 
     "src/shared/SceneManager.js"
     "src/shared/NetworkManager.js"

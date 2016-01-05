@@ -11428,6 +11428,58 @@ SPE.Emitter = function(options) {
 
 for (var i in SPE.utils) SPE.Emitter.prototype[i] = SPE.utils[i];
 
+var THREEx = THREEx || {};
+
+THREEx.DynamicTexture = function(width, height) {
+    var canvas = document.createElement("canvas");
+    canvas.width = width, canvas.height = height, this.canvas = canvas;
+    var context = canvas.getContext("2d");
+    this.context = context;
+    var texture = new THREE.Texture(canvas);
+    this.texture = texture;
+}, THREEx.DynamicTexture.prototype.clear = function(fillStyle) {
+    return void 0 !== fillStyle ? (this.context.fillStyle = fillStyle, this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)) : this.context.clearRect(0, 0, this.canvas.width, this.canvas.height), 
+    this.texture.needsUpdate = !0, this;
+}, THREEx.DynamicTexture.prototype.drawText = function(text, x, y, fillStyle, contextFont) {
+    if (void 0 !== contextFont && (this.context.font = contextFont), void 0 === x || null === x) {
+        var textSize = this.context.measureText(text);
+        x = (this.canvas.width - textSize.width) / 2;
+    }
+    return this.context.fillStyle = fillStyle, this.context.fillText(text, x, y), this.texture.needsUpdate = !0, 
+    this;
+}, THREEx.DynamicTexture.prototype.drawTextCooked = function(options) {
+    function computeMaxTextLength(text) {
+        for (var maxText = "", maxWidth = (1 - 2 * params.margin) * canvas.width; maxText.length !== text.length; ) {
+            var textSize = context.measureText(maxText);
+            if (textSize.width > maxWidth) break;
+            maxText += text.substr(maxText.length, 1);
+        }
+        return maxText;
+    }
+    var context = this.context, canvas = this.canvas;
+    options = options || {};
+    var text = options.text, params = {
+        margin: void 0 !== options.margin ? options.margin : .1,
+        lineHeight: void 0 !== options.lineHeight ? options.lineHeight : .1,
+        align: void 0 !== options.align ? options.align : "left",
+        fillStyle: void 0 !== options.fillStyle ? options.fillStyle : "black",
+        font: void 0 !== options.font ? options.font : "bold 102.4px Arial"
+    };
+    console.assert("string" == typeof text), context.save(), context.fillStyle = params.fillStyle, 
+    context.font = params.font;
+    for (var y = (params.lineHeight + params.margin) * canvas.height; text.length > 0; ) {
+        var maxText = computeMaxTextLength(text);
+        text = text.substr(maxText.length);
+        var textSize = context.measureText(maxText);
+        if ("left" === params.align) var x = params.margin * canvas.width; else if ("right" === params.align) var x = (1 - params.margin) * canvas.width - textSize.width; else if ("center" === params.align) var x = (canvas.width - textSize.width) / 2; else console.assert(!1);
+        this.context.fillText(maxText, x, y), y += params.lineHeight * canvas.height;
+    }
+    return context.restore(), this.texture.needsUpdate = !0, this;
+}, THREEx.DynamicTexture.prototype.drawImage = function() {
+    return this.context.drawImage.apply(this.context, arguments), this.texture.needsUpdate = !0, 
+    this;
+};
+
 var SceneManager;
 
 SceneManager = function() {
