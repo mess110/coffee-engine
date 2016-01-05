@@ -11928,21 +11928,23 @@ SpotLight = function(superClass) {
         geometry = new THREE.CylinderGeometry(.1, 2.5, 5, 64, 40, !0), geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, -geometry.parameters.height / 2, 0)), 
         geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2)), this.material = new THREEx.VolumetricSpotLightMaterial(), 
         this.mesh = new THREE.Mesh(geometry, this.material), this.mesh.position.set(x, y, z), 
-        this.mesh.lookAt(new THREE.Vector3(0, 0, 0)), this.material.uniforms.lightColor.value.set("white"), 
-        this.material.uniforms.spotPosition.value = this.mesh.position, this.spotLight = new THREE.SpotLight(), 
-        this.spotLight.position.copy(this.mesh.position), this.spotLight.color = this.mesh.material.uniforms.lightColor.value, 
-        this.spotLight.exponent = 30, this.spotLight.angle = Math.PI / 3, this.spotLight.intensity = 3, 
-        this.spotLight.castShadow = !0, this.spotLight.shadowCameraNear = .01, this.spotLight.shadowCameraFar = 100, 
-        this.spotLight.shadowCameraFov = 45, this.spotLight.shadowCameraLeft = -8, this.spotLight.shadowCameraRight = 8, 
-        this.spotLight.shadowCameraTop = 8, this.spotLight.shadowCameraBottom = -8, this.spotLight.shadowBias = 0, 
-        this.spotLight.shadowDarkness = .5, this.spotLight.shadowMapWidth = 1024, this.spotLight.shadowMapHeight = 1024, 
-        this.direction = new THREE.Vector3(0, 0, 0), this.lastDir = 0;
+        this.mesh.lookAt(new THREE.Vector3(0, 0, 0)), this.setColor("white"), this.material.uniforms.spotPosition.value = this.mesh.position, 
+        this.spotLight = new THREE.SpotLight(), this.spotLight.position.copy(this.mesh.position), 
+        this.spotLight.color = this.mesh.material.uniforms.lightColor.value, this.spotLight.exponent = 30, 
+        this.spotLight.angle = Math.PI / 3, this.spotLight.intensity = 3, this.spotLight.castShadow = !0, 
+        this.spotLight.shadowCameraNear = .01, this.spotLight.shadowCameraFar = 100, this.spotLight.shadowCameraFov = 45, 
+        this.spotLight.shadowCameraLeft = -8, this.spotLight.shadowCameraRight = 8, this.spotLight.shadowCameraTop = 8, 
+        this.spotLight.shadowCameraBottom = -8, this.spotLight.shadowBias = 0, this.spotLight.shadowDarkness = .5, 
+        this.spotLight.shadowMapWidth = 1024, this.spotLight.shadowMapHeight = 1024, this.direction = new THREE.Vector3(0, 0, 0), 
+        this.lastDir = 0;
     }
     return extend(SpotLight, superClass), SpotLight.prototype.lookAt = function(node) {
         var target;
         return target = node.position, this.mesh.lookAt(target), this.spotLight.target.position.copy(target);
     }, SpotLight.prototype.addToScene = function(scene) {
         return scene.add(this.mesh), scene.add(this.spotLight), scene.add(this.spotLight.target);
+    }, SpotLight.prototype.setColor = function(color) {
+        return this.material.uniforms.lightColor.value.set(color);
     }, SpotLight;
 }(BaseModel);
 

@@ -1,5 +1,26 @@
+rainbow = new Rainbow()
+rainbow.setSpectrum('red', 'white')
+rainbow.setNumberRange(1, 20)
+
+if not localStorage.getItem('localStorageInitialized')
+  localStorage.setItem('localStorageInitialized', 'yezzer')
+  localStorage.setItem('spotLightColorEffect', 'yezzer')
+  localStorage.setItem('bloodEffect', 'yezzer')
+
 config = Config.get()
 config.fillWindow()
+config.maxNameLength = 14
+config.name = prompt("name (14 chars max)", "AAA")
+config.name = 'AAA' unless config.name?
+config.name = config.name.substring(0, config.maxNameLength)
+config.sendHighScores = document.location.hostname != "localhost"
+config.spotLightColorEffect = localStorage.getItem('spotLightColorEffect')
+config.bloodEffect = localStorage.getItem('bloodEffect')
+
+jNorthPole.BASE_URL = 'https://json.northpole.ro/'
+`// please don't :)`
+jNorthPole.API_KEY = atob('YWN0aQ==')
+jNorthPole.SECRET = atob('YWN0aV9wbHpfbjBfaDRja3o')
 
 camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000)
 engine = new Engine3D()
@@ -11,6 +32,47 @@ SoundManager.get().add('shotgun', 'sounds/shotgun.wav')
 SoundManager.get().add('hit', 'sounds/hit.wav')
 
 Helper.fancyShadows(engine.renderer)
+
+Number::toRoman = ->
+  num = Math.floor(this)
+  return 'O' if num == 0
+  val = undefined
+  s = ''
+  i = 0
+  v = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+  r = [ 'M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I']
+
+  toBigRoman = (n) ->
+    ret = ''
+    n1 = ''
+    rem = n
+    while rem > 1000
+      prefix = ''
+      suffix = ''
+      n = rem
+      s = '' + rem
+      magnitude = 1
+      while n > 1000
+        n /= 1000
+        magnitude *= 1000
+        prefix += '('
+        suffix += ')'
+      n1 = Math.floor(n)
+      rem = s - (n1 * magnitude)
+      ret += prefix + n1.toRoman() + suffix
+    ret + rem.toRoman()
+
+  if this - num or num < 1
+    num = 0
+  if num > 3999
+    return toBigRoman(num)
+  while num
+    val = v[i]
+    while num >= val
+      num -= val
+      s += r[i]
+    ++i
+  s
 
 class BloodParticle extends BaseParticle
   constructor: (texturePath) ->
@@ -45,7 +107,7 @@ class LoadingScene extends BaseScene
   constructor: ->
     super()
 
-    @particle2 = new BloodParticle('imgs/splatter_particle.png')
+    @particle2 = new BloodParticle('imgs/splatter.png')
     @particle2.emitter.disable()
     @scene.add @particle2.mesh
 
@@ -68,9 +130,8 @@ class LoadingScene extends BaseScene
 
     @spawnBunny(true)
 
-
     @dynamicTexture  = new THREEx.DynamicTexture(256,256)
-    @dynamicTexture.context.font = "48px 'Pacifico' cursive"
+    @dynamicTexture.context.font = "24px 'Forum' cursive"
     @dynamicTexture.drawText('')
     dgeometry = new (THREE.PlaneBufferGeometry)(10, 10)
     @dmaterial = new (THREE.MeshBasicMaterial)(map: @dynamicTexture.texture, transparent: true, opacity: 0)
@@ -165,7 +226,8 @@ class LoadingScene extends BaseScene
     @loaded = true
 
   mkSplat: (pos) ->
-    @splatElevation += 0.0002
+    return if not config.bloodEffect
+    @splatElevation += 0.0003
     @splatMat = new (THREE.MeshPhongMaterial)(
       map: @splatTexture
       transparent: true
@@ -191,7 +253,7 @@ class LoadingScene extends BaseScene
     @particle.tick(tpf) if @particle?
     @particle2.tick(tpf) if @particle2?
 
-    @mask.castShadow = !@drapes.opened if @mask and @drapes
+    @mask.castShadow = !@drapes.opened && @selectedCameraPosition != 1 if @mask and @drapes
 
     @floatingCombatText.position.y += tpf
     if @dmaterial.opacity - tpf <= 0
@@ -229,13 +291,17 @@ class LoadingScene extends BaseScene
           @killingSpree += 1 if @killingSpree <= 8
           pnt = intersects[0].point
 
-          @particle2.mesh.position.set pnt.x, pnt.y + 2, pnt.z
-          @particle2.mesh.lookAt(@bear.position)
-          @particle2.emitter.enable()
+          if config.bloodEffect
+            @particle2.mesh.position.set pnt.x, pnt.y + 2, pnt.z
+            @particle2.mesh.lookAt(@bear.position)
+            @particle2.emitter.enable()
+
+          reactionHitVector = pnt.clone().add(direction.clone().normalize().multiplyScalar(40))
+          reactionHitVector.y = @getRandomArbitrary(20, 30)
 
           geometry = new (THREE.Geometry)
           geometry.vertices.push @bear.position
-          geometry.vertices.push pnt
+          geometry.vertices.push reactionHitVector
           @scene.remove @line
           @line = new (THREE.Line)(geometry, new (THREE.LineBasicMaterial)(color: 'gold'))
           # @scene.add @line
@@ -246,32 +312,38 @@ class LoadingScene extends BaseScene
           hit = 1 if hit < 1
           @score += hit
           @dynamicTexture.clear()
-          @dynamicTexture.drawText("+#{hit}", 32, 64, '#fefefe')
+          @dynamicTexture.drawText("+#{hit.toRoman()}", 32, 64, '#fefefe')
           @dmaterial.opacity = 1
           @floatingCombatText.lookAt(camera.position)
           @floatingCombatText.position.copy(pnt)
-          document.getElementById('count').innerHTML = @score
+
+          document.getElementById('count').innerHTML = @score.toRoman()
+          document.getElementById('count').className = 'more-points'
+          setTimeout ->
+            document.getElementById('count').className = ''
+          , 700
 
           intersected = intersects.first().object
-          asd = @getBunnySpawnPoint()
-          bar = intersected.position.clone()
+          bunnySpawnPoint = @getBunnySpawnPoint()
+          bunnyPosition = intersected.position.clone()
 
           intersected.dead = true
+
+          tween = new (TWEEN.Tween)(bunnyPosition).to(reactionHitVector, 6000).onUpdate(->
+            intersected.position.set @x, @y, @z
+            return
+          ).easing(TWEEN.Easing.Exponential.Out)
+          .onComplete(=>
+            intersected.position.copy(bunnySpawnPoint)
+            intersected.dead = false
+            intersected.position.y = 0
+            intersected.animations[1].play()
+            delete intersected.deathAnimated
+          ).start()
 
           setTimeout =>
             @particle2.emitter.disable()
             @mkSplat(pnt)
-
-            tween = new (TWEEN.Tween)(bar).to(asd, 1000).onUpdate(->
-              intersected.position.set @x, @y, @z
-              return
-            ).easing(TWEEN.Easing.Cubic.InOut).start()
-            setTimeout =>
-              intersected.dead = false
-              intersected.animations[1].play()
-              delete intersected.deathAnimated
-            , 1000
-
             @spawnBunny()
           , 350
         else
@@ -302,13 +374,17 @@ class LoadingScene extends BaseScene
         if splat.material.opacity < 0.5
           splat.material.opacity += tpf
 
+      closestDistToBear = 30
       for bunny in @bunnies
         bunny.lookAt(@bear.position) if not bunny.dead
         bunny.translateZ(tpf * bunny.speed) if @moving
-        if bunny.position.distanceTo(@bear.position) < 2.5 and not bunny.dead
-          @gameOver = true
-          @toggleDrapes()
-          @resetScene()
+        distToBear = bunny.position.distanceTo(@bear.position)
+
+        if not bunny.dead
+          if distToBear < 2.5
+            @gameOver = true
+            @toggleDrapes()
+            @resetScene()
 
         if bunny.dead and not bunny.deathAnimated
           bunny.deathAnimated = true
@@ -316,6 +392,9 @@ class LoadingScene extends BaseScene
           bunny.animations[1].stop()
           bunny.animations[2].play()
         else
+          if distToBear < closestDistToBear
+            closestDistToBear = distToBear
+
           if bunny.animations[0].isPlaying and @moving
             bunny.animations[0].stop()
             bunny.animations[1].play()
@@ -326,7 +405,37 @@ class LoadingScene extends BaseScene
             bunny.animations[1].stop()
             bunny.animations[2].stop()
 
+      if config.spotLightColorEffect
+        colorDest = rainbow.colourAt(closestDistToBear)
+        @spotLight.setColor("##{colorDest}")
+      else
+        @spotLight.setColor("white")
+
+  jNorthPoleError: (data, status) ->
+    document.getElementById('highscore').className = 'hidden'
+    console.log "jNorthPole error: #{status}"
+    console.log data
+
+  getHighScores: ->
+    jNorthPole.getStorage({ api_key: jNorthPole.API_KEY, secret: jNorthPole.SECRET, '__limit': 5, '__sort': { score: 'desc' } }, (data) ->
+      s = ''
+      for u in data
+        # u.score might not be a number for whatever reason
+        try
+          s += "<li>#{u.name.substring(0, config.maxNameLength)} <span class='highlight'>#{u.score.toRoman()}</span></li>"
+        catch err
+          console.log u
+          console.log err
+      document.getElementById('highscoreList').innerHTML = s
+    , @jNorthPoleError)
+
   resetScene: ->
+    @spotLight.setColor('white')
+    jNorthPole.createStorage({ name: config.name.substring(0, config.maxNameLength), score: @score, api_key: jNorthPole.API_KEY, secret: jNorthPole.SECRET }, (data) ->
+      console.log data
+      loadingScene.getHighScores()
+    , @jNorthPoleError)
+
     @cameraPosition(0)
     setTimeout =>
       @bear.position.set 0, 0, 0
@@ -355,7 +464,7 @@ class LoadingScene extends BaseScene
       mesh.castShadow = true
       @bunny = mesh
       if first
-        @bunny.position.set 20, 0, 0
+        @bunny.position.set 2, 0, 20
       else
         @bunny.position.copy @getBunnySpawnPoint()
       @bunny.scale.set 0.5, 0.5, 0.5
@@ -400,16 +509,20 @@ class LoadingScene extends BaseScene
     menu = document.getElementById('menu')
     help = document.getElementById('help')
     score = document.getElementById('score')
+    highscore = document.getElementById('highscore')
 
     if @started == false
       @score = 0
-      count.innerHTML = @score
+      count.innerHTML = @score.toRoman()
+
       menu.className = 'hidden'
       help.className = 'hidden'
       score.className = 'visible'
+      highscore.className = 'hidden'
     else
       menu.className = 'visible'
       help.className = 'visible'
+      highscore.className = 'visible'
     @started = true
     @drapes.animations[0].play()
     setTimeout =>
@@ -429,6 +542,18 @@ class LoadingScene extends BaseScene
     @cameraPosition(0) if event.which == 49
     @cameraPosition(1) if event.which == 50
     @toggleCamera() if event.which == 67
+    if event.which == 86
+      if config.spotLightColorEffect?
+        localStorage.removeItem("spotLightColorEffect")
+      else
+        localStorage.setItem("spotLightColorEffect", "yezzer")
+      config.spotLightColorEffect = localStorage.getItem('spotLightColorEffect')
+    if event.which == 66
+      if config.bloodEffect?
+        localStorage.removeItem("bloodEffect")
+      else
+        localStorage.setItem("bloodEffect", "yezzer")
+      config.bloodEffect = localStorage.getItem('bloodEffect')
 
     @toggleDrapes() if event.which == 32 and not @started
 
