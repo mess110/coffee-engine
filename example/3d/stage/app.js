@@ -71,6 +71,7 @@ LoadingScene = (function(superClass) {
     this.started = false;
     this.score = 0;
     this.ambientLights = [Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight()];
+    this.killingSpree = 0;
     box = new THREE.BoxGeometry(1, 1, 1);
     mat = new THREE.MeshPhongMaterial({
       color: 0xff0000
@@ -233,6 +234,7 @@ LoadingScene = (function(superClass) {
         this.raycaster.set(this.bear.position, direction);
         intersects = this.raycaster.intersectObjects(this.bunnies);
         if (intersects.any()) {
+          this.killingSpree += 1;
           pnt = intersects[0].point;
           this.particle2.mesh.position.set(pnt.x, pnt.y + 2, pnt.z);
           this.particle2.mesh.lookAt(this.bear.position);
@@ -242,10 +244,11 @@ LoadingScene = (function(superClass) {
           geometry.vertices.push(pnt);
           this.scene.remove(this.line);
           this.line = new THREE.Line(geometry, new THREE.LineBasicMaterial({
-            color: 'black'
+            color: 'gold'
           }));
+          this.scene.add(this.line);
           SoundManager.get().play('hit');
-          this.score += 1;
+          this.score += this.killingSpree * pnt.distanceTo(this.bear.position);
           document.getElementById('count').innerHTML = this.score;
           intersected = intersects.first().object;
           asd = this.getBunnySpawnPoint();
@@ -267,6 +270,8 @@ LoadingScene = (function(superClass) {
               return _this.spawnBunny();
             };
           })(this), 350);
+        } else {
+          this.killingSpree = 0;
         }
       }
       if (this.keyboard.pressed('w') || this.keyboard.pressed('up')) {
@@ -411,6 +416,7 @@ LoadingScene = (function(superClass) {
         z: 0
       }
     ][i];
+    this.selectedCameraPosition = i;
     this.tweenMoveTo({
       position: new THREE.Vector3(e.x, e.y, e.z)
     }, camera, 500);
@@ -421,6 +427,12 @@ LoadingScene = (function(superClass) {
         }, camera, 500);
       };
     })(this), 501);
+  };
+
+  LoadingScene.prototype.toggleCamera = function() {
+    var i;
+    i = this.selectedCameraPosition === 0 ? 1 : 0;
+    return this.cameraPosition(i);
   };
 
   LoadingScene.prototype.getBunnySpawnPoint = function() {
@@ -482,6 +494,9 @@ LoadingScene = (function(superClass) {
     }
     if (event.which === 50) {
       this.cameraPosition(1);
+    }
+    if (event.which === 67) {
+      this.toggleCamera();
     }
     if (event.which === 32 && !this.started) {
       return this.toggleDrapes();

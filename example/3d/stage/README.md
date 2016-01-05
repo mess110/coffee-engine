@@ -2,7 +2,7 @@ http://opengameart.org/content/chaingun-pistol-rifle-shotgun-shots
 http://opengameart.org/content/33-metal-clang-sounds-cast-iron-pans
 
 TODO
-  c - change camera
+  floating combat text
   score
   highscore alert
   spotlight becomes red when bunnies near

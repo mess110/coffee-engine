@@ -54,6 +54,7 @@ class LoadingScene extends BaseScene
     @started = false
     @score = 0
     @ambientLights = [Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight()]
+    @killingSpree = 0
 
     box = new (THREE.BoxGeometry)(1, 1, 1)
     mat = new (THREE.MeshPhongMaterial)(color: 0xff0000)
@@ -209,6 +210,7 @@ class LoadingScene extends BaseScene
         @raycaster.set(@bear.position, direction)
         intersects = @raycaster.intersectObjects(@bunnies)
         if intersects.any()
+          @killingSpree += 1
           pnt = intersects[0].point
 
           @particle2.mesh.position.set pnt.x, pnt.y + 2, pnt.z
@@ -219,11 +221,11 @@ class LoadingScene extends BaseScene
           geometry.vertices.push @bear.position
           geometry.vertices.push pnt
           @scene.remove @line
-          @line = new (THREE.Line)(geometry, new (THREE.LineBasicMaterial)(color: 'black'))
-          # @scene.add @line
+          @line = new (THREE.Line)(geometry, new (THREE.LineBasicMaterial)(color: 'gold'))
+          @scene.add @line
 
           SoundManager.get().play('hit')
-          @score += 1
+          @score += @killingSpree * pnt.distanceTo(@bear.position)
           document.getElementById('count').innerHTML = @score
 
           intersected = intersects.first().object
@@ -248,6 +250,8 @@ class LoadingScene extends BaseScene
 
             @spawnBunny()
           , 350
+        else
+          @killingSpree = 0
       if @keyboard.pressed('w') or @keyboard.pressed('up')
         @moving = true
         @bear.translateZ(tpf * @bear.speed)
@@ -342,11 +346,16 @@ class LoadingScene extends BaseScene
       { x: 0, y: 20, z: 27 }
       { x: 0, y: 33, z: 0 }
     ][i]
+    @selectedCameraPosition = i
 
     @tweenMoveTo({ position: new (THREE.Vector3)(e.x, e.y, e.z) }, camera, 500)
     setTimeout =>
       @tweenLookAt({ position: new (THREE.Vector3)(0, 0, 0) }, camera, 500)
     , 501
+
+  toggleCamera: ->
+    i = if @selectedCameraPosition == 0 then 1 else 0
+    @cameraPosition(i)
 
   getBunnySpawnPoint: () ->
     angle = Math.random()*Math.PI*2
@@ -392,6 +401,7 @@ class LoadingScene extends BaseScene
 
     @cameraPosition(0) if event.which == 49
     @cameraPosition(1) if event.which == 50
+    @toggleCamera() if event.which == 67
 
     @toggleDrapes() if event.which == 32 and not @started
 
