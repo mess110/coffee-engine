@@ -156,6 +156,7 @@ LoadingScene = (function(superClass) {
     this.splats = [];
     this.bunnies = [];
     this.started = false;
+    this.cameraTweening = false;
     this.score = 0;
     this.ambientLights = [Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight()];
     this.killingSpree = 0;
@@ -585,6 +586,10 @@ LoadingScene = (function(superClass) {
     if (i == null) {
       i = 0;
     }
+    if (this.cameraTweening) {
+      return;
+    }
+    this.cameraTweening = true;
     e = [
       {
         x: 0,
@@ -597,16 +602,22 @@ LoadingScene = (function(superClass) {
       }
     ][i];
     this.selectedCameraPosition = i;
+    this.cameraTweening = true;
     this.tweenMoveTo({
       position: new THREE.Vector3(e.x, e.y, e.z)
     }, camera, 500);
-    return setTimeout((function(_this) {
+    setTimeout((function(_this) {
       return function() {
         return _this.tweenLookAt({
           position: new THREE.Vector3(0, 0, 0)
         }, camera, 500);
       };
     })(this), 501);
+    return setTimeout((function(_this) {
+      return function() {
+        return _this.cameraTweening = false;
+      };
+    })(this), 1001);
   };
 
   LoadingScene.prototype.toggleCamera = function() {

@@ -114,16 +114,13 @@ class LoadingScene extends BaseScene
     @splats = []
     @bunnies = []
     @started = false
+    @cameraTweening = false
     @score = 0
     @ambientLights = [Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight()]
     @killingSpree = 0
 
     box = new (THREE.BoxGeometry)(1, 1, 1)
     mat = new (THREE.MeshPhongMaterial)(color: 0xff0000)
-
-    # @scene.fog = new THREE.FogExp2( 0x000000, 0.07 )
-
-    # @controls = new (THREE.OrbitControls)(engine.camera)
 
     @spotLight = new SpotLight(0, 30, 25)
     @spotLight.addToScene(@scene)
@@ -478,16 +475,22 @@ class LoadingScene extends BaseScene
     )
 
   cameraPosition: (i = 0) ->
+    return if @cameraTweening
+    @cameraTweening = true
     e = [
       { x: 0, y: 20, z: 27 }
       { x: 0, y: 33, z: 0 }
     ][i]
     @selectedCameraPosition = i
+    @cameraTweening = true
 
     @tweenMoveTo({ position: new (THREE.Vector3)(e.x, e.y, e.z) }, camera, 500)
     setTimeout =>
       @tweenLookAt({ position: new (THREE.Vector3)(0, 0, 0) }, camera, 500)
     , 501
+    setTimeout =>
+      @cameraTweening = false
+    , 1001
 
   toggleCamera: ->
     i = if @selectedCameraPosition == 0 then 1 else 0
