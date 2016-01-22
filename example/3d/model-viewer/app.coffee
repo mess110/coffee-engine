@@ -1,6 +1,6 @@
 glob = require('glob')
 
-app = angular.module('app', [])
+app = angular.module('app', ['ngStorage'])
 
 app.directive 'customOnChange', ->
   {
@@ -12,10 +12,15 @@ app.directive 'customOnChange', ->
 
   }
 
-app.controller 'MainController', ($scope) ->
+app.controller 'MainController', ($scope, $localStorage) ->
 
   $scope.loadDir = (event) ->
-    s = event.target.files[0].path
+    if event?
+      s = event.target.files[0].path
+      $localStorage.loadedPath = s
+    else
+      s = $localStorage.loadedPath
+
     $scope.loadedPath = s
 
     glob("#{s}/**/*.json", {}, (er, files) ->
@@ -42,7 +47,8 @@ app.controller 'MainController', ($scope) ->
   $scope.toggleStats = ->
     config.toggleStats()
 
-
+  if $localStorage.loadedPath?
+    $scope.loadDir()
 
 class ModelViewerScene extends BaseScene
   constructor: ->
