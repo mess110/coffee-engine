@@ -4,32 +4,25 @@ class BaseModel
   visible: true
   mesh: undefined
 
-  getTweenFromPosition: () ->
-    {
-      x: @mesh.position.x
-      y: @mesh.position.y
-      z: @mesh.position.z
-      rX: @mesh.rotation.x
-      rY: @mesh.rotation.y
-      rZ: @mesh.rotation.z
-    }
-
-  addToPosition: (x, y, z) ->
-    @mesh.position.x += x
-    @mesh.position.y += y
-    @mesh.position.z += z
-
+  # @param [Number] i the new scale
   setScale: (i) ->
     @mesh.scale.set i, i, i
 
-  setVisible: (b) ->
+  # Sets object visibility recursively.
+  #
+  # @param [Boolean] value
+  setVisible: (value) ->
     @mesh.traverse (object) ->
-      object.visible = b
-    @visible = b
+      object.visible = value
+    @visible = value
 
+  # Toggles model wireframe
   toggleWireframe: ->
     return unless @mesh? or @mesh.material?
     @mesh.material.wireframe = !@mesh.material.wireframe
 
+  # Checked weather the raycaster intersects the mesh
+  #
+  # @param [Raycaster] raycaster
   isHovered: (raycaster) ->
     raycaster.intersectObject(@mesh).length > 0

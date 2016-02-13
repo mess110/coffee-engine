@@ -2,11 +2,21 @@
 class JsonModelManager
   instance = null
 
+  # Handles loading JSON models
   class PrivateJsonModelManager
     loader: new (THREE.JSONLoader)
     models: {}
     loadCount: 0
 
+    # Load JSON model
+    #
+    # param [String] key
+    # param [String] url to the json file
+    # param [String] callback method called once the object is loaded
+    #
+    # @example
+    #
+    #   TODO
     load: (key, url, callback) ->
       @loadCount += 1
       @loader.load url, (geometry, materials) ->
@@ -31,6 +41,7 @@ class JsonModelManager
         JsonModelManager.get().models[key] = mesh
         callback(mesh)
 
+    # Check if all objects which started loading have finished loading
     hasFinishedLoading: ->
       @loadCount == Object.keys(@models).size()
 

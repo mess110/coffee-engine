@@ -9,6 +9,7 @@ class SoundManager
   class PrivateSoundManager
     sounds: {}
 
+    # Add a sound
     add: (key, url) ->
       audio = document.createElement('audio')
       source = document.createElement('source')
@@ -19,12 +20,14 @@ class SoundManager
 
       @sounds[key] = audio
 
+    # Play a sound by key
     play: (key) ->
       if key of @sounds
         @sounds[key].play()
       else
         console.log 'Sound with key: ' + key + ' not found!'
 
+    # Update the volume of all the loaded sounds
     updateGlobalVolume: (i) ->
       i = 0 if i < 0
       i = 1 if i > 1

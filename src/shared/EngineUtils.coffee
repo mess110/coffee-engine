@@ -31,5 +31,8 @@ class EngineUtils
       Math.floor((1 + Math.random()) * 0x10000).toString(16).substring 1
     s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4()
 
+  # Sets the cursor
+  #
+  # param [String] url of the new cursor
   @setCursor: (url) ->
     document.body.style.cursor = "url('#{url}'), auto"

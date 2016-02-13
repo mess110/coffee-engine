@@ -5,6 +5,11 @@
 #   spotLight.addToScene(scene)
 #
 class SpotLight extends BaseModel
+  # Creates a new spotlight
+  #
+  # @param [Number] x - start z position
+  # @param [Number] y - start y position
+  # @param [Number] z - start x position
   constructor: (x, y, z)->
     geometry = new (THREE.CylinderGeometry)(0.1, 2.5, 5, 32 * 2, 40, true)
     geometry.applyMatrix (new (THREE.Matrix4)).makeTranslation(0, -geometry.parameters.height / 2, 0)
@@ -40,6 +45,9 @@ class SpotLight extends BaseModel
     @direction = new (THREE.Vector3)(0,0,0)
     @lastDir = 0
 
+  # Make the spotlight look at a node's position
+  #
+  # @param [Object] node
   lookAt: (node) ->
     target = node.position
     @mesh.lookAt target
@@ -52,5 +60,13 @@ class SpotLight extends BaseModel
     scene.add @spotLight
     scene.add @spotLight.target
 
+  # Sets the spotlight color
+  #
+  # @param [String] color
+  #
+  # @example
+  #
+  #   spotLight.setColor('white')
+  #   spotLight.setColor('#ffffff')
   setColor: (color) ->
     @material.uniforms.lightColor.value.set color

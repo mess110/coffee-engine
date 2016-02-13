@@ -6,6 +6,7 @@
 #
 #   water.tick(tpf)
 class Water extends BaseModel
+  # Create water
   constructor: (waterNormalsUrl, engine, scene, size, segments)->
     waterNormals = new (THREE.ImageUtils.loadTexture)('/bower_components/ocean/assets/img/waternormals.jpg')
     waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping
@@ -27,6 +28,9 @@ class Water extends BaseModel
 
     @speed = 1
 
+  # Used to update the water animation.
+  #
+  # Should be called in scene.tick
   tick: (tpf) ->
     @water.material.uniforms.time.value += tpf * @speed
     @water.render()

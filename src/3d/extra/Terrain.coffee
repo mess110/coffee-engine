@@ -11,6 +11,7 @@
 #
 class Terrain extends BaseModel
 
+  # Creates the terrain
   constructor: (textureUrl, width, height, wSegments, hSegments)->
     mat = new THREE.MeshLambertMaterial(
       map: THREE.ImageUtils.loadTexture(textureUrl)

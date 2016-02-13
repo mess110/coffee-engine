@@ -7,6 +7,8 @@
 #
 #   @particle.tick(tpf)
 class BaseParticle extends BaseModel
+
+  # create the particle
   constructor: (texturePath) ->
 
     @particleGroup = new (SPE.Group)(
@@ -32,5 +34,8 @@ class BaseParticle extends BaseModel
     @particleGroup.addEmitter @emitter
     @mesh = @particleGroup.mesh
 
+  # Used to animate the particle
+  #
+  # Should normally be called in scene.tick
   tick: (tpf) ->
     @particleGroup.tick(tpf)

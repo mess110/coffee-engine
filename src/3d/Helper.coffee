@@ -10,14 +10,31 @@ class Helper
   @zero: new THREE.Vector3(0, 0, 0)
   @one: new THREE.Vector3(1, 1, 1)
 
-  # Create a camera
+  # Create a new camera.
+  #
+  # By default, it creates a PerspectiveCamera
+  #
+  # @param [Object] options for the camera
+  #
+  # @example
+  #
+  #   cam = Utils.camera()
+  #
+  #   cam = Utils.camera(view_angle: 45, aspect: config.width / config.height, 1, 1000)
+  #
+  #   cam = Utils.camera(type: 'Ortographic', view_angle: 45, aspect: config.width / config.height, 1, 1000)
+  #
+  # @see Config
+  # @see Engine3D.setCamera
+  #
   @camera: (options={}) ->
     config = Config.get()
     options.view_angle = 45 unless options.view_angle?
     options.aspect = config.width / config.height unless options.aspect?
     options.near = 1 unless options.near?
     options.far = 10000 unless options.far?
-    new THREE.PerspectiveCamera(options.view_angle, options.aspect, options.near, options.far)
+    options.type = 'PerspectiveCamera' unless options.type
+    new THREE[options.type](options.view_angle, options.aspect, options.near, options.far)
 
   # Create lights
   @light: ->
@@ -40,19 +57,33 @@ class Helper
     new (THREE.AmbientLight)(0x404040)
 
   # Create cubes with lambert material
+  #
+  # @param [Number] size of the cube
+  #
   @cube: (size) ->
     box = new (THREE.BoxGeometry)(size, size, size)
     mat = new (THREE.MeshLambertMaterial)(color: 0xff0000)
     new (THREE.Mesh)(box, mat)
 
-  # Enable shadows
+  # Enable shadows on the renderer
+  #
+  # @param [Renderer] renderer
+  #
   @fancyShadows: (renderer) ->
     renderer.shadowMapEnabled = true
     renderer.shadowMapSoft = true
     renderer.shadowMapType = THREE.PCFShadowMap
     renderer.shadowMapAutoUpdate = true
 
-  # Add a sky sphere
+  # Add a sky sphere from an image
+  #
+  # @param [String] imgUrl for the image displayed
+  # @param [Number] radius of the sphere
+  # @param [Number] segments of the sphere
+  #
+  # @example
+  #
+  #   Utils.skySphere('', 450000, 64)
   @skySphere: (imgUrl, radius=450000, segments=64)->
     geom = new (THREE.SphereGeometry)(radius, segments, segments)
     mat = new (THREE.MeshBasicMaterial)(
@@ -62,6 +93,9 @@ class Helper
     new (THREE.Mesh)(geom, mat)
 
   # Add a skybox
+  #
+  # @param [Array] imgUrls array of imgUrls
+  # @param [Number] size of the box
   #
   # [
   #   '/assets/px.jpg'

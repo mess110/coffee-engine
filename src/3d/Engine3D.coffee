@@ -4,6 +4,7 @@ class Engine3D
   uptime: 0
   config: Config.get()
 
+  # Starting point of the engine
   constructor: () ->
     @width = @config.width
     @height = @config.height
@@ -48,19 +49,55 @@ class Engine3D
   onDocumentKeyboardEvent: (event) =>
       @sceneManager.currentScene().doKeyboardEvent(event)
 
+  # Sets the engine camera
+  #
+  # @param [Camera] camera
+  #
+  # It also takes care of window resizing for this specific camera on the renderer
+  # if Config.get().resize is true.
   setCamera: (camera) ->
     @camera = camera
     if @config.resize
       @winResize = new THREEx.WindowResize(@renderer, @camera)
 
+  # Set the renderer clearColor
+  #
+  # @see http://threejs.org/docs/#Reference/Renderers/WebGLRenderer.setClearColor
+  #
+  # @example
+  #   engine.setClearColor(0xFFFFFF)
+  #   engine.setClearColor(0xFFFFFF, 0.5)
+  setClearColor: (color, alpha) ->
+    @renderer.setClearColor(color, alpha)
+
+  # Adds and sets a scene
+  #
+  # param [Scene] scene
   addScene: (scene) ->
     @sceneManager.addScene scene
     if !@sceneManager.currentSceneIndex?
       @sceneManager.setScene scene
 
+  # Remove a scene
+  #
+  # param [Scene]
   removeScene: (scene) ->
     @sceneManager.removeScene scene
 
+  # Starts rendering
+  #
+  # Using requestAnimationFrame, this method will continously call itself. Think of
+  # it like: "Ok, the scenes are configured, the game engine is ready, GO!"
+  #
+  # It updates:
+  #
+  # * the time per frame (tpf)
+  # * uptime
+  # * ticking the scene
+  # * updating animations
+  # * updating stats
+  # * updating tweens
+  # * rendering the scene
   render: =>
     requestAnimationFrame this.render
 

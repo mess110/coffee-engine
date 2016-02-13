@@ -66,9 +66,9 @@ module.exports = (grunt) ->
       "compile-coffee":
         command: "coffee --output . -b -c ."
       "doc-3d":
-        command: "./node_modules/.bin/codo -o ./doc/3d/ -r README.md src/3d/ src/shared/"
+        command: "./node_modules/.bin/codo -o ./doc/3d/ -r README_3D.md src/3d/ src/shared/"
       "doc-2d":
-        command: "./node_modules/.bin/codo -o ./doc/2d/ -r README.md src/2d/ src/shared/"
+        command: "./node_modules/.bin/codo -o ./doc/2d/ -r README_2D.md src/2d/ src/shared/"
       "tools":
         command: "npm run start"
 

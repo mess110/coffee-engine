@@ -3,9 +3,11 @@ class StatsManager
 
   instance = null
 
+  # Handles stats
   class PrivateStatsManager
     statsVisible: false
 
+    # @nodoc
     constructor: () ->
       @stats = new Stats()
       @stats.domElement.style.position = 'absolute'
@@ -16,6 +18,7 @@ class StatsManager
       @rendererStats.domElement.style.left = '0px'
       @rendererStats.domElement.style.bottom   = '0px'
 
+    # Toggles the visibility of the stats
     toggle: ->
       @statsVisible = !@statsVisible
       if @statsVisible
@@ -26,6 +29,7 @@ class StatsManager
         document.body.removeChild( @rendererStats.domElement )
       @statsVisible
 
+    # @nodoc
     update: (renderer) ->
       @stats.update()
       @rendererStats.update(renderer)
