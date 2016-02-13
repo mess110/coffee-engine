@@ -27,7 +27,7 @@ class ParticlePlaygroundScene extends BaseScene
   constructor: ->
     super()
 
-    @controls = new (THREE.OrbitControls)(engine.camera, engine.renderer.domElement)
+    @controls = Helper.orbitControls(engine)
 
     @particle = new BaseParticle('../stage/imgs/star.png')
     @scene.add @particle.mesh

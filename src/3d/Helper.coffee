@@ -92,7 +92,7 @@ class Helper
   # @example
   #
   #   Utils.skySphere('', 450000, 64)
-  @skySphere: (imgUrl, radius=450000, segments=64)->
+  @skySphere: (imgUrl, radius=450000, segments=64) ->
     geom = new (THREE.SphereGeometry)(radius, segments, segments)
     mat = new (THREE.MeshBasicMaterial)(
       map: THREE.ImageUtils.loadTexture(imgUrl)
@@ -126,3 +126,9 @@ class Helper
       depthWrite: false
       side: THREE.BackSide)
     new (THREE.Mesh)(new (THREE.BoxGeometry)(size, size, size), aSkyBoxMaterial)
+
+  # Create orbit controls
+  #
+  # @param [Engine3D] engine
+  @orbitControls: (engine) ->
+    new (THREE.OrbitControls)(engine.camera, engine.renderer.domElement)

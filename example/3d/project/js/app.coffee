@@ -14,6 +14,8 @@ class GameScene extends BaseScene
     @light = Helper.ambientLight()
     @scene.add @light
 
+    @controls = Helper.orbitControls(engine)
+
     @loaded = true
 
   tick: (tpf) ->

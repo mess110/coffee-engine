@@ -59,7 +59,7 @@ class ModelViewerScene extends BaseScene
     @scene.add Helper.ambientLight()
     @scene.add Helper.ambientLight()
 
-    @controls = new (THREE.OrbitControls)(engine.camera)
+    @controls = Helper.orbitControls(engine)
     @controls.damping = 0.2
 
   viewModel: (name, url) ->
