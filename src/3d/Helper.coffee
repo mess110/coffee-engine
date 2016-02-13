@@ -10,6 +10,11 @@ class Helper
   @zero: new THREE.Vector3(0, 0, 0)
   @one: new THREE.Vector3(1, 1, 1)
 
+  @toggleFullScreen = Utils.toggleFullScreen
+  @guid: Utils.guid
+  @setCursor: Utils.setCursor
+  @rgbToHex: Utils.rgbToHex
+
   # Create a new camera.
   #
   # By default, it creates a PerspectiveCamera
@@ -26,7 +31,6 @@ class Helper
   #
   # @see Config
   # @see Engine3D.setCamera
-  #
   @camera: (options={}) ->
     config = Config.get()
     options.view_angle = 45 unless options.view_angle?
@@ -53,16 +57,20 @@ class Helper
     light
 
   # Create ambient lights
-  @ambientLight: ->
-    new (THREE.AmbientLight)(0x404040)
+  #
+  # @param [Color] color
+  @ambientLight: (color = 0x404040) ->
+    new (THREE.AmbientLight)(color)
 
   # Create cubes with lambert material
   #
-  # @param [Number] size of the cube
-  #
-  @cube: (size) ->
-    box = new (THREE.BoxGeometry)(size, size, size)
-    mat = new (THREE.MeshLambertMaterial)(color: 0xff0000)
+  # @param [Object] options containing size, material and color
+  @cube: (options = {}) ->
+    options.size = 1 unless options.size?
+    options.material = 'MeshNormalMaterial' unless options.material?
+    options.color = 0xff0000 unless options.color?
+    box = new (THREE.BoxGeometry)(options.size, options.size, options.size)
+    mat = new (THREE[options.material])(color: options.color)
     new (THREE.Mesh)(box, mat)
 
   # Enable shadows on the renderer

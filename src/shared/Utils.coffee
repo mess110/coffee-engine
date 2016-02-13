@@ -1,5 +1,5 @@
 # Shared methods between all engines
-class EngineUtils
+class Utils
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.
   #
@@ -36,3 +36,8 @@ class EngineUtils
   # param [String] url of the new cursor
   @setCursor: (url) ->
     document.body.style.cursor = "url('#{url}'), auto"
+
+  # Convert RGB value to Hex
+  @rgbToHex = (r, g, b) ->
+    throw "Invalid color component"  if r > 255 or g > 255 or b > 255
+    ((r << 16) | (g << 8) | b).toString 16

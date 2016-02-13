@@ -20,12 +20,24 @@ class Terrain extends BaseModel
     @mesh = new (THREE.Mesh)(geom, mat)
     @mesh.rotation.x -= Math.PI / 2
 
+  # Apply heightmap data retrieved from getHeightData
+  #
+  # @see getHeightData
   applyHeightmap: (imageData) ->
     i = 0
     for vertice in @mesh.geometry.vertices
       vertice.z = imageData[i]
       i++
 
+  # Hackish way to add a heightmap to the scene
+  #
+  # @param [String] textureUrl
+  # @param [String] heightmapUrl
+  # @param [Number] width
+  # @param [Number] height
+  # @param [Number] wSegments
+  # @param [Number] hSegments
+  # @param [Number] scale
   @heightmap: (textureUrl, heightmapUrl, width, height, wSegments, hSegments, scale=1, scene) ->
     hm = THREE.ImageUtils.loadTexture(heightmapUrl, THREE.UVMapping, () =>
       hm.heightData = Terrain.getHeightData(hm.image, scale)
@@ -39,6 +51,9 @@ class Terrain extends BaseModel
       scene.scene.add terrain.mesh
     )
 
+  # Another hackish way to add a heightmap to the scene
+  #
+  # @param [Object] options
   @heightmap_blocking: (options) ->
     hm = THREE.ImageUtils.loadTexture(options.heightmapUrl)
     hm.heightData = Terrain.getHeightData(hm.image, options.scale)
@@ -51,6 +66,10 @@ class Terrain extends BaseModel
     scene.terrain = terrain
     scene.scene.add terrain.mesh
 
+  # Returns height data of an Image object
+  #
+  # @param [Image] img
+  # @param [Number] scale
   @getHeightData: (img, scale = 1) ->
     canvas = document.createElement('canvas')
     canvas.width = img.width

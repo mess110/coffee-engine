@@ -11,7 +11,7 @@ if `git diff bower.json | grep version`.empty?
 end
 
 `bower install`
-`grunt release`
+`grunt build`
 `git rm \`git ls-files --deleted\``
 `git add .`
 `git commit -m "release version #{version}"`

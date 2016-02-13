@@ -1,18 +1,12 @@
 Config.get().toggleDebug()
 engine = new Engine3D()
-# engine.setClearColor('white')
 
 class GameScene extends BaseScene
   init: ->
-    @cube = Helper.cube()
+    @cube = Helper.cube(size: 1, material: 'MeshPhongMaterial')
     @scene.add @cube
 
     @scene.add Helper.ambientLight()
-    @scene.add Helper.ambientLight()
-
-    engine.camera.lookAt(@cube)
-
-    @scene.add JsonModelManager.get().models['sword']
 
   tick: (tpf) ->
     @cube.rotation.z += 1 * tpf

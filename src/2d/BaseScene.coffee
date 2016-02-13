@@ -1,3 +1,4 @@
+# @nodoc
 class BaseScene
   constructor: (engine) ->
     @engine = engine

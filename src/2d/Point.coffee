@@ -1,3 +1,4 @@
+# @nodoc
 class Point
   constructor: (x, y) ->
     @x = x

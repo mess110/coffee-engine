@@ -24,7 +24,7 @@ module.exports = (grunt) ->
     "src/shared/NetworkManager.js"
     "src/shared/StatsManager.js"
     "src/shared/SoundManager.js"
-    "src/shared/EngineUtils.js"
+    "src/shared/Utils.js"
 
     "src/3d/JsonModelManager.js"
     "src/3d/ResourceManager.js"
@@ -47,9 +47,8 @@ module.exports = (grunt) ->
     "bower_components/tweenjs/src/Tween.js"
 
     "src/shared/SceneManager.js"
-    "src/shared/EngineUtils.js"
+    "src/shared/Utils.js"
 
-    "src/2d/Utils.js"
     "src/2d/BaseScene.js"
     "src/2d/BaseModel.js"
     "src/2d/Engine2D.js"
@@ -67,9 +66,9 @@ module.exports = (grunt) ->
       "compile-coffee":
         command: "coffee --output . -b -c ."
       "doc-3d":
-        command: "./node_modules/.bin/codo -o ./doc/3d/ -r README_3D.md src/3d/ src/shared/"
+        command: "./node_modules/.bin/codo -u -o ./doc/3d/ -r README_3D.md src/3d/ src/shared/"
       "doc-2d":
-        command: "./node_modules/.bin/codo -o ./doc/2d/ -r README_2D.md src/2d/ src/shared/"
+        command: "./node_modules/.bin/codo -u -o ./doc/2d/ -r README_2D.md src/2d/ src/shared/"
       "tools":
         command: "npm run start"
 
@@ -86,7 +85,7 @@ module.exports = (grunt) ->
   grunt.registerTask "compile:coffee:watch", ["shell:compile-coffee-watch"]
   grunt.registerTask "compile:coffee", ["shell:compile-coffee"]
 
-  grunt.registerTask "release", ["compile:coffee", "uglify:engine"]
+  grunt.registerTask "build", ["compile:coffee", "uglify:engine"]
   grunt.registerTask "dev", ["compile:coffee:watch"]
 
   grunt.registerTask "doc", ["shell:doc-3d", "shell:doc-2d"]

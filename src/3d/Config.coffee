@@ -65,9 +65,9 @@ class Config
     toggleDebug: () ->
       @debug = !@debug
 
-    # @see EngineUtils.toggleFullScreen
+    # @see Utils.toggleFullScreen
     toggleFullScreen: () ->
-      EngineUtils.toggleFullScreen()
+      Utils.toggleFullScreen()
 
   @get: () ->
     instance ?= new Singleton.Config()

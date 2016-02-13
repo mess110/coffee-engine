@@ -11514,7 +11514,7 @@ SceneManager = function() {
             return i = this.scenes.indexOf(scene), this.setSceneByIndex(i), this.currentScene();
         }, SceneManager.prototype.setSceneByIndex = function(i) {
             return !this.isEmpty() && this.isValidIndex(i) && (this.currentSceneIndex = i), 
-            this.currentScene();
+            Config.get().debug && console.log("Changing to scene " + i), this.currentScene();
         }, SceneManager.prototype.isEmpty = function() {
             return 0 === this.scenes.length;
         }, SceneManager.prototype.isValidIndex = function(i) {
@@ -11621,11 +11621,12 @@ JsonModelManager = function() {
         function JsonModelManager() {}
         return JsonModelManager.prototype.loader = new THREE.JSONLoader(), JsonModelManager.prototype.models = {}, 
         JsonModelManager.prototype.loadCount = 0, JsonModelManager.prototype.load = function(key, url, callback) {
-            return this.loadCount += 1, this.loader.load(url, function(geometry, materials) {
-                var i, jmm, len, mat, material, mesh;
+            return null == callback && (callback = function() {
+                return {};
+            }), this.loadCount += 1, this.loader.load(url, function(geometry, materials) {
+                var i, jmm, len, mat, mesh;
                 for (jmm = window.JsonModelManager.get(), mesh = new THREE.SkinnedMesh(geometry, new THREE.MeshFaceMaterial(materials)), 
-                material = mesh.material.materials, i = 0, len = materials.length; len > i; i++) mat = materials[i], 
-                mat.skinning = !0;
+                i = 0, len = materials.length; len > i; i++) mat = materials[i], mat.skinning = !0;
                 if (null != mesh.animations) throw "mesh already has animations. not overwriting default behaviour";
                 return mesh = jmm.initAnimations(mesh), jmm.models[key] = mesh, callback(mesh);
             });
@@ -11675,6 +11676,8 @@ BaseScene = function() {
     BaseScene.prototype.keyboard = new THREEx.KeyboardState(), BaseScene.prototype.loaded = !1, 
     BaseScene.prototype.uptime = 0, BaseScene.prototype.fullTick = function(tpf) {
         return this.uptime += tpf, this.tick(tpf);
+    }, BaseScene.prototype.init = function() {
+        throw "scene.init not implemented";
     }, BaseScene.prototype.tick = function(tpf) {
         throw "scene.tick not implemented";
     }, BaseScene.prototype.doMouseEvent = function(event, raycaster) {
@@ -11797,12 +11800,14 @@ Helper = function() {
         light.shadowCameraRight = 60, light.shadowCameraBottom = 60, light.shadowCameraNear = 1, 
         light.shadowCameraFar = 1e3, light.shadowBias = -1e-4, light.shadowMapWidth = light.shadowMapHeight = 1024, 
         light.shadowDarkness = .7, light;
-    }, Helper.ambientLight = function() {
-        return new THREE.AmbientLight(4210752);
-    }, Helper.cube = function(size) {
+    }, Helper.ambientLight = function(color) {
+        return null == color && (color = 4210752), new THREE.AmbientLight(color);
+    }, Helper.cube = function(options) {
         var box, mat;
-        return box = new THREE.BoxGeometry(size, size, size), mat = new THREE.MeshLambertMaterial({
-            color: 16711680
+        return null == options && (options = {}), null == options.size && (options.size = 1), 
+        null == options.material && (options.material = "MeshNormalMaterial"), null == options.color && (options.color = 16711680), 
+        box = new THREE.BoxGeometry(options.size, options.size, options.size), mat = new THREE[options.material]({
+            color: options.color
         }), new THREE.Mesh(box, mat);
     }, Helper.fancyShadows = function(renderer) {
         return renderer.shadowMapEnabled = !0, renderer.shadowMapSoft = !0, renderer.shadowMapType = THREE.PCFShadowMap, 
@@ -11944,6 +11949,38 @@ SpotLight = function(superClass) {
     }, SpotLight;
 }(BaseModel);
 
+var LoadingScene, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+LoadingScene = function(superClass) {
+    function LoadingScene(urls, hasFinishedLoading) {
+        var i, interval, len, name, url;
+        if (null == hasFinishedLoading && (hasFinishedLoading = void 0), LoadingScene.__super__.constructor.call(this), 
+        !(urls instanceof Array)) throw "urls needs to be an array";
+        for (this.hasFinishedLoading = hasFinishedLoading, i = 0, len = urls.length; len > i; i++) url = urls[i], 
+        name = url.replace(".json", "").split("/").last(), Config.get().debug && console.log("Loading '" + name + "' from '" + url + "'"), 
+        this.jmm.load(name, url);
+        interval = setInterval(function(_this) {
+            return function() {
+                return _this.jmm.hasFinishedLoading() ? (clearInterval(interval), _this.hasFinishedLoading()) : void 0;
+            };
+        }(this), 100);
+    }
+    return extend(LoadingScene, superClass), LoadingScene.prototype.jmm = JsonModelManager.get(), 
+    LoadingScene.prototype.init = function() {}, LoadingScene.prototype.tick = function(tpf) {}, 
+    LoadingScene.prototype.doMouseEvent = function(event, raycaster) {}, LoadingScene.prototype.doKeyboardEvent = function(event) {}, 
+    LoadingScene.prototype.hasFinishedLoading = function() {
+        if (null != this.hasFinishedLoading) return this.hasFinishedLoading();
+        throw "not implemented";
+    }, LoadingScene;
+}(BaseScene);
+
 var Engine3D, bind = function(fn, me) {
     return function() {
         return fn.apply(me, arguments);
@@ -11959,8 +11996,11 @@ Engine3D = function() {
             antialias: this.config.antialias,
             alpha: this.config.transparentBackground
         }), this.renderer.setSize(this.width, this.height), document.body.appendChild(this.renderer.domElement), 
-        camera = new THREE.PerspectiveCamera(45, this.width / this.height, .5, 1e6), this.setCamera(camera), 
-        this.camera.position.z = 10, this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), 
+        camera = Helper.camera({
+            aspect: this.width / this.height,
+            near: .5,
+            far: 1e6
+        }), this.setCamera(camera), this.camera.position.z = 10, this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), 
         this.anaglyphEffect.setSize(this.width, this.height), this.sceneManager = SceneManager.get(), 
         document.addEventListener("mouseup", this.onDocumentMouseEvent, !1), document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), 
         document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), 

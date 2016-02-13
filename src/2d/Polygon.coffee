@@ -1,3 +1,4 @@
+# @nodoc
 class Polygon
   constructor: (points) ->
     @points = points

@@ -355,7 +355,7 @@ SceneManager = function() {
             return i = this.scenes.indexOf(scene), this.setSceneByIndex(i), this.currentScene();
         }, SceneManager.prototype.setSceneByIndex = function(i) {
             return !this.isEmpty() && this.isValidIndex(i) && (this.currentSceneIndex = i), 
-            this.currentScene();
+            Config.get().debug && console.log("Changing to scene " + i), this.currentScene();
         }, SceneManager.prototype.isEmpty = function() {
             return 0 === this.scenes.length;
         }, SceneManager.prototype.isValidIndex = function(i) {

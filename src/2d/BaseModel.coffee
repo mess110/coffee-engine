@@ -1,3 +1,4 @@
+# @nodoc
 class BaseModel
   constructor: (options) ->
     options.position ||= {}

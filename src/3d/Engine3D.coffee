@@ -16,11 +16,10 @@ class Engine3D
     @renderer.setSize @width, @height
     document.body.appendChild @renderer.domElement
 
-    camera = new THREE.PerspectiveCamera(45, @width / @height, 0.5, 1000000)
+    camera = Helper.camera(aspect: @width / @height, near: 0.5, far: 1000000)
     @setCamera(camera)
     @camera.position.z = 10
 
-    # TODO find out if anaglyph not supported - what happens?
     @anaglyphEffect = new THREE.AnaglyphEffect(@renderer)
     @anaglyphEffect.setSize(@width, @height)
 

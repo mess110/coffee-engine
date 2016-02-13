@@ -1,4 +1,7 @@
+# The 2D Engine. Vrum Wrum..
 class Engine2D
+
+  # @nodoc
   constructor: (canvasId, width, height, windowResize = false) ->
     @sceneManager = SceneManager.get()
 
@@ -23,6 +26,7 @@ class Engine2D
       window.addEventListener 'resize', @resize, false
       @resize()
 
+  # @nodoc
   resize: ->
     canvasRatio = @canvas.height / @canvas.width
     windowRatio = window.innerHeight / window.innerWidth
@@ -37,17 +41,21 @@ class Engine2D
     @canvas.style.width = width + 'px'
     @canvas.style.height = height + 'px'
 
+  # @nodoc
   onDocumentMouseEvent: (event) =>
       @sceneManager.currentScene().doMouseEvent(event)
 
+  # @nodoc
   onDocumentKeyboardEvent: (event) =>
       @sceneManager.currentScene().doKeyboardEvent(event)
 
   # TODO move this in BaseScene
+  # @nodoc
   clear: ->
     @context.fillStyle = @backgroundColor
     @context.fillRect 0, 0, @width, @height
 
+  # @nodoc
   render: =>
     requestAnimationFrame this.render
 
