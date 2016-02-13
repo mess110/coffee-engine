@@ -22,6 +22,7 @@ div h3 {
   height: 100%;
   z-index: 100;
   border-right: dashed 1px black;
+  overflow-y: auto;
 }
 
 .animation-browser {
@@ -31,6 +32,7 @@ div h3 {
   right: 0px;
   z-index: 100;
   border-left: dashed 1px black;
+  overflow-y: auto;
 }
 
 canvas {
@@ -40,6 +42,13 @@ canvas {
 
 p {
   text-align: center;
+  cursor: pointer;
+  margin: 0px;
+  padding: 10px;
+}
+
+p:hover {
+  background-color: #f0f0f0;
 }
 
 input[type=file] {

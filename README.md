@@ -22,6 +22,8 @@ It also comes with some tools
 * 2d engine (WIP)
 * tools
   - model-viewer
+  - particle-editor
+  - terrain-generator
 
 3D
 --
@@ -41,6 +43,7 @@ A nw.js desktop app which allows you to:
 
 * view models and animations from json models exported for three.js
 * play with particles
+* visualize heightmap terrains
 
 The models I am using are created in blender and exported with the official
 three.js blender plugin.

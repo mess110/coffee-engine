@@ -6,6 +6,8 @@
 #   @scene.add @particle.mesh
 #
 #   @particle.tick(tpf)
+#
+# @see https://squarefeet.github.io/ShaderParticleEngine/
 class BaseParticle extends BaseModel
 
   # create the particle

@@ -12,42 +12,33 @@ div h3 {
   text-align: center;
 }
 
-.ctrl-panel {
+.menu {
   text-align: center;
-}
-
-.file-browser {
   position: absolute;
-  width: 20%;
-  height: 100%;
-  z-index: 100;
-  border-right: dashed 1px black;
-}
-
-.animation-browser {
-  position: absolute;
-  width: 20%;
+  overflow: auto;
+  width: 40%;
   height: 100%;
   right: 0px;
   z-index: 100;
   border-left: dashed 1px black;
+  background-color: white;
 }
 
 canvas {
   position: absolute;
-  top: 0px;
-  right: 0px;
   z-index: 0;
 }
 
-p {
-  text-align: center;
+input[type=number] {
+  width: 60px;
 }
 
-input[type=file] {
-  display: none;
-}
-
-.menu {
-  padding: 5px;
+.heightmap {
+  border: 1px solid green;
+  width: 100px;
+  height: 100px;
+  max-width: 100px;
+  max-height: 100px;
+  min-width: 100px;
+  min-height: 100px;
 }

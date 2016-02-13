@@ -5,6 +5,8 @@
 #   @scene.add water.mesh
 #
 #   water.tick(tpf)
+#
+# @see https://github.com/jbouny/ocean
 class Water extends BaseModel
   # Create water
   constructor: (waterNormalsUrl, engine, scene, size, segments)->

@@ -5,6 +5,7 @@
 #   spotLight.addToScene(scene)
 #   spotLight.lookAt(new (THREE.Vector3)(0, 0, 0))
 #
+# @see https://github.com/jeromeetienne/threex.volumetricspotlight
 class SpotLight extends BaseModel
   # Creates a new spotlight
   #

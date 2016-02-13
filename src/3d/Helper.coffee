@@ -130,5 +130,14 @@ class Helper
   # Create orbit controls
   #
   # @param [Engine3D] engine
+  #
+  # @example
+  #   controls = Helper.orbitControls(engine)
+  #
+  # @example
+  #   controls.enabled = false
+  #
+  # @see https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js
+  # @see https://stackoverflow.com/questions/20058579/threejs-disable-orbit-camera-while-using-transform-control
   @orbitControls: (engine) ->
     new (THREE.OrbitControls)(engine.camera, engine.renderer.domElement)

@@ -3,7 +3,7 @@ DEFAULT_OPTIONS =
   height: 20
   wSegments: 5
   hSegments: 5
-  scale: 1
+  scale: 5
   textureUrl: 'heightmap.png'
   heightmapUrl: 'heightmap.png'
 
@@ -38,7 +38,8 @@ class TerrainGeneratorScene extends BaseScene
     @scene.add Helper.ambientLight()
     @scene.add Helper.ambientLight()
 
-    @controls = new (THREE.OrbitControls)(engine.camera, engine.renderer.domElement)
+    @controls = Helper.orbitControls(engine)
+
     options = DEFAULT_OPTIONS
     Terrain.heightmap(options.heightmapUrl, options.heightmapUrl, options.width, options.height, options.wSegments, options.hSegments, options.scale)
 
@@ -54,10 +55,9 @@ class TerrainGeneratorScene extends BaseScene
   doKeyboardEvent: (event) ->
 
 config = Config.get()
-config.preventDefaultMouseEvents = false
 config.fillWindow()
-config.width = config.width / 2
-config.resize = false
+config.preventDefaultMouseEvents = false
+config.width = config.width * 6 / 10
 
 engine = new Engine3D()
 engine.camera.position.set 0, 15, 100
