@@ -37,6 +37,7 @@ module.exports = (grunt) ->
     "src/3d/extra/Water.js"
     "src/3d/extra/Terrain.js"
     "src/3d/extra/SpotLight.js"
+    "src/3d/extra/LoadingScene.js"
 
     "src/3d/Engine3D.js"
   ]

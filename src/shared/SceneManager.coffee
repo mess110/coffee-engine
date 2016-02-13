@@ -44,6 +44,7 @@ class SceneManager
     setSceneByIndex: (i) ->
       if !@isEmpty() and @isValidIndex(i)
         @currentSceneIndex = i
+      console.log "Changing to scene #{i}" if Config.get().debug
       @currentScene()
 
     # checks if there are scenes added to the SceneManager

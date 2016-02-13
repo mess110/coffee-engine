@@ -103,7 +103,7 @@ class BloodParticle extends BaseParticle
     @particleGroup.addEmitter @emitter
     @mesh = @particleGroup.mesh
 
-class LoadingScene extends BaseScene
+class GameScene extends BaseScene
   constructor: ->
     super()
 
@@ -430,7 +430,7 @@ class LoadingScene extends BaseScene
     @spotLight.setColor('white')
     jNorthPole.createStorage({ name: config.name.substring(0, config.maxNameLength), score: @score, api_key: jNorthPole.API_KEY, secret: jNorthPole.SECRET }, (data) ->
       console.log data
-      loadingScene.getHighScores()
+      gameScene.getHighScores()
     , @jNorthPoleError)
 
     @cameraPosition(0)
@@ -560,6 +560,6 @@ class LoadingScene extends BaseScene
 
     @toggleDrapes() if event.which == 32 and not @started
 
-loadingScene = new LoadingScene()
-engine.addScene(loadingScene)
+gameScene = new GameScene()
+engine.addScene(gameScene)
 engine.render()

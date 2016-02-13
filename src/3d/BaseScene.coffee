@@ -19,6 +19,10 @@ class BaseScene
     @uptime += tpf
     @tick(tpf)
 
+  # Used to init the scene
+  init: ->
+    throw 'scene.init not implemented'
+
   # This method is automatically called by the engine for
   # each frame
   #

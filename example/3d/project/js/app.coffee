@@ -4,7 +4,7 @@ config.fillWindow()
 engine = new Engine3D()
 engine.camera.position.set 0, 0, 100
 
-class LoadingScene extends BaseScene
+class GameScene extends BaseScene
   constructor: ->
     super()
 
@@ -26,8 +26,8 @@ class LoadingScene extends BaseScene
 
   doKeyboardEvent: (event) ->
 
-loadingScene = new LoadingScene()
-engine.addScene(loadingScene)
+gameScene = new GameScene()
+engine.addScene(gameScene)
 
 engine.render()
 

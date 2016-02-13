@@ -17,29 +17,32 @@ class JsonModelManager
     # @example
     #
     #   TODO
-    load: (key, url, callback) ->
+    load: (key, url, callback = -> {}) ->
       @loadCount += 1
       @loader.load url, (geometry, materials) ->
+        jmm = window.JsonModelManager.get()
+
         mesh = new (THREE.SkinnedMesh)(geometry, new (THREE.MeshFaceMaterial)(materials))
-
-        material = mesh.material.materials
-
-        i = 0
-        while i < materials.length
-          mat = materials[i]
+        for mat in materials
           mat.skinning = true
-          i++
 
         throw 'mesh already has animations. not overwriting default behaviour' if mesh.animations?
 
-        mesh.animations = []
-        if mesh.geometry.animations?
-          for anim in mesh.geometry.animations
-            animation = new THREE.Animation(mesh, anim, THREE.AnimationHandler.CATMULLROM)
-            mesh.animations.push animation
-
-        window.JsonModelManager.get().models[key] = mesh
+        mesh = jmm.initAnimations(mesh)
+        jmm.models[key] = mesh
         callback(mesh)
+
+    # Used to init or re-init animations
+    #
+    # Can also be useful when trying to clone animated objects as clone() from
+    # THREEJS doesn't also clone the created THREE.Animation
+    initAnimations: (mesh) ->
+      mesh.animations = []
+      if mesh.geometry.animations?
+        for anim in mesh.geometry.animations
+          animation = new THREE.Animation(mesh, anim, THREE.AnimationHandler.CATMULLROM)
+          mesh.animations.push animation
+      mesh
 
     # Check if all objects which started loading have finished loading
     hasFinishedLoading: ->

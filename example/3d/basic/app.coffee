@@ -1,21 +1,20 @@
+Config.get().toggleDebug()
 engine = new Engine3D()
-engine.camera.position.z = 110
+# engine.setClearColor('white')
 
-class LoadingScene extends BaseScene
-  constructor: ->
-    super()
-
+class GameScene extends BaseScene
+  init: ->
     @cube = Helper.cube()
     @scene.add @cube
 
     @scene.add Helper.ambientLight()
     @scene.add Helper.ambientLight()
 
-    @loaded = true
+    engine.camera.lookAt(@cube)
+
+    @scene.add JsonModelManager.get().models['sword']
 
   tick: (tpf) ->
-    return unless @loaded
-
     @cube.rotation.z += 1 * tpf
     @cube.rotation.y += 1 * tpf
 
@@ -23,6 +22,12 @@ class LoadingScene extends BaseScene
 
   doKeyboardEvent: (event) ->
 
-loadingScene = new LoadingScene()
+gameScene = new GameScene()
+loadingScene = new LoadingScene(['sword.json'], () ->
+  gameScene.init()
+  engine.sceneManager.setScene(gameScene)
+)
+
 engine.addScene(loadingScene)
+engine.addScene(gameScene)
 engine.render()

@@ -3,6 +3,7 @@
 # @example
 #   spotLight = new SpotLight(0, 10, 0)
 #   spotLight.addToScene(scene)
+#   spotLight.lookAt(new (THREE.Vector3)(0, 0, 0))
 #
 class SpotLight extends BaseModel
   # Creates a new spotlight

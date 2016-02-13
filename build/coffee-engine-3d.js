@@ -11622,16 +11622,19 @@ JsonModelManager = function() {
         return JsonModelManager.prototype.loader = new THREE.JSONLoader(), JsonModelManager.prototype.models = {}, 
         JsonModelManager.prototype.loadCount = 0, JsonModelManager.prototype.load = function(key, url, callback) {
             return this.loadCount += 1, this.loader.load(url, function(geometry, materials) {
-                var anim, animation, i, j, len, mat, material, mesh, ref;
-                for (mesh = new THREE.SkinnedMesh(geometry, new THREE.MeshFaceMaterial(materials)), 
-                material = mesh.material.materials, i = 0; i < materials.length; ) mat = materials[i], 
-                mat.skinning = !0, i++;
+                var i, jmm, len, mat, material, mesh;
+                for (jmm = window.JsonModelManager.get(), mesh = new THREE.SkinnedMesh(geometry, new THREE.MeshFaceMaterial(materials)), 
+                material = mesh.material.materials, i = 0, len = materials.length; len > i; i++) mat = materials[i], 
+                mat.skinning = !0;
                 if (null != mesh.animations) throw "mesh already has animations. not overwriting default behaviour";
-                if (mesh.animations = [], null != mesh.geometry.animations) for (ref = mesh.geometry.animations, 
-                j = 0, len = ref.length; len > j; j++) anim = ref[j], animation = new THREE.Animation(mesh, anim, THREE.AnimationHandler.CATMULLROM), 
-                mesh.animations.push(animation);
-                return window.JsonModelManager.get().models[key] = mesh, callback(mesh);
+                return mesh = jmm.initAnimations(mesh), jmm.models[key] = mesh, callback(mesh);
             });
+        }, JsonModelManager.prototype.initAnimations = function(mesh) {
+            var anim, animation, i, len, ref;
+            if (mesh.animations = [], null != mesh.geometry.animations) for (ref = mesh.geometry.animations, 
+            i = 0, len = ref.length; len > i; i++) anim = ref[i], animation = new THREE.Animation(mesh, anim, THREE.AnimationHandler.CATMULLROM), 
+            mesh.animations.push(animation);
+            return mesh;
         }, JsonModelManager.prototype.hasFinishedLoading = function() {
             return this.loadCount === Object.keys(this.models).size();
         }, JsonModelManager;
