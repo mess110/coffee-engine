@@ -11480,42 +11480,50 @@ THREEx.DynamicTexture = function(width, height) {
     this;
 };
 
+var Singleton, exports;
+
+exports = void 0, ("undefined" == typeof exports || null === exports) && (exports = {}), 
+Singleton = function() {
+    function Singleton() {}
+    return Singleton;
+}();
+
 var SceneManager;
 
 SceneManager = function() {
     function SceneManager() {}
-    var PrivateSceneManager, instance;
-    return instance = null, PrivateSceneManager = function() {
-        function PrivateSceneManager() {}
-        return PrivateSceneManager.prototype.scenes = [], PrivateSceneManager.prototype.currentSceneIndex = void 0, 
-        PrivateSceneManager.prototype.currentScene = function() {
+    var instance;
+    return instance = null, Singleton.SceneManager = function() {
+        function SceneManager() {}
+        return SceneManager.prototype.scenes = [], SceneManager.prototype.currentSceneIndex = void 0, 
+        SceneManager.prototype.currentScene = function() {
             if (void 0 === this.currentSceneIndex) throw "SceneManager.setScene not called";
             if (0 === this.scenes.length) throw "Requires at least one scene";
             return this.scenes[this.currentSceneIndex];
-        }, PrivateSceneManager.prototype.addScene = function(scene) {
+        }, SceneManager.prototype.addScene = function(scene) {
             var i;
             return i = this.scenes.indexOf(scene), -1 === i ? this.scenes.push(scene) : void 0;
-        }, PrivateSceneManager.prototype.removeScene = function(scene) {
+        }, SceneManager.prototype.removeScene = function(scene) {
             var i;
             return i = this.scenes.indexOf(scene), this.removeSceneByIndex(i);
-        }, PrivateSceneManager.prototype.removeSceneByIndex = function(i) {
+        }, SceneManager.prototype.removeSceneByIndex = function(i) {
             return i >= 0 ? (i === this.currentSceneIndex && (this.currentSceneIndex = void 0), 
             array.splice(i, 1)) : void 0;
-        }, PrivateSceneManager.prototype.setScene = function(scene) {
+        }, SceneManager.prototype.setScene = function(scene) {
             var i;
             return i = this.scenes.indexOf(scene), this.setSceneByIndex(i), this.currentScene();
-        }, PrivateSceneManager.prototype.setSceneByIndex = function(i) {
+        }, SceneManager.prototype.setSceneByIndex = function(i) {
             return !this.isEmpty() && this.isValidIndex(i) && (this.currentSceneIndex = i), 
             this.currentScene();
-        }, PrivateSceneManager.prototype.isEmpty = function() {
+        }, SceneManager.prototype.isEmpty = function() {
             return 0 === this.scenes.length;
-        }, PrivateSceneManager.prototype.isValidIndex = function(i) {
+        }, SceneManager.prototype.isValidIndex = function(i) {
             return i >= 0 && i < this.scenes.length;
-        }, PrivateSceneManager.prototype.tick = function(tpf) {
+        }, SceneManager.prototype.tick = function(tpf) {
             return this.currentScene().fullTick(tpf);
-        }, PrivateSceneManager;
+        }, SceneManager;
     }(), SceneManager.get = function() {
-        return null != instance ? instance : instance = new PrivateSceneManager();
+        return null != instance ? instance : instance = new Singleton.SceneManager();
     }, SceneManager;
 }();
 
@@ -11523,21 +11531,21 @@ var NetworkManager;
 
 NetworkManager = function() {
     function NetworkManager() {}
-    var PrivateNetworkManager, instance;
-    return instance = null, PrivateNetworkManager = function() {
-        function PrivateNetworkManager() {}
-        return PrivateNetworkManager.prototype.socket = void 0, PrivateNetworkManager.prototype.connect = function(namespace) {
+    var instance;
+    return instance = null, Singleton.NetworkManager = function() {
+        function NetworkManager() {}
+        return NetworkManager.prototype.socket = void 0, NetworkManager.prototype.connect = function(namespace) {
             return null == namespace && (namespace = "/"), this.socket = io.connect(namespace), 
             this.socket.on("error", function(err) {
                 return console.error(err);
             }), this.socket.on("message", function(msg) {
                 return console.log(msg);
             });
-        }, PrivateNetworkManager.prototype.emit = function(event, params) {
+        }, NetworkManager.prototype.emit = function(event, params) {
             return params.timestamp = new Date().getTime(), this.socket.emit(event, params);
-        }, PrivateNetworkManager;
+        }, NetworkManager;
     }(), NetworkManager.get = function() {
-        return null != instance ? instance : instance = new PrivateNetworkManager();
+        return null != instance ? instance : instance = new Singleton.NetworkManager();
     }, NetworkManager;
 }();
 
@@ -11545,22 +11553,22 @@ var StatsManager;
 
 StatsManager = function() {
     function StatsManager() {}
-    var PrivateStatsManager, instance;
-    return instance = null, PrivateStatsManager = function() {
-        function PrivateStatsManager() {
+    var instance;
+    return instance = null, Singleton.StatsManager = function() {
+        function StatsManager() {
             this.stats = new Stats(), this.stats.domElement.style.position = "absolute", this.stats.domElement.style.top = "0px", 
             this.rendererStats = new THREEx.RendererStats(), this.rendererStats.domElement.style.position = "absolute", 
             this.rendererStats.domElement.style.left = "0px", this.rendererStats.domElement.style.bottom = "0px";
         }
-        return PrivateStatsManager.prototype.statsVisible = !1, PrivateStatsManager.prototype.toggle = function() {
+        return StatsManager.prototype.statsVisible = !1, StatsManager.prototype.toggle = function() {
             return this.statsVisible = !this.statsVisible, this.statsVisible ? (document.body.appendChild(this.stats.domElement), 
             document.body.appendChild(this.rendererStats.domElement)) : (document.body.removeChild(this.stats.domElement), 
             document.body.removeChild(this.rendererStats.domElement)), this.statsVisible;
-        }, PrivateStatsManager.prototype.update = function(renderer) {
+        }, StatsManager.prototype.update = function(renderer) {
             return this.stats.update(), this.rendererStats.update(renderer);
-        }, PrivateStatsManager;
+        }, StatsManager;
     }(), StatsManager.get = function() {
-        return null != instance ? instance : instance = new PrivateStatsManager();
+        return null != instance ? instance : instance = new Singleton.StatsManager();
     }, StatsManager;
 }();
 
@@ -11568,23 +11576,23 @@ var SoundManager;
 
 SoundManager = function() {
     function SoundManager() {}
-    var PrivateSoundManager, instance;
-    return instance = null, PrivateSoundManager = function() {
-        function PrivateSoundManager() {}
-        return PrivateSoundManager.prototype.sounds = {}, PrivateSoundManager.prototype.add = function(key, url) {
+    var instance;
+    return instance = null, Singleton.SoundManager = function() {
+        function SoundManager() {}
+        return SoundManager.prototype.sounds = {}, SoundManager.prototype.add = function(key, url) {
             var audio, source;
             return audio = document.createElement("audio"), source = document.createElement("source"), 
             source.src = url, audio.appendChild(source), audio.playbackRate = 1, this.sounds[key] = audio;
-        }, PrivateSoundManager.prototype.play = function(key) {
+        }, SoundManager.prototype.play = function(key) {
             return key in this.sounds ? this.sounds[key].play() : console.log("Sound with key: " + key + " not found!");
-        }, PrivateSoundManager.prototype.updateGlobalVolume = function(i) {
+        }, SoundManager.prototype.updateGlobalVolume = function(i) {
             var key;
             0 > i && (i = 0), i > 1 && (i = 1);
             for (key in this.sounds) this.sounds[key].volume = i;
             return i;
-        }, PrivateSoundManager;
+        }, SoundManager;
     }(), SoundManager.get = function() {
-        return null != instance ? instance : instance = new PrivateSoundManager();
+        return null != instance ? instance : instance = new Singleton.SoundManager();
     }, SoundManager;
 }();
 
@@ -11604,19 +11612,15 @@ EngineUtils = function() {
     }, EngineUtils;
 }();
 
-var exports;
-
-exports = void 0, ("undefined" == typeof exports || null === exports) && (exports = {});
-
 var JsonModelManager;
 
 JsonModelManager = function() {
     function JsonModelManager() {}
-    var PrivateJsonModelManager, instance;
-    return instance = null, PrivateJsonModelManager = function() {
-        function PrivateJsonModelManager() {}
-        return PrivateJsonModelManager.prototype.loader = new THREE.JSONLoader(), PrivateJsonModelManager.prototype.models = {}, 
-        PrivateJsonModelManager.prototype.loadCount = 0, PrivateJsonModelManager.prototype.load = function(key, url, callback) {
+    var instance;
+    return instance = null, Singleton.JsonModelManager = function() {
+        function JsonModelManager() {}
+        return JsonModelManager.prototype.loader = new THREE.JSONLoader(), JsonModelManager.prototype.models = {}, 
+        JsonModelManager.prototype.loadCount = 0, JsonModelManager.prototype.load = function(key, url, callback) {
             return this.loadCount += 1, this.loader.load(url, function(geometry, materials) {
                 var anim, animation, i, j, len, mat, material, mesh, ref;
                 for (mesh = new THREE.SkinnedMesh(geometry, new THREE.MeshFaceMaterial(materials)), 
@@ -11626,37 +11630,37 @@ JsonModelManager = function() {
                 if (mesh.animations = [], null != mesh.geometry.animations) for (ref = mesh.geometry.animations, 
                 j = 0, len = ref.length; len > j; j++) anim = ref[j], animation = new THREE.Animation(mesh, anim, THREE.AnimationHandler.CATMULLROM), 
                 mesh.animations.push(animation);
-                return JsonModelManager.get().models[key] = mesh, callback(mesh);
+                return window.JsonModelManager.get().models[key] = mesh, callback(mesh);
             });
-        }, PrivateJsonModelManager.prototype.hasFinishedLoading = function() {
+        }, JsonModelManager.prototype.hasFinishedLoading = function() {
             return this.loadCount === Object.keys(this.models).size();
-        }, PrivateJsonModelManager;
+        }, JsonModelManager;
     }(), JsonModelManager.get = function() {
-        return null != instance ? instance : instance = new PrivateJsonModelManager();
+        return null != instance ? instance : instance = new Singleton.JsonModelManager();
     }, JsonModelManager;
-}();
+}(), exports.JsonModelManager = JsonModelManager;
 
 var ResourceManager;
 
 ResourceManager = function() {
     function ResourceManager() {}
-    var PrivateResourceManager, instance;
-    return instance = null, PrivateResourceManager = function() {
-        function PrivateResourceManager() {}
-        return PrivateResourceManager.prototype.loadedTexturesCount = 0, PrivateResourceManager.prototype.textures = {}, 
-        PrivateResourceManager.prototype.addTexture = function(key, url) {
+    var instance;
+    return instance = null, Singleton.ResourceManager = function() {
+        function ResourceManager() {}
+        return ResourceManager.prototype.loadedTexturesCount = 0, ResourceManager.prototype.textures = {}, 
+        ResourceManager.prototype.addTexture = function(key, url) {
             var texture;
             return texture = THREE.ImageUtils.loadTexture(url, {}, this._inc), this.textures[key] = texture, 
             this;
-        }, PrivateResourceManager.prototype.texture = function(key) {
+        }, ResourceManager.prototype.texture = function(key) {
             return this.textures[key];
-        }, PrivateResourceManager.prototype.hasFinishedLoading = function() {
+        }, ResourceManager.prototype.hasFinishedLoading = function() {
             return this.loadedTexturesCount === Object.keys(textures).length;
-        }, PrivateResourceManager.prototype._inc = function() {
+        }, ResourceManager.prototype._inc = function() {
             return ResourceManager.get().loadedTexturesCount += 1;
-        }, PrivateResourceManager;
+        }, ResourceManager;
     }(), ResourceManager.get = function() {
-        return null != instance ? instance : instance = new PrivateResourceManager();
+        return null != instance ? instance : instance = new Singleton.ResourceManager();
     }, ResourceManager;
 }();
 
@@ -11695,23 +11699,12 @@ var BaseModel;
 
 BaseModel = function() {
     function BaseModel() {}
-    return BaseModel.prototype.visible = !0, BaseModel.prototype.mesh = void 0, BaseModel.prototype.getTweenFromPosition = function() {
-        return {
-            x: this.mesh.position.x,
-            y: this.mesh.position.y,
-            z: this.mesh.position.z,
-            rX: this.mesh.rotation.x,
-            rY: this.mesh.rotation.y,
-            rZ: this.mesh.rotation.z
-        };
-    }, BaseModel.prototype.addToPosition = function(x, y, z) {
-        return this.mesh.position.x += x, this.mesh.position.y += y, this.mesh.position.z += z;
-    }, BaseModel.prototype.setScale = function(i) {
+    return BaseModel.prototype.visible = !0, BaseModel.prototype.mesh = void 0, BaseModel.prototype.setScale = function(i) {
         return this.mesh.scale.set(i, i, i);
-    }, BaseModel.prototype.setVisible = function(b) {
+    }, BaseModel.prototype.setVisible = function(value) {
         return this.mesh.traverse(function(object) {
-            return object.visible = b;
-        }), this.visible = b;
+            return object.visible = value;
+        }), this.visible = value;
     }, BaseModel.prototype.toggleWireframe = function() {
         return null != this.mesh || null != this.mesh.material ? this.mesh.material.wireframe = !this.mesh.material.wireframe : void 0;
     }, BaseModel.prototype.isHovered = function(raycaster) {
@@ -11758,29 +11751,28 @@ var Config;
 
 Config = function() {
     function Config() {}
-    var PrivateConfig, instance;
-    return instance = null, PrivateConfig = function() {
-        function PrivateConfig() {}
-        return PrivateConfig.prototype.showStatsOnLoad = !1, PrivateConfig.prototype.contextMenuDisabled = !0, 
-        PrivateConfig.prototype.antialias = !0, PrivateConfig.prototype.anaglyph = !1, PrivateConfig.prototype.resize = !1, 
-        PrivateConfig.prototype.width = 1280, PrivateConfig.prototype.height = 1024, PrivateConfig.prototype.soundEnabled = !1, 
-        PrivateConfig.prototype.debug = !1, PrivateConfig.prototype.preventDefaultMouseEvents = !0, 
-        PrivateConfig.prototype.animate = !0, PrivateConfig.prototype.transparentBackground = !1, 
-        PrivateConfig.prototype.fillWindow = function() {
+    var instance;
+    return instance = null, Singleton.Config = function() {
+        function Config() {}
+        return Config.prototype.showStatsOnLoad = !1, Config.prototype.contextMenuDisabled = !0, 
+        Config.prototype.antialias = !0, Config.prototype.anaglyph = !1, Config.prototype.resize = !1, 
+        Config.prototype.width = 1280, Config.prototype.height = 1024, Config.prototype.soundEnabled = !1, 
+        Config.prototype.debug = !1, Config.prototype.preventDefaultMouseEvents = !0, Config.prototype.animate = !0, 
+        Config.prototype.transparentBackground = !1, Config.prototype.fillWindow = function() {
             return this.resize = !0, this.width = window.innerWidth, this.height = window.innerHeight;
-        }, PrivateConfig.prototype.toggleAnaglyph = function() {
+        }, Config.prototype.toggleAnaglyph = function() {
             return this.anaglyph = !this.anaglyph;
-        }, PrivateConfig.prototype.toggleStats = function() {
+        }, Config.prototype.toggleStats = function() {
             return StatsManager.get().toggle();
-        }, PrivateConfig.prototype.toggleSound = function() {
+        }, Config.prototype.toggleSound = function() {
             return this.soundEnabled = !this.soundEnabled;
-        }, PrivateConfig.prototype.toggleDebug = function() {
+        }, Config.prototype.toggleDebug = function() {
             return this.debug = !this.debug;
-        }, PrivateConfig.prototype.toggleFullScreen = function() {
+        }, Config.prototype.toggleFullScreen = function() {
             return EngineUtils.toggleFullScreen();
-        }, PrivateConfig;
+        }, Config;
     }(), Config.get = function() {
-        return null != instance ? instance : instance = new PrivateConfig();
+        return null != instance ? instance : instance = new Singleton.Config();
     }, Config;
 }(), exports.Config = Config;
 
@@ -11793,7 +11785,8 @@ Helper = function() {
         var config;
         return null == options && (options = {}), config = Config.get(), null == options.view_angle && (options.view_angle = 45), 
         null == options.aspect && (options.aspect = config.width / config.height), null == options.near && (options.near = 1), 
-        null == options.far && (options.far = 1e4), new THREE.PerspectiveCamera(options.view_angle, options.aspect, options.near, options.far);
+        null == options.far && (options.far = 1e4), options.type || (options.type = "PerspectiveCamera"), 
+        new THREE[options.type](options.view_angle, options.aspect, options.near, options.far);
     }, Helper.light = function() {
         var light;
         return light = new THREE.DirectionalLight(16777215), light.position.set(0, 100, 60), 
@@ -11980,6 +11973,8 @@ Engine3D = function() {
         return this.sceneManager.currentScene().doKeyboardEvent(event);
     }, Engine3D.prototype.setCamera = function(camera) {
         return this.camera = camera, this.config.resize ? this.winResize = new THREEx.WindowResize(this.renderer, this.camera) : void 0;
+    }, Engine3D.prototype.setClearColor = function(color, alpha) {
+        return this.renderer.setClearColor(color, alpha);
     }, Engine3D.prototype.addScene = function(scene) {
         return this.sceneManager.addScene(scene), null == this.sceneManager.currentSceneIndex ? this.sceneManager.setScene(scene) : void 0;
     }, Engine3D.prototype.removeScene = function(scene) {

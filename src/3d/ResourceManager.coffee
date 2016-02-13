@@ -4,7 +4,7 @@ class ResourceManager
   instance = null
 
   # Handles loading textures
-  class PrivateResourceManager
+  class Singleton.ResourceManager
     loadedTexturesCount: 0
     textures: {}
 
@@ -32,4 +32,4 @@ class ResourceManager
       ResourceManager.get().loadedTexturesCount += 1
 
   @get: () ->
-    instance ?= new PrivateResourceManager()
+    instance ?= new Singleton.ResourceManager()

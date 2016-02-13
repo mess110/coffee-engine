@@ -4,7 +4,7 @@ class NetworkManager
   instance = null
 
   # Uses socket.io for networking
-  class PrivateNetworkManager
+  class Singleton.NetworkManager
     socket: undefined
 
     # Connect to a namespace
@@ -20,9 +20,12 @@ class NetworkManager
         console.log msg
 
     # Emit an event
+    #
+    # @param [String] event name
+    # @param [Object] event payload
     emit: (event, params) ->
       params.timestamp = new Date().getTime()
       @socket.emit(event, params)
 
   @get: () ->
-    instance ?= new PrivateNetworkManager()
+    instance ?= new Singleton.NetworkManager()

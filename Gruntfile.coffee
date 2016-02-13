@@ -17,14 +17,14 @@ module.exports = (grunt) ->
     "bower_components/ShaderParticleEngine/build/ShaderParticles.js"
     "bower_components/threex.dynamictexture/threex.dynamictexture.js"
 
+    # This NEEDS to be in this position
+    "src/3d/Hack.js"
+
     "src/shared/SceneManager.js"
     "src/shared/NetworkManager.js"
     "src/shared/StatsManager.js"
     "src/shared/SoundManager.js"
     "src/shared/EngineUtils.js"
-
-    # This NEEDS to be in this position
-    "src/3d/Hack.js"
 
     "src/3d/JsonModelManager.js"
     "src/3d/ResourceManager.js"

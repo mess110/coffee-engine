@@ -6,7 +6,7 @@ class SoundManager
   # Class used to manage sounds
   #
   # Can be accessed through the singleton class SoundManager
-  class PrivateSoundManager
+  class Singleton.SoundManager
     sounds: {}
 
     # Add a sound
@@ -38,4 +38,4 @@ class SoundManager
       i
 
   @get: () ->
-    instance ?= new PrivateSoundManager()
+    instance ?= new Singleton.SoundManager()

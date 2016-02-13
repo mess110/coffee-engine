@@ -6,7 +6,7 @@ class SceneManager
   # Class used to manage scenes
   #
   # Can be accessed through the singleton class SceneManager
-  class PrivateSceneManager
+  class Singleton.SceneManager
     scenes: []
     currentSceneIndex: undefined
 
@@ -59,4 +59,4 @@ class SceneManager
       @currentScene().fullTick(tpf)
 
   @get: () ->
-    instance ?= new PrivateSceneManager()
+    instance ?= new Singleton.SceneManager()

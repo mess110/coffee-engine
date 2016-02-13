@@ -3,7 +3,7 @@ class JsonModelManager
   instance = null
 
   # Handles loading JSON models
-  class PrivateJsonModelManager
+  class Singleton.JsonModelManager
     loader: new (THREE.JSONLoader)
     models: {}
     loadCount: 0
@@ -38,7 +38,7 @@ class JsonModelManager
             animation = new THREE.Animation(mesh, anim, THREE.AnimationHandler.CATMULLROM)
             mesh.animations.push animation
 
-        JsonModelManager.get().models[key] = mesh
+        window.JsonModelManager.get().models[key] = mesh
         callback(mesh)
 
     # Check if all objects which started loading have finished loading
@@ -46,4 +46,6 @@ class JsonModelManager
       @loadCount == Object.keys(@models).size()
 
   @get: () ->
-    instance ?= new PrivateJsonModelManager()
+    instance ?= new Singleton.JsonModelManager()
+
+exports.JsonModelManager = JsonModelManager

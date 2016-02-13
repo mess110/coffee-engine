@@ -333,38 +333,38 @@ var SceneManager;
 
 SceneManager = function() {
     function SceneManager() {}
-    var PrivateSceneManager, instance;
-    return instance = null, PrivateSceneManager = function() {
-        function PrivateSceneManager() {}
-        return PrivateSceneManager.prototype.scenes = [], PrivateSceneManager.prototype.currentSceneIndex = void 0, 
-        PrivateSceneManager.prototype.currentScene = function() {
+    var instance;
+    return instance = null, Singleton.SceneManager = function() {
+        function SceneManager() {}
+        return SceneManager.prototype.scenes = [], SceneManager.prototype.currentSceneIndex = void 0, 
+        SceneManager.prototype.currentScene = function() {
             if (void 0 === this.currentSceneIndex) throw "SceneManager.setScene not called";
             if (0 === this.scenes.length) throw "Requires at least one scene";
             return this.scenes[this.currentSceneIndex];
-        }, PrivateSceneManager.prototype.addScene = function(scene) {
+        }, SceneManager.prototype.addScene = function(scene) {
             var i;
             return i = this.scenes.indexOf(scene), -1 === i ? this.scenes.push(scene) : void 0;
-        }, PrivateSceneManager.prototype.removeScene = function(scene) {
+        }, SceneManager.prototype.removeScene = function(scene) {
             var i;
             return i = this.scenes.indexOf(scene), this.removeSceneByIndex(i);
-        }, PrivateSceneManager.prototype.removeSceneByIndex = function(i) {
+        }, SceneManager.prototype.removeSceneByIndex = function(i) {
             return i >= 0 ? (i === this.currentSceneIndex && (this.currentSceneIndex = void 0), 
             array.splice(i, 1)) : void 0;
-        }, PrivateSceneManager.prototype.setScene = function(scene) {
+        }, SceneManager.prototype.setScene = function(scene) {
             var i;
             return i = this.scenes.indexOf(scene), this.setSceneByIndex(i), this.currentScene();
-        }, PrivateSceneManager.prototype.setSceneByIndex = function(i) {
+        }, SceneManager.prototype.setSceneByIndex = function(i) {
             return !this.isEmpty() && this.isValidIndex(i) && (this.currentSceneIndex = i), 
             this.currentScene();
-        }, PrivateSceneManager.prototype.isEmpty = function() {
+        }, SceneManager.prototype.isEmpty = function() {
             return 0 === this.scenes.length;
-        }, PrivateSceneManager.prototype.isValidIndex = function(i) {
+        }, SceneManager.prototype.isValidIndex = function(i) {
             return i >= 0 && i < this.scenes.length;
-        }, PrivateSceneManager.prototype.tick = function(tpf) {
+        }, SceneManager.prototype.tick = function(tpf) {
             return this.currentScene().fullTick(tpf);
-        }, PrivateSceneManager;
+        }, SceneManager;
     }(), SceneManager.get = function() {
-        return null != instance ? instance : instance = new PrivateSceneManager();
+        return null != instance ? instance : instance = new Singleton.SceneManager();
     }, SceneManager;
 }();
 

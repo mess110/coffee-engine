@@ -4,7 +4,7 @@ class StatsManager
   instance = null
 
   # Handles stats
-  class PrivateStatsManager
+  class Singleton.StatsManager
     statsVisible: false
 
     # @nodoc
@@ -35,4 +35,4 @@ class StatsManager
       @rendererStats.update(renderer)
 
   @get: () ->
-    instance ?= new PrivateStatsManager()
+    instance ?= new Singleton.StatsManager()

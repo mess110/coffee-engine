@@ -3,4 +3,4 @@ exports = undefined
 if typeof exports == 'undefined' or exports == null
   exports = {}
 
-window.Singleton or= {}
+class Singleton
