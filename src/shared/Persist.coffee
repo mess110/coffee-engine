@@ -20,8 +20,8 @@
 #   persist.default('hello', 'world')
 #   persist.get('hello') # returns world
 class Persist
-  @PREFIX = 'ce.'
-  @DEFAULT_SUFFIX = '.default'
+  @PREFIX = 'ce'
+  @DEFAULT_SUFFIX = 'default'
 
   # chooses storage type. By default, it uses localStorage
   #
@@ -35,7 +35,7 @@ class Persist
   # @param [Object] value
   set: (key, value, def=undefined) ->
     throw 'key missing' unless key?
-    @storage["#{Persist.PREFIX}#{key}"] = value
+    @storage["#{Persist.PREFIX}.#{key}"] = value
     @default(key, def) if def?
 
   # set the default value for a key
@@ -47,7 +47,7 @@ class Persist
   #
   # @see DEFAULT_SUFFIX
   default: (key, value) ->
-    @set("#{key}#{Persist.DEFAULT_SUFFIX}", value)
+    @set("#{key}.#{Persist.DEFAULT_SUFFIX}", value)
 
   # Get a value in the storage. If the value does not exist,
   # it checks for the default value
@@ -57,12 +57,12 @@ class Persist
   # @param [String] key
   get: (key) ->
     value = @_get(key)
-    if !value? then @_get("#{key}#{Persist.DEFAULT_SUFFIX}") else value
+    if !value? then @_get("#{key}.#{Persist.DEFAULT_SUFFIX}") else value
 
   # Get a value in the storage
   _get: (key) ->
     throw 'key missing' unless key?
-    value = @storage["#{Persist.PREFIX}#{key}"]
+    value = @storage["#{Persist.PREFIX}.#{key}"]
     return Number(value) if isNumeric(value)
     return Boolean(value) if ['true', 'false'].includes(value)
     return undefined if value == 'undefined'
@@ -82,7 +82,7 @@ class Persist
   clear: (exceptions=[], withDefaults=false) ->
     exceptions = [exceptions] unless exceptions instanceof Array
     for storage of @storage
-      continue if storage.endsWith(Persist.DEFAULT_SUFFIX) and withDefaults == false
+      continue if storage.endsWith(".#{Persist.DEFAULT_SUFFIX}") and withDefaults == false
       if !exceptions.includes(storage)
         @rm(storage)
 
