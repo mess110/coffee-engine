@@ -95,5 +95,4 @@ module.exports = (grunt) ->
 
   grunt.registerTask "default", ["dev"]
 
-  grunt.loadNpmTasks 'grunt-shell'
-  grunt.loadNpmTasks 'grunt-contrib-uglify'
+  require('load-grunt-tasks')(grunt)
