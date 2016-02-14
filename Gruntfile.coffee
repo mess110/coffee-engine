@@ -7,6 +7,7 @@ module.exports = (grunt) ->
 
     "bower_components/threejs/examples/js/effects/AnaglyphEffect.js"
     "bower_components/threejs/examples/js/controls/OrbitControls.js"
+    "bower_components/threejs/examples/js/Mirror.js"
 
     "bower_components/threex.windowresize/threex.windowresize.js"
     "bower_components/threex.rendererstats/threex.rendererstats.js"
@@ -37,6 +38,7 @@ module.exports = (grunt) ->
     "src/3d/extra/Water.js"
     "src/3d/extra/Terrain.js"
     "src/3d/extra/SpotLight.js"
+    "src/3d/extra/Mirror.js"
     "src/3d/extra/LoadingScene.js"
 
     "src/3d/Engine3D.js"
