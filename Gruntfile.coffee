@@ -25,6 +25,7 @@ module.exports = (grunt) ->
     "src/shared/NetworkManager.js"
     "src/shared/StatsManager.js"
     "src/shared/SoundManager.js"
+    "src/shared/Persist.js"
     "src/shared/Utils.js"
 
     "src/3d/JsonModelManager.js"
@@ -49,6 +50,7 @@ module.exports = (grunt) ->
     "bower_components/tweenjs/src/Tween.js"
 
     "src/shared/SceneManager.js"
+    "src/shared/Persist.js"
     "src/shared/Utils.js"
 
     "src/2d/BaseScene.js"

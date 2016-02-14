@@ -106,3 +106,7 @@ String::isPresent = ->
 # Capitalizes first letter
 String::capitalizeFirstLetter = ->
   @charAt(0).toUpperCase() + @slice(1)
+
+# Check if value is a number
+isNumeric = (n) ->
+  !isNaN(parseFloat(n)) and isFinite(n)
