@@ -5,7 +5,7 @@ class JsonModelManager
   # Handles loading JSON models
   class Singleton.JsonModelManager
     loader: new (THREE.JSONLoader)
-    models: {}
+    items: {}
     loadCount: 0
 
     # Load JSON model
@@ -29,8 +29,9 @@ class JsonModelManager
         throw 'mesh already has animations. not overwriting default behaviour' if mesh.animations?
 
         mesh = jmm.initAnimations(mesh)
-        jmm.models[key] = mesh
+        jmm.items[key] = mesh
         callback(mesh)
+        @
 
     # Used to init or re-init animations
     #
@@ -46,7 +47,7 @@ class JsonModelManager
 
     # Check if all objects which started loading have finished loading
     hasFinishedLoading: ->
-      @loadCount == Object.keys(@models).size()
+      @loadCount == Object.keys(@items).size()
 
   @get: () ->
     instance ?= new Singleton.JsonModelManager()

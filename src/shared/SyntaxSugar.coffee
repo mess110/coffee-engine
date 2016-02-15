@@ -91,6 +91,27 @@ String::size = (s) ->
 String::startsWith = (s) ->
   @.indexOf(s) == 0
 
+String::startsWithAny = (prefixes) ->
+  startsWith = false
+  for prefix in prefixes
+    startsWith = true if @.startsWith(prefix)
+  startsWith
+
+String::endsWith = (suffix) ->
+  @indexOf(suffix, @length - (suffix.length)) != -1
+
+String::endsWithAny = (suffixes) ->
+  endsWith = false
+  for suffix in suffixes
+    endsWith = true if @.endsWith(suffix)
+  endsWith
+
+String::replaceAny = (sources, dest) ->
+  tmp = @
+  for source in sources
+    tmp = tmp.replace(source, dest)
+  tmp
+
 # Checks if a string has size 0
 String::isEmpty = ->
   @.size() == 0

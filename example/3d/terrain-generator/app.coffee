@@ -1,6 +1,6 @@
 DEFAULT_OPTIONS =
-  width: 20
-  height: 20
+  width: 10
+  height: 10
   wSegments: 5
   hSegments: 5
   scale: 5
@@ -33,7 +33,6 @@ class TerrainGeneratorScene extends BaseScene
   constructor: ->
     super()
 
-    @scene.add Helper.ambientLight()
     @scene.add Helper.ambientLight()
     @scene.add Helper.ambientLight()
     @scene.add Helper.ambientLight()

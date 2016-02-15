@@ -1,5 +1,5 @@
-# A helper scene which loads models and calls a function once
-# model loading is done
+# A helper scene which loads models or images, and calls a function once
+# loading is done
 #
 # @example
 #   gameScene = new GameScene()
@@ -7,13 +7,18 @@
 #     engine.sceneManager.setScene(gameScene)
 #   )
 class LoadingScene extends BaseScene
+  JSON_URLS = ['.json']
+  IMG_URLS = ['.png', '.jpg', '.jpeg']
+
   jmm: JsonModelManager.get()
+  tm: TextureManager.get()
+  config: Config.get()
 
   # You can either override the method hasFinishedLoading or you can
   # pass it as a param. It will be called once JsonModelManager has
   # finished loading.
   #
-  # @param [Array] urls of the json models
+  # @param [Array] urls of the json models or images
   # @param [Function] hasFinishedLoading called 
   constructor: (urls, hasFinishedLoading = undefined)->
     super()
@@ -23,15 +28,27 @@ class LoadingScene extends BaseScene
     @hasFinishedLoading = hasFinishedLoading
 
     for url in urls
-      name = url.replace('.json', '').split('/').last()
-      console.log "Loading '#{name}' from '#{url}'" if Config.get().debug
-      @jmm.load(name, url)
+      @_loadJsonModel(url) if url.endsWithAny(JSON_URLS)
+      @_loadTexture(url) if url.endsWithAny(IMG_URLS)
 
     interval = setInterval =>
-      if @jmm.hasFinishedLoading()
+      if @jmm.hasFinishedLoading() and @tm.hasFinishedLoading()
         clearInterval(interval)
+        console.log 'Finished loading' if @config.debug
         @hasFinishedLoading()
     , 100
+
+  # assumes the url has been validated as a json model
+  _loadJsonModel: (url) ->
+    name = url.replaceAny(JSON_URLS, '').split('/').last()
+    console.log "Loading model '#{name}' from '#{url}'" if @config.debug
+    @jmm.load(name, url)
+
+  # assumes the url has been validated as a texture
+  _loadTexture: (url) ->
+    name = url.replaceAny(IMG_URLS, '').split('/').last()
+    console.log "Loading texture '#{name}' from '#{url}'" if @config.debug
+    @tm.load(name, url)
 
   # @nodoc
   init: ->

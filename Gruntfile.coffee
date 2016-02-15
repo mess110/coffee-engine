@@ -29,7 +29,7 @@ module.exports = (grunt) ->
     "src/shared/Utils.js"
 
     "src/3d/JsonModelManager.js"
-    "src/3d/ResourceManager.js"
+    "src/3d/TextureManager.js"
     "src/3d/BaseScene.js"
     "src/3d/BaseModel.js"
     "src/3d/BaseParticle.js"
