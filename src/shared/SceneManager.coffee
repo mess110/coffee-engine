@@ -12,9 +12,8 @@ class SceneManager
 
     # Returns the current scene
     currentScene: ->
-      throw 'SceneManager.setScene not called' if @currentSceneIndex == undefined
-      throw 'Requires at least one scene' if @scenes.length == 0
-
+      throw 'SceneManager.setScene not called' unless @currentSceneIndex?
+      throw 'Requires at least one scene' if @isEmpty()
       @scenes[@currentSceneIndex]
 
     # Adds a scene if it is not found in @scenes
@@ -37,13 +36,14 @@ class SceneManager
     # sets the scene
     setScene: (scene) ->
       i = @scenes.indexOf(scene)
+      throw 'scene not added to SceneManager' if i == -1
       @setSceneByIndex(i)
       @currentScene()
 
     # sets the scene by index
     setSceneByIndex: (i) ->
-      if !@isEmpty() and @isValidIndex(i)
-        @currentSceneIndex = i
+      throw 'invalid scene index' if @isEmpty() or !@isValidIndex(i)
+      @currentSceneIndex = i
       console.log "Changing to scene #{i}" if Config.get().debug
       @currentScene()
 

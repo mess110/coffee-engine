@@ -15,8 +15,8 @@ class GameScene extends BaseScene
   tick: (tpf) ->
     return unless @loaded
 
-    @cube.rotation.z += 1 * tpf
-    @cube.rotation.y += 1 * tpf
+    @cube.rotation.x += tpf
+    @cube.rotation.y += tpf
 
   doMouseEvent: (event, raycaster) ->
 
