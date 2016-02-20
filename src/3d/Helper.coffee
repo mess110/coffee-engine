@@ -141,3 +141,15 @@ class Helper
   # @see https://stackoverflow.com/questions/20058579/threejs-disable-orbit-camera-while-using-transform-control
   @orbitControls: (engine) ->
     new (THREE.OrbitControls)(engine.camera, engine.renderer.domElement)
+
+  # Create fog
+  #
+  # @example
+  #   scene.fog = Helper.fog('white', 0, 500)
+  #
+  # @see http://threejs.org/docs/#Reference/Scenes/Fog
+  @fog: (options = {})->
+    options.color = 0x000000 unless options.color?
+    options.near = 0 unless options.near?
+    options.far = 500 unless options.far?
+    new THREE.Fog(options.color, options.near, options.far)
