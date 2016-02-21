@@ -19,7 +19,7 @@ class GameScene extends BaseScene
   doKeyboardEvent: (event) ->
 
 gameScene = new GameScene()
-loadingScene = new LoadingScene(['sword.json', 'sword.png'], () ->
+loadingScene = new LoadingScene([], () ->
   gameScene.init()
   engine.sceneManager.setScene(gameScene)
 )

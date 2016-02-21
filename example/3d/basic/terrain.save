@@ -1,9 +1,9 @@
 {
-  "width": 10,
-  "height": 10,
-  "wSegments": 5,
-  "hSegments": 5,
-  "scale": 20,
-  "textureUrl": "heightmap.png",
-  "heightmapUrl": "heightmap.png"
+  "width": 50,
+  "height": 50,
+  "wSegments": 127,
+  "hSegments": 127,
+  "scale": 10,
+  "textureUrl": "grass.png",
+  "heightmapUrl": "heightmap3.png"
 }

@@ -63,5 +63,6 @@ class BaseParticle extends BaseModel
   tick: (tpf) ->
     @particleGroup.tick(tpf)
 
+  # Load particle with TextureManager
   @fromJson = (json) ->
     new BaseParticle(json)

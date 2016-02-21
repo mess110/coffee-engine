@@ -9,6 +9,11 @@
 #   terrain = new Terrain(options.textureUrl, options.width, options.height, options.wSegments, options.hSegments)
 #   terrain.applyHeightmap(hm.heightData)
 #
+# @example
+#   # assuming you are using a LoadingScene
+#   json = SaveObjectManager.get().items['terrain']
+#   @scene.add Terrain.fromJson(json).mesh
+#
 class Terrain extends BaseModel
 
   # Creates the terrain
@@ -35,13 +40,6 @@ class Terrain extends BaseModel
     for vertice in @mesh.geometry.vertices
       vertice.z = imageData[i]
       i++
-
-  @fromJson: (json) ->
-    hm = TextureManager.get().items[Utils.getKeyName(json.heightmapUrl, Utils.IMG_URLS)]
-    hm.heightData = Terrain.getHeightData(hm.image, json.scale)
-    terrain = new Terrain(json)
-    terrain.applyHeightmap(hm.heightData)
-    terrain
 
   # Hackish way to add a heightmap to the scene
   #
@@ -105,3 +103,13 @@ class Terrain extends BaseModel
       data[j++] = all / (12 * scale)
       i += 4
     data
+
+  # Propper way to load a terrain using TextureManager
+  #
+  # @param [Object] json
+  @fromJson: (json) ->
+    hm = TextureManager.get().items[Utils.getKeyName(json.heightmapUrl, Utils.IMG_URLS)]
+    hm.heightData = Terrain.getHeightData(hm.image, json.scale)
+    terrain = new Terrain(json)
+    terrain.applyHeightmap(hm.heightData)
+    terrain

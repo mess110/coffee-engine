@@ -10,11 +10,7 @@ class GameScene extends BaseScene
 
     @controls = Helper.orbitControls(engine)
 
-    @loaded = true
-
   tick: (tpf) ->
-    return unless @loaded
-
     @cube.rotation.x += tpf
     @cube.rotation.y += tpf
 

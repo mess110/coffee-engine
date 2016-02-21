@@ -16,6 +16,9 @@ class SaveObjectManager
   #   @scene.add @particle.mesh
   #
   #   @particle.tick(tpf)
+  #
+  # @see Terrain.fromJson
+  # @see Particle.fromJson
   class Singleton.SaveObjectManager
     items: {}
     loadCount: 0
