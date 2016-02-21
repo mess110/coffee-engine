@@ -338,8 +338,8 @@ SceneManager = function() {
         function SceneManager() {}
         return SceneManager.prototype.scenes = [], SceneManager.prototype.currentSceneIndex = void 0, 
         SceneManager.prototype.currentScene = function() {
-            if (void 0 === this.currentSceneIndex) throw "SceneManager.setScene not called";
-            if (0 === this.scenes.length) throw "Requires at least one scene";
+            if (null == this.currentSceneIndex) throw "SceneManager.setScene not called";
+            if (this.isEmpty()) throw "Requires at least one scene";
             return this.scenes[this.currentSceneIndex];
         }, SceneManager.prototype.addScene = function(scene) {
             var i;
@@ -352,10 +352,12 @@ SceneManager = function() {
             array.splice(i, 1)) : void 0;
         }, SceneManager.prototype.setScene = function(scene) {
             var i;
-            return i = this.scenes.indexOf(scene), this.setSceneByIndex(i), this.currentScene();
+            if (i = this.scenes.indexOf(scene), -1 === i) throw "scene not added to SceneManager";
+            return this.setSceneByIndex(i), this.currentScene();
         }, SceneManager.prototype.setSceneByIndex = function(i) {
-            return !this.isEmpty() && this.isValidIndex(i) && (this.currentSceneIndex = i), 
-            Config.get().debug && console.log("Changing to scene " + i), this.currentScene();
+            if (this.isEmpty() || !this.isValidIndex(i)) throw "invalid scene index";
+            return this.currentSceneIndex = i, Config.get().debug && console.log("Changing to scene " + i), 
+            this.currentScene();
         }, SceneManager.prototype.isEmpty = function() {
             return 0 === this.scenes.length;
         }, SceneManager.prototype.isValidIndex = function(i) {
@@ -368,29 +370,76 @@ SceneManager = function() {
     }, SceneManager;
 }();
 
-var EngineUtils;
+var Persist;
 
-EngineUtils = function() {
-    function EngineUtils() {}
-    return EngineUtils.toggleFullScreen = function() {
-        document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-    }, EngineUtils.guid = function() {
-        var s4;
-        return s4 = function() {
-            return Math.floor(65536 * (1 + Math.random())).toString(16).substring(1);
-        }, s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
-    }, EngineUtils.setCursor = function(url) {
-        return document.body.style.cursor = "url('" + url + "'), auto";
-    }, EngineUtils;
+Persist = function() {
+    function Persist() {
+        this.storage = localStorage;
+    }
+    return Persist.PREFIX = "ce", Persist.DEFAULT_SUFFIX = "default", Persist.prototype.set = function(key, value, def) {
+        if (null == def && (def = void 0), null == key) throw "key missing";
+        return this.storage[Persist.PREFIX + "." + key] = value, null != def ? this["default"](key, def) : void 0;
+    }, Persist.prototype["default"] = function(key, value) {
+        return this.set(key + "." + Persist.DEFAULT_SUFFIX, value);
+    }, Persist.prototype.get = function(key) {
+        var value;
+        return value = this._get(key), null == value ? this._get(key + "." + Persist.DEFAULT_SUFFIX) : value;
+    }, Persist.prototype._get = function(key) {
+        var value;
+        if (null == key) throw "key missing";
+        return value = this.storage[Persist.PREFIX + "." + key], isNumeric(value) ? Number(value) : [ "true", "false" ].includes(value) ? Boolean(value) : "undefined" === value ? void 0 : value;
+    }, Persist.prototype.rm = function(key) {
+        if (null == key) throw "key missing";
+        return this.storage.removeItem(key);
+    }, Persist.prototype.clear = function(exceptions, withDefaults) {
+        var results, storage;
+        null == exceptions && (exceptions = []), null == withDefaults && (withDefaults = !1), 
+        exceptions instanceof Array || (exceptions = [ exceptions ]), results = [];
+        for (storage in this.storage) storage.endsWith("." + Persist.DEFAULT_SUFFIX) && withDefaults === !1 || (exceptions.includes(storage) ? results.push(void 0) : results.push(this.rm(storage)));
+        return results;
+    }, Persist.get = function(key) {
+        return new Persist().get(key);
+    }, Persist.set = function(key, value, def) {
+        return new Persist().set(key, value, def);
+    }, Persist["default"] = function(key, value) {
+        return new Persist()["default"](key, value);
+    }, Persist.rm = function(key) {
+        return new Persist().rm(key);
+    }, Persist.clear = function(exceptions, withDefaults) {
+        return new Persist().clear(exceptions, withDefaults);
+    }, Persist;
 }();
 
 var Utils;
 
 Utils = function() {
     function Utils() {}
-    return Utils.rgbToHex = function(r, g, b) {
+    return Utils.JSON_URLS = [ ".json" ], Utils.IMG_URLS = [ ".png", ".jpg", ".jpeg" ], 
+    Utils.SAVE_URLS = [ ".save" ], Utils.toggleFullScreen = function() {
+        document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    }, Utils.guid = function() {
+        var s4;
+        return s4 = function() {
+            return Math.floor(65536 * (1 + Math.random())).toString(16).substring(1);
+        }, s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
+    }, Utils.setCursor = function(url) {
+        return document.body.style.cursor = "url('" + url + "'), auto";
+    }, Utils.rgbToHex = function(r, g, b) {
         if (r > 255 || g > 255 || b > 255) throw "Invalid color component";
         return (r << 16 | g << 8 | b).toString(16);
+    }, Utils.getKeyName = function(url, array) {
+        return url.replaceAny(array, "").split("/").last();
+    }, Utils.saveFile = function(content, fileName, format) {
+        var blob, e, error, isFileSaverSupported, json;
+        null == format && (format = "application/json");
+        try {
+            isFileSaverSupported = !!new Blob();
+        } catch (error) {
+            throw e = error, "FileSaver not supported";
+        }
+        return json = JSON.stringify(content, null, 2), blob = new Blob([ json ], {
+            type: format + ";charset=utf-8"
+        }), saveAs(blob, fileName);
     }, Utils;
 }();
 
@@ -468,7 +517,11 @@ Engine2D = function() {
         return requestAnimationFrame(this.render), now = new Date().getTime(), tpf = (now - (this.time || now)) / 1e3, 
         this.time = now, this.sceneManager.tick(tpf);
     }, Engine2D;
-}(), Array.prototype.isEmpty = function() {
+}();
+
+var isNumeric;
+
+Array.prototype.isEmpty = function() {
     return 0 === this.length;
 }, Array.prototype.any = function() {
     return !this.isEmpty();
@@ -515,6 +568,23 @@ Engine2D = function() {
     return this.length;
 }, String.prototype.startsWith = function(s) {
     return 0 === this.indexOf(s);
+}, String.prototype.startsWithAny = function(prefixes) {
+    var j, len, prefix, startsWith;
+    for (startsWith = !1, j = 0, len = prefixes.length; len > j; j++) prefix = prefixes[j], 
+    this.startsWith(prefix) && (startsWith = !0);
+    return startsWith;
+}, String.prototype.endsWith = function(suffix) {
+    return -1 !== this.indexOf(suffix, this.length - suffix.length);
+}, String.prototype.endsWithAny = function(suffixes) {
+    var endsWith, j, len, suffix;
+    for (endsWith = !1, j = 0, len = suffixes.length; len > j; j++) suffix = suffixes[j], 
+    this.endsWith(suffix) && (endsWith = !0);
+    return endsWith;
+}, String.prototype.replaceAny = function(sources, dest) {
+    var j, len, source, tmp;
+    for (tmp = this, j = 0, len = sources.length; len > j; j++) source = sources[j], 
+    tmp = tmp.replace(source, dest);
+    return tmp;
 }, String.prototype.isEmpty = function() {
     return 0 === this.size();
 }, String.prototype.contains = function(s) {
@@ -523,4 +593,6 @@ Engine2D = function() {
     return "undefined" != typeof this && null !== this && !this.isEmpty();
 }, String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
+}, isNumeric = function(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
 };

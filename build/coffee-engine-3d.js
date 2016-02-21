@@ -10433,7 +10433,97 @@ THREE.MorphBlendMesh.prototype.createAnimation = function(name, start, end, fps)
     this.domElement.addEventListener("touchend", touchend, !1), this.domElement.addEventListener("touchmove", touchmove, !1), 
     window.addEventListener("keydown", onKeyDown, !1), this.update();
 }, THREE.OrbitControls.prototype = Object.create(THREE.EventDispatcher.prototype), 
-THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;
+THREE.OrbitControls.prototype.constructor = THREE.OrbitControls, THREE.ShaderLib.mirror = {
+    uniforms: {
+        mirrorColor: {
+            type: "c",
+            value: new THREE.Color(8355711)
+        },
+        mirrorSampler: {
+            type: "t",
+            value: null
+        },
+        textureMatrix: {
+            type: "m4",
+            value: new THREE.Matrix4()
+        }
+    },
+    vertexShader: [ "uniform mat4 textureMatrix;", "varying vec4 mirrorCoord;", "void main() {", "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );", "vec4 worldPosition = modelMatrix * vec4( position, 1.0 );", "mirrorCoord = textureMatrix * worldPosition;", "gl_Position = projectionMatrix * mvPosition;", "}" ].join("\n"),
+    fragmentShader: [ "uniform vec3 mirrorColor;", "uniform sampler2D mirrorSampler;", "varying vec4 mirrorCoord;", "float blendOverlay(float base, float blend) {", "return( base < 0.5 ? ( 2.0 * base * blend ) : (1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );", "}", "void main() {", "vec4 color = texture2DProj(mirrorSampler, mirrorCoord);", "color = vec4(blendOverlay(mirrorColor.r, color.r), blendOverlay(mirrorColor.g, color.g), blendOverlay(mirrorColor.b, color.b), 1.0);", "gl_FragColor = color;", "}" ].join("\n")
+}, THREE.Mirror = function(renderer, camera, options) {
+    THREE.Object3D.call(this), this.name = "mirror_" + this.id, options = options || {}, 
+    this.matrixNeedsUpdate = !0;
+    var width = void 0 !== options.textureWidth ? options.textureWidth : 512, height = void 0 !== options.textureHeight ? options.textureHeight : 512;
+    this.clipBias = void 0 !== options.clipBias ? options.clipBias : 0;
+    var mirrorColor = void 0 !== options.color ? new THREE.Color(options.color) : new THREE.Color(8355711);
+    this.renderer = renderer, this.mirrorPlane = new THREE.Plane(), this.normal = new THREE.Vector3(0, 0, 1), 
+    this.mirrorWorldPosition = new THREE.Vector3(), this.cameraWorldPosition = new THREE.Vector3(), 
+    this.rotationMatrix = new THREE.Matrix4(), this.lookAtPosition = new THREE.Vector3(0, 0, -1), 
+    this.clipPlane = new THREE.Vector4();
+    var debugMode = void 0 !== options.debugMode ? options.debugMode : !1;
+    if (debugMode) {
+        var arrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 10, 16777088), planeGeometry = new THREE.Geometry();
+        planeGeometry.vertices.push(new THREE.Vector3(-10, -10, 0)), planeGeometry.vertices.push(new THREE.Vector3(10, -10, 0)), 
+        planeGeometry.vertices.push(new THREE.Vector3(10, 10, 0)), planeGeometry.vertices.push(new THREE.Vector3(-10, 10, 0)), 
+        planeGeometry.vertices.push(planeGeometry.vertices[0]);
+        var plane = new THREE.Line(planeGeometry, new THREE.LineBasicMaterial({
+            color: 16777088
+        }));
+        this.add(arrow), this.add(plane);
+    }
+    camera instanceof THREE.PerspectiveCamera ? this.camera = camera : (this.camera = new THREE.PerspectiveCamera(), 
+    console.log(this.name + ": camera is not a Perspective Camera!")), this.textureMatrix = new THREE.Matrix4(), 
+    this.mirrorCamera = this.camera.clone(), this.mirrorCamera.matrixAutoUpdate = !0, 
+    this.texture = new THREE.WebGLRenderTarget(width, height), this.tempTexture = new THREE.WebGLRenderTarget(width, height);
+    var mirrorShader = THREE.ShaderLib.mirror, mirrorUniforms = THREE.UniformsUtils.clone(mirrorShader.uniforms);
+    this.material = new THREE.ShaderMaterial({
+        fragmentShader: mirrorShader.fragmentShader,
+        vertexShader: mirrorShader.vertexShader,
+        uniforms: mirrorUniforms
+    }), this.material.uniforms.mirrorSampler.value = this.texture, this.material.uniforms.mirrorColor.value = mirrorColor, 
+    this.material.uniforms.textureMatrix.value = this.textureMatrix, THREE.Math.isPowerOfTwo(width) && THREE.Math.isPowerOfTwo(height) || (this.texture.generateMipmaps = !1, 
+    this.tempTexture.generateMipmaps = !1), this.updateTextureMatrix(), this.render();
+}, THREE.Mirror.prototype = Object.create(THREE.Object3D.prototype), THREE.Mirror.prototype.constructor = THREE.Mirror, 
+THREE.Mirror.prototype.renderWithMirror = function(otherMirror) {
+    this.updateTextureMatrix(), this.matrixNeedsUpdate = !1;
+    var tempCamera = otherMirror.camera;
+    otherMirror.camera = this.mirrorCamera, otherMirror.renderTemp(), otherMirror.material.uniforms.mirrorSampler.value = otherMirror.tempTexture, 
+    this.render(), this.matrixNeedsUpdate = !0, otherMirror.material.uniforms.mirrorSampler.value = otherMirror.texture, 
+    otherMirror.camera = tempCamera, otherMirror.updateTextureMatrix();
+}, THREE.Mirror.prototype.updateTextureMatrix = function() {
+    this.updateMatrixWorld(), this.camera.updateMatrixWorld(), this.mirrorWorldPosition.setFromMatrixPosition(this.matrixWorld), 
+    this.cameraWorldPosition.setFromMatrixPosition(this.camera.matrixWorld), this.rotationMatrix.extractRotation(this.matrixWorld), 
+    this.normal.set(0, 0, 1), this.normal.applyMatrix4(this.rotationMatrix);
+    var view = this.mirrorWorldPosition.clone().sub(this.cameraWorldPosition);
+    view.reflect(this.normal).negate(), view.add(this.mirrorWorldPosition), this.rotationMatrix.extractRotation(this.camera.matrixWorld), 
+    this.lookAtPosition.set(0, 0, -1), this.lookAtPosition.applyMatrix4(this.rotationMatrix), 
+    this.lookAtPosition.add(this.cameraWorldPosition);
+    var target = this.mirrorWorldPosition.clone().sub(this.lookAtPosition);
+    target.reflect(this.normal).negate(), target.add(this.mirrorWorldPosition), this.up.set(0, -1, 0), 
+    this.up.applyMatrix4(this.rotationMatrix), this.up.reflect(this.normal).negate(), 
+    this.mirrorCamera.position.copy(view), this.mirrorCamera.up = this.up, this.mirrorCamera.lookAt(target), 
+    this.mirrorCamera.updateProjectionMatrix(), this.mirrorCamera.updateMatrixWorld(), 
+    this.mirrorCamera.matrixWorldInverse.getInverse(this.mirrorCamera.matrixWorld), 
+    this.textureMatrix.set(.5, 0, 0, .5, 0, .5, 0, .5, 0, 0, .5, .5, 0, 0, 0, 1), this.textureMatrix.multiply(this.mirrorCamera.projectionMatrix), 
+    this.textureMatrix.multiply(this.mirrorCamera.matrixWorldInverse), this.mirrorPlane.setFromNormalAndCoplanarPoint(this.normal, this.mirrorWorldPosition), 
+    this.mirrorPlane.applyMatrix4(this.mirrorCamera.matrixWorldInverse), this.clipPlane.set(this.mirrorPlane.normal.x, this.mirrorPlane.normal.y, this.mirrorPlane.normal.z, this.mirrorPlane.constant);
+    var q = new THREE.Vector4(), projectionMatrix = this.mirrorCamera.projectionMatrix;
+    q.x = (Math.sign(this.clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0], 
+    q.y = (Math.sign(this.clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5], 
+    q.z = -1, q.w = (1 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
+    var c = new THREE.Vector4();
+    c = this.clipPlane.multiplyScalar(2 / this.clipPlane.dot(q)), projectionMatrix.elements[2] = c.x, 
+    projectionMatrix.elements[6] = c.y, projectionMatrix.elements[10] = c.z + 1 - this.clipBias, 
+    projectionMatrix.elements[14] = c.w;
+}, THREE.Mirror.prototype.render = function() {
+    this.matrixNeedsUpdate && this.updateTextureMatrix(), this.matrixNeedsUpdate = !0;
+    for (var scene = this; void 0 !== scene.parent; ) scene = scene.parent;
+    void 0 !== scene && scene instanceof THREE.Scene && this.renderer.render(scene, this.mirrorCamera, this.texture, !0);
+}, THREE.Mirror.prototype.renderTemp = function() {
+    this.matrixNeedsUpdate && this.updateTextureMatrix(), this.matrixNeedsUpdate = !0;
+    for (var scene = this; void 0 !== scene.parent; ) scene = scene.parent;
+    void 0 !== scene && scene instanceof THREE.Scene && this.renderer.render(scene, this.mirrorCamera, this.tempTexture, !0);
+};
 
 var THREEx = THREEx || {};
 
@@ -11480,6 +11570,117 @@ THREEx.DynamicTexture = function(width, height) {
     this;
 };
 
+var saveAs = saveAs || function(view) {
+    "use strict";
+    if ("undefined" == typeof navigator || !/MSIE [1-9]\./.test(navigator.userAgent)) {
+        var doc = view.document, get_URL = function() {
+            return view.URL || view.webkitURL || view;
+        }, save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a"), can_use_save_link = "download" in save_link, click = function(node) {
+            var event = new MouseEvent("click");
+            node.dispatchEvent(event);
+        }, is_safari = /Version\/[\d\.]+.*Safari/.test(navigator.userAgent), webkit_req_fs = view.webkitRequestFileSystem, req_fs = view.requestFileSystem || webkit_req_fs || view.mozRequestFileSystem, throw_outside = function(ex) {
+            (view.setImmediate || view.setTimeout)(function() {
+                throw ex;
+            }, 0);
+        }, force_saveable_type = "application/octet-stream", fs_min_size = 0, arbitrary_revoke_timeout = 500, revoke = function(file) {
+            var revoker = function() {
+                "string" == typeof file ? get_URL().revokeObjectURL(file) : file.remove();
+            };
+            view.chrome ? revoker() : setTimeout(revoker, arbitrary_revoke_timeout);
+        }, dispatch = function(filesaver, event_types, event) {
+            event_types = [].concat(event_types);
+            for (var i = event_types.length; i--; ) {
+                var listener = filesaver["on" + event_types[i]];
+                if ("function" == typeof listener) try {
+                    listener.call(filesaver, event || filesaver);
+                } catch (ex) {
+                    throw_outside(ex);
+                }
+            }
+        }, auto_bom = function(blob) {
+            return /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type) ? new Blob([ "\ufeff", blob ], {
+                type: blob.type
+            }) : blob;
+        }, FileSaver = function(blob, name, no_auto_bom) {
+            no_auto_bom || (blob = auto_bom(blob));
+            var object_url, target_view, slice, filesaver = this, type = blob.type, blob_changed = !1, dispatch_all = function() {
+                dispatch(filesaver, "writestart progress write writeend".split(" "));
+            }, fs_error = function() {
+                if (target_view && is_safari && "undefined" != typeof FileReader) {
+                    var reader = new FileReader();
+                    return reader.onloadend = function() {
+                        var base64Data = reader.result;
+                        target_view.location.href = "data:attachment/file" + base64Data.slice(base64Data.search(/[,;]/)), 
+                        filesaver.readyState = filesaver.DONE, dispatch_all();
+                    }, reader.readAsDataURL(blob), void (filesaver.readyState = filesaver.INIT);
+                }
+                if ((blob_changed || !object_url) && (object_url = get_URL().createObjectURL(blob)), 
+                target_view) target_view.location.href = object_url; else {
+                    var new_tab = view.open(object_url, "_blank");
+                    void 0 == new_tab && is_safari && (view.location.href = object_url);
+                }
+                filesaver.readyState = filesaver.DONE, dispatch_all(), revoke(object_url);
+            }, abortable = function(func) {
+                return function() {
+                    return filesaver.readyState !== filesaver.DONE ? func.apply(this, arguments) : void 0;
+                };
+            }, create_if_not_found = {
+                create: !0,
+                exclusive: !1
+            };
+            return filesaver.readyState = filesaver.INIT, name || (name = "download"), can_use_save_link ? (object_url = get_URL().createObjectURL(blob), 
+            void setTimeout(function() {
+                save_link.href = object_url, save_link.download = name, click(save_link), dispatch_all(), 
+                revoke(object_url), filesaver.readyState = filesaver.DONE;
+            })) : (view.chrome && type && type !== force_saveable_type && (slice = blob.slice || blob.webkitSlice, 
+            blob = slice.call(blob, 0, blob.size, force_saveable_type), blob_changed = !0), 
+            webkit_req_fs && "download" !== name && (name += ".download"), (type === force_saveable_type || webkit_req_fs) && (target_view = view), 
+            req_fs ? (fs_min_size += blob.size, void req_fs(view.TEMPORARY, fs_min_size, abortable(function(fs) {
+                fs.root.getDirectory("saved", create_if_not_found, abortable(function(dir) {
+                    var save = function() {
+                        dir.getFile(name, create_if_not_found, abortable(function(file) {
+                            file.createWriter(abortable(function(writer) {
+                                writer.onwriteend = function(event) {
+                                    target_view.location.href = file.toURL(), filesaver.readyState = filesaver.DONE, 
+                                    dispatch(filesaver, "writeend", event), revoke(file);
+                                }, writer.onerror = function() {
+                                    var error = writer.error;
+                                    error.code !== error.ABORT_ERR && fs_error();
+                                }, "writestart progress write abort".split(" ").forEach(function(event) {
+                                    writer["on" + event] = filesaver["on" + event];
+                                }), writer.write(blob), filesaver.abort = function() {
+                                    writer.abort(), filesaver.readyState = filesaver.DONE;
+                                }, filesaver.readyState = filesaver.WRITING;
+                            }), fs_error);
+                        }), fs_error);
+                    };
+                    dir.getFile(name, {
+                        create: !1
+                    }, abortable(function(file) {
+                        file.remove(), save();
+                    }), abortable(function(ex) {
+                        ex.code === ex.NOT_FOUND_ERR ? save() : fs_error();
+                    }));
+                }), fs_error);
+            }), fs_error)) : void fs_error());
+        }, FS_proto = FileSaver.prototype, saveAs = function(blob, name, no_auto_bom) {
+            return new FileSaver(blob, name, no_auto_bom);
+        };
+        return "undefined" != typeof navigator && navigator.msSaveOrOpenBlob ? function(blob, name, no_auto_bom) {
+            return no_auto_bom || (blob = auto_bom(blob)), navigator.msSaveOrOpenBlob(blob, name || "download");
+        } : (FS_proto.abort = function() {
+            var filesaver = this;
+            filesaver.readyState = filesaver.DONE, dispatch(filesaver, "abort");
+        }, FS_proto.readyState = FS_proto.INIT = 0, FS_proto.WRITING = 1, FS_proto.DONE = 2, 
+        FS_proto.error = FS_proto.onwritestart = FS_proto.onprogress = FS_proto.onwrite = FS_proto.onabort = FS_proto.onerror = FS_proto.onwriteend = null, 
+        saveAs);
+    }
+}("undefined" != typeof self && self || "undefined" != typeof window && window || this.content);
+
+"undefined" != typeof module && module.exports ? module.exports.saveAs = saveAs : "undefined" != typeof define && null !== define && null != define.amd && define([], function() {
+    return saveAs;
+});
+
 var Singleton, exports;
 
 exports = void 0, ("undefined" == typeof exports || null === exports) && (exports = {}), 
@@ -11497,8 +11698,8 @@ SceneManager = function() {
         function SceneManager() {}
         return SceneManager.prototype.scenes = [], SceneManager.prototype.currentSceneIndex = void 0, 
         SceneManager.prototype.currentScene = function() {
-            if (void 0 === this.currentSceneIndex) throw "SceneManager.setScene not called";
-            if (0 === this.scenes.length) throw "Requires at least one scene";
+            if (null == this.currentSceneIndex) throw "SceneManager.setScene not called";
+            if (this.isEmpty()) throw "Requires at least one scene";
             return this.scenes[this.currentSceneIndex];
         }, SceneManager.prototype.addScene = function(scene) {
             var i;
@@ -11511,10 +11712,12 @@ SceneManager = function() {
             array.splice(i, 1)) : void 0;
         }, SceneManager.prototype.setScene = function(scene) {
             var i;
-            return i = this.scenes.indexOf(scene), this.setSceneByIndex(i), this.currentScene();
+            if (i = this.scenes.indexOf(scene), -1 === i) throw "scene not added to SceneManager";
+            return this.setSceneByIndex(i), this.currentScene();
         }, SceneManager.prototype.setSceneByIndex = function(i) {
-            return !this.isEmpty() && this.isValidIndex(i) && (this.currentSceneIndex = i), 
-            Config.get().debug && console.log("Changing to scene " + i), this.currentScene();
+            if (this.isEmpty() || !this.isValidIndex(i)) throw "invalid scene index";
+            return this.currentSceneIndex = i, Config.get().debug && console.log("Changing to scene " + i), 
+            this.currentScene();
         }, SceneManager.prototype.isEmpty = function() {
             return 0 === this.scenes.length;
         }, SceneManager.prototype.isValidIndex = function(i) {
@@ -11596,20 +11799,105 @@ SoundManager = function() {
     }, SoundManager;
 }();
 
-var EngineUtils;
+var SaveObjectManager;
 
-EngineUtils = function() {
-    function EngineUtils() {}
-    return EngineUtils.toggleFullScreen = function() {
+SaveObjectManager = function() {
+    function SaveObjectManager() {}
+    var instance;
+    return instance = null, Singleton.SaveObjectManager = function() {
+        function SaveObjectManager() {}
+        return SaveObjectManager.prototype.items = {}, SaveObjectManager.prototype.loadCount = 0, 
+        SaveObjectManager.prototype.load = function(key, url) {
+            var request;
+            return this.items[key] = null, request = new XMLHttpRequest(), request.open("GET", url, !0), 
+            request.onload = function() {
+                var data, som;
+                request.status >= 200 && request.status < 400 && (data = JSON.parse(request.responseText), 
+                som = window.SaveObjectManager.get(), som.items[key] = data, som._load());
+            }, request.onerror = function() {
+                console.log("error loading " + url);
+            }, request.send(), this;
+        }, SaveObjectManager.prototype.hasFinishedLoading = function() {
+            return this.loadCount === Object.keys(this.items).size();
+        }, SaveObjectManager.prototype._load = function() {
+            return window.SaveObjectManager.get().loadCount += 1;
+        }, SaveObjectManager;
+    }(), SaveObjectManager.get = function() {
+        return null != instance ? instance : instance = new Singleton.SaveObjectManager();
+    }, SaveObjectManager;
+}();
+
+var Persist;
+
+Persist = function() {
+    function Persist() {
+        this.storage = localStorage;
+    }
+    return Persist.PREFIX = "ce", Persist.DEFAULT_SUFFIX = "default", Persist.prototype.set = function(key, value, def) {
+        if (null == def && (def = void 0), null == key) throw "key missing";
+        return this.storage[Persist.PREFIX + "." + key] = value, null != def ? this["default"](key, def) : void 0;
+    }, Persist.prototype["default"] = function(key, value) {
+        return this.set(key + "." + Persist.DEFAULT_SUFFIX, value);
+    }, Persist.prototype.get = function(key) {
+        var value;
+        return value = this._get(key), null == value ? this._get(key + "." + Persist.DEFAULT_SUFFIX) : value;
+    }, Persist.prototype._get = function(key) {
+        var value;
+        if (null == key) throw "key missing";
+        return value = this.storage[Persist.PREFIX + "." + key], isNumeric(value) ? Number(value) : [ "true", "false" ].includes(value) ? Boolean(value) : "undefined" === value ? void 0 : value;
+    }, Persist.prototype.rm = function(key) {
+        if (null == key) throw "key missing";
+        return this.storage.removeItem(key);
+    }, Persist.prototype.clear = function(exceptions, withDefaults) {
+        var results, storage;
+        null == exceptions && (exceptions = []), null == withDefaults && (withDefaults = !1), 
+        exceptions instanceof Array || (exceptions = [ exceptions ]), results = [];
+        for (storage in this.storage) storage.endsWith("." + Persist.DEFAULT_SUFFIX) && withDefaults === !1 || (exceptions.includes(storage) ? results.push(void 0) : results.push(this.rm(storage)));
+        return results;
+    }, Persist.get = function(key) {
+        return new Persist().get(key);
+    }, Persist.set = function(key, value, def) {
+        return new Persist().set(key, value, def);
+    }, Persist["default"] = function(key, value) {
+        return new Persist()["default"](key, value);
+    }, Persist.rm = function(key) {
+        return new Persist().rm(key);
+    }, Persist.clear = function(exceptions, withDefaults) {
+        return new Persist().clear(exceptions, withDefaults);
+    }, Persist;
+}();
+
+var Utils;
+
+Utils = function() {
+    function Utils() {}
+    return Utils.JSON_URLS = [ ".json" ], Utils.IMG_URLS = [ ".png", ".jpg", ".jpeg" ], 
+    Utils.SAVE_URLS = [ ".save" ], Utils.toggleFullScreen = function() {
         document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-    }, EngineUtils.guid = function() {
+    }, Utils.guid = function() {
         var s4;
         return s4 = function() {
             return Math.floor(65536 * (1 + Math.random())).toString(16).substring(1);
         }, s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
-    }, EngineUtils.setCursor = function(url) {
+    }, Utils.setCursor = function(url) {
         return document.body.style.cursor = "url('" + url + "'), auto";
-    }, EngineUtils;
+    }, Utils.rgbToHex = function(r, g, b) {
+        if (r > 255 || g > 255 || b > 255) throw "Invalid color component";
+        return (r << 16 | g << 8 | b).toString(16);
+    }, Utils.getKeyName = function(url, array) {
+        return url.replaceAny(array, "").split("/").last();
+    }, Utils.saveFile = function(content, fileName, format) {
+        var blob, e, error, isFileSaverSupported, json;
+        null == format && (format = "application/json");
+        try {
+            isFileSaverSupported = !!new Blob();
+        } catch (error) {
+            throw e = error, "FileSaver not supported";
+        }
+        return json = JSON.stringify(content, null, 2), blob = new Blob([ json ], {
+            type: format + ";charset=utf-8"
+        }), saveAs(blob, fileName);
+    }, Utils;
 }();
 
 var JsonModelManager;
@@ -11619,7 +11907,7 @@ JsonModelManager = function() {
     var instance;
     return instance = null, Singleton.JsonModelManager = function() {
         function JsonModelManager() {}
-        return JsonModelManager.prototype.loader = new THREE.JSONLoader(), JsonModelManager.prototype.models = {}, 
+        return JsonModelManager.prototype.loader = new THREE.JSONLoader(), JsonModelManager.prototype.items = {}, 
         JsonModelManager.prototype.loadCount = 0, JsonModelManager.prototype.load = function(key, url, callback) {
             return null == callback && (callback = function() {
                 return {};
@@ -11628,7 +11916,7 @@ JsonModelManager = function() {
                 for (jmm = window.JsonModelManager.get(), mesh = new THREE.SkinnedMesh(geometry, new THREE.MeshFaceMaterial(materials)), 
                 i = 0, len = materials.length; len > i; i++) mat = materials[i], mat.skinning = !0;
                 if (null != mesh.animations) throw "mesh already has animations. not overwriting default behaviour";
-                return mesh = jmm.initAnimations(mesh), jmm.models[key] = mesh, callback(mesh);
+                return mesh = jmm.initAnimations(mesh), jmm.items[key] = mesh, callback(mesh), this;
             });
         }, JsonModelManager.prototype.initAnimations = function(mesh) {
             var anim, animation, i, len, ref;
@@ -11637,35 +11925,33 @@ JsonModelManager = function() {
             mesh.animations.push(animation);
             return mesh;
         }, JsonModelManager.prototype.hasFinishedLoading = function() {
-            return this.loadCount === Object.keys(this.models).size();
+            return this.loadCount === Object.keys(this.items).size();
         }, JsonModelManager;
     }(), JsonModelManager.get = function() {
         return null != instance ? instance : instance = new Singleton.JsonModelManager();
     }, JsonModelManager;
 }(), exports.JsonModelManager = JsonModelManager;
 
-var ResourceManager;
+var TextureManager;
 
-ResourceManager = function() {
-    function ResourceManager() {}
+TextureManager = function() {
+    function TextureManager() {}
     var instance;
-    return instance = null, Singleton.ResourceManager = function() {
-        function ResourceManager() {}
-        return ResourceManager.prototype.loadedTexturesCount = 0, ResourceManager.prototype.textures = {}, 
-        ResourceManager.prototype.addTexture = function(key, url) {
+    return instance = null, Singleton.TextureManager = function() {
+        function TextureManager() {}
+        return TextureManager.prototype.items = {}, TextureManager.prototype.loadCount = 0, 
+        TextureManager.prototype.load = function(key, url) {
             var texture;
-            return texture = THREE.ImageUtils.loadTexture(url, {}, this._inc), this.textures[key] = texture, 
+            return texture = THREE.ImageUtils.loadTexture(url, {}, this._load), this.items[key] = texture, 
             this;
-        }, ResourceManager.prototype.texture = function(key) {
-            return this.textures[key];
-        }, ResourceManager.prototype.hasFinishedLoading = function() {
-            return this.loadedTexturesCount === Object.keys(textures).length;
-        }, ResourceManager.prototype._inc = function() {
-            return ResourceManager.get().loadedTexturesCount += 1;
-        }, ResourceManager;
-    }(), ResourceManager.get = function() {
-        return null != instance ? instance : instance = new Singleton.ResourceManager();
-    }, ResourceManager;
+        }, TextureManager.prototype.hasFinishedLoading = function() {
+            return this.loadCount === Object.keys(this.items).size();
+        }, TextureManager.prototype._load = function() {
+            return window.TextureManager.get().loadCount += 1;
+        }, TextureManager;
+    }(), TextureManager.get = function() {
+        return null != instance ? instance : instance = new Singleton.TextureManager();
+    }, TextureManager;
 }();
 
 var BaseScene;
@@ -11729,12 +12015,20 @@ var BaseParticle, extend = function(child, parent) {
 
 BaseParticle = function(superClass) {
     function BaseParticle(texturePath) {
-        this.particleGroup = new SPE.Group({
-            texture: THREE.ImageUtils.loadTexture(texturePath),
-            maxAge: .2,
-            hasPerspective: !0,
-            colorize: !0
-        }), this.emitter = new SPE.Emitter({
+        var json, key;
+        "string" == typeof texturePath ? json = {
+            group: {
+                maxAge: .2,
+                colorize: !0,
+                hasPerspective: !0,
+                blending: 2,
+                transparent: !0,
+                alphaTest: .5,
+                texture: THREE.ImageUtils.loadTexture(texturePath)
+            }
+        } : (json = texturePath, key = Utils.getKeyName(json.group.textureUrl, Utils.IMG_URLS), 
+        json.group.texture = TextureManager.get().items[key]), this.particleGroup = new SPE.Group(json.group), 
+        this.emitter = new SPE.Emitter({
             position: new THREE.Vector3(0, 0, 0),
             positionSpread: new THREE.Vector3(0, 0, 0),
             acceleration: new THREE.Vector3(0, -10, 0),
@@ -11750,6 +12044,8 @@ BaseParticle = function(superClass) {
     }
     return extend(BaseParticle, superClass), BaseParticle.prototype.tick = function(tpf) {
         return this.particleGroup.tick(tpf);
+    }, BaseParticle.fromJson = function(json) {
+        return new BaseParticle(json);
     }, BaseParticle;
 }(BaseModel);
 
@@ -11775,7 +12071,7 @@ Config = function() {
         }, Config.prototype.toggleDebug = function() {
             return this.debug = !this.debug;
         }, Config.prototype.toggleFullScreen = function() {
-            return EngineUtils.toggleFullScreen();
+            return Utils.toggleFullScreen();
         }, Config;
     }(), Config.get = function() {
         return null != instance ? instance : instance = new Singleton.Config();
@@ -11787,7 +12083,8 @@ var Helper;
 Helper = function() {
     function Helper() {}
     return Helper.zero = new THREE.Vector3(0, 0, 0), Helper.one = new THREE.Vector3(1, 1, 1), 
-    Helper.camera = function(options) {
+    Helper.toggleFullScreen = Utils.toggleFullScreen, Helper.guid = Utils.guid, Helper.setCursor = Utils.setCursor, 
+    Helper.rgbToHex = Utils.rgbToHex, Helper.camera = function(options) {
         var config;
         return null == options && (options = {}), config = Config.get(), null == options.view_angle && (options.view_angle = 45), 
         null == options.aspect && (options.aspect = config.width / config.height), null == options.near && (options.near = 1), 
@@ -11830,6 +12127,18 @@ Helper = function() {
             depthWrite: !1,
             side: THREE.BackSide
         }), new THREE.Mesh(new THREE.BoxGeometry(size, size, size), aSkyBoxMaterial);
+    }, Helper.orbitControls = function(engine) {
+        return new THREE.OrbitControls(engine.camera, engine.renderer.domElement);
+    }, Helper.fog = function(options) {
+        return null == options && (options = {}), null == options.color && (options.color = 0), 
+        null == options.near && (options.near = 0), null == options.far && (options.far = 500), 
+        new THREE.Fog(options.color, options.near, options.far);
+    }, Helper.grid = function(options) {
+        var grid;
+        return null == options && (options = {}), null == options.size && (options.size = 10), 
+        null == options.step && (options.step = 1), null == options.color && (options.color = 16777215), 
+        null == options.colorCenterLine && (options.colorCenterLine = options.color), grid = new THREE.GridHelper(options.size, options.step), 
+        grid.setColors(options.colorCenterLine, options.color), grid;
     }, Helper;
 }();
 
@@ -11874,10 +12183,12 @@ var Terrain, extend = function(child, parent) {
 
 Terrain = function(superClass) {
     function Terrain(textureUrl, width, height, wSegments, hSegments) {
-        var geom, mat;
-        mat = new THREE.MeshLambertMaterial({
+        var geom, json, mat;
+        1 === arguments.length ? (json = textureUrl, mat = new THREE.MeshLambertMaterial({
+            map: TextureManager.get().items[Utils.getKeyName(json.textureUrl, Utils.IMG_URLS)]
+        }), geom = new THREE.PlaneGeometry(json.width, json.height, json.wSegments, json.hSegments)) : (mat = new THREE.MeshLambertMaterial({
             map: THREE.ImageUtils.loadTexture(textureUrl)
-        }), geom = new THREE.PlaneGeometry(width, height, wSegments, hSegments), this.mesh = new THREE.Mesh(geom, mat), 
+        }), geom = new THREE.PlaneGeometry(width, height, wSegments, hSegments)), this.mesh = new THREE.Mesh(geom, mat), 
         this.mesh.rotation.x -= Math.PI / 2;
     }
     return extend(Terrain, superClass), Terrain.prototype.applyHeightmap = function(imageData) {
@@ -11897,8 +12208,8 @@ Terrain = function(superClass) {
         }(this));
     }, Terrain.heightmap_blocking = function(options) {
         var hm, scene, terrain;
-        return hm = THREE.ImageUtils.loadTexture(options.heightmapUrl), hm.heightData = Terrain.getHeightData(hm.image, options.scale), 
-        terrain = new Terrain(options.textureUrl, options.width, options.height, options.wSegments, options.hSegments), 
+        return hm = THREE.ImageUtils.loadTexture(options.heightmapUrl, THREE.UVMapping), 
+        hm.heightData = Terrain.getHeightData(hm.image, options.scale), terrain = new Terrain(options.textureUrl, options.width, options.height, options.wSegments, options.hSegments), 
         terrain.applyHeightmap(hm.heightData), ("undefined" == typeof scene || null === scene) && (scene = SceneManager.get().currentScene()), 
         scene.terrain = terrain, scene.scene.add(terrain.mesh);
     }, Terrain.getHeightData = function(img, scale) {
@@ -11911,6 +12222,11 @@ Terrain = function(superClass) {
         j = 0, i = 0; i < pix.length; ) all = pix[i] + pix[i + 1] + pix[i + 2], data[j++] = all / (12 * scale), 
         i += 4;
         return data;
+    }, Terrain.fromJson = function(json) {
+        var hm, terrain;
+        return hm = TextureManager.get().items[Utils.getKeyName(json.heightmapUrl, Utils.IMG_URLS)], 
+        hm.heightData = Terrain.getHeightData(hm.image, json.scale), terrain = new Terrain(json), 
+        terrain.applyHeightmap(hm.heightData), terrain;
     }, Terrain;
 }(BaseModel);
 
@@ -11949,6 +12265,31 @@ SpotLight = function(superClass) {
     }, SpotLight;
 }(BaseModel);
 
+var Mirror, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+Mirror = function(superClass) {
+    function Mirror(engine) {
+        var planeGeo;
+        planeGeo = new THREE.PlaneBufferGeometry(100.1, 100.1), this.mirror = new THREE.Mirror(engine.renderer, engine.camera, {
+            clipBias: .003,
+            textureWidth: 512,
+            textureHeight: 512,
+            color: 7829367
+        }), this.mesh = new THREE.Mesh(planeGeo, this.mirror.material), this.mesh.add(this.mirror), 
+        this.mesh.rotateX(-Math.PI / 2);
+    }
+    return extend(Mirror, superClass), Mirror.prototype.tick = function() {
+        return this.mirror.render();
+    }, Mirror;
+}(BaseModel);
+
 var LoadingScene, extend = function(child, parent) {
     function ctor() {
         this.constructor = child;
@@ -11960,20 +12301,34 @@ var LoadingScene, extend = function(child, parent) {
 
 LoadingScene = function(superClass) {
     function LoadingScene(urls, hasFinishedLoading) {
-        var i, interval, len, name, url;
+        var i, interval, len, url;
         if (null == hasFinishedLoading && (hasFinishedLoading = void 0), LoadingScene.__super__.constructor.call(this), 
         !(urls instanceof Array)) throw "urls needs to be an array";
         for (this.hasFinishedLoading = hasFinishedLoading, i = 0, len = urls.length; len > i; i++) url = urls[i], 
-        name = url.replace(".json", "").split("/").last(), Config.get().debug && console.log("Loading '" + name + "' from '" + url + "'"), 
-        this.jmm.load(name, url);
+        url.endsWithAny(Utils.JSON_URLS) && this._loadJsonModel(url), url.endsWithAny(Utils.IMG_URLS) && this._loadTexture(url), 
+        url.endsWithAny(Utils.SAVE_URLS) && this._loadSaveObject(url);
         interval = setInterval(function(_this) {
             return function() {
-                return _this.jmm.hasFinishedLoading() ? (clearInterval(interval), _this.hasFinishedLoading()) : void 0;
+                return _this.jmm.hasFinishedLoading() && _this.tm.hasFinishedLoading() && _this.som.hasFinishedLoading() ? (clearInterval(interval), 
+                _this.config.debug && console.log("Finished loading"), _this.hasFinishedLoading()) : void 0;
             };
         }(this), 100);
     }
     return extend(LoadingScene, superClass), LoadingScene.prototype.jmm = JsonModelManager.get(), 
-    LoadingScene.prototype.init = function() {}, LoadingScene.prototype.tick = function(tpf) {}, 
+    LoadingScene.prototype.tm = TextureManager.get(), LoadingScene.prototype.som = SaveObjectManager.get(), 
+    LoadingScene.prototype.config = Config.get(), LoadingScene.prototype._loadJsonModel = function(url) {
+        var name;
+        return name = Utils.getKeyName(url, Utils.JSON_URLS), this.config.debug && console.log("Loading model '" + name + "' from '" + url + "'"), 
+        this.jmm.load(name, url);
+    }, LoadingScene.prototype._loadTexture = function(url) {
+        var name;
+        return name = Utils.getKeyName(url, Utils.IMG_URLS), this.config.debug && console.log("Loading texture '" + name + "' from '" + url + "'"), 
+        this.tm.load(name, url);
+    }, LoadingScene.prototype._loadSaveObject = function(url) {
+        var name;
+        return name = Utils.getKeyName(url, Utils.SAVE_URLS), this.config.debug && console.log("Loading save object '" + name + "' from '" + url + "'"), 
+        this.som.load(name, url);
+    }, LoadingScene.prototype.init = function() {}, LoadingScene.prototype.tick = function(tpf) {}, 
     LoadingScene.prototype.doMouseEvent = function(event, raycaster) {}, LoadingScene.prototype.doKeyboardEvent = function(event) {}, 
     LoadingScene.prototype.hasFinishedLoading = function() {
         if (null != this.hasFinishedLoading) return this.hasFinishedLoading();
@@ -12035,7 +12390,11 @@ Engine3D = function() {
         mouseY = 2 * -(event.layerY / this.height) + 1, vector = new THREE.Vector3(mouseX, mouseY, .5), 
         vector.unproject(this.camera), new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize())) : void 0;
     }, Engine3D;
-}(), Array.prototype.isEmpty = function() {
+}();
+
+var isNumeric;
+
+Array.prototype.isEmpty = function() {
     return 0 === this.length;
 }, Array.prototype.any = function() {
     return !this.isEmpty();
@@ -12082,6 +12441,23 @@ Engine3D = function() {
     return this.length;
 }, String.prototype.startsWith = function(s) {
     return 0 === this.indexOf(s);
+}, String.prototype.startsWithAny = function(prefixes) {
+    var j, len, prefix, startsWith;
+    for (startsWith = !1, j = 0, len = prefixes.length; len > j; j++) prefix = prefixes[j], 
+    this.startsWith(prefix) && (startsWith = !0);
+    return startsWith;
+}, String.prototype.endsWith = function(suffix) {
+    return -1 !== this.indexOf(suffix, this.length - suffix.length);
+}, String.prototype.endsWithAny = function(suffixes) {
+    var endsWith, j, len, suffix;
+    for (endsWith = !1, j = 0, len = suffixes.length; len > j; j++) suffix = suffixes[j], 
+    this.endsWith(suffix) && (endsWith = !0);
+    return endsWith;
+}, String.prototype.replaceAny = function(sources, dest) {
+    var j, len, source, tmp;
+    for (tmp = this, j = 0, len = sources.length; len > j; j++) source = sources[j], 
+    tmp = tmp.replace(source, dest);
+    return tmp;
 }, String.prototype.isEmpty = function() {
     return 0 === this.size();
 }, String.prototype.contains = function(s) {
@@ -12090,4 +12466,6 @@ Engine3D = function() {
     return "undefined" != typeof this && null !== this && !this.isEmpty();
 }, String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
+}, isNumeric = function(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
 };
