@@ -25,6 +25,9 @@ app.controller 'MainController', ($scope) ->
   $scope.updateTerrain = ->
     terrainGeneratorScene.updateTerrain($scope.options)
 
+  $scope.saveJson = ->
+    Utils.saveFile($scope.options, 'terrain.save')
+
   $scope.toggleStats = ->
     config.toggleStats()
 

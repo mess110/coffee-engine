@@ -59,6 +59,10 @@ class ModelViewerScene extends BaseScene
     @scene.add Helper.ambientLight()
     @scene.add Helper.ambientLight()
 
+    @scene.fog = Helper.fog(far: 70, color: 'white')
+    @scene.add Helper.grid(size: 200, step: 10, color: 'gray')
+    engine.setClearColor(@scene.fog.color, 1)
+
     @controls = Helper.orbitControls(engine)
     @controls.damping = 0.2
 
@@ -84,8 +88,7 @@ config = Config.get()
 config.fillWindow()
 
 engine = new Engine3D()
-engine.camera.position.set 0, 5, 10
-engine.renderer.setClearColor( 0xFFFFFF )
+engine.camera.position.set 0, 10, 10
 
 modelViewerScene = new ModelViewerScene()
 engine.addScene(modelViewerScene)

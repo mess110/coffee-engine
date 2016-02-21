@@ -13,10 +13,17 @@ class Terrain extends BaseModel
 
   # Creates the terrain
   constructor: (textureUrl, width, height, wSegments, hSegments)->
-    mat = new THREE.MeshLambertMaterial(
-      map: THREE.ImageUtils.loadTexture(textureUrl)
-    )
-    geom = new (THREE.PlaneGeometry)(width, height, wSegments, hSegments)
+    if arguments.length == 1
+      json = textureUrl # rename the param
+      mat = new THREE.MeshLambertMaterial(
+        map: TextureManager.get().items[Utils.getKeyName(json.textureUrl, Utils.IMG_URLS)]
+      )
+      geom = new (THREE.PlaneGeometry)(json.width, json.height, json.wSegments, json.hSegments)
+    else
+      mat = new THREE.MeshLambertMaterial(
+        map: THREE.ImageUtils.loadTexture(textureUrl)
+      )
+      geom = new (THREE.PlaneGeometry)(width, height, wSegments, hSegments)
     @mesh = new (THREE.Mesh)(geom, mat)
     @mesh.rotation.x -= Math.PI / 2
 
@@ -28,6 +35,13 @@ class Terrain extends BaseModel
     for vertice in @mesh.geometry.vertices
       vertice.z = imageData[i]
       i++
+
+  @fromJson: (json) ->
+    hm = TextureManager.get().items[Utils.getKeyName(json.heightmapUrl, Utils.IMG_URLS)]
+    hm.heightData = Terrain.getHeightData(hm.image, json.scale)
+    terrain = new Terrain(json)
+    terrain.applyHeightmap(hm.heightData)
+    terrain
 
   # Hackish way to add a heightmap to the scene
   #
@@ -55,7 +69,7 @@ class Terrain extends BaseModel
   #
   # @param [Object] options
   @heightmap_blocking: (options) ->
-    hm = THREE.ImageUtils.loadTexture(options.heightmapUrl)
+    hm = THREE.ImageUtils.loadTexture(options.heightmapUrl, THREE.UVMapping)
     hm.heightData = Terrain.getHeightData(hm.image, options.scale)
 
     terrain = new Terrain(options.textureUrl, options.width, options.height, options.wSegments, options.hSegments)

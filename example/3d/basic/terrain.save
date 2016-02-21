@@ -1,0 +1,9 @@
+{
+  "width": 10,
+  "height": 10,
+  "wSegments": 5,
+  "hSegments": 5,
+  "scale": 20,
+  "textureUrl": "heightmap.png",
+  "heightmapUrl": "heightmap.png"
+}

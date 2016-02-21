@@ -5,6 +5,12 @@
 #
 # @see http://threejs.org/docs/#Reference/Math/Vector3
 # @see http://blog.romanliutikov.com/post/58322336872/setup-scene-in-threejs
+#
+# @example
+#   @scene.fog = Helper.fog(far: 70, color: 'white')
+#   @scene.add Helper.grid(size: 200, step: 10, color: 'gray')
+#   engine.setClearColor( @scene.fog.color, 1)
+#
 class Helper
 
   @zero: new THREE.Vector3(0, 0, 0)
@@ -153,3 +159,13 @@ class Helper
     options.near = 0 unless options.near?
     options.far = 500 unless options.far?
     new THREE.Fog(options.color, options.near, options.far)
+
+  # Create a grid
+  @grid: (options = {}) ->
+    options.size = 10 unless options.size?
+    options.step = 1 unless options.step?
+    options.color = 0xffffff unless options.color?
+    options.colorCenterLine = options.color unless options.colorCenterLine?
+    grid = new (THREE.GridHelper)(options.size, options.step)
+    grid.setColors options.colorCenterLine, options.color
+    grid

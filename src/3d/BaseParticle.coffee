@@ -7,19 +7,40 @@
 #
 #   @particle.tick(tpf)
 #
+# @example
+#   @particle = BaseParticle.fromJson(json)
+#   @scene.add @particle.mesh
+#
+#   @particle.tick(tpf)
+#
 # @see https://squarefeet.github.io/ShaderParticleEngine/
 class BaseParticle extends BaseModel
 
   # create the particle
+  #
+  # If texturePath is a json object, it will use the TextureManager, otherwise
+  # it will load as an image
+  #
+  # @param [String] texturePath
   constructor: (texturePath) ->
+    if typeof(texturePath) == 'string'
+      json =
+        group:
+          maxAge: 0.2
+          colorize: true
+          hasPerspective: true
+          blending: 2 # AdditiveBlending
+          transparent: true
+          alphaTest: 0.5
+          texture: THREE.ImageUtils.loadTexture(texturePath)
+    else
+      json = texturePath
+      key = Utils.getKeyName(json.group.textureUrl, Utils.IMG_URLS)
+      json.group.texture = TextureManager.get().items[key]
 
-    @particleGroup = new (SPE.Group)(
-      texture: THREE.ImageUtils.loadTexture(texturePath)
-      maxAge: 0.2
-      hasPerspective: true
-      colorize: true
-    )
+    @particleGroup = new (SPE.Group)(json.group)
 
+    # TODO: ability to save
     @emitter = new (SPE.Emitter)(
       position: new (THREE.Vector3)(0, 0, 0)
       positionSpread: new (THREE.Vector3)(0, 0, 0)
@@ -41,3 +62,6 @@ class BaseParticle extends BaseModel
   # Should normally be called in scene.tick
   tick: (tpf) ->
     @particleGroup.tick(tpf)
+
+  @fromJson = (json) ->
+    new BaseParticle(json)

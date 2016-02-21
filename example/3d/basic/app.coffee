@@ -7,6 +7,8 @@ class GameScene extends BaseScene
     @scene.add @cube
 
     @scene.add Helper.ambientLight()
+    @scene.add Helper.ambientLight()
+    @scene.add Helper.ambientLight()
 
   tick: (tpf) ->
     @cube.rotation.z += 1 * tpf

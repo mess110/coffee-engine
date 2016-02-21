@@ -22,6 +22,21 @@ app.controller 'MainController', ($scope) ->
   $scope.toggleStats = ->
     config.toggleStats()
 
+  $scope.saveJson = ->
+    hash = {
+      group:
+        textureUrl: $scope.particle.particleGroup.texture.sourceFile
+        maxAge: $scope.particle.particleGroup.maxAge
+        colorize: $scope.particle.particleGroup.colorize
+        hasPerspective: $scope.particle.particleGroup.hasPerspective
+        blending: $scope.particle.particleGroup.blending
+        transparent: $scope.particle.particleGroup.transparent
+        alphaTest: $scope.particle.particleGroup.alphaTest
+      emitter:
+        todo: 'todo'
+    }
+    Utils.saveFile(hash, 'particle.save')
+
 
 class ParticlePlaygroundScene extends BaseScene
   constructor: ->
@@ -29,7 +44,7 @@ class ParticlePlaygroundScene extends BaseScene
 
     @controls = Helper.orbitControls(engine)
 
-    @particle = new BaseParticle('../stage/imgs/star.png')
+    @particle = new BaseParticle('star.png')
     @scene.add @particle.mesh
 
     @loaded = true

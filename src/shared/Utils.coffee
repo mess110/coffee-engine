@@ -1,5 +1,9 @@
 # Shared methods between all engines
 class Utils
+  @JSON_URLS = ['.json']
+  @IMG_URLS = ['.png', '.jpg', '.jpeg']
+  @SAVE_URLS = ['.save']
+
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.
   #
@@ -41,3 +45,23 @@ class Utils
   @rgbToHex = (r, g, b) ->
     throw "Invalid color component"  if r > 255 or g > 255 or b > 255
     ((r << 16) | (g << 8) | b).toString 16
+
+  # Returns key name used in texture manager or json model manager
+  #
+  # @example
+  #   LoadingScene.getKeyName('/demo/foo.json', Utils.JSON_URLS) # returns 'foo'
+  @getKeyName = (url, array) ->
+    url.replaceAny(array, '').split('/').last()
+
+  # Save a file
+  #
+  # @see https://github.com/carlos-algms/FileSaver.js
+  @saveFile = (content, fileName, format="application/json") ->
+    try
+      isFileSaverSupported = ! !new Blob
+    catch e
+      throw 'FileSaver not supported'
+
+    json = JSON.stringify(content, null, 2)
+    blob = new Blob([json], type: "#{format};charset=utf-8")
+    saveAs blob, fileName

@@ -1,5 +1,5 @@
-# A helper scene which loads models or images, and calls a function once
-# loading is done
+# A helper scene which loads [models, images, save objects], and calls a
+# function once loading is done
 #
 # @example
 #   gameScene = new GameScene()
@@ -7,11 +7,9 @@
 #     engine.sceneManager.setScene(gameScene)
 #   )
 class LoadingScene extends BaseScene
-  JSON_URLS = ['.json']
-  IMG_URLS = ['.png', '.jpg', '.jpeg']
-
   jmm: JsonModelManager.get()
   tm: TextureManager.get()
+  som: SaveObjectManager.get()
   config: Config.get()
 
   # You can either override the method hasFinishedLoading or you can
@@ -28,11 +26,12 @@ class LoadingScene extends BaseScene
     @hasFinishedLoading = hasFinishedLoading
 
     for url in urls
-      @_loadJsonModel(url) if url.endsWithAny(JSON_URLS)
-      @_loadTexture(url) if url.endsWithAny(IMG_URLS)
+      @_loadJsonModel(url) if url.endsWithAny(Utils.JSON_URLS)
+      @_loadTexture(url) if url.endsWithAny(Utils.IMG_URLS)
+      @_loadSaveObject(url) if url.endsWithAny(Utils.SAVE_URLS)
 
     interval = setInterval =>
-      if @jmm.hasFinishedLoading() and @tm.hasFinishedLoading()
+      if @jmm.hasFinishedLoading() and @tm.hasFinishedLoading() and @som.hasFinishedLoading()
         clearInterval(interval)
         console.log 'Finished loading' if @config.debug
         @hasFinishedLoading()
@@ -40,15 +39,20 @@ class LoadingScene extends BaseScene
 
   # assumes the url has been validated as a json model
   _loadJsonModel: (url) ->
-    name = url.replaceAny(JSON_URLS, '').split('/').last()
+    name = Utils.getKeyName(url, Utils.JSON_URLS)
     console.log "Loading model '#{name}' from '#{url}'" if @config.debug
     @jmm.load(name, url)
 
   # assumes the url has been validated as a texture
   _loadTexture: (url) ->
-    name = url.replaceAny(IMG_URLS, '').split('/').last()
+    name = Utils.getKeyName(url, Utils.IMG_URLS)
     console.log "Loading texture '#{name}' from '#{url}'" if @config.debug
     @tm.load(name, url)
+
+  _loadSaveObject: (url) ->
+    name = Utils.getKeyName(url, Utils.SAVE_URLS)
+    console.log "Loading save object '#{name}' from '#{url}'" if @config.debug
+    @som.load(name, url)
 
   # @nodoc
   init: ->
