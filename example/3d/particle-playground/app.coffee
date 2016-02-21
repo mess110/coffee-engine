@@ -42,6 +42,10 @@ class ParticlePlaygroundScene extends BaseScene
   constructor: ->
     super()
 
+    @scene.fog = Helper.fog(far: 40, color: 'black')
+    @scene.add Helper.grid(size: 200, step: 10, color: 'gray')
+    engine.setClearColor(@scene.fog.color, 1)
+
     @controls = Helper.orbitControls(engine)
 
     @particle = new BaseParticle('star.png')

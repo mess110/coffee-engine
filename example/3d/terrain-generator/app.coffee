@@ -36,6 +36,10 @@ class TerrainGeneratorScene extends BaseScene
   constructor: ->
     super()
 
+    @scene.fog = Helper.fog(far: 300, color: 'white')
+    @scene.add Helper.grid(size: 2000, step: 20, color: 'gray')
+    engine.setClearColor(@scene.fog.color, 1)
+
     @scene.add Helper.ambientLight()
     @scene.add Helper.ambientLight()
     @scene.add Helper.ambientLight()
@@ -63,7 +67,6 @@ config.width = config.width * 6 / 10
 
 engine = new Engine3D()
 engine.camera.position.set 0, 15, 100
-engine.renderer.setClearColor( 0xF0F0F0 )
 
 terrainGeneratorScene = new TerrainGeneratorScene()
 engine.addScene(terrainGeneratorScene)
