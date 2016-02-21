@@ -29,8 +29,24 @@ class Terrain extends BaseModel
         map: THREE.ImageUtils.loadTexture(textureUrl)
       )
       geom = new (THREE.PlaneGeometry)(width, height, wSegments, hSegments)
+
     @mesh = new (THREE.Mesh)(geom, mat)
     @mesh.rotation.x -= Math.PI / 2
+
+    @raycaster = new (THREE.Raycaster)
+
+  # Get height at a specific position.
+  #
+  # A ray is cast from the top of the position returning the height at the
+  # intersection point
+  #
+  # @example
+  #   height = @terrain.getHeightAt(@cube.position)
+  #   @cube.position.y = height
+  getHeightAt: (position) ->
+    @raycaster.set(new THREE.Vector3(position.x, 1000, position.z), Helper.down)
+    intersects = @raycaster.intersectObject(@mesh)
+    if intersects[0]? then intersects[0].point.y else 0
 
   # Apply heightmap data retrieved from getHeightData
   #

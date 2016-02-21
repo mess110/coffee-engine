@@ -15,6 +15,8 @@ class Helper
 
   @zero: new THREE.Vector3(0, 0, 0)
   @one: new THREE.Vector3(1, 1, 1)
+  @up: new THREE.Vector3(0, 1, 0)
+  @down: new THREE.Vector3(0, -1, 0)
 
   @toggleFullScreen = Utils.toggleFullScreen
   @guid: Utils.guid
@@ -78,6 +80,19 @@ class Helper
     box = new (THREE.BoxGeometry)(options.size, options.size, options.size)
     mat = new (THREE[options.material])(color: options.color)
     new (THREE.Mesh)(box, mat)
+
+  @plane: (options = {}) ->
+    options.width ?= 5
+    options.height ?= 5
+    options.wSegments ?= 1
+    options.hSegments ?= 1
+    options.color ?= 0xff0000
+
+    geometry = new (THREE.PlaneBufferGeometry)(options.width, options.height, options.wSegments, options.hSegments)
+    material = new (THREE.MeshBasicMaterial)(
+      color: options.color
+      side: THREE.DoubleSide)
+    new (THREE.Mesh)(geometry, material)
 
   # Enable shadows on the renderer
   #
