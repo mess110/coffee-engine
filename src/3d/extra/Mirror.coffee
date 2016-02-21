@@ -1,16 +1,23 @@
 # Mirror helper
 #
 # @example
-#   mirror = new Mirror(engine)
-#   scene.add(mirror.mesh)
+#   @mirror = new Mirror(engine)
+#   scene.add(@mirror.mesh)
 #
-#   # in scene.tick()
-#   mirror.tick()
+#   @mirror.tick()
 class Mirror extends BaseModel
   # Create a mirror
-  constructor: (engine) ->
-    planeGeo = new (THREE.PlaneBufferGeometry)(100.1, 100.1)
-    @mirror = new THREE.Mirror( engine.renderer, engine.camera, { clipBias: 0.003, textureWidth: 512, textureHeight: 512, color: 0x777777 } )
+  constructor: (engine, options = {}) ->
+    options.width ?= 10
+    options.height ?= 10
+    options.mirror ?= {}
+    options.mirror.clipBias ?= 0.003
+    options.mirror.textureHeight ?= 512
+    options.mirror.textureHeight ?= 512
+    options.mirror.color ?= 0x777777
+
+    planeGeo = new (THREE.PlaneBufferGeometry)(options.width, options.height)
+    @mirror = new THREE.Mirror(engine.renderer, engine.camera, options.mirror)
     @mesh = new (THREE.Mesh)(planeGeo, @mirror.material)
     @mesh.add @mirror
     @mesh.rotateX -Math.PI / 2

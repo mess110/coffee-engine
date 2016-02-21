@@ -113,10 +113,16 @@ class Helper
   # @example
   #
   #   Utils.skySphere('', 450000, 64)
-  @skySphere: (imgUrl, radius=450000, segments=64) ->
-    geom = new (THREE.SphereGeometry)(radius, segments, segments)
+  @skySphere: (options) ->
+    console.log 'here'
+    throw 'options.textureUrl not defined' unless options.textureUrl?
+    options.radius ?= 450000
+    options.segments ?= 64
+
+    geom = new (THREE.SphereGeometry)(options.radius, options.segments, options.segments)
+    name = Utils.getKeyName(options.textureUrl, Utils.IMG_URLS)
     mat = new (THREE.MeshBasicMaterial)(
-      map: THREE.ImageUtils.loadTexture(imgUrl)
+      map: TextureManager.get().items[name]
       side: THREE.BackSide
     )
     new (THREE.Mesh)(geom, mat)
