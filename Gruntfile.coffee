@@ -19,6 +19,7 @@ module.exports = (grunt) ->
     "bower_components/threex.dynamictexture/threex.dynamictexture.js"
 
     "bower_components/file-saver/FileSaver.js"
+    "bower_components/virtualjoystick.js/virtualjoystick.js"
 
     # This NEEDS to be in this position
     "src/3d/Hack.js"
@@ -30,6 +31,7 @@ module.exports = (grunt) ->
     "src/shared/SaveObjectManager.js"
     "src/shared/Persist.js"
     "src/shared/Utils.js"
+    "src/shared/VirtualController.js"
 
     "src/3d/JsonModelManager.js"
     "src/3d/TextureManager.js"

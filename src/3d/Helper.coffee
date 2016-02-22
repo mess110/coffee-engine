@@ -114,7 +114,6 @@ class Helper
   #
   #   Utils.skySphere('', 450000, 64)
   @skySphere: (options) ->
-    console.log 'here'
     throw 'options.textureUrl not defined' unless options.textureUrl?
     options.radius ?= 450000
     options.segments ?= 64
