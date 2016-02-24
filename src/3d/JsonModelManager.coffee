@@ -45,6 +45,11 @@ class JsonModelManager
           mesh.animations.push animation
       mesh
 
+    # clone an item with animations
+    clone: (key) ->
+      mesh = @items[key].clone()
+      @initAnimations(mesh)
+
     # Check if all objects which started loading have finished loading
     hasFinishedLoading: ->
       @loadCount == Object.keys(@items).size()

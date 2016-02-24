@@ -7,6 +7,14 @@ if not localStorage.getItem('localStorageInitialized')
   localStorage.setItem('spotLightColorEffect', 'yezzer')
   localStorage.setItem('bloodEffect', 'yezzer')
 
+tm = TextureManager.get()
+jm = JsonModelManager.get()
+
+vj = new VirtualController()
+vj.joystick2.addEventListener 'touchStart', ->
+  cs = SceneManager.get().currentScene()
+  cs.shooting = true
+
 config = Config.get()
 config.fillWindow()
 config.maxNameLength = 14
@@ -75,10 +83,9 @@ Number::toRoman = ->
   s
 
 class BloodParticle extends BaseParticle
-  constructor: (texturePath) ->
-
+  constructor: ->
     @particleGroup = new (SPE.Group)(
-      texture: THREE.ImageUtils.loadTexture(texturePath)
+      texture: tm.items['splatter']
       maxAge: 0.2
       blending: THREE.NormalBlending
       hasPerspective: true
@@ -107,7 +114,7 @@ class GameScene extends BaseScene
   constructor: ->
     super()
 
-    @particle2 = new BloodParticle('imgs/splatter.png')
+    @particle2 = new BloodParticle()
     @particle2.emitter.disable()
     @scene.add @particle2.mesh
 
@@ -118,6 +125,7 @@ class GameScene extends BaseScene
     @score = 0
     @ambientLights = [Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight(), Helper.ambientLight()]
     @killingSpree = 0
+    @shooting = false
 
     box = new (THREE.BoxGeometry)(1, 1, 1)
     mat = new (THREE.MeshPhongMaterial)(color: 0xff0000)
@@ -136,63 +144,62 @@ class GameScene extends BaseScene
     # @floatingCombatText.position.y = 100
     @scene.add @floatingCombatText
 
-    JsonModelManager.get().load('bear', 'models/bear_all.json', (mesh) =>
-      mesh.receiveShadow = true
-      mesh.castShadow = true
-      @bear = mesh
-      @bear.position.set 0, 0, 0
-      @bear.animations[0].play()
-      @bear.speed = 5
-      @scene.add @bear
-      @spotLight.lookAt(@bear) if @bear?
-      @cameraPosition(0)
+    @bear = jm.items['bear_all']
+    @bear.receiveShadow = true
+    @bear.castShadow = true
+    @bear.position.set 0, 0, 0
+    @bear.animations[0].play()
+    @bear.speed = 5
+    @scene.add @bear
+    @spotLight.lookAt(@bear) if @bear?
+    @cameraPosition(0)
 
-      JsonModelManager.get().load('shotgun', 'models/shotgun.json', (mesh) =>
-        mesh.receiveShadow = true
-        mesh.castShadow = true
-        @shotgun = mesh
-        # @shotgun.position.set 0, 0, -10
-        @shotgun.animations[1].loop = false
-        @shotgun.scale.set 0.3, 0.3, 0.3
-        @shotgun.position.set 0, 3, 2.5
-        @bear.add @shotgun
+    @shotgun = jm.items['shotgun']
+    @shotgun.receiveShadow = true
+    @shotgun.castShadow = true
+    # @shotgun.position.set 0, 0, -10
+    @shotgun.animations[1].loop = false
+    @shotgun.scale.set 0.3, 0.3, 0.3
+    @shotgun.position.set 0, 3, 2.5
+    @bear.add @shotgun
 
-        @particle = new BaseParticle('./imgs/star.png')
-        @particle.mesh.rotation.set Math.PI / 2, 0, 0
-        @particle.mesh.position.set 0, 0.75, 5
-        @particle.mesh.visible = false
-        @shotgun.add @particle.mesh
-      )
+    @particle = new BaseParticle(
+      group:
+        textureUrl: 'imgs/star.png'
+        maxAge: 0.2
+        colorize: true
+        hasPerspective: true
+        blending: 2 # AdditiveBlending
+        transparent: true
+        alphaTest: 0.5
     )
+    @particle.mesh.rotation.set Math.PI / 2, 0, 0
+    @particle.mesh.position.set 0, 0.75, 5
+    @particle.mesh.visible = false
+    @shotgun.add @particle.mesh
 
-    JsonModelManager.get().load('drapes', 'models/drapes.json', (mesh) =>
-      mesh.receiveShadow = true
-      mesh.castShadow = true
-      @drapesBg = mesh
-      @drapesBg.position.set 0, 0, -15
-      @drapesBg.scale.set 3.5, 2, 1
-      @scene.add @drapesBg
-    )
+    @drapesBg = jm.items['drapes']
+    @drapesBg.receiveShadow = true
+    @drapesBg.castShadow = true
+    @drapesBg.position.set 0, 0, -15
+    @drapesBg.scale.set 3.5, 2, 1
+    # @scene.add @drapesBg
 
-    JsonModelManager.get().load('drapes', 'models/drapes2.json', (mesh) =>
-      mesh.receiveShadow = true
-      mesh.castShadow = true
-      @drapes = mesh
-      @drapes.opened = false
-      @drapes.position.set 0, 0, 15
-      @drapes.scale.x = 2
-      @scene.add @drapes
-    )
+    @drapes = jm.items['drapes2']
+    @drapes.receiveShadow = true
+    @drapes.castShadow = true
+    @drapes.opened = false
+    @drapes.position.set 0, 0, 15
+    @drapes.scale.x = 2
+    # @scene.add @drapes
 
-    JsonModelManager.get().load('mask', 'models/theater_mask.json', (mesh) =>
-      mesh.receiveShadow = true
-      mesh.castShadow = true
-      @mask = mesh
-      @mask.position.set 0, 16, 16
-      @scene.add @mask
-    )
+    @mask = jm.items['theater_mask']
+    @mask.receiveShadow = true
+    @mask.castShadow = true
+    @mask.position.set 0, 16, 16
+    @scene.add @mask
 
-    texture = THREE.ImageUtils.loadTexture('models/diffuse.png')
+    texture = tm.items['diffuse']
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping
     texture.repeat.set 6, 6
 
@@ -218,7 +225,7 @@ class GameScene extends BaseScene
 
     @splatElevation = 0
 
-    @splatTexture = THREE.ImageUtils.loadTexture('imgs/splatter.png')
+    @splatTexture = tm.items['splatter']
 
     @loaded = true
 
@@ -264,7 +271,9 @@ class GameScene extends BaseScene
 
       return if @gameOver
 
-      if @keyboard.pressed(' ') and !@shotgun.animations[1].isPlaying
+      if (@keyboard.pressed(' ') or @shooting) and !@shotgun.animations[1].isPlaying
+        @toggleDrapes() if not @started
+
         @shotgun.animations[1].play()
         @particle.mesh.visible = true
         setTimeout =>
@@ -275,7 +284,9 @@ class GameScene extends BaseScene
         snd.playbackRate = 1.3
         snd.play('shotgun')
 
-        return if not @started
+        if not @started
+          @spotLight.setColor("white")
+          return
 
         matrix = new (THREE.Matrix4)
         matrix.extractRotation @bear.matrix
@@ -345,17 +356,20 @@ class GameScene extends BaseScene
           , 350
         else
           @killingSpree = 0
-      if @keyboard.pressed('w') or @keyboard.pressed('up')
+
+      return if not @started
+
+      if @keyboard.pressed('w') or @keyboard.pressed('up') or vj.joystick1.up()
         @moving = true
         @bear.translateZ(tpf * @bear.speed)
-      if @keyboard.pressed('s') or @keyboard.pressed('down')
+      if @keyboard.pressed('s') or @keyboard.pressed('down') or vj.joystick1.down()
         @moving = true
         @bear.translateZ(-tpf * @bear.speed)
 
-      if @keyboard.pressed('a') or @keyboard.pressed('left')
+      if @keyboard.pressed('a') or @keyboard.pressed('left') or vj.joystick1.left()
         @moving = true
         @bear.rotation.y += tpf * @bear.speed / 2
-      if @keyboard.pressed('d') or @keyboard.pressed('right')
+      if @keyboard.pressed('d') or @keyboard.pressed('right') or vj.joystick1.right()
         @moving = true
         @bear.rotation.y -= tpf * @bear.speed / 2
 
@@ -407,6 +421,7 @@ class GameScene extends BaseScene
         @spotLight.setColor("##{colorDest}")
       else
         @spotLight.setColor("white")
+    @shooting = false
 
   jNorthPoleError: (data, status) ->
     document.getElementById('highscore').className = 'hidden'
@@ -430,7 +445,7 @@ class GameScene extends BaseScene
     @spotLight.setColor('white')
     jNorthPole.createStorage({ name: config.name.substring(0, config.maxNameLength), score: @score, api_key: jNorthPole.API_KEY, secret: jNorthPole.SECRET }, (data) ->
       console.log data
-      gameScene.getHighScores()
+      SceneManager.get().currentScene().getHighScores()
     , @jNorthPoleError)
 
     @cameraPosition(0)
@@ -456,23 +471,22 @@ class GameScene extends BaseScene
     Math.random() * (max - min) + min
 
   spawnBunny: (first = false)->
-    JsonModelManager.get().load('bunny', 'models/bunny_all.json', (mesh) =>
-      mesh.receiveShadow = true
-      mesh.castShadow = true
-      @bunny = mesh
-      if first
-        @bunny.position.set 2, 0, 20
-      else
-        @bunny.position.copy @getBunnySpawnPoint()
-      @bunny.scale.set 0.5, 0.5, 0.5
-      @bunny.animations[1].play()
-      @bunny.animations[2].loop = false
-      @bunny.speed = 3
-      @bunny.dead = false
+    bunny = jm.initAnimations(jm.items['bunny_all'].clone())
 
-      @bunnies.push @bunny
-      @scene.add @bunny
-    )
+    bunny.receiveShadow = true
+    bunny.castShadow = true
+    if first
+      bunny.position.set 2, 0, 20
+    else
+      bunny.position.copy @getBunnySpawnPoint()
+    bunny.scale.set 0.5, 0.5, 0.5
+    bunny.animations[1].play()
+    bunny.animations[2].loop = false
+    bunny.speed = 3
+    bunny.dead = false
+
+    @bunnies.push bunny
+    @scene.add bunny
 
   cameraPosition: (i = 0) ->
     return if @cameraTweening
@@ -558,8 +572,22 @@ class GameScene extends BaseScene
         localStorage.setItem("bloodEffect", "yezzer")
       config.bloodEffect = localStorage.getItem('bloodEffect')
 
-    @toggleDrapes() if event.which == 32 and not @started
+objs = [
+  './models/bear_all.json'
+  './models/bunny_all.json'
+  './models/shotgun.json'
+  './models/drapes.json'
+  './models/drapes2.json'
+  './models/theater_mask.json'
 
-gameScene = new GameScene()
-engine.addScene(gameScene)
+  './imgs/splatter.png'
+  './models/diffuse.png'
+  './imgs/star.png'
+]
+
+loadingScene = new LoadingScene objs, ->
+  gameScene = new GameScene()
+  engine.addScene(gameScene)
+  engine.sceneManager.setScene(gameScene)
+engine.addScene(loadingScene)
 engine.render()
