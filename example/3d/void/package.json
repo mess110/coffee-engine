@@ -1,0 +1,27 @@
+{
+  "name": "coffee-engine-template-3d",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "install": "bower install",
+
+    "sass-no-watch": "./node_modules/node-sass/bin/node-sass css/app.sass css/app.css",
+    "sass": "nodemon -e sass -x \"npm run sass\"",
+
+    "coffee-no-watch": "coffee --output . -b -c .",
+    "coffee": "coffee --output . -b -c -w .",
+
+    "server": "python -m SimpleHTTPServer",
+
+    "test": "echo \"Error: no test specified\" && exit 1",
+
+    "compile": "npm run coffee-no-watch && npm run sass-no-watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "node-sass": "^3.4.2",
+    "nodemon": "^1.8.1"
+  }
+}
