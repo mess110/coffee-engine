@@ -1,3 +1,5 @@
+fs = require('fs')
+
 module.exports = (grunt) ->
   files_3d = [
     "bower_components/stats.js/src/Stats.js"
@@ -68,6 +70,13 @@ module.exports = (grunt) ->
     "bower_components/socket.io-client/dist/socket.io.js"
   ]
 
+  all_2d_files = files_2d.concat(extras)
+  all_3d_files = files_3d.concat(extras)
+
+  for file in all_3d_files.concat(all_2d_files)
+    unless fs.existsSync(file)
+      throw "ERROR: #{file} does not exist!"
+
   grunt.initConfig
     pkg: grunt.file.readJSON("package.json")
     shell:
@@ -88,8 +97,8 @@ module.exports = (grunt) ->
           mangle: false
           beautify: true
         files: [
-          "build/coffee-engine-2d.js": files_2d.concat(extras)
-          "build/coffee-engine-3d.js": files_3d.concat(extras)
+          "build/coffee-engine-2d.js": all_2d_files
+          "build/coffee-engine-3d.js": all_3d_files
         ]
 
   grunt.registerTask "compile:coffee:watch", ["shell:compile-coffee-watch"]
