@@ -12,7 +12,8 @@
     "coffee-no-watch": "coffee --output . -b -c .",
     "coffee": "coffee --output . -b -c -w .",
 
-    "server": "python -m SimpleHTTPServer",
+    "http": "python -m SimpleHTTPServer",
+    "server": "coffee -w js/server/server.coffee",
 
     "test": "echo \"Error: no test specified\" && exit 1",
 
@@ -20,6 +21,11 @@
   },
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "express.io": "^1.1.13",
+    "coffee-script": "^1.10.0",
+    "connect": "^3.4.1"
+  },
   "devDependencies": {
     "node-sass": "^3.4.2",
     "nodemon": "^1.8.1"
