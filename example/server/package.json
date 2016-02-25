@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express.io": "^1.1.13"
+    "express.io": "^1.1.13",
+    "coffee-script": "^1.10.0",
+    "connect": "^3.4.1"
   }
 }
