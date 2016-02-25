@@ -28,6 +28,7 @@
     "ShaderParticleEngine": "git@github.com:squarefeet/ShaderParticleEngine.git#Release-0.8.1",
     "threex.dynamictexture": "*",
     "file-saver": "*",
-    "virtualjoystick.js": "*"
+    "virtualjoystick.js": "*",
+    "socket.io-client": "~0.9.16"
   }
 }

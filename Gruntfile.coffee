@@ -65,6 +65,7 @@ module.exports = (grunt) ->
 
   extras = [
     "src/shared/SyntaxSugar.js"
+    "bower_components/socket.io-client/dist/socket.io.js"
   ]
 
   grunt.initConfig
