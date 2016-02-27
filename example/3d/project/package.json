@@ -11,10 +11,12 @@
     "coffee-no-watch": "coffee --output . -b -c .",
     "coffee": "coffee --output . -b -c -w .",
 
-    "http": "python -m SimpleHTTPServer",
-    "server": "coffee -w js/server/server.coffee",
+    "server-no-watch": "coffee -w js/server/server.coffee",
+    "server": "nodemon -e coffee -x \"npm run server-no-watch\"",
 
     "test": "echo \"Error: no test specified\" && exit 1",
+
+    "http": "python -m SimpleHTTPServer",
 
     "compile": "npm run coffee-no-watch && npm run sass-no-watch"
   },
