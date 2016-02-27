@@ -4,6 +4,14 @@ class NetworkManager
   instance = null
 
   # Uses socket.io for networking
+  #
+  # @example
+  #   nm = NetworkManager.get()
+  #   nm.connect('http://localhost:9292/namespace')
+  #   nm.emit('ready', name: 'kiki')
+  #
+  #   nm.on 'move', (data) ->
+  #     console.log data
   class Singleton.NetworkManager
     socket: undefined
 
@@ -12,11 +20,13 @@ class NetworkManager
       # uses socket.io from npm so there is no need for a connection string
       @socket = io.connect(namespace)
 
-      @socket.on 'ready', (data) ->
-        console.log data
-
-      @socket.on 'error', (err) ->
-        console.error err
+    # set a listener
+    #
+    # @example
+    #   nm.on 'move', (data) ->
+    #     console.log data
+    on: (event, func) ->
+      @socket.on event, func
 
     # Emit an event
     #

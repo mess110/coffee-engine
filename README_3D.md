@@ -11,13 +11,16 @@ Features
 
 - Engine
 - SceneManager
-- StorageManager
-- JsonModelLoader
-  - Animations
 - Water
 - Sky
 - Heightmap
 - Spotlight
+- LoadingScene
+- manage resources
+  - StorageManager
+  - TextureManager
+  - JsonModelLoader
+    - Animations
 
 Tutorial
 ========
