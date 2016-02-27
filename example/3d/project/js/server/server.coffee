@@ -7,7 +7,7 @@ config =
   guid: server.Utils.guid()
   dirname: __dirname
   version: 1
-  port: 7076
+  port: 1337
 
 class GameServer
   IO_METHODS: []

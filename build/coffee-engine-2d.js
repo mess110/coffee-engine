@@ -441,7 +441,7 @@ Utils = function() {
             type: format + ";charset=utf-8"
         }), saveAs(blob, fileName);
     }, Utils;
-}();
+}(), exports.Utils = Utils;
 
 var BaseScene;
 

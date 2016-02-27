@@ -11903,12 +11903,9 @@ NetworkManager = function() {
     return instance = null, Singleton.NetworkManager = function() {
         function NetworkManager() {}
         return NetworkManager.prototype.socket = void 0, NetworkManager.prototype.connect = function(namespace) {
-            return null == namespace && (namespace = "/"), this.socket = io.connect(namespace), 
-            this.socket.on("ready", function(data) {
-                return console.log(data);
-            }), this.socket.on("error", function(err) {
-                return console.error(err);
-            });
+            return null == namespace && (namespace = "/"), this.socket = io.connect(namespace);
+        }, NetworkManager.prototype.on = function(event, func) {
+            return this.socket.on(event, func);
         }, NetworkManager.prototype.emit = function(event, params) {
             return null == params && (params = {}), params.timestamp = new Date().getTime(), 
             this.socket.emit(event, params);
@@ -12064,7 +12061,7 @@ Utils = function() {
             type: format + ";charset=utf-8"
         }), saveAs(blob, fileName);
     }, Utils;
-}();
+}(), exports.Utils = Utils;
 
 var VirtualController;
 
