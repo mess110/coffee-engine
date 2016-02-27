@@ -49,6 +49,7 @@ class LoadingScene extends BaseScene
     console.log "Loading texture '#{name}' from '#{url}'" if @config.debug
     @tm.load(name, url)
 
+  # assumes the url has been validated as a jave object
   _loadSaveObject: (url) ->
     name = Utils.getKeyName(url, Utils.SAVE_URLS)
     console.log "Loading save object '#{name}' from '#{url}'" if @config.debug

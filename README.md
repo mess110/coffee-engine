@@ -20,6 +20,7 @@ It also comes with some tools
 
 * 3d engine ~ thin layer over three.js in coffeescript
 * 2d engine (WIP)
+* server ~ using socket.io
 * tools
   - model-viewer
   - particle-editor

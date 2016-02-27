@@ -43,6 +43,7 @@ class Pod
         pkm.remove socket.id
         gameServer.disconnect(socket, data) if gameServer.disconnect?
 
+  # Return the keys from the PodKeyManager
   keys: ->
     PodKeyManager.get().keys
 

@@ -91,21 +91,33 @@ String::size = (s) ->
 String::startsWith = (s) ->
   @.indexOf(s) == 0
 
+# Checks if an string starts with any of the prefixes.
+# The prefixes is an array of strings
 String::startsWithAny = (prefixes) ->
   startsWith = false
   for prefix in prefixes
     startsWith = true if @.startsWith(prefix)
   startsWith
 
+# Checks if a string ends with another string
+#
+# @param [String] suffix
 String::endsWith = (suffix) ->
   @indexOf(suffix, @length - (suffix.length)) != -1
 
+# Checks if an array ends with any of the prefixes
+#
+# @param [Array] suffixes
 String::endsWithAny = (suffixes) ->
   endsWith = false
   for suffix in suffixes
     endsWith = true if @.endsWith(suffix)
   endsWith
 
+# Replaces any of the sources as dest String
+#
+# @param [Array] sources
+# @param [String] dest
 String::replaceAny = (sources, dest) ->
   tmp = @
   for source in sources

@@ -81,6 +81,9 @@ class Helper
     mat = new (THREE[options.material])(color: options.color)
     new (THREE.Mesh)(box, mat)
 
+  # Creates a plane
+  #
+  # @param [Object] options
   @plane: (options = {}) ->
     options.width ?= 5
     options.height ?= 5

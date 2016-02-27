@@ -88,6 +88,8 @@ module.exports = (grunt) ->
         command: "./node_modules/.bin/codo -u -o ./doc/3d/ -r README_3D.md src/3d/ src/shared/"
       "doc-2d":
         command: "./node_modules/.bin/codo -u -o ./doc/2d/ -r README_2D.md src/2d/ src/shared/"
+      "doc-server":
+        command: "./node_modules/.bin/codo -u -o ./doc/server/ -r README_SERVER.md src/server/ src/shared/Utils.coffee"
       "tools":
         command: "npm run start"
 
@@ -107,7 +109,7 @@ module.exports = (grunt) ->
   grunt.registerTask "build", ["compile:coffee", "uglify:engine"]
   grunt.registerTask "dev", ["compile:coffee:watch"]
 
-  grunt.registerTask "doc", ["shell:doc-3d", "shell:doc-2d"]
+  grunt.registerTask "doc", ["shell:doc-3d", "shell:doc-2d", "shell:doc-server"]
   grunt.registerTask "tools", ["shell:tools"]
 
   grunt.registerTask "default", ["dev"]
