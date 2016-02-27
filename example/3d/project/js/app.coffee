@@ -1,6 +1,9 @@
 config = Config.get()
 config.fillWindow()
 
+nm = NetworkManager.get()
+nm.connect()
+
 engine = new Engine3D()
 engine.camera.position.set 0, 0, 10
 

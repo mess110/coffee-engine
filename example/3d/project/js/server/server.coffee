@@ -1,27 +1,25 @@
 #!/usr/bin/env coffee
 
-path = require('path')
-express = require('express.io')
+# server = require('../../../../../src/server/server.coffee') # for dev
+server = require('../../bower_components/coffee-engine/src/server/server.coffee')
 
-app = express()
-app.http().io()
-io = app.io
-
-info =
+config =
+  guid: server.Utils.guid()
+  dirname: __dirname
   version: 1
   port: 7076
 
-app.use('/', express.static(path.join(__dirname, '../../')))
+class GameServer
+  IO_METHODS: []
 
-app.get '/info.json', (req, res) ->
-  res.setHeader('Content-Type', 'application/json')
-  res.send(JSON.stringify(info))
+  connect: (socket) ->
+    console.log "#{socket.id} connect"
+    console.log pod.keys()
 
-io.on 'connection', (socket) ->
-  socket.emit 'ready', info
+  disconnect: (socket, data) ->
+    console.log "#{socket.id} disconnect"
+    pod.broadcast('disconnect', id: socket.id)
 
-  socket.on 'ready', (data) ->
-    console.log data
-
-console.log "Listening on port #{info.port}"
-app.listen info.port
+gameServer = new GameServer()
+pod = new server.Pod(config, gameServer)
+pod.listen()

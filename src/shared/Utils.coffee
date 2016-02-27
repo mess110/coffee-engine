@@ -65,3 +65,5 @@ class Utils
     json = JSON.stringify(content, null, 2)
     blob = new Blob([json], type: "#{format};charset=utf-8")
     saveAs blob, fileName
+
+exports.Utils = Utils
