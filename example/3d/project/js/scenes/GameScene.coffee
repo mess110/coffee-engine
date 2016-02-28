@@ -1,7 +1,5 @@
 class GameScene extends BaseScene
-  constructor: ->
-    super()
-
+  init: ->
     @cube = Helper.cube()
     @scene.add @cube
 

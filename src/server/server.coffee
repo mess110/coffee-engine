@@ -58,7 +58,7 @@ class Pod
   # @example
   #   pod.broadcast('event', { foo: 1 })
   broadcast: (eventName, data) ->
-    for key in @keys
+    for key in @keys()
       @socket(key).emit(eventName, data)
 
   # starts here
