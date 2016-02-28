@@ -16,7 +16,7 @@ class GameServer
     console.log "#{socket.id} connect"
     console.log pod.keys()
 
-  disconnect: (socket, data) ->
+  disconnect: (socket) ->
     console.log "#{socket.id} disconnect"
     pod.broadcast('disconnect', id: socket.id)
 

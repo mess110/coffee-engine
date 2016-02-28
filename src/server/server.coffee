@@ -35,13 +35,15 @@ class Pod
       pkm.push socket.id
       gameServer.connect(socket) if gameServer.connect?
 
-      for method in gameServer.IO_METHODS
-        socket.on method, (data) ->
-          gameServer[method](socket, data)
+      socket.on 'data', (data) ->
+        if gameServer.IO_METHODS.includes(data.type)
+          gameServer[data.type](socket, data)
+        else
+          console.log "invalid data.type: '#{data.type}'"
 
-      socket.on 'disconnect', (data) ->
+      socket.on 'disconnect', ->
         pkm.remove socket.id
-        gameServer.disconnect(socket, data) if gameServer.disconnect?
+        gameServer.disconnect(socket) if gameServer.disconnect?
 
   # Return the keys from the PodKeyManager
   keys: ->

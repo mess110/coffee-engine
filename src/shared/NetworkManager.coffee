@@ -28,13 +28,21 @@ class NetworkManager
     on: (event, func) ->
       @socket.on event, func
 
+    # Emit a raw event
+    #
+    # @param [String] name
+    # @param [Object] data
+    rawEmit: (name, data={}) ->
+      data.timestamp = new Date().getTime()
+      @socket.emit(name, data)
+
     # Emit an event
     #
-    # @param [String] event name
-    # @param [Object] event payload
-    emit: (event, params={}) ->
-      params.timestamp = new Date().getTime()
-      @socket.emit(event, params)
+    # Used with coffee-engine-server
+    #
+    # @param [Object] data
+    emit: (data) ->
+      @rawEmit('data', data)
 
   @get: () ->
     instance ?= new Singleton.NetworkManager()

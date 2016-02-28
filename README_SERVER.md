@@ -30,7 +30,7 @@ GameServer
     connect: (socket) ->
       console.log socket.id
 
-    disconnect: (socket, data) ->
+    disconnect: (socket) ->
       console.log socket.id
 ```
 
