@@ -7,7 +7,9 @@ nm.connect()
 engine = new Engine3D()
 
 gameScene = new GameScene()
-loadingScene = new LoadingScene([], ->
+loadingScene = new LoadingScene([
+  # Asset urls
+], ->
   gameScene.init()
   engine.sceneManager.setScene(gameScene)
 )

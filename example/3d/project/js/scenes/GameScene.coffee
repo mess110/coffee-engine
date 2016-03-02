@@ -3,9 +3,7 @@ class GameScene extends BaseScene
     @cube = Helper.cube()
     @scene.add @cube
 
-    @light = Helper.ambientLight()
-    @scene.add @light
-
+    @scene.add Helper.ambientLight()
     @controls = Helper.orbitControls(engine)
 
   tick: (tpf) ->

@@ -4,22 +4,25 @@ class JsonModelManager
 
   # Handles loading JSON models
   class Singleton.JsonModelManager
+    baseUrl: ''
     loader: new (THREE.JSONLoader)
     items: {}
     loadCount: 0
 
-    # Load JSON model
+    # Load JSON model and store it in @items under a specified key
     #
     # param [String] key
     # param [String] url to the json file
     # param [String] callback method called once the object is loaded
     #
-    # @example
+    # @see Singleton.JsonModelManager.hasFinishedLoading()
     #
-    #   TODO
+    # @example
+    #    jmm = JsonModelManager.get()
+    #    jmm.load('key', 'url/to/file.json')
     load: (key, url, callback = -> {}) ->
       @loadCount += 1
-      @loader.load url, (geometry, materials) ->
+      @loader.load "#{@baseUrl}#{url}", (geometry, materials) ->
         jmm = window.JsonModelManager.get()
 
         mesh = new (THREE.SkinnedMesh)(geometry, new (THREE.MeshFaceMaterial)(materials))
@@ -45,10 +48,22 @@ class JsonModelManager
           mesh.animations.push animation
       mesh
 
-    # clone an item with animations
+    # Clone an item with animations
     clone: (key) ->
-      mesh = @items[key].clone()
+      mesh = @_hack(@items[key].clone())
       @initAnimations(mesh)
+
+    # @nodoc
+    # When cloning a SkinnedMesh, three.js doesn't clone the materials so
+    # we need to do that
+    _hack: (mesh) ->
+      mesh.material = mesh.material.clone()
+      # mesh.material.needsUpdate = true
+      # mesh.material.materials[0] = mesh.material.materials[0].clone()
+      # mesh.material.materials[0].needsUpdate = true
+      mesh.material.materials[0].map = mesh.material.materials[0].map.clone()
+      mesh.material.materials[0].map.needsUpdate = true
+      mesh
 
     # Check if all objects which started loading have finished loading
     hasFinishedLoading: ->

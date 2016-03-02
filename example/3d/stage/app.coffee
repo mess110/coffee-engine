@@ -144,7 +144,7 @@ class GameScene extends BaseScene
     # @floatingCombatText.position.y = 100
     @scene.add @floatingCombatText
 
-    @bear = jm.items['bear_all']
+    @bear = jm.clone('bear_all')
     @bear.receiveShadow = true
     @bear.castShadow = true
     @bear.position.set 0, 0, 0
@@ -154,7 +154,7 @@ class GameScene extends BaseScene
     @spotLight.lookAt(@bear) if @bear?
     @cameraPosition(0)
 
-    @shotgun = jm.items['shotgun']
+    @shotgun = jm.clone('shotgun')
     @shotgun.receiveShadow = true
     @shotgun.castShadow = true
     # @shotgun.position.set 0, 0, -10
@@ -178,14 +178,14 @@ class GameScene extends BaseScene
     @particle.mesh.visible = false
     @shotgun.add @particle.mesh
 
-    @drapesBg = jm.items['drapes']
+    @drapesBg = jm.clone('drapes')
     @drapesBg.receiveShadow = true
     @drapesBg.castShadow = true
     @drapesBg.position.set 0, 0, -15
     @drapesBg.scale.set 3.5, 2, 1
     # @scene.add @drapesBg
 
-    @drapes = jm.items['drapes2']
+    @drapes = jm.clone('drapes2')
     @drapes.receiveShadow = true
     @drapes.castShadow = true
     @drapes.opened = false
@@ -193,7 +193,7 @@ class GameScene extends BaseScene
     @drapes.scale.x = 2
     # @scene.add @drapes
 
-    @mask = jm.items['theater_mask']
+    @mask = jm.clone('theater_mask')
     @mask.receiveShadow = true
     @mask.castShadow = true
     @mask.position.set 0, 16, 16
@@ -471,7 +471,7 @@ class GameScene extends BaseScene
     Math.random() * (max - min) + min
 
   spawnBunny: (first = false)->
-    bunny = jm.initAnimations(jm.items['bunny_all'].clone())
+    bunny = jm.clone('bunny_all')
 
     bunny.receiveShadow = true
     bunny.castShadow = true
