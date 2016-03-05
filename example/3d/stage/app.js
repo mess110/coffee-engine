@@ -191,7 +191,7 @@ GameScene = (function(superClass) {
     });
     this.floatingCombatText = new THREE.Mesh(dgeometry, this.dmaterial);
     this.scene.add(this.floatingCombatText);
-    this.bear = jm.items['bear_all'];
+    this.bear = jm.clone('bear_all');
     this.bear.receiveShadow = true;
     this.bear.castShadow = true;
     this.bear.position.set(0, 0, 0);
@@ -202,7 +202,7 @@ GameScene = (function(superClass) {
       this.spotLight.lookAt(this.bear);
     }
     this.cameraPosition(0);
-    this.shotgun = jm.items['shotgun'];
+    this.shotgun = jm.clone('shotgun');
     this.shotgun.receiveShadow = true;
     this.shotgun.castShadow = true;
     this.shotgun.animations[1].loop = false;
@@ -224,18 +224,18 @@ GameScene = (function(superClass) {
     this.particle.mesh.position.set(0, 0.75, 5);
     this.particle.mesh.visible = false;
     this.shotgun.add(this.particle.mesh);
-    this.drapesBg = jm.items['drapes'];
+    this.drapesBg = jm.clone('drapes');
     this.drapesBg.receiveShadow = true;
     this.drapesBg.castShadow = true;
     this.drapesBg.position.set(0, 0, -15);
     this.drapesBg.scale.set(3.5, 2, 1);
-    this.drapes = jm.items['drapes2'];
+    this.drapes = jm.clone('drapes2');
     this.drapes.receiveShadow = true;
     this.drapes.castShadow = true;
     this.drapes.opened = false;
     this.drapes.position.set(0, 0, 15);
     this.drapes.scale.x = 2;
-    this.mask = jm.items['theater_mask'];
+    this.mask = jm.clone('theater_mask');
     this.mask.receiveShadow = true;
     this.mask.castShadow = true;
     this.mask.position.set(0, 16, 16);
@@ -572,7 +572,7 @@ GameScene = (function(superClass) {
     if (first == null) {
       first = false;
     }
-    bunny = jm.initAnimations(jm.items['bunny_all'].clone());
+    bunny = jm.clone('bunny_all');
     bunny.receiveShadow = true;
     bunny.castShadow = true;
     if (first) {
