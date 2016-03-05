@@ -11687,7 +11687,7 @@ var VirtualJoystick = function(opts) {
     this._mouseSupport = void 0 !== opts.mouseSupport ? opts.mouseSupport : !1, this._stationaryBase = opts.stationaryBase || !1, 
     this._baseX = this._stickX = opts.baseX || 0, this._baseY = this._stickY = opts.baseY || 0, 
     this._limitStickTravel = opts.limitStickTravel || !1, this._stickRadius = void 0 !== opts.stickRadius ? opts.stickRadius : 100, 
-    this._useCssTransform = void 0 !== opts.useCssTransform ? opts.useCssTransform : !1, 
+    this._deadZone = opts.deadZone || 0, this._useCssTransform = void 0 !== opts.useCssTransform ? opts.useCssTransform : !1, 
     this._container.style.position = "relative", this._container.appendChild(this._baseEl), 
     this._baseEl.style.position = "absolute", this._baseEl.style.display = "none", this._container.appendChild(this._stickEl), 
     this._stickEl.style.position = "absolute", this._stickEl.style.display = "none", 
@@ -11733,19 +11733,19 @@ VirtualJoystick.prototype.destroy = function() {
 }, VirtualJoystick.prototype.up = function() {
     if (this._pressed === !1) return !1;
     var deltaX = this.deltaX(), deltaY = this.deltaY();
-    return deltaY >= 0 ? !1 : !(Math.abs(deltaX) > 2 * Math.abs(deltaY));
+    return deltaY >= 0 ? !1 : Math.abs(deltaX) > 2 * Math.abs(deltaY) ? !1 : !(deltaY > -this._deadZone && deltaY < this._deadZone);
 }, VirtualJoystick.prototype.down = function() {
     if (this._pressed === !1) return !1;
     var deltaX = this.deltaX(), deltaY = this.deltaY();
-    return 0 >= deltaY ? !1 : !(Math.abs(deltaX) > 2 * Math.abs(deltaY));
+    return 0 >= deltaY ? !1 : Math.abs(deltaX) > 2 * Math.abs(deltaY) ? !1 : !(deltaY > -this._deadZone && deltaY < this._deadZone);
 }, VirtualJoystick.prototype.right = function() {
     if (this._pressed === !1) return !1;
     var deltaX = this.deltaX(), deltaY = this.deltaY();
-    return 0 >= deltaX ? !1 : !(Math.abs(deltaY) > 2 * Math.abs(deltaX));
+    return 0 >= deltaX ? !1 : Math.abs(deltaY) > 2 * Math.abs(deltaX) ? !1 : !(deltaX > -this._deadZone && deltaX < this._deadZone);
 }, VirtualJoystick.prototype.left = function() {
     if (this._pressed === !1) return !1;
     var deltaX = this.deltaX(), deltaY = this.deltaY();
-    return deltaX >= 0 ? !1 : !(Math.abs(deltaY) > 2 * Math.abs(deltaX));
+    return deltaX >= 0 ? !1 : Math.abs(deltaY) > 2 * Math.abs(deltaX) ? !1 : !(deltaX > -this._deadZone && deltaX < this._deadZone);
 }, VirtualJoystick.prototype._onUp = function() {
     this._pressed = !1, this._stickEl.style.display = "none", 0 == this._stationaryBase && (this._baseEl.style.display = "none", 
     this._baseX = this._baseY = 0, this._stickX = this._stickY = 0);
@@ -11906,9 +11906,11 @@ NetworkManager = function() {
             return null == namespace && (namespace = "/"), this.socket = io.connect(namespace);
         }, NetworkManager.prototype.on = function(event, func) {
             return this.socket.on(event, func);
-        }, NetworkManager.prototype.emit = function(event, params) {
-            return null == params && (params = {}), params.timestamp = new Date().getTime(), 
-            this.socket.emit(event, params);
+        }, NetworkManager.prototype.rawEmit = function(name, data) {
+            return null == data && (data = {}), data.timestamp = new Date().getTime(), this.socket.emit(name, data);
+        }, NetworkManager.prototype.emit = function(data) {
+            if (null == data && null == data.type) throw "data.type missing";
+            return this.rawEmit("data", data);
         }, NetworkManager;
     }(), NetworkManager.get = function() {
         return null != instance ? instance : instance = new Singleton.NetworkManager();
@@ -12099,11 +12101,12 @@ JsonModelManager = function() {
     var instance;
     return instance = null, Singleton.JsonModelManager = function() {
         function JsonModelManager() {}
-        return JsonModelManager.prototype.loader = new THREE.JSONLoader(), JsonModelManager.prototype.items = {}, 
-        JsonModelManager.prototype.loadCount = 0, JsonModelManager.prototype.load = function(key, url, callback) {
+        return JsonModelManager.prototype.baseUrl = "", JsonModelManager.prototype.loader = new THREE.JSONLoader(), 
+        JsonModelManager.prototype.items = {}, JsonModelManager.prototype.loadCount = 0, 
+        JsonModelManager.prototype.load = function(key, url, callback) {
             return null == callback && (callback = function() {
                 return {};
-            }), this.loadCount += 1, this.loader.load(url, function(geometry, materials) {
+            }), this.loadCount += 1, this.loader.load("" + this.baseUrl + url, function(geometry, materials) {
                 var i, jmm, len, mat, mesh;
                 for (jmm = window.JsonModelManager.get(), mesh = new THREE.SkinnedMesh(geometry, new THREE.MeshFaceMaterial(materials)), 
                 i = 0, len = materials.length; len > i; i++) mat = materials[i], mat.skinning = !0;
@@ -12118,7 +12121,10 @@ JsonModelManager = function() {
             return mesh;
         }, JsonModelManager.prototype.clone = function(key) {
             var mesh;
-            return mesh = this.items[key].clone(), this.initAnimations(mesh);
+            return mesh = this._hack(this.items[key].clone()), this.initAnimations(mesh);
+        }, JsonModelManager.prototype._hack = function(mesh) {
+            return mesh.material = mesh.material.clone(), mesh.material.materials[0].map = mesh.material.materials[0].map.clone(), 
+            mesh.material.materials[0].map.needsUpdate = !0, mesh;
         }, JsonModelManager.prototype.hasFinishedLoading = function() {
             return this.loadCount === Object.keys(this.items).size();
         }, JsonModelManager;

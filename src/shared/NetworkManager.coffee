@@ -42,6 +42,7 @@ class NetworkManager
     #
     # @param [Object] data
     emit: (data) ->
+      throw 'data.type missing' unless data? or data.type?
       @rawEmit('data', data)
 
   @get: () ->
