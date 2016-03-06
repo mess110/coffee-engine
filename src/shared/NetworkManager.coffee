@@ -5,6 +5,8 @@ class NetworkManager
 
   # Uses socket.io for networking
   #
+  # TODO: inputId in base36 (maybe)
+  #
   # @example
   #   nm = NetworkManager.get()
   #   nm.connect('http://localhost:9292/namespace')
@@ -14,11 +16,17 @@ class NetworkManager
   #     console.log data
   class Singleton.NetworkManager
     socket: undefined
+    inputId: 0
 
     # Connect to a namespace
     connect: (namespace = '/') ->
       # uses socket.io from npm so there is no need for a connection string
       @socket = io.connect(namespace)
+
+    # Get the current session id, same one as on the server
+    getSessionId: () ->
+      return unless @socket?
+      @socket.socket.sessionid
 
     # set a listener
     #
@@ -34,7 +42,9 @@ class NetworkManager
     # @param [Object] data
     rawEmit: (name, data={}) ->
       data.timestamp = new Date().getTime()
+      data.inputId = @inputId
       @socket.emit(name, data)
+      @inputId += 1
 
     # Emit an event
     #
