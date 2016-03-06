@@ -1,8 +1,18 @@
 config = Config.get()
 config.fillWindow()
+config.toggleStats()
 
 nm = NetworkManager.get()
 nm.connect()
+
+nm.on 'join', (data) ->
+  gameScene.join(data)
+
+nm.on 'disconnect', (data) ->
+  gameScene.disconnect(data)
+
+nm.on 'gameTick', (data) ->
+  gameScene.gameTick(data)
 
 engine = new Engine3D()
 

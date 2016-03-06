@@ -11902,12 +11902,16 @@ NetworkManager = function() {
     var instance;
     return instance = null, Singleton.NetworkManager = function() {
         function NetworkManager() {}
-        return NetworkManager.prototype.socket = void 0, NetworkManager.prototype.connect = function(namespace) {
+        return NetworkManager.prototype.socket = void 0, NetworkManager.prototype.inputId = 0, 
+        NetworkManager.prototype.connect = function(namespace) {
             return null == namespace && (namespace = "/"), this.socket = io.connect(namespace);
+        }, NetworkManager.prototype.getSessionId = function() {
+            return null != this.socket ? this.socket.socket.sessionid : void 0;
         }, NetworkManager.prototype.on = function(event, func) {
             return this.socket.on(event, func);
         }, NetworkManager.prototype.rawEmit = function(name, data) {
-            return null == data && (data = {}), data.timestamp = new Date().getTime(), this.socket.emit(name, data);
+            return null == data && (data = {}), data.timestamp = new Date().getTime(), data.inputId = this.inputId, 
+            this.socket.emit(name, data), this.inputId += 1;
         }, NetworkManager.prototype.emit = function(data) {
             if (null == data && null == data.type) throw "data.type missing";
             return this.rawEmit("data", data);

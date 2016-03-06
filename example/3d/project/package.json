@@ -14,6 +14,8 @@
     "server-no-watch": "coffee -w js/server/server.coffee",
     "server": "nodemon -e coffee -x \"npm run server-no-watch\"",
 
+    "prod": "npm run compile && npm run server-no-watch",
+
     "test": "echo \"Error: no test specified\" && exit 1",
 
     "http": "python -m SimpleHTTPServer",

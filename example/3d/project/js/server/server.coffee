@@ -2,24 +2,30 @@
 
 # server = require('../../../../../src/server/server.coffee') # for dev
 server = require('../../bower_components/coffee-engine/src/server/server.coffee')
+Game = require('./Game.coffee').Game
 
 config =
-  guid: server.Utils.guid()
-  dirname: __dirname
-  version: 1
-  port: 1337
+  pod:
+    id: server.Utils.guid()
+    dirname: __dirname
+    version: 1
+    port: 1337
+  gameServer:
+    ticksPerSecond: 50
+    ioMethods: ['join', 'move']
 
-class GameServer
-  IO_METHODS: []
+class GameServer extends server.GameServer
+  game: new Game(config.gameServer)
 
-  connect: (socket) ->
-    console.log "#{socket.id} connect"
-    console.log pod.keys()
+  move: (socket, data) ->
+    @game.move(socket, data)
+
+  join: (socket, data) ->
+    @game.join(socket, data)
 
   disconnect: (socket) ->
-    console.log "#{socket.id} disconnect"
-    pod.broadcast('disconnect', id: socket.id)
+    @game.disconnect(socket)
 
-gameServer = new GameServer()
-pod = new server.Pod(config, gameServer)
+gameServer = new GameServer(config.gameServer)
+pod = new server.Pod(config.pod, gameServer)
 pod.listen()
