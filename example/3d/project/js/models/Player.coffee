@@ -13,3 +13,9 @@ class Player extends BaseModel
       common.move(@mesh, direction: { x: 5 }, tpf: tpf)
     if @mesh.position.x > @ghost.position.x
       common.move(@mesh, direction: { x: -5 }, tpf: tpf)
+
+  setPosition: (data) ->
+    @mesh.position.x = data.position.x
+
+  setGhostPosition: (data) ->
+    @ghost.position.x = data.position.x

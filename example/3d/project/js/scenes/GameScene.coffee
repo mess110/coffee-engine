@@ -15,7 +15,7 @@ class GameScene extends BaseScene
     @game = data.game
     player = @playerMeshes[@key]
     if player?
-      player.mesh.position.x = data.game[@key].position.x
+      player.setPosition(data.game[@key])
       @discardAcknowledgedInputs(data.game[@key].lastAckInputId)
       player.move(@inputs)
 
@@ -26,7 +26,7 @@ class GameScene extends BaseScene
     @scene.add player.mesh
     @scene.add player.ghost
     @playerMeshes[player.id] = player
-    player.mesh.position.x = @game[player.id].position.x
+    player.setPosition(@game[player.id])
 
   disconnect: (data) ->
     player = @playerMeshes[data.id]
@@ -52,7 +52,7 @@ class GameScene extends BaseScene
 
     for key of @playerMeshes
       player = @playerMeshes[key]
-      player.ghost.position.x = @game[player.id].position.x
+      player.setGhostPosition(@game[player.id])
 
       if player.id == @key
         player.move(hash)
