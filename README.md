@@ -2,7 +2,29 @@ coffee-engine
 =============
 
 A collection of pre-bundled libraries and a basic game architecture to jump start
-your game development.
+your development.
+
+* 3d engine ~ thin layer over three.js in coffeescript
+* 2d engine (WIP)
+* server ~ using socket.io
+  * tick rate
+  * example for:
+    * client side prediction
+    * server reconciliation
+    * entity interpolication
+* tools
+  - model-viewer
+  - particle-editor
+  - terrain-generator
+* examples
+
+3D
+--
+
+To get started with the 3D engine, read the docs. They are automatically generated
+after npm install in the doc folder.
+
+You can also find more information in README_3D.md
 
 The 3D engine uses:
 
@@ -12,27 +34,6 @@ The 3D engine uses:
 * Water Material
 * ShaderParticleEngine
 * Stats.js
-
-It also comes with some tools
-
-* JSON model viewer
-* particle engine editor
-
-* 3d engine ~ thin layer over three.js in coffeescript
-* 2d engine (WIP)
-* server ~ using socket.io
-* tools
-  - model-viewer
-  - particle-editor
-  - terrain-generator
-
-3D
---
-
-To get started with the 3D engine, read the docs. They are automatically generated
-after npm install in the doc folder.
-
-You can also find more information in README_3D.md
 
 tools
 -----
@@ -48,6 +49,11 @@ A nw.js desktop app which allows you to:
 
 The models I am using are created in blender and exported with the official
 three.js blender plugin.
+
+examples
+--------
+
+All examples are in the example/ folder.
 
 commands
 --------

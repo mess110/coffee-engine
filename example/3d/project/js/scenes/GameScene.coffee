@@ -1,5 +1,5 @@
 class GameScene extends BaseScene
-  game: {}
+  players: {}
   playerMeshes: {}
   inputs: []
 
@@ -11,22 +11,22 @@ class GameScene extends BaseScene
   discardAcknowledgedInputs: (lastAckInputId) ->
     @inputs = (input for input in @inputs when input.inputId > lastAckInputId)
 
-  gameTick: (data) ->
-    @game = data.game
+  serverTick: (data) ->
+    @players = data.players
     player = @playerMeshes[@key]
     if player?
-      player.setPosition(data.game[@key])
-      @discardAcknowledgedInputs(data.game[@key].lastAckInputId)
+      player.setPosition(data.players[@key])
+      @discardAcknowledgedInputs(data.players[@key].lastAckInputId)
       player.move(@inputs)
 
   join: (data) ->
-    @game[data.id] = data
+    @players[data.id] = data
     player = new Player()
     player.id = data.id
     @scene.add player.mesh
     @scene.add player.ghost
     @playerMeshes[player.id] = player
-    player.setPosition(@game[player.id])
+    player.setPosition(@players[player.id])
 
   disconnect: (data) ->
     player = @playerMeshes[data.id]
@@ -36,26 +36,22 @@ class GameScene extends BaseScene
       delete @playerMeshes[player.id]
 
   tick: (tpf) ->
-    hash =
-      type: 'move'
-      tpf: tpf
-      direction:
-        x: 0
+    input = common.moveInput(tpf)
 
     if @keyboard.pressed('a')
-      hash.direction.x = -5
+      input.direction.x = -5
     if @keyboard.pressed('d')
-      hash.direction.x = 5
+      input.direction.x = 5
 
-    nm.emit(hash)
-    @inputs.push hash
+    nm.emit(input)
+    @inputs.push input
 
     for key of @playerMeshes
       player = @playerMeshes[key]
-      player.setGhostPosition(@game[player.id])
+      player.setGhostPosition(@players[player.id])
 
       if player.id == @key
-        player.move(hash)
+        player.move(input)
       else
         player.interpolate(tpf)
 

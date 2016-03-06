@@ -91,6 +91,7 @@ class Pod
       gameServer.connect(socket) if gameServer.connect?
 
       socket.on 'data', (data) ->
+        data.ownerId = socket.id
         if gameServer.config.ioMethods.includes(data.type)
           gameServer[data.type](socket, data)
         else
