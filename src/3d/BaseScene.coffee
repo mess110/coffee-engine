@@ -9,6 +9,7 @@
 # The engine can switch between these scenes.
 class BaseScene
   scene: new THREE.Scene()
+  jmm: JsonModelManager.get()
   lastMousePosition: undefined
   keyboard: new THREEx.KeyboardState()
   loaded: false
