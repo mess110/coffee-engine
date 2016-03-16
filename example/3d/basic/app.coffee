@@ -1,4 +1,9 @@
-Config.get().toggleDebug()
+config = Config.get()
+
+config.toggleDebug()
+config.toggleStats()
+config.fillWindow()
+
 engine = new Engine3D()
 
 class GameScene extends BaseScene
