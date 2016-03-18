@@ -1,0 +1,101 @@
+# Used to overlay stuff on a canvas. The canvas can be later used to create
+# a material.
+#
+# @see Helper.materialFromCanvas
+#
+# @example
+#   @drawImage(key: 'corb')
+#   @drawImage(key: 'template')
+#
+#   @drawText(text: 'foo', y: 60, strokeStyle: 'black')
+#   @drawBezier(
+#     curve: '99.2,207.2,130.02,60.0,300.5,276.2,300.7,176.2'
+#     text: 'hello world'
+#     strokeStyle: 'black'
+#     letterPadding: 4
+#   )
+class ArtGenerator
+  tm: TextureManager.get()
+
+  constructor: (options) ->
+    @options = options
+
+    @canvas = document.createElement( 'canvas' )
+    @canvas.width = options.width
+    @canvas.height = options.height
+    @ctx = @canvas.getContext( '2d' )
+
+  # @example
+  #   @art = new ArtGenerator(
+  #     width: 340
+  #     height: 473
+  #   )
+  #   @art.fromJson items: [
+  #     {
+  #       type: 'image'
+  #       key: 'corb'
+  #     }
+  #     {
+  #       type: 'image'
+  #       key: 'template'
+  #     }
+  #     {
+  #       type: 'text'
+  #       text: 'foo'
+  #       y: 60
+  #       strokeStyle: 'black'
+  #     }
+  #     {
+  #       type: 'bezier'
+  #       curve: '99.2,207.2,130.02,60.0,300.5,276.2,300.7,176.2'
+  #       text: 'hello world'
+  #       strokeStyle: 'black'
+  #       letterPadding: 4
+  #     }
+  #   ]
+  fromJson: (json) ->
+    @clear()
+    for item in json.items
+      if item.type == 'image'
+        @drawImage(item)
+      if item.type == 'text'
+        @drawText(item)
+      if item.type == 'bezier'
+        @drawBezier(item)
+
+  drawBezier: (options) ->
+    StackOverflow.drawBezier(options, @ctx)
+
+  drawText: (options = {}) ->
+    throw 'options.text missing' unless options.text?
+    options.fillStyle ?= 'white'
+    options.fillLineWidth ?= 1
+    options.strokeLineWidth ?= 7
+    options.strokeStyle ?= undefined # lol
+    options.font ?= '40px Helvetica'
+    options.x ?= 0
+    options.y ?= 0
+
+    @ctx.save()
+    @ctx.font = options.font
+
+    if options.strokeStyle?
+      @ctx.miterLimit = 2
+      @ctx.lineJoin = 'circle'
+      @ctx.strokeStyle = options.strokeStyle
+      @ctx.lineWidth = options.strokeLineWidth
+      @ctx.strokeText options.text, options.x, options.y
+
+    @ctx.lineWidth = options.fillLineWidth
+    @ctx.fillStyle = options.fillStyle
+    @ctx.fillText options.text, options.x, options.y
+    @ctx.restore()
+
+  drawImage: (options = {}) ->
+    throw 'key not found' unless options.key?
+    options.x ?= 0
+    options.y ?= 0
+    @ctx.drawImage(@tm.items[options.key].image, options.x, options.y)
+
+  clear: ->
+    @ctx.clearRect(0, 0, @options.width, @options.height)

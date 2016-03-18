@@ -23,6 +23,13 @@ class Helper
   @setCursor: Utils.setCursor
   @rgbToHex: Utils.rgbToHex
 
+
+  @distanceTo: (v1, v2) ->
+    dx = v1.x - (v2.x)
+    dy = v1.y - (v2.y)
+    dz = v1.z - (v2.z)
+    Math.sqrt dx * dx + dy * dy + dz * dz
+
   # Create a new camera.
   #
   # By default, it creates a PerspectiveCamera
@@ -90,12 +97,13 @@ class Helper
     options.wSegments ?= 1
     options.hSegments ?= 1
     options.color ?= 0xff0000
-
-    geometry = new (THREE.PlaneBufferGeometry)(options.width, options.height, options.wSegments, options.hSegments)
-    material = new (THREE.MeshBasicMaterial)(
+    options.class ?= 'PlaneBufferGeometry'
+    options.material ?= new (THREE.MeshBasicMaterial)(
       color: options.color
       side: THREE.DoubleSide)
-    new (THREE.Mesh)(geometry, material)
+
+    geometry = new (THREE[options.class])(options.width, options.height, options.wSegments, options.hSegments)
+    new (THREE.Mesh)(geometry, options.material)
 
   # Enable shadows on the renderer
   #
@@ -192,3 +200,17 @@ class Helper
     grid = new (THREE.GridHelper)(options.size, options.step)
     grid.setColors options.colorCenterLine, options.color
     grid
+
+  # Creates a material from what is drawn on a canvas
+  @materialFromCanvas: (canvas) ->
+    texture = new THREE.Texture(canvas)
+    texture.needsUpdate = true
+    new THREE.MeshBasicMaterial(map: texture, transparent: true) # , side: THREE.DoubleSide)
+
+  # An intersection plane
+  #
+  # @example
+  #   @plane = Helper.intersectPlane()
+  #   pos = raycaster.ray.intersectPlane(@plane)
+  @intersectPlane: ->
+    new THREE.Plane(new THREE.Vector3(0, 0, 1), -1)

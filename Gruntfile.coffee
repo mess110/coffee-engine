@@ -18,7 +18,7 @@ module.exports = (grunt) ->
     "bower_components/threex.volumetricspotlight/threex.volumetricspotlightmaterial.js"
     "bower_components/ocean/water-material.js"
     "bower_components/ShaderParticleEngine/build/ShaderParticles.js"
-    "bower_components/threex.dynamictexture/threex.dynamictexture.js"
+    "src/vendor/threex.dynamictexture.js"
 
     "bower_components/file-saver/FileSaver.js"
     "bower_components/virtualjoystick.js/virtualjoystick.js"
@@ -48,6 +48,7 @@ module.exports = (grunt) ->
     "src/3d/extra/SpotLight.js"
     "src/3d/extra/Mirror.js"
     "src/3d/extra/LoadingScene.js"
+    "src/3d/extra/ArtGenerator.js"
 
     "src/3d/Engine3D.js"
   ]
@@ -68,6 +69,7 @@ module.exports = (grunt) ->
   extras = [
     "src/shared/SyntaxSugar.js"
     "bower_components/socket.io-client/dist/socket.io.js"
+    "src/vendor/drawBezier.js"
   ]
 
   all_2d_files = files_2d.concat(extras)

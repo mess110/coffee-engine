@@ -25,6 +25,13 @@ class Config
     animate: true
     transparentBackground: false
 
+    # by disabling this you are:
+    #
+    #   (a) entering a world of pain
+    #   (b) making a card game - if so, there is a better way to overlay Planes.
+    #     You can set the mesh.renderOrder and it will render in that order.
+    sortObjects: true
+
     # Fill window
     #
     # Call this before creating the engine.

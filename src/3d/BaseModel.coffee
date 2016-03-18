@@ -8,6 +8,9 @@ class BaseModel
   setScale: (i) ->
     @mesh.scale.set i, i, i
 
+  setPosition: (pos) ->
+    @mesh.position.set pos.x, pos.y, pos.z
+
   # Sets object visibility recursively.
   #
   # @param [Boolean] value
@@ -18,18 +21,25 @@ class BaseModel
 
   # Toggles model wireframe
   toggleWireframe: ->
-    return unless @mesh? or @mesh.material?
-    @mesh.material.wireframe = !@mesh.material.wireframe
-    if @mesh.material.materials?
-      for material in @mesh.material.materials
-        material.wireframe = !material.wireframe
-    @mesh.material.wireframe
+    return unless @mesh?
+    if @mesh.material?
+      @mesh.material.wireframe = !@mesh.material.wireframe
+      if @mesh.material.materials?
+        for material in @mesh.material.materials
+          material.wireframe = !material.wireframe
+      @mesh.material.wireframe
+    else
+      return unless @mesh.children?
+      for mesh in @mesh.children
+        continue unless mesh.material?
+        mesh.material.wireframe = !mesh.material.wireframe
 
   # Checked weather the raycaster intersects the mesh
   #
   # @param [Raycaster] raycaster
   isHovered: (raycaster) ->
-    raycaster.intersectObject(@mesh).length > 0
+    raycaster.intersectObject(@mesh).length > 0 ||
+    raycaster.intersectObjects(@mesh.children).length > 0
 
   # Play an animation
   #

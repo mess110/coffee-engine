@@ -22,7 +22,7 @@ class TextureManager
       @loadCount == Object.keys(@items).size()
 
     # @nodoc
-    _load: () ->
+    _load: (image) ->
       window.TextureManager.get().loadCount += 1
 
   @get: () ->

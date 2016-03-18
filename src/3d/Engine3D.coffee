@@ -12,7 +12,10 @@ class Engine3D
     @renderer = new THREE.WebGLRenderer(
       antialias: @config.antialias
       alpha: @config.transparentBackground
+      logarithmicDepthBuffer: false
     )
+    # @renderer.context.disable(@renderer.context.DEPTH_TEST)
+    @renderer.sortObjects = config.sortObjects
     @renderer.setSize @width, @height
     document.body.appendChild @renderer.domElement
 
