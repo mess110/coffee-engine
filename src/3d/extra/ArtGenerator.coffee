@@ -95,7 +95,24 @@ class ArtGenerator
     throw 'key not found' unless options.key?
     options.x ?= 0
     options.y ?= 0
-    @ctx.drawImage(@tm.items[options.key].image, options.x, options.y)
+    options.angle ?= 0
+
+    x = options.x
+    y = options.y
+
+    image = @tm.items[options.key].image
+
+    if options.angle != 0
+      @ctx.save()
+      @ctx.translate(options.x + image.width / 2, options.y + image.height / 2)
+      @ctx.rotate(options.angle * Math.PI / 180)
+      x = -(image.width / 2)
+      y = -(image.height / 2)
+
+    @ctx.drawImage(image, x, y)
+
+    if options.angle != 0
+      @ctx.restore()
 
   clear: ->
     @ctx.clearRect(0, 0, @options.width, @options.height)

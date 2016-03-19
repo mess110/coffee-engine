@@ -97,3 +97,4 @@ class BaseScene
       camera.position.set @x, @y, @z
       return
     ).easing(easing).start()
+    tween

@@ -3,48 +3,6 @@ StackOverflow = StackOverflow or {}
 # http://stackoverflow.com/a/31349123/642778
 # did some cleanup and customization of the fonts
 StackOverflow.drawBezier = (options = {}, ctx) ->
-  bezier = (b1, b2) ->
-    #Final stage which takes p, p+1 and calculates the rotation, distance on the path and accumulates the total distance
-    @rad = Math.atan(b1.point.mY / b1.point.mX)
-    @b2 = b2
-    @b1 = b1
-    dx = b2.x - (b1.x)
-    dx2 = (b2.x - (b1.x)) * (b2.x - (b1.x))
-    @dist = Math.sqrt((b2.x - (b1.x)) * (b2.x - (b1.x)) + (b2.y - (b1.y)) * (b2.y - (b1.y)))
-    xDist = xDist + @dist
-    @curve =
-      rad: @rad
-      dist: @dist
-      cDist: xDist
-    return
-
-  bezierT = (t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY) ->
-    #calculates the tangent line to a point in the curve; later used to calculate the degrees of rotation at this point.
-    @mx = 3 * (1 - t) * (1 - t) * (control1X - startX) + 6 * (1 - t) * t * (control2X - control1X) + 3 * t * t * (endX - control2X)
-    @my = 3 * (1 - t) * (1 - t) * (control1Y - startY) + 6 * (1 - t) * t * (control2Y - control1Y) + 3 * t * t * (endY - control2Y)
-    return
-
-  bezier2 = (t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY) ->
-    #Quadratic bezier curve plotter
-    @Bezier1 = new bezier1(t, startX, startY, control1X, control1Y, control2X, control2Y)
-    @Bezier2 = new bezier1(t, control1X, control1Y, control2X, control2Y, endX, endY)
-    @x = (1 - t) * @Bezier1.x + t * @Bezier2.x
-    @y = (1 - t) * @Bezier1.y + t * @Bezier2.y
-    @slope = new bezierT(t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY)
-    @point =
-      t: t
-      x: @x
-      y: @y
-      mX: @slope.mx
-      mY: @slope.my
-    return
-
-  bezier1 = (t, startX, startY, control1X, control1Y, control2X, control2Y) ->
-    #linear bezier curve plotter; used recursivly in the quadratic bezier curve calculation
-    @x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * control1X + t * t * control2X
-    @y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * control1Y + t * t * control2Y
-    return
-
   if options.curve?
     options.points ?= options.curve.split(',')
 
@@ -73,7 +31,6 @@ StackOverflow.drawBezier = (options = {}, ctx) ->
     else
       options.points[i] += options.y
     i += 1
-
 
   ribbonSpecs =
     maxChar: options.maxChar
@@ -151,4 +108,46 @@ StackOverflow.drawBezier = (options = {}, ctx) ->
         break
       j++
     i++
+  return
+
+bezier = (b1, b2) ->
+  #Final stage which takes p, p+1 and calculates the rotation, distance on the path and accumulates the total distance
+  @rad = Math.atan(b1.point.mY / b1.point.mX)
+  @b2 = b2
+  @b1 = b1
+  dx = b2.x - (b1.x)
+  dx2 = (b2.x - (b1.x)) * (b2.x - (b1.x))
+  @dist = Math.sqrt((b2.x - (b1.x)) * (b2.x - (b1.x)) + (b2.y - (b1.y)) * (b2.y - (b1.y)))
+  xDist = xDist + @dist
+  @curve =
+    rad: @rad
+    dist: @dist
+    cDist: xDist
+  return
+
+bezierT = (t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY) ->
+  #calculates the tangent line to a point in the curve; later used to calculate the degrees of rotation at this point.
+  @mx = 3 * (1 - t) * (1 - t) * (control1X - startX) + 6 * (1 - t) * t * (control2X - control1X) + 3 * t * t * (endX - control2X)
+  @my = 3 * (1 - t) * (1 - t) * (control1Y - startY) + 6 * (1 - t) * t * (control2Y - control1Y) + 3 * t * t * (endY - control2Y)
+  return
+
+bezier2 = (t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY) ->
+  #Quadratic bezier curve plotter
+  @Bezier1 = new bezier1(t, startX, startY, control1X, control1Y, control2X, control2Y)
+  @Bezier2 = new bezier1(t, control1X, control1Y, control2X, control2Y, endX, endY)
+  @x = (1 - t) * @Bezier1.x + t * @Bezier2.x
+  @y = (1 - t) * @Bezier1.y + t * @Bezier2.y
+  @slope = new bezierT(t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY)
+  @point =
+    t: t
+    x: @x
+    y: @y
+    mX: @slope.mx
+    mY: @slope.my
+  return
+
+bezier1 = (t, startX, startY, control1X, control1Y, control2X, control2Y) ->
+  #linear bezier curve plotter; used recursivly in the quadratic bezier curve calculation
+  @x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * control1X + t * t * control2X
+  @y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * control1Y + t * t * control2Y
   return
