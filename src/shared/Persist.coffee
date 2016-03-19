@@ -43,6 +43,10 @@ class Persist
     @storage["#{Persist.PREFIX}.#{key}"] = value
     @default(key, def) if def?
 
+  defaultJson: (key, value) ->
+    value = JSON.stringify(value)
+    @default(key, value)
+
   # set the default value for a key
   #
   # The default value is stored in the same storage and has the suffix DEFAULT_SUFFIX
@@ -115,6 +119,9 @@ class Persist
   # @see default
   @default: (key, value) ->
     new Persist().default(key, value)
+
+  @defaultJson: (key, value) ->
+    new Persist().defaultJson(key, value)
 
   # @see rm
   @rm: (key) ->

@@ -41,10 +41,17 @@ class NetworkManager
     # @param [String] name
     # @param [Object] data
     rawEmit: (name, data={}) ->
+      data = @_prepareData(data)
+      @socket.emit(name, data)
+
+    fakeEmit: (name, data={}) ->
+      @_prepareData(data)
+
+    _prepareData: (data={}) ->
       data.timestamp = new Date().getTime()
       data.inputId = @inputId
-      @socket.emit(name, data)
       @inputId += 1
+      data
 
     # Emit an event
     #
@@ -54,6 +61,10 @@ class NetworkManager
     emit: (data) ->
       throw 'data.type missing' unless data? or data.type?
       @rawEmit('data', data)
+
+    fake: (data) ->
+      throw 'data.type missing' unless data? or data.type?
+      @fakeEmit('data', data)
 
   @get: () ->
     instance ?= new Singleton.NetworkManager()

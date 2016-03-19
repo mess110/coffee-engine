@@ -83,6 +83,13 @@ Array::sum = ->
     sum += e
   sum
 
+Array::where = (hash) ->
+  @.filter (d) ->
+    ok = true
+    for key of hash
+      ok = ok && d[key] == hash[key]
+    ok
+
 # Returns the length of a string
 String::size = (s) ->
   @.length
