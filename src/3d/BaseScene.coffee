@@ -24,6 +24,21 @@ class BaseScene
   init: ->
     throw 'scene.init not implemented'
 
+  # used to uninit the scene
+  uninit: ->
+    @clear()
+
+  # remove all the objects from the scene
+  clear: ->
+    children = @scene.children
+    i = @scene.children.length - 1
+    while i >= 0
+      child = children[i]
+      child.clear()
+      @scene.remove child
+      i--
+    return
+
   # This method is automatically called by the engine for
   # each frame
   #

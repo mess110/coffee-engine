@@ -56,9 +56,13 @@ class Helper
     new THREE[options.type](options.view_angle, options.aspect, options.near, options.far)
 
   # Create lights
-  @light: ->
+  @light: (options = {}) ->
+    options.x ?= 0
+    options.y ?= 100
+    options.z ?= 60
+
     light = new (THREE.DirectionalLight)(0xffffff)
-    light.position.set 0, 100, 60
+    light.position.set options.x, options.y, options.z
     light.castShadow = true
     light.shadowCameraLeft = -60
     light.shadowCameraTop = -60

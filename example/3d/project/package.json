@@ -6,7 +6,7 @@
     "install": "bower install",
 
     "sass-no-watch": "./node_modules/node-sass/bin/node-sass css/app.sass css/app.css",
-    "sass": "nodemon -e sass -x \"npm run sass\"",
+    "sass": "nodemon -e sass -x \"npm run sass-no-watch\"",
 
     "coffee-no-watch": "coffee --output . -b -c .",
     "coffee": "coffee --output . -b -c -w .",

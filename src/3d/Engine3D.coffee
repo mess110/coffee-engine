@@ -80,6 +80,14 @@ class Engine3D
     if !@sceneManager.currentSceneIndex?
       @sceneManager.setScene scene
 
+  # Used to switch betweens scenes with init and uninit
+  initScene: (scene) ->
+    currentScene = @sceneManager.currentScene()
+    if currentScene?
+      currentScene.uninit()
+    scene.init()
+    @sceneManager.setScene(scene)
+
   # Remove a scene
   #
   # param [Scene]

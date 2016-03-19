@@ -25,17 +25,24 @@ class LoadingScene extends BaseScene
 
     @hasFinishedLoading = hasFinishedLoading
 
+    @preStart()
+
     for url in urls
       @_loadJsonModel(url) if url.endsWithAny(Utils.JSON_URLS)
       @_loadTexture(url) if url.endsWithAny(Utils.IMG_URLS)
       @_loadSaveObject(url) if url.endsWithAny(Utils.SAVE_URLS)
 
     interval = setInterval =>
-      if @jmm.hasFinishedLoading() and @tm.hasFinishedLoading() and @som.hasFinishedLoading()
+      if @isLoadingDone()
         clearInterval(interval)
         console.log 'Finished loading' if @config.debug
         @hasFinishedLoading()
     , 100
+
+  preStart: ->
+
+  isLoadingDone: ->
+    @jmm.hasFinishedLoading() and @tm.hasFinishedLoading() and @som.hasFinishedLoading()
 
   # assumes the url has been validated as a json model
   _loadJsonModel: (url) ->

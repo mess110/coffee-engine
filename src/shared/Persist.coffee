@@ -29,6 +29,11 @@ class Persist
   constructor: () ->
     @storage = localStorage
 
+  setJson: (key, value, def=undefined) ->
+    value = JSON.stringify(value)
+    def = JSON.stringify(def) if def?
+    @set(key, value, def)
+
   # set a value in the storage
   #
   # @param [String] key
@@ -48,6 +53,11 @@ class Persist
   # @see DEFAULT_SUFFIX
   default: (key, value) ->
     @set("#{key}.#{Persist.DEFAULT_SUFFIX}", value)
+
+  getJson: (key) ->
+    item = @get(key)
+    if item?
+      return JSON.parse(item)
 
   # Get a value in the storage. If the value does not exist,
   # it checks for the default value
@@ -73,7 +83,7 @@ class Persist
   # @param [String] key
   rm: (key) ->
     throw 'key missing' unless key?
-    @storage.removeItem(key)
+    @storage.removeItem("#{Persist.PREFIX}.#{key}")
 
   # clear storage with exceptions
   #
@@ -87,8 +97,16 @@ class Persist
         @rm(storage)
 
   # @see get
+  @getJson: (key) ->
+    new Persist().getJson(key)
+
+  # @see get
   @get: (key) ->
     new Persist().get(key)
+
+  # @see set
+  @setJson: (key, value, def) ->
+    new Persist().setJson(key, value, def)
 
   # @see set
   @set: (key, value, def) ->
