@@ -1,0 +1,22 @@
+{
+  "name": "project",
+  "version": "0.0.0",
+  "authors": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {},
+  "dependencies": {
+    "coffee-engine": "~0.0.46",
+    "angular": "1.4.10",
+    "angular-route": "1.4.10",
+    "bootstrap-sass": "~3.3.6",
+    "hammerjs": "hammer.js#~2.0.6"
+  }
+}
