@@ -14,14 +14,24 @@ class GameScene extends BaseScene
     @scene.add board.mesh
 
     manaBar = new ManaBar(reverse: true)
-    manaBar.mesh.position.set -6.5, 13, 0
+    manaBar.mesh.position.set -.5, 13, 0
     @scene.add manaBar.mesh
     manaBar.update(5, 10)
 
     manaBar = new ManaBar(reverse: false)
-    manaBar.mesh.position.set 6.5, -13, 0
+    manaBar.mesh.position.set .5, -13, 0
     @scene.add manaBar.mesh
     manaBar.update(2, 10)
+
+    deck = new Card()
+    deck.mesh.position.set 26, -7.7, 0
+    deck.mesh.rotation.z = Math.PI / 2
+    @scene.add deck.mesh
+
+    deck = new Card()
+    deck.mesh.position.set 26, 7.7, 0
+    deck.mesh.rotation.z = Math.PI / 2
+    @scene.add deck.mesh
 
     @endTurnButton = new FlipButton(
       keyFront: 'endTurnFront'
@@ -29,12 +39,10 @@ class GameScene extends BaseScene
       width: 8.9
       height: 6.4
     )
-    @endTurnButton.mesh.position.x = 21
+    @endTurnButton.mesh.position.x = 25
     @scene.add @endTurnButton.mesh
 
     @ref = new Referee(constants)
-
-    @_startInputProcessing()
 
   _startInputProcessing: () ->
     @shifter = setInterval =>
@@ -50,6 +58,7 @@ class GameScene extends BaseScene
 
   uninit: ->
     super()
+    @game = undefined
     clearInterval(@shifter)
 
   serverTick: (data) ->
@@ -73,12 +82,36 @@ class GameScene extends BaseScene
   _initGame: (data) ->
     @game = data
 
+    if @game.phase == constants.Phase.mulligan
+      for hero in @game.cards.where(type: constants.CardType.hero)
+        card = new Card().switchTo(hero)
+        pos = PosHelp.draw(hero.ownerId)
+        card.setPosition(pos)
+        @scene.add card.mesh
+
+        duration = new Animation().inHero(card, hero)
+
+      for displayed in @game.cards.where(status: constants.CardStatus.displayed)
+        card = new Card().switchTo(displayed)
+        pos = PosHelp.draw(displayed.ownerId)
+        card.setPosition(pos)
+        @scene.add card.mesh
+
+        setTimeout ->
+          new Animation().inDisplayed(card, displayed)
+        , duration
+    # TODO:
+    # move held cards in hand
+    # move displayed cards in position
+
+    @_startInputProcessing()
+
   tick: (tpf) ->
 
   doMouseEvent: (event, raycaster) ->
     if event.type == 'mousemove'
       @endTurnButton.glow(@endTurnButton.isHovered(raycaster), 'green')
-    if event.type == 'mouseup'
+    if event.type == 'mouseup' and @endTurnButton.isHovered(raycaster)
       @endTurnButton.toggle()
 
   doKeyboardEvent: (event) ->

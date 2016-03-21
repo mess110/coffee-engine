@@ -27,12 +27,13 @@ class Referee
     game.phase = @constants.Phase.mulligan
     if game.vsBot
       game.id = 'bot'
-      game.player2.deckId = @constants.decks[0].id
+      randomDeck = Helper.random(@constants.decks.size())
+      game.player2.deckId = @constants.decks[randomDeck].id
 
     throw new Error('player1 deck missing') unless game.player1.deckId?
     throw new Error('player2 deck missing') unless game.player2.deckId?
 
-    rand = Math.floor(Math.random() * 2) + 1
+    rand = Helper.random(2) + 1
     game.turnPlayerId = game["player#{rand}"].id
 
     game.player1 = @_preparePlayer(game, game.player1)
@@ -49,11 +50,6 @@ class Referee
     deck = @constants.decks.where(id: player.deckId).first()
     throw new Error("deck with id #{deck.id} not found") unless deck?
 
-    hero = @constants.cards.where(heroId: deck.heroId).first()
-    throw new Error("hero with id #{deck.heroId} not found") unless hero?
-    hero = @_prepareCard(hero, player)
-    game.cards.push hero
-
     for card in deck.cards
       foundCard = @constants.cards.where(id: card).first()
       throw new Error("card with id #{card} not found") unless foundCard?
@@ -62,15 +58,24 @@ class Referee
 
     game.cards = game.cards.shuffle()
 
+    hero = @constants.cards.where(heroId: deck.heroId).first()
+    throw new Error("hero with id #{deck.heroId} not found") unless hero?
+    hero = @_prepareCard(hero, player)
+    hero.status = @constants.CardStatus.played
+    game.cards.insert 0, hero
+
+    displayedCards = game.cards.where(ownerId: player.id, type: [@constants.CardType.minion, @constants.CardType.spell])
+    for i in [0..2]
+      displayedCards[i].status = @constants.CardStatus.displayed
+
     player
 
   _prepareCard: (obj, player) ->
     clone = @_clone(obj)
-    clone.attack = 0 unless clone.attack?
-    clone.cost = 0 unless clone.cost?
     clone.back = player.cardBack
 
     clone.ownerId = player.id
+    clone.status = @constants.CardStatus.deck
     clone.original =
       attack: clone.attack
       health: clone.health

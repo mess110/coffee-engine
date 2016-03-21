@@ -6,6 +6,13 @@ constants =
     battle: 1
     finished: 2
 
+  CardStatus:
+    deck: 0
+    displayed: 1
+    hand: 2
+    played: 3
+    discard: 4
+
   CardType:
     hero: 0
     minion: 1
@@ -178,8 +185,8 @@ constants.art =
 constants.cards = [
   {
     id: 0
-    type: constants.CardType.hero
     heroId: constants.Hero.baba
+    type: constants.CardType.hero
     health: 21
     art: constants.art['babaDochia']
   }
@@ -228,7 +235,7 @@ constants.decks = [
   }
   {
     id: 1
-    hero: constants.Hero.ileana
+    heroId: constants.Hero.ileana
     name: 'Ileana Cosanzeana'
     description: 'restore 2 health'
     url: 'assets/ileanaCosanzeana.png'
@@ -236,7 +243,7 @@ constants.decks = [
   }
   {
     id: 2
-    hero: constants.Hero.zalmoxis
+    heroId: constants.Hero.zalmoxis
     name: 'Zalmoxis'
     description: 'deal 1 damage'
     url: 'assets/zalmoxis.png'

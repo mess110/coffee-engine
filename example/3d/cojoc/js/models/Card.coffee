@@ -89,6 +89,7 @@ class Card extends CojocModel
 
     @attack.mesh.position.set -2.6, -3.4, 0
     @cost.mesh.position.set -2.6, 4.1, 0
+    @
 
   moveTo: ->
     if @tween?

@@ -87,8 +87,20 @@ Array::where = (hash) ->
   @.filter (d) ->
     ok = true
     for key of hash
-      ok = ok && d[key] == hash[key]
+      found = false
+      if hash[key] instanceof Array
+        for item in hash[key]
+          if d[key] == item
+            found = true
+            break
+        ok = ok && found
+      else
+        ok = ok && d[key] == hash[key]
     ok
+
+Array::insert = (index, item) ->
+  @splice index, 0, item
+  return
 
 # Returns the length of a string
 String::size = (s) ->

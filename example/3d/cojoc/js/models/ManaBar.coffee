@@ -1,6 +1,6 @@
 class ManaCrystal extends Panel
-  @WIDTH = 2
-  @HEIGHT = 2
+  @WIDTH = 3
+  @HEIGHT = 3
 
   constructor: ->
     super(key: 'mana', width: ManaCrystal.WIDTH, height: ManaCrystal.HEIGHT)

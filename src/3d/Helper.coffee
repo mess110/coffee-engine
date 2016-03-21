@@ -26,6 +26,9 @@ class Helper
   @shallowClone: (json) ->
     JSON.parse(JSON.stringify(json))
 
+  @random: (n) ->
+    Math.floor(Math.random() * n)
+
   @distanceTo: (v1, v2) ->
     dx = v1.x - (v2.x)
     dy = v1.y - (v2.y)
