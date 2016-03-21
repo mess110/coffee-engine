@@ -5,11 +5,7 @@ class SandboxScene extends BaseScene
     engine.camera.position.z = 20
     engine.camera.lookAt(Helper.zero)
 
-    card = new Card(constants.cards[0])
-    @cards.push card
-
-    card = new Card(constants.cards[1])
-    card.mesh.position.z = 1
+    card = new Card(constants.cards[3])
     @cards.push card
 
     for card in @cards

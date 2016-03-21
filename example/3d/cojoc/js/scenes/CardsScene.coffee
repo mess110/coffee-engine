@@ -42,7 +42,8 @@ class CardsScene extends BaseScene
     while j > 0
       j -= 1
       for card in constants.cards
-        @card = new Card(card)
+        @card = new Card()
+        @card.switchTo(card)
         @card.mesh.position.x += (@card.w + 1) * @cards.size()
         @card.mesh.position.y = 1
         @scene.add @card.mesh

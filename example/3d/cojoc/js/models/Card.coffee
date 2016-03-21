@@ -7,12 +7,11 @@ class Card extends CojocModel
   hSegments: 48
   selected: false
 
-  constructor: (json) ->
+  constructor: (json={}) ->
     options =
       width: @w, height: @h
       wSegments: @wSegments, hSegments: @hSegments
 
-    throw new Exception('need json when creating a card') unless json?
     # because we don't want to modify the constants object
     json = JSON.parse(JSON.stringify(json))
     json.back ?= 'cardBack'
@@ -27,44 +26,39 @@ class Card extends CojocModel
       class: 'PlaneBufferGeometry',
       width: @w, height: @h,
       wSegments: @wSegments, hSegments: @hSegments
-    ).mesh
-    @back.rotation.y = Math.PI
-    @mesh.add @back
+    )
+    @back.mesh.renderOrder = renderOrder.get()
+    @back.mesh.rotation.y = Math.PI
+    @mesh.add @back.mesh
 
     @art = new ArtGenerator(width: @canvasWidth, height: @canvasHeight)
-    @art.fromJson @fromTemplate(json)
-    mat2 = Helper.materialFromCanvas(@art.canvas)
-    mat2.map.minFilter = THREE.LinearFilter
+    # @art.fromJson @fromTemplate(json)
+    # mat2 = Helper.materialFromCanvas(@art.canvas)
+    # mat2.map.minFilter = THREE.LinearFilter
 
-    @front = Helper.plane(
+    @front = new Panel(
+      key: json.back,
       class: 'PlaneGeometry',
       class: 'PlaneBufferGeometry',
       width: @w, height: @h,
-      wSegments: @wSegments, hSegments: @hSegments,
-      material: mat2)
-    @front.renderOrder = renderOrder.get()
-    @mesh.add @front
+      wSegments: @wSegments, hSegments: @hSegments
+    )
+    @front.mesh.renderOrder = renderOrder.get()
+    @mesh.add @front.mesh
 
     @health = new DynamicNumberPanel()
-    @health.mesh.position.set 2.6, -3.4, 0
-    if json.type == constants.CardType.hero
-      @health.mesh.position.set 2.6, 3.4, 0
-      @health.mesh.rotation.z = -Math.PI / 2
     @health.mesh.renderOrder = renderOrder.get()
-    @health.set json.health if json.health
     @mesh.add @health.mesh
 
     @attack = new DynamicNumberPanel()
-    @attack.mesh.position.set -2.6, -3.4, 0
     @attack.mesh.renderOrder = renderOrder.get()
-    @attack.set json.attack if json.attack
     @mesh.add @attack.mesh
 
     @cost = new DynamicNumberPanel()
-    @cost.mesh.position.set -2.6, 4.1, 0
     @cost.mesh.renderOrder = renderOrder.get()
-    @cost.set json.cost if json.cost
     @mesh.add @cost.mesh
+
+    # @switchTo(json)
 
   fromTemplate: (json) ->
     a = []
@@ -76,6 +70,25 @@ class Card extends CojocModel
     for item in json.art.front
       a.push item
     items: a
+
+  switchTo: (json) ->
+    @art.fromJson @fromTemplate(json)
+    mat2 = Helper.materialFromCanvas(@art.canvas)
+    mat2.map.minFilter = THREE.LinearFilter
+    @front.mesh.material = mat2
+
+    @health.set json.health, true
+    @attack.set json.attack, true
+    @cost.set json.cost, true
+
+    if json.type == constants.CardType.hero
+      @health.mesh.position.set 2.6, 3.4, 0
+      @health.mesh.rotation.z = -Math.PI / 2
+    else
+      @health.mesh.position.set 2.6, -3.4, 0
+
+    @attack.mesh.position.set -2.6, -3.4, 0
+    @cost.mesh.position.set -2.6, 4.1, 0
 
   moveTo: ->
     if @tween?

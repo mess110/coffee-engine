@@ -10,8 +10,8 @@ class FlipButton extends CojocModel
   BACK: 1
 
   constructor: (options = {}) ->
-    throw new Exception('options.keyFront missing') unless options.keyFront?
-    throw new Exception('options.keyBack missing') unless options.keyBack?
+    throw new Error('options.keyFront missing') unless options.keyFront?
+    throw new Error('options.keyBack missing') unless options.keyBack?
     @mesh = new THREE.Object3D()
     @side = @FRONT
     @animationFinished = true
@@ -20,10 +20,12 @@ class FlipButton extends CojocModel
 
     front = new Panel(
       key: options.keyFront, width: options.width, height: options.height)
+    front.mesh.renderOrder = renderOrder.get()
     @mesh.add front.mesh
 
     back = new Panel(key: options.keyBack, width: options.width, height: options.height)
     back.mesh.rotation.y = Math.PI
+    back.mesh.renderOrder = renderOrder.get()
     @mesh.add back.mesh
 
   toggle: ->
@@ -33,10 +35,12 @@ class FlipButton extends CojocModel
     @animationFinished = false
     rotateAmount = Math.PI
     target =
-      z: 3
+      x: -4
+      z: 5
       rX: if @side == @FRONT then -rotateAmount else rotateAmount
     target2 =
-      z: -3
+      x: 4
+      z: -5
 
     # this needs to be here to change asap
     @side = if @side == @FRONT then @BACK else @FRONT

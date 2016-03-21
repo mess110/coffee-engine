@@ -1,6 +1,10 @@
 class ManaCrystal extends Panel
+  @WIDTH = 2
+  @HEIGHT = 2
+
   constructor: ->
-    super(key: 'mana', width: 1, height: 1)
+    super(key: 'mana', width: ManaCrystal.WIDTH, height: ManaCrystal.HEIGHT)
+    @mesh.renderOrder = renderOrder.get()
     @setOpacity(0.0)
 
   shake: () ->
@@ -21,7 +25,7 @@ class ManaBar extends BaseModel
 
     @mesh = new THREE.Object3D()
 
-    wM = 1
+    wM = ManaCrystal.WIDTH
     w = constants.max_mana * wM
     @box = new THREE.Mesh( new THREE.BoxGeometry( w, 1, 0.1 ),
       new THREE.MeshNormalMaterial(transparent: true, opacity: 0.0) )
@@ -31,10 +35,11 @@ class ManaBar extends BaseModel
     @mesh.add @box
 
     @maxMana = 0
-    @currentMana = 0
+    @mana = 0
 
     @text = new DynamicNumberPanel(textSpace: 512, align: if options.reverse then 'right' else 'left')
     @text.mesh.position.set (if options.reverse then -0.35 else 0.35), -0.3, 0
+    @text.mesh.renderOrder = renderOrder.get()
     @mesh.add @text.mesh
 
     for i in [0...constants.max_mana] by 1
@@ -45,13 +50,13 @@ class ManaBar extends BaseModel
       @cubes.push cube
       @mesh.add cube.mesh
 
-  update: (currentMana, maxMana) ->
-    return if maxMana == @maxMana and currentMana == @currentMana
+  update: (mana, maxMana) ->
+    return if maxMana == @maxMana and mana == @mana
 
     @maxMana = maxMana
     @maxMana = constants.max_mana if @maxMana > constants.max_mana
-    @currentMana = currentMana
-    @currentMana = @maxMana if @currentMana > @maxMana
+    @mana = mana
+    @mana = @maxMana if @mana > @maxMana
 
     if @maxMana > 0
       @text.set(@toString())
@@ -59,7 +64,7 @@ class ManaBar extends BaseModel
     for i in [0...constants.max_mana] by 1
       cube = @cubes[i]
       if i < @maxMana
-        if i < @currentMana
+        if i < @mana
           cube.fadeTo(1)
         else
           cube.fadeTo(0.5)
@@ -73,4 +78,4 @@ class ManaBar extends BaseModel
     return
 
   toString: ->
-    "#{@currentMana} / #{@maxMana}"
+    "#{@mana} / #{@maxMana}"

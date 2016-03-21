@@ -20,7 +20,12 @@ class DynamicNumberPanel extends Panel
   clear: ->
     @dynamicTexture.clear()
 
-  set: (text) ->
+  set: (text = '', init = false) ->
+    if init
+      @prev = undefined
+      @original = undefined
+      @text = undefined
+
     text = text.toString()
     @clear()
 

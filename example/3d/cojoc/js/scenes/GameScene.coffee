@@ -9,8 +9,28 @@ class GameScene extends BaseScene
 
     board = new Panel(
       key: 'board', width: 96 / 4 * 3, height: 54 / 4 * 3
-    ).mesh
-    @scene.add board
+    )
+    board.mesh.renderOrder = renderOrder.get()
+    @scene.add board.mesh
+
+    manaBar = new ManaBar(reverse: true)
+    manaBar.mesh.position.set -6.5, 13, 0
+    @scene.add manaBar.mesh
+    manaBar.update(5, 10)
+
+    manaBar = new ManaBar(reverse: false)
+    manaBar.mesh.position.set 6.5, -13, 0
+    @scene.add manaBar.mesh
+    manaBar.update(2, 10)
+
+    @endTurnButton = new FlipButton(
+      keyFront: 'endTurnFront'
+      keyBack: 'endTurnBack'
+      width: 8.9
+      height: 6.4
+    )
+    @endTurnButton.mesh.position.x = 21
+    @scene.add @endTurnButton.mesh
 
     @ref = new Referee(constants)
 
@@ -33,7 +53,8 @@ class GameScene extends BaseScene
     clearInterval(@shifter)
 
   serverTick: (data) ->
-    @game = data unless @game?
+    if !@game?
+      @_initGame(data)
     for input in data.inputs
       @inputs.push input
 
@@ -49,9 +70,16 @@ class GameScene extends BaseScene
 
   disconnect: (data) ->
 
+  _initGame: (data) ->
+    @game = data
+
   tick: (tpf) ->
 
   doMouseEvent: (event, raycaster) ->
+    if event.type == 'mousemove'
+      @endTurnButton.glow(@endTurnButton.isHovered(raycaster), 'green')
+    if event.type == 'mouseup'
+      @endTurnButton.toggle()
 
   doKeyboardEvent: (event) ->
     @emit(type: 'foo', hello: 'world')

@@ -3,6 +3,7 @@ StackOverflow = StackOverflow or {}
 # http://stackoverflow.com/a/31349123/642778
 # did some cleanup and customization of the fonts
 StackOverflow.drawBezier = (options = {}, ctx) ->
+  options = Helper.shallowClone(options)
   if options.curve?
     options.points ?= options.curve.split(',')
 

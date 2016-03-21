@@ -68,7 +68,6 @@ app.controller 'MainController', ($scope, $rootScope, $location, $interval, game
     if url == '/sandbox'
       scene = sandboxScene
     $scope.onLoadSetScene(scene) if $scope.prevScene != scene or !$scope.prevScene?
-    console.log scene
     $scope.prevScene = scene
     return
 

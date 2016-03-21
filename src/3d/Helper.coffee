@@ -23,6 +23,8 @@ class Helper
   @setCursor: Utils.setCursor
   @rgbToHex: Utils.rgbToHex
 
+  @shallowClone: (json) ->
+    JSON.parse(JSON.stringify(json))
 
   @distanceTo: (v1, v2) ->
     dx = v1.x - (v2.x)
@@ -252,9 +254,6 @@ class Helper
       options.target.rX ?= options.position.rX
       options.target.rY ?= options.position.rY
       options.target.rZ ?= options.position.rZ
-
-    if options.relative
-      options.target.y += options.position.x
 
     throw new Error('target same as position') if options.position == options.target
 
