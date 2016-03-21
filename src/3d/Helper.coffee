@@ -218,3 +218,50 @@ class Helper
   #   pos = raycaster.ray.intersectPlane(@plane)
   @intersectPlane: ->
     new THREE.Plane(new THREE.Vector3(0, 0, 1), -1)
+
+  # http://sole.github.io/tween.js/examples/03_graphs.html
+  @tween: (options = {}) ->
+    throw new Error('options.target missing') unless options.target?
+    throw new Error('options.mesh missing') unless options.mesh?
+
+    options.relative ?= false
+    options.duration ?= 1000
+    options.kind ?= 'Linear'
+    options.direction ?= 'None'
+
+    options.position ?= options.mesh.position.clone()
+    options.position.rX = options.mesh.rotation.x
+    options.position.rY = options.mesh.rotation.y
+    options.position.rZ = options.mesh.rotation.z
+
+    if options.relative
+      for e in ['x', 'y', 'z']
+        if options.target[e]?
+          options.target[e] += options.mesh.position[e]
+        else
+          options.target[e] = options.mesh.position[e]
+      for e in ['rX', 'rY', 'rZ']
+        if options.target[e]?
+          options.target[e] += options.mesh.rotation[e.toLowerCase()[1]]
+        else
+          options.target[e] = options.mesh.rotation[e.toLowerCase()[1]]
+    else
+      options.target.x ?= options.position.x
+      options.target.y ?= options.position.y
+      options.target.z ?= options.position.z
+      options.target.rX ?= options.position.rX
+      options.target.rY ?= options.position.rY
+      options.target.rZ ?= options.position.rZ
+
+    if options.relative
+      options.target.y += options.position.x
+
+    throw new Error('target same as position') if options.position == options.target
+
+    tween = new TWEEN.Tween(options.position).to(options.target, options.duration)
+      .easing(TWEEN.Easing[options.kind][options.direction])
+      .onUpdate( ->
+        options.mesh.position.set(@x, @y, @z)
+        options.mesh.rotation.set(@rX, @rY, @rZ)
+      )
+    tween

@@ -8,6 +8,9 @@ class BaseModel
   setScale: (i) ->
     @mesh.scale.set i, i, i
 
+  setOpacity: (opacity) ->
+    @mesh.material.opacity = opacity
+
   setPosition: (pos) ->
     @mesh.position.set pos.x, pos.y, pos.z
 

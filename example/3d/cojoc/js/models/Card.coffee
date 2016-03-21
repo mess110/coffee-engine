@@ -1,4 +1,4 @@
-class Card extends BaseModel
+class Card extends CojocModel
   w: 6.4
   h: 8.9
   canvasWidth: 335
@@ -7,18 +7,11 @@ class Card extends BaseModel
   hSegments: 48
   selected: false
 
-  fromTemplate: (json) ->
-    a = []
-    for item in json.art.picture
-      a.push item
-    # a = json.art.front
-    for item in constants.ArtTemplates[json.type]
-      a.push item
-    for item in json.art.front
-      a.push item
-    items: a
-
   constructor: (json) ->
+    options =
+      width: @w, height: @h
+      wSegments: @wSegments, hSegments: @hSegments
+
     throw new Exception('need json when creating a card') unless json?
     # because we don't want to modify the constants object
     json = JSON.parse(JSON.stringify(json))
@@ -26,17 +19,7 @@ class Card extends BaseModel
 
     @mesh = new THREE.Object3D()
 
-    @glow = new Panel(
-      key: 'glowGreen'
-      class: 'PlaneGeometry',
-      class: 'PlaneBufferGeometry',
-      width: @w, height: @h,
-      wSegments: @wSegments, hSegments: @hSegments
-    )
-    @glow.mesh.material.depthTest = false
-    @glow.setVisible(false)
-    @glow.setScale(1.1)
-    @mesh.add @glow.mesh
+    Glow.addAll(@, options)
 
     @back = new Panel(
       key: json.back,
@@ -59,8 +42,7 @@ class Card extends BaseModel
       width: @w, height: @h,
       wSegments: @wSegments, hSegments: @hSegments,
       material: mat2)
-    @front.renderOrder = renderOrder
-    renderOrder += 1
+    @front.renderOrder = renderOrder.get()
     @mesh.add @front
 
     @health = new DynamicNumberPanel()
@@ -68,26 +50,32 @@ class Card extends BaseModel
     if json.type == constants.CardType.hero
       @health.mesh.position.set 2.6, 3.4, 0
       @health.mesh.rotation.z = -Math.PI / 2
-    @health.mesh.renderOrder = renderOrder
-    renderOrder += 1
+    @health.mesh.renderOrder = renderOrder.get()
     @health.set json.health if json.health
     @mesh.add @health.mesh
 
     @attack = new DynamicNumberPanel()
     @attack.mesh.position.set -2.6, -3.4, 0
-    @attack.mesh.renderOrder = renderOrder
-    renderOrder += 1
+    @attack.mesh.renderOrder = renderOrder.get()
     @attack.set json.attack if json.attack
     @mesh.add @attack.mesh
 
     @cost = new DynamicNumberPanel()
     @cost.mesh.position.set -2.6, 4.1, 0
-    @cost.mesh.renderOrder = renderOrder
-    renderOrder += 1
+    @cost.mesh.renderOrder = renderOrder.get()
     @cost.set json.cost if json.cost
     @mesh.add @cost.mesh
 
-    renderOrder += 100
+  fromTemplate: (json) ->
+    a = []
+    for item in json.art.picture
+      a.push item
+    # a = json.art.front
+    for item in constants.ArtTemplates[json.type]
+      a.push item
+    for item in json.art.front
+      a.push item
+    items: a
 
   moveTo: ->
     if @tween?
@@ -137,12 +125,19 @@ class Card extends BaseModel
       if @back.geometry.vertices[index2]?
         @back.geometry.vertices[index2].z = amount * options.dirMod
 
-      if @glow.mesh.geometry.vertices[index]?
-        @glow.mesh.geometry.vertices[index].z = amount * -1 * options.dirMod
-      if @glow.mesh.geometry.vertices[index2]?
-        @glow.mesh.geometry.vertices[index2].z = amount * -1 * options.dirMod
+      if @glowGreen.mesh.geometry.vertices[index]?
+        @glowGreen.mesh.geometry.vertices[index].z = amount * -1 * options.dirMod
+      if @glowGreen.mesh.geometry.vertices[index2]?
+        @glowGreen.mesh.geometry.vertices[index2].z = amount * -1 * options.dirMod
       i++
     @back.geometry.verticesNeedUpdate = true
     @front.geometry.verticesNeedUpdate = true
-    @glow.mesh.geometry.verticesNeedUpdate = true
+    @glowGreen.mesh.geometry.verticesNeedUpdate = true
     return
+
+  bringToFront: ->
+    for elem in [@glowGreen, @glowBlue, @glowRed, @glowYellow, @back, @front, @health, @attack, @cost]
+      if elem.mesh?
+        elem.mesh.renderOrder = renderOrder.get()
+      else
+        elem.renderOrder = renderOrder.get()

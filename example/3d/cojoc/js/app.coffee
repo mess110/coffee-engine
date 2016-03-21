@@ -20,12 +20,21 @@ nm.on 'disconnect', (data) ->
 nm.on 'serverTick', (data) ->
   gameScene.serverTick(data)
 
-renderOrder = 0
 firstLoadDone = false
+
+class RenderOrder
+  renderOrder: 0
+
+  get: ->
+    @renderOrder += 1
+    @renderOrder
+
+renderOrder = new RenderOrder()
 
 cardsScene = new CardsScene()
 gameScene = new GameScene()
 menuScene = new MenuScene()
+sandboxScene = new SandboxScene()
 loadingScene = new CojocLoadingScene([
   'assets/babaDochia.png'
   'assets/ileanaCosanzeana.png'
@@ -39,7 +48,14 @@ loadingScene = new CojocLoadingScene([
   'assets/heart.png'
   'assets/mana.png'
   'assets/woodSword.png'
+
   'assets/glowGreen.png'
+  'assets/glowBlue.png'
+  'assets/glowYellow.png'
+  'assets/glowRed.png'
+
+  'assets/endTurnFront.png'
+  'assets/endTurnBack.png'
 
   'assets/board.png'
 ], () ->
@@ -48,6 +64,7 @@ loadingScene = new CojocLoadingScene([
 )
 
 engine.addScene(loadingScene)
+engine.addScene(sandboxScene)
 engine.addScene(menuScene)
 engine.addScene(gameScene)
 engine.addScene(cardsScene)

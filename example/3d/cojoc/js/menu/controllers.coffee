@@ -14,9 +14,10 @@ app.controller 'GameController', ($scope, $interval, gameTicker) ->
       gameTicker.start()
   , 10
 
+app.controller 'SandboxController', ($scope) ->
+
 app.controller 'CardsController', ($scope) ->
   $scope.hide.logo = true
-  $scope.onLoadSetScene(cardsScene)
 
 app.controller 'LoginController', ($scope) ->
 
@@ -55,7 +56,21 @@ app.controller 'HomeController', ($scope, gameTicker) ->
     else
       $scope.goto('/choose-hero')
 
-app.controller 'MainController', ($scope, $location, $interval, gameTicker, facebook) ->
+app.controller 'MainController', ($scope, $rootScope, $location, $interval, gameTicker, facebook) ->
+
+  $rootScope.$on '$routeChangeStart', (event, next, current) ->
+    scene = menuScene
+    url = $location.path()
+    if url.startsWith('/games/')
+      scene = gameScene
+    if url == '/cards'
+      scene = cardsScene
+    if url == '/sandbox'
+      scene = sandboxScene
+    $scope.onLoadSetScene(scene) if $scope.prevScene != scene or !$scope.prevScene?
+    console.log scene
+    $scope.prevScene = scene
+    return
 
   $scope.addInput = (data) ->
     gameTicker.addInput(data)
@@ -64,7 +79,6 @@ app.controller 'MainController', ($scope, $location, $interval, gameTicker, face
     loadingScene.isLoadingDone() and firstLoadDone
 
   $scope.backToHome = ->
-    engine.initScene(menuScene)
     $scope.goto('/home')
 
   $scope.onLoadSetScene = (scene) ->

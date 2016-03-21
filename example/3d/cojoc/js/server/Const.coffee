@@ -1,4 +1,6 @@
 constants =
+  max_mana: 10
+
   Phase:
     mulligan: 0
     battle: 1

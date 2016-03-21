@@ -49,6 +49,7 @@ module.exports = (grunt) ->
     "src/3d/extra/Mirror.js"
     "src/3d/extra/LoadingScene.js"
     "src/3d/extra/ArtGenerator.js"
+    "src/3d/extra/Modifiers.js"
 
     "src/3d/Engine3D.js"
   ]

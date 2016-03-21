@@ -7,8 +7,8 @@ auth =
   onlyLoggedIn: ($location, $q) ->
     deferred = $q.defer()
     user = Persist.getJson('user')
-    # if user? and user.id? and user.name?
-    if 1 == 1
+    if user? and user.id? and user.name?
+    # if 1 == 1
       deferred.resolve()
     else
       deferred.reject()
@@ -20,6 +20,7 @@ app.config ['$routeProvider', ($routeProvider) ->
     .when('/login', templateUrl: 'views/login.html', controller: 'LoginController')
     .when('/logout', templateUrl: 'views/logout.html', controller: 'LogoutController', resolve: auth)
     .when('/home', templateUrl: 'views/home.html', controller: 'HomeController', resolve: auth)
+    .when('/sandbox', templateUrl: 'views/sandbox.html', controller: 'SandboxController', resolve: auth)
     .when('/games/:id', templateUrl: 'views/game.html', controller: 'GameController', resolve: auth)
     .when('/cards', templateUrl: 'views/cards.html', controller: 'CardsController', resolve: auth)
     .when('/choose-hero', templateUrl: 'views/choose_hero.html', controller: 'ChooseHeroController', resolve: auth)
@@ -31,10 +32,6 @@ app.run ($rootScope, $interval, $location) ->
   $rootScope.hide =
     menu: true
     logo: false
-
-  $rootScope.$on '$routeChangeStart', (event, next, current) ->
-    #event.stopPropagation();  //if you don't want event to bubble up 
-    return
 
   loadingCheck = $interval ->
     if loadingScene.isLoadingDone() and firstLoadDone

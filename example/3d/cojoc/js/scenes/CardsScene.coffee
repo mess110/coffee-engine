@@ -19,10 +19,10 @@ class CardsScene extends BaseScene
     @hammertime.on 'pan', (ev) ->
       dirMult = if ev.direction == 2 then 1 else -1
       cardsScene.cameraTarget.position.x += ev.distance / 1000 * dirMult
+      return
 
     @hammertime.on 'swipe', (ev) ->
       dirMult = if ev.direction == 2 then 1 else -1
-      console.log 'here'
 
       target = cardsScene.cameraTarget.position.clone()
       target.x += ev.distance / 10 * dirMult
@@ -48,6 +48,8 @@ class CardsScene extends BaseScene
         @scene.add @card.mesh
         @cards.push @card
 
+    # @cards.first().selected = true
+
   uninit: ->
     super()
     @hammertime.destroy()
@@ -69,12 +71,14 @@ class CardsScene extends BaseScene
     for card in @cards
       isHovered = card.isHovered(raycaster)
 
-      # if card.selected
-        # pos = raycaster.ray.intersectPlane(@plane)
-        # card.setPosition(pos)
+      if card.selected
+        pos = raycaster.ray.intersectPlane(@plane)
+        pos.z = 0
+        card.setPosition(pos)
 
       if event.type == "mousemove"
-        card.glow.setVisible(isHovered)
+        card.glow(isHovered, 'blue')
+    return
 
   doKeyboardEvent: (event) ->
     # if event.type == 'keydown'
