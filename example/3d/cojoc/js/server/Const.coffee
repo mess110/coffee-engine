@@ -1,6 +1,10 @@
 constants =
   max_mana: 10
 
+  CojocType:
+    endTurn: 'endTurn'
+    card: 'card'
+
   Phase:
     mulligan: 0
     battle: 1
@@ -9,9 +13,9 @@ constants =
   CardStatus:
     deck: 0
     displayed: 1
-    hand: 2
+    held: 2
     played: 3
-    discard: 4
+    discarded: 4
 
   CardType:
     hero: 0
@@ -221,7 +225,7 @@ constants.cards = [
 ]
 
 constants.dummyDeck = [
-  3, 3, 3, 3, 3, 4, 4, 4, 4, 4
+  3, 3, 3, 4, 4, 4
 ]
 
 constants.decks = [

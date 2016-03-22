@@ -50,6 +50,9 @@ class ManaBar extends BaseModel
       @cubes.push cube
       @mesh.add cube.mesh
 
+  updatePlayer: (player) ->
+    @update(player.mana, player.maxMana)
+
   update: (mana, maxMana) ->
     return if maxMana == @maxMana and mana == @mana
 
@@ -60,6 +63,8 @@ class ManaBar extends BaseModel
 
     if @maxMana > 0
       @text.set(@toString())
+    else
+      @text.set('')
 
     for i in [0...constants.max_mana] by 1
       cube = @cubes[i]

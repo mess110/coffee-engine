@@ -12,6 +12,9 @@ app.controller 'GameController', ($scope, $interval, gameTicker) ->
       $interval.cancel(loadingCheck)
       engine.initScene(gameScene)
       gameTicker.start()
+      setTimeout =>
+        gameTicker.enableAI()
+      , 4000
   , 10
 
 app.controller 'SandboxController', ($scope) ->

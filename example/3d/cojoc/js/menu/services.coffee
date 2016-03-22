@@ -2,13 +2,20 @@ app.service 'gameTicker', ($interval) ->
   Persist.defaultJson('game', {})
   @game = Persist.getJson('game')
   @referee = new Referee(constants)
+  @ai = false
 
   @start = ->
     @interval = $interval =>
+      if @ai
+        input = AI.getInput(constants, @game)
+        gameScene.emit(input) if input?
       @referee.tick(@game)
-      gameScene.serverTick(@game)
+      gameScene.serverTick(Helper.shallowClone(@game))
       @referee.clearInputs(@game)
     , 250
+
+  @enableAI = ->
+    @ai = true
 
   @stop = ->
     $interval.cancel(@interval)

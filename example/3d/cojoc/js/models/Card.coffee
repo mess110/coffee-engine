@@ -91,16 +91,21 @@ class Card extends CojocModel
     @cost.mesh.position.set -2.6, 4.1, 0
     @
 
-  moveTo: ->
+  moveTo: (target, duration, kind = 'Cubic', direction = 'In') ->
     if @tween?
       @tween.stop()
     me = @
-    target = {x: 0, y: 10, z: 0}
+    from = @mesh.position.clone()
+    from.rX = @mesh.rotation.x
+    from.rY = @mesh.rotation.y
+    from.rZ = @mesh.rotation.z
+
     distance = Helper.distanceTo(@mesh.position, target)
-    @tween = new TWEEN.Tween(@mesh.position).to(target, distance * 100).onUpdate(->
+    @tween = new TWEEN.Tween(from).to(target, duration).onUpdate(->
       me.mesh.position.set @x, @y, @z
+      me.mesh.rotation.set @rX, @rY, @rZ
       return
-    ).easing(TWEEN.Easing.Linear.None).start().onComplete(->
+    ).easing(TWEEN.Easing[kind][direction]).start().onComplete(->
       me.tween = null
     )
 

@@ -28,6 +28,44 @@ class FlipButton extends CojocModel
     back.mesh.renderOrder = renderOrder.get()
     @mesh.add back.mesh
 
+  canPress: ->
+    @side == @FRONT
+
+  set: (front)->
+    upDur = 600
+    downDur = 400
+    side = if front then @FRONT else @BACK
+    return if side == @side
+    @side = side
+
+    @tween.stop() if @tween?
+    @tween2.stop() if @tween2?
+
+    rotateAmount = Math.PI
+    originalX = 25
+    originalZ = 0
+
+    target =
+      x: originalX - 4
+      z: originalZ + 5
+    target2 =
+      x: originalX
+      z: originalZ
+    if side == @FRONT
+      target.rX = 0
+    else
+      target.rX = Math.PI
+
+    @tween = Helper.tween(target: target, mesh: @mesh, relative: false, kind: 'Elastic', direction: 'Out', duration: upDur)
+      .onComplete =>
+        @tween2 = Helper.tween(target: target2, mesh: @mesh, relative: false, kind: 'Cubic', direction: 'Out', duration: downDur)
+          .onComplete =>
+            @tween = undefined
+            @tween2 = undefined
+        @tween2.start()
+    @tween.start()
+    upDur + downDur
+
   toggle: ->
     upDur = 600
     downDur = 400
