@@ -28,12 +28,12 @@ class GameScene extends BaseScene
     deck = new Card()
     deck.mesh.position.set 26, -7.7, 0
     deck.mesh.rotation.z = Math.PI / 2
-    @scene.add deck.mesh
+    # @scene.add deck.mesh
 
     deck = new Card()
     deck.mesh.position.set 26, 7.7, 0
     deck.mesh.rotation.z = Math.PI / 2
-    @scene.add deck.mesh
+    # @scene.add deck.mesh
 
     @darken = new Darken()
     @darken.mesh.position.z = 20
@@ -82,6 +82,7 @@ class GameScene extends BaseScene
     if @game.phase == constants.Phase.battle
       @darken.fade(0)
       @moveDiscardedCards(0)
+      @instantiateHeldCards()
 
       myTurn = @game.turnPlayerId == @ownId
       if oldPhase == constants.Phase.mulligan
@@ -158,15 +159,7 @@ class GameScene extends BaseScene
 
         duration = new Animation().inHero(card, hero)
 
-      # instantiate held cards
-      heldCards = @game.cards.where(status: constants.CardStatus.held)
-      for held in heldCards
-        card = new Card().switchTo(held)
-        card.index = held.index
-        pos = PosHelp.draw(held.ownerId)
-        card.setPosition(pos)
-        @scene.add card.mesh
-        @cards.push card
+      @instantiateHeldCards()
 
       @moveHeldCards(duration - 1000)
 
@@ -195,11 +188,11 @@ class GameScene extends BaseScene
   doMouseEvent: (event, raycaster) ->
     return unless @ownIndex
 
-    if event.type == 'mousemove'
-      @endTurnButton.glow(@endTurnButton.isHovered(raycaster), 'green')
-
     if event.type == 'mouseup' and @endTurnButton.isHovered(raycaster)
       if @game.phase == constants.Phase.mulligan and @endTurnButton.canPress()
+        @emit(cojocType: constants.CojocType.endTurn)
+
+      if @game.phase == constants.Phase.battle and @endTurnButton.canPress()
         @emit(cojocType: constants.CojocType.endTurn)
 
     # Handle card clicking
@@ -248,3 +241,14 @@ class GameScene extends BaseScene
         card = @cards.where(index: discarded.index).first()
         new Animation().inDiscard(card, discarded, duration)
         i += 1
+
+  instantiateHeldCards: () ->
+    heldCards = @game.cards.where(status: constants.CardStatus.held)
+    for held in heldCards
+      continue if @cards.where(index: held.index).any()
+      card = new Card().switchTo(held)
+      card.index = held.index
+      pos = PosHelp.draw(held.ownerId)
+      card.setPosition(pos)
+      @scene.add card.mesh
+      @cards.push card

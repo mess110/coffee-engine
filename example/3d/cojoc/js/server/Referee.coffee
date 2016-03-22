@@ -8,6 +8,12 @@ class Referee
 
   # should return animation duration
   processInput: (game, input) ->
+    if game.phase == @constants.Phase.battle
+      if input.cojocType == @constants.CojocType.endTurn
+        game.turnPlayerId = @_getOtherPlayerId(game, input.ownerId)
+        @_refreshMana(game)
+        @_drawCard(game)
+
     if game.phase == @constants.Phase.mulligan
 
       handSelected = game[@_getPlayerIndexById(game, input.ownerId)].handSelected
@@ -29,8 +35,8 @@ class Referee
 
       if game.player1.handSelected and game.player2.handSelected
         game.phase = @constants.Phase.battle
-        game[@_getPlayerIndexById(game, game.turnPlayerId)].mana = 1
-        game[@_getPlayerIndexById(game, game.turnPlayerId)].maxMana = 1
+        @_refreshMana(game)
+        @_drawCard(game)
 
     game.lastAckInputId = input.inputId
     game.inputHistory.push input
@@ -124,5 +130,21 @@ class Referee
       'player1'
     else
       'player2'
+
+  _getOtherPlayerId: (game, id) ->
+    if game.player1.id == id
+      game.player2.id
+    else
+      game.player1.id
+
+  _refreshMana: (game) ->
+    playerIndex = @_getPlayerIndexById(game, game.turnPlayerId)
+    game[playerIndex].maxMana += 1
+    game[playerIndex].mana = game[playerIndex].maxMana
+
+  _drawCard: (game) ->
+    playerIndex = @_getPlayerIndexById(game, game.turnPlayerId)
+    cardsInDeck = game.cards.where(status: @constants.CardStatus.deck, ownerId: game[playerIndex].id)
+    cardsInDeck.first().status = @constants.CardStatus.held
 
 exports.Referee = Referee

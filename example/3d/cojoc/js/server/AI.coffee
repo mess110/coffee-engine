@@ -11,3 +11,6 @@ class AI
         displayedCards = game.cards.where(status: constants.CardStatus.displayed, ownerId: 'bot')
         return cojocType: constants.CojocType.card, index: displayedCards[0].index, ownerId: 'bot'
 
+    if game.phase == constants.Phase.battle
+      if game.turnPlayerId == 'bot'
+        return cojocType: constants.CojocType.endTurn, ownerId: 'bot'
