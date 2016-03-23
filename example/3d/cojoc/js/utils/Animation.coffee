@@ -31,16 +31,20 @@ class Animation
   inHeld: (card, displayed, startDelay, i, total) ->
     duration = 250
     setTimeout =>
-      target = PosHelp.held(displayed.ownerId, (card.w + 0.5) * i)
-      target.x -= (total - 1) * (card.w + 0.5) / 2
+      target = PosHelp.held(displayed.ownerId, (card.w / 4 * 3) * i)
+      target.x -= (total - 1) * (card.w / 4 * 3) / 2
       card.moveTo(target, duration, 'Cubic', 'Out')
     , startDelay
     startDelay +  duration
 
+  inPreview: (card) ->
+    # card.mesh.position.z = 16
+    card.mesh.position.y = -4
+
   inDiscard: (card, discarded, startDelay) ->
-    duration = 250
+    duration = 500
     setTimeout =>
-      target = { x: -100, y: 0, z: 20 }
-      card.moveTo(target, duration, 'Cubic', 'Out')
+      target = { x: -20, y: 2, z: 10, rX: 0, rY: Math.PI, rZ: Math.PI / 2 }
+      card.moveTo(target, duration, 'Quadratic', 'Out')
     , startDelay
     startDelay +  duration

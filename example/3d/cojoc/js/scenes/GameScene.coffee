@@ -8,6 +8,7 @@ class GameScene extends BaseScene
     engine.camera.lookAt(Helper.zero.clone())
 
     @cards = []
+    @isDown = false
 
     board = new Panel(
       key: 'board', width: 96 / 4 * 3, height: 54 / 4 * 3
@@ -83,6 +84,7 @@ class GameScene extends BaseScene
       @darken.fade(0)
       @moveDiscardedCards(0)
       @instantiateHeldCards()
+      @moveHeldCards(0)
 
       myTurn = @game.turnPlayerId == @ownId
       if oldPhase == constants.Phase.mulligan
@@ -179,43 +181,87 @@ class GameScene extends BaseScene
     @_startInputProcessing()
 
   tick: (tpf) ->
+    for card in @cards
+      if card.dissolveEffect?
+          card.dissolveEffect.update(tpf)
+          card.dissolveEffect2.update(tpf)
+
+    return unless @game
+    if @game.phase == constants.Phase.battle
+      if @isDown and @hovered?
+        @moveHeldCards(0, @hovered)
+        @hovered.bringToFront()
+        @hovered.clearMoveToTween()
+        new Animation().inPreview(@hovered)
 
   getHoveredCard: (raycaster) ->
+    hoveredCards = []
     for card in @cards
-      if card.isHovered(raycaster)
-        return card
+      hoveredCards.push card if card.isHovered(raycaster)
+    hoveredCards.sort((a, b) ->
+      a.front.mesh.renderOrder - b.front.mesh.renderOrder
+    ).last()
 
   doMouseEvent: (event, raycaster) ->
     return unless @ownIndex
+    @isDown = event.type == 'mousedown' or event.type == 'mousemove'
 
-    if event.type == 'mouseup' and @endTurnButton.isHovered(raycaster)
+    if event.type == 'mousedown' and @endTurnButton.isHovered(raycaster)
       if @game.phase == constants.Phase.mulligan and @endTurnButton.canPress()
         @emit(cojocType: constants.CojocType.endTurn)
 
       if @game.phase == constants.Phase.battle and @endTurnButton.canPress()
         @emit(cojocType: constants.CojocType.endTurn)
 
+    cardsInHand = @game.cards.where(status: constants.CardStatus.held, ownerId: @ownId)
+
     # Handle card clicking
-    if event.type == 'mouseup'
-      card = @getHoveredCard(raycaster)
-      if card?
-        json = @game.cards.where(index: card.index, ownerId: @ownId).first()
-        if json?
-          cardsInHand = @game.cards.where(status: constants.CardStatus.held, ownerId: @ownId).size()
-          if @game.phase == constants.Phase.mulligan and !@game[@ownIndex].handSelected
-            if (json.status == constants.CardStatus.displayed and cardsInHand < 3) or json.status == constants.CardStatus.held
-              @emit(cojocType: constants.CojocType.card, index: json.index)
+    card = @getHoveredCard(raycaster)
+
+    # if event.type == 'mousedown'
+      # if @game.phase == constants.Phase.battle
+        # card.bringToFront()
+        # card.clearMoveToTween()
+        # new Animation().inPreview(card)
+
+    if event.type == 'mouseup' and @game.phase == constants.Phase.battle
+      @moveHeldCards(0)
+      @sortHand()
+
+    if card?
+      @hovered = card
+
+      json = @game.cards.where(index: card.index, ownerId: @ownId).first()
+      if event.type == 'mouseup'
+        if @game.phase == constants.Phase.mulligan and !@game[@ownIndex].handSelected
+          card.bringToFront()
+          if (json.status == constants.CardStatus.displayed and cardsInHand.size() < 3) or json.status == constants.CardStatus.held
+            @emit(cojocType: constants.CojocType.card, index: json.index)
+    else
+      @hovered = undefined
+
 
   doKeyboardEvent: (event) ->
     # @emit(type: 'foo', hello: 'world')
 
-  moveHeldCards: (duration) ->
+  sortHand: ->
+    heldCards = @game.cards.where(status: constants.CardStatus.held)
+    heldCards = heldCards.sort((a, b) -> a.handPosition - b.handPosition)
+    for card in heldCards
+      @cards.where(index: card.index).first().bringToFront()
+
+  moveHeldCards: (duration, exception) ->
     heldCards = @game.cards.where(status: constants.CardStatus.held)
     for player in [@game.player1.id, @game.player2.id]
       i = 0
       playerHeldCards = heldCards.where(ownerId: player)
+      playerHeldCards.sort((a, b) -> a.handPosition - b.handPosition)
       total = playerHeldCards.size()
       for held in playerHeldCards
+        if exception?
+          if held.index == exception.index
+            i += 1
+            continue
         card = @cards.where(index: held.index).first()
         new Animation().inHeld(card, held, duration, i, total)
         i += 1
@@ -240,6 +286,7 @@ class GameScene extends BaseScene
       for discarded in playerDiscardedCards
         card = @cards.where(index: discarded.index).first()
         new Animation().inDiscard(card, discarded, duration)
+        card.dissolve()
         i += 1
 
   instantiateHeldCards: () ->

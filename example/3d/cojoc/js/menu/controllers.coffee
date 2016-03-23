@@ -18,6 +18,7 @@ app.controller 'GameController', ($scope, $interval, gameTicker) ->
   , 10
 
 app.controller 'SandboxController', ($scope) ->
+  $scope.hide.logo = true
 
 app.controller 'CardsController', ($scope) ->
   $scope.hide.logo = true

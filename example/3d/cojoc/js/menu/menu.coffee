@@ -7,8 +7,8 @@ auth =
   onlyLoggedIn: ($location, $q) ->
     deferred = $q.defer()
     user = Persist.getJson('user')
-    if user? and user.id? and user.name?
-    # if 1 == 1
+    # if user? and user.id? and user.name?
+    if 1 == 1
       deferred.resolve()
     else
       deferred.reject()

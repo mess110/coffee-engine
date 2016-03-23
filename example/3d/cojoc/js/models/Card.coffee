@@ -3,8 +3,8 @@ class Card extends CojocModel
   h: 8.9
   canvasWidth: 335
   canvasHeight: 452
-  wSegments: 32
-  hSegments: 48
+  wSegments: 12
+  hSegments: 12
   selected: false
 
   constructor: (json={}) ->
@@ -92,8 +92,7 @@ class Card extends CojocModel
     @
 
   moveTo: (target, duration, kind = 'Cubic', direction = 'In') ->
-    if @tween?
-      @tween.stop()
+    @clearMoveToTween()
     me = @
     from = @mesh.position.clone()
     from.rX = @mesh.rotation.x
@@ -109,6 +108,10 @@ class Card extends CojocModel
       me.tween = null
     )
 
+  clearMoveToTween: ->
+    if @tween?
+      @tween.stop()
+
   tweenBend: ->
     me = @
     x = 0
@@ -118,6 +121,17 @@ class Card extends CojocModel
     ).easing(TWEEN.Easing.Linear.None).start().onComplete(->
       me.tween = null
     )
+
+  dissolve: ->
+    return if @dissolveEffect?
+    duration = 1
+    color = 'orange'
+    nt = TextureManager.get().items['noise']
+    @dissolveEffect = new DissolvingEffect(@front.mesh, color, duration, true, nt)
+    @dissolveEffect2 = new DissolvingEffect(@back.mesh, color, duration, true, nt)
+    for item in [@cost, @attack, @health]
+      new FadeModifier(item, 1, 0, duration * 100)
+    return
 
   bend: (options = {})->
     options.amount ?= 0.9

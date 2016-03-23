@@ -35,6 +35,9 @@ loadingScene = new CojocLoadingScene([
 
   'assets/corb.png'
   'assets/fireball.png'
+  'assets/heal.png'
+  'assets/calulNazdravan.png'
+  'assets/iele.png'
 
   'assets/template.png'
   'assets/cardBack.png'
@@ -51,6 +54,8 @@ loadingScene = new CojocLoadingScene([
   'assets/endTurnBack.png'
 
   'assets/board.png'
+
+  'assets/noise.jpg'
 ], () ->
   engine.initScene(menuScene)
   firstLoadDone = true

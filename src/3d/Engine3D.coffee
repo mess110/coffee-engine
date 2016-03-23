@@ -28,11 +28,17 @@ class Engine3D
 
     @sceneManager = SceneManager.get()
 
-    document.addEventListener "mouseup", @onDocumentMouseEvent, false
-    document.addEventListener "mousedown", @onDocumentMouseEvent, false
-    document.addEventListener "mousemove", @onDocumentMouseEvent, false
-    document.addEventListener "keydown", @onDocumentKeyboardEvent, false
-    document.addEventListener "keyup", @onDocumentKeyboardEvent, false
+    document.addEventListener "mouseup", @mouseHandler, false
+    document.addEventListener "mousedown", @mouseHandler, false
+    document.addEventListener "mousemove", @mouseHandler, false
+
+    document.addEventListener "keydown", @keyboardHandler, false
+    document.addEventListener "keyup", @keyboardHandler, false
+
+    document.addEventListener("touchstart", @touchHandler, true)
+    document.addEventListener("touchmove", @touchHandler, true)
+    document.addEventListener("touchend", @touchHandler, true)
+    document.addEventListener("touchcancel", @touchHandler, true)
 
     if @config.contextMenuDisabled
       document.addEventListener "contextmenu", (e) ->
@@ -42,14 +48,37 @@ class Engine3D
     @statsManager = StatsManager.get()
     @statsManager.toggle() if @config.showStatsOnLoad
 
-  # @nodoc
-  onDocumentMouseEvent: (event) =>
-      raycaster = @_parseMouseEvent(event)
-      @sceneManager.currentScene().doMouseEvent(event, raycaster) if raycaster?
+  touchHandler: (event) ->
+    touches = event.changedTouches
+    first = touches[0]
+    type = ''
+    switch event.type
+      when 'touchstart'
+        type = 'mousedown'
+      when 'touchmove'
+        type = 'mousemove'
+      when 'touchend'
+        type = 'mouseup'
+      else
+        return
+    # initMouseEvent(type, canBubble, cancelable, view, clickCount, 
+    #                screenX, screenY, clientX, clientY, ctrlKey, 
+    #                altKey, shiftKey, metaKey, button, relatedTarget);
+    simulatedEvent = document.createEvent('MouseEvent')
+    simulatedEvent.initMouseEvent type, true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY, false, false, false, false, 0, null
+    first.target.dispatchEvent simulatedEvent
+    event.preventDefault()
+    return
+
 
   # @nodoc
-  onDocumentKeyboardEvent: (event) =>
-      @sceneManager.currentScene().doKeyboardEvent(event)
+  mouseHandler: (event) =>
+    raycaster = @_parseMouseEvent(event)
+    @sceneManager.currentScene().doMouseEvent(event, raycaster) if raycaster?
+
+  # @nodoc
+  keyboardHandler: (event) =>
+    @sceneManager.currentScene().doKeyboardEvent(event)
 
   # Sets the engine camera
   #
@@ -127,13 +156,21 @@ class Engine3D
     if @config.anaglyph
       @anaglyphEffect.render @sceneManager.currentScene().scene, @camera
 
+  unproject: (x, y) ->
+    mouseX = (x / @width) * 2 - 1
+    mouseY = -(y / @height) * 2 + 1
+    vector = new THREE.Vector3(mouseX, mouseY, 0.5)
+    vector.unproject @camera
+    return new THREE.Raycaster(@camera.position, vector.sub(@camera.position).normalize())
+
   # @nodoc
   _parseMouseEvent: (event) ->
     event.preventDefault() if @config.preventDefaultMouseEvents
-    if event.target is @renderer.domElement
-      # could need event.clientX or event.clientY
-      mouseX = (event.layerX / @width) * 2 - 1
-      mouseY = -(event.layerY / @height) * 2 + 1
-      vector = new THREE.Vector3(mouseX, mouseY, 0.5)
-      vector.unproject @camera
-      return new THREE.Raycaster(@camera.position, vector.sub(@camera.position).normalize())
+    return unless event.target is @renderer.domElement
+
+    # could need event.clientX or event.clientY
+    mouseX = (event.layerX / @width) * 2 - 1
+    mouseY = -(event.layerY / @height) * 2 + 1
+    vector = new THREE.Vector3(mouseX, mouseY, 0.5)
+    vector.unproject @camera
+    return new THREE.Raycaster(@camera.position, vector.sub(@camera.position).normalize())

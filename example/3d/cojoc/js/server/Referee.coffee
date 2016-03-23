@@ -17,17 +17,26 @@ class Referee
     if game.phase == @constants.Phase.mulligan
 
       handSelected = game[@_getPlayerIndexById(game, input.ownerId)].handSelected
-      cardsInHand = game.cards.where(status: @constants.CardStatus.held, ownerId: input.ownerId).size()
+      cardsInHand = game.cards.where(status: @constants.CardStatus.held, ownerId: input.ownerId)
+      cardsInHandSize = cardsInHand.size()
 
       if input.cojocType == @constants.CojocType.card and not handSelected
         card = game.cards.where(index: input.index).first()
         if card.status == @constants.CardStatus.held
           card.status = @constants.CardStatus.displayed
+          card.handPosition = undefined
+
+          cardsInHand = game.cards.where(status: @constants.CardStatus.held, ownerId: input.ownerId)
+          i = 0
+          for c in cardsInHand.sort((a, b) -> a.handPosition - b.handPosition)
+            c.handPosition = i
+            i += 1
         else
           card.status = @constants.CardStatus.held
+          card.handPosition = cardsInHandSize
 
       if input.cojocType == @constants.CojocType.endTurn and not handSelected
-        if cardsInHand == 3
+        if cardsInHandSize == 3
           game[@_getPlayerIndexById(game, input.ownerId)].handSelected = true
           displayedCards = game.cards.where(status: @constants.CardStatus.displayed, ownerId: input.ownerId)
           for card in displayedCards
@@ -145,6 +154,10 @@ class Referee
   _drawCard: (game) ->
     playerIndex = @_getPlayerIndexById(game, game.turnPlayerId)
     cardsInDeck = game.cards.where(status: @constants.CardStatus.deck, ownerId: game[playerIndex].id)
-    cardsInDeck.first().status = @constants.CardStatus.held
+    cardsInHand = game.cards.where(status: @constants.CardStatus.held, ownerId: game[playerIndex].id)
+    card = cardsInDeck.first()
+    card.status = @constants.CardStatus.held
+    card.handPosition = cardsInHand.size()
+    card
 
 exports.Referee = Referee
