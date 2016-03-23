@@ -14,6 +14,13 @@ class Referee
         @_refreshMana(game)
         @_drawCard(game)
 
+      if input.cojocType == @constants.CojocType.play
+        card = game.cards.where(index: input.index).first()
+        if card.status == @constants.CardStatus.held
+          card.status = @constants.CardStatus.played
+          card.handPosition = undefined
+          @_refreshHandPositions(game, input)
+
     if game.phase == @constants.Phase.mulligan
 
       handSelected = game[@_getPlayerIndexById(game, input.ownerId)].handSelected
@@ -25,12 +32,7 @@ class Referee
         if card.status == @constants.CardStatus.held
           card.status = @constants.CardStatus.displayed
           card.handPosition = undefined
-
-          cardsInHand = game.cards.where(status: @constants.CardStatus.held, ownerId: input.ownerId)
-          i = 0
-          for c in cardsInHand.sort((a, b) -> a.handPosition - b.handPosition)
-            c.handPosition = i
-            i += 1
+          @_refreshHandPositions(game, input)
         else
           card.status = @constants.CardStatus.held
           card.handPosition = cardsInHandSize
@@ -145,6 +147,13 @@ class Referee
       game.player2.id
     else
       game.player1.id
+
+  _refreshHandPositions: (game, input) ->
+    cardsInHand = game.cards.where(status: @constants.CardStatus.held, ownerId: input.ownerId)
+    i = 0
+    for c in cardsInHand.sort((a, b) -> a.handPosition - b.handPosition)
+      c.handPosition = i
+      i += 1
 
   _refreshMana: (game) ->
     playerIndex = @_getPlayerIndexById(game, game.turnPlayerId)

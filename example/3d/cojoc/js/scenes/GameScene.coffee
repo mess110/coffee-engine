@@ -194,35 +194,18 @@ class GameScene extends BaseScene
         @hovered.clearMoveToTween()
         new Animation().inPreview(@hovered)
 
-  getHoveredCard: (raycaster) ->
-    hoveredCards = []
-    for card in @cards
-      hoveredCards.push card if card.isHovered(raycaster)
-    hoveredCards.sort((a, b) ->
-      a.front.mesh.renderOrder - b.front.mesh.renderOrder
-    ).last()
-
   doMouseEvent: (event, raycaster) ->
     return unless @ownIndex
     @isDown = event.type == 'mousedown' or event.type == 'mousemove'
 
     if event.type == 'mousedown' and @endTurnButton.isHovered(raycaster)
-      if @game.phase == constants.Phase.mulligan and @endTurnButton.canPress()
-        @emit(cojocType: constants.CojocType.endTurn)
-
-      if @game.phase == constants.Phase.battle and @endTurnButton.canPress()
+      if (@game.phase == constants.Phase.mulligan || @game.phase == constants.Phase.battle) and @endTurnButton.canPress()
         @emit(cojocType: constants.CojocType.endTurn)
 
     cardsInHand = @game.cards.where(status: constants.CardStatus.held, ownerId: @ownId)
 
     # Handle card clicking
     card = @getHoveredCard(raycaster)
-
-    # if event.type == 'mousedown'
-      # if @game.phase == constants.Phase.battle
-        # card.bringToFront()
-        # card.clearMoveToTween()
-        # new Animation().inPreview(card)
 
     if event.type == 'mouseup' and @game.phase == constants.Phase.battle
       @moveHeldCards(0)
@@ -240,9 +223,16 @@ class GameScene extends BaseScene
     else
       @hovered = undefined
 
-
   doKeyboardEvent: (event) ->
     # @emit(type: 'foo', hello: 'world')
+
+  getHoveredCard: (raycaster) ->
+    hoveredCards = []
+    for card in @cards
+      hoveredCards.push card if card.isHovered(raycaster)
+    hoveredCards.sort((a, b) ->
+      a.front.mesh.renderOrder - b.front.mesh.renderOrder
+    ).last()
 
   sortHand: ->
     heldCards = @game.cards.where(status: constants.CardStatus.held)

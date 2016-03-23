@@ -4,6 +4,7 @@ constants =
   CojocType:
     endTurn: 'endTurn'
     card: 'card'
+    play: 'play'
 
   Phase:
     mulligan: 0

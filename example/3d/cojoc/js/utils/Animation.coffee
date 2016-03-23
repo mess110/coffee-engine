@@ -41,6 +41,17 @@ class Animation
     # card.mesh.position.z = 16
     card.mesh.position.y = -4
 
+  inPlay: (card) ->
+    # no idea why it doesn't work without timeout
+    setTimeout =>
+      target = { x: 0, y: 0, z: 5, rX: 0, rY: 0, rZ: 0 }
+      card.moveTo(target, 1000, 'Exponential', 'Out')
+    , 0
+    setTimeout =>
+      card.dissolve()
+    , 250
+    1000
+
   inDiscard: (card, discarded, startDelay) ->
     duration = 500
     setTimeout =>
