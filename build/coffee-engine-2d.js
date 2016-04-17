@@ -376,11 +376,19 @@ Persist = function() {
     function Persist() {
         this.storage = localStorage;
     }
-    return Persist.PREFIX = "ce", Persist.DEFAULT_SUFFIX = "default", Persist.prototype.set = function(key, value, def) {
+    return Persist.PREFIX = "ce", Persist.DEFAULT_SUFFIX = "default", Persist.prototype.setJson = function(key, value, def) {
+        return null == def && (def = void 0), value = JSON.stringify(value), null != def && (def = JSON.stringify(def)), 
+        this.set(key, value, def);
+    }, Persist.prototype.set = function(key, value, def) {
         if (null == def && (def = void 0), null == key) throw "key missing";
         return this.storage[Persist.PREFIX + "." + key] = value, null != def ? this["default"](key, def) : void 0;
+    }, Persist.prototype.defaultJson = function(key, value) {
+        return value = JSON.stringify(value), this["default"](key, value);
     }, Persist.prototype["default"] = function(key, value) {
         return this.set(key + "." + Persist.DEFAULT_SUFFIX, value);
+    }, Persist.prototype.getJson = function(key) {
+        var item;
+        return item = this.get(key), null != item ? JSON.parse(item) : void 0;
     }, Persist.prototype.get = function(key) {
         var value;
         return value = this._get(key), null == value ? this._get(key + "." + Persist.DEFAULT_SUFFIX) : value;
@@ -390,19 +398,25 @@ Persist = function() {
         return value = this.storage[Persist.PREFIX + "." + key], isNumeric(value) ? Number(value) : [ "true", "false" ].includes(value) ? Boolean(value) : "undefined" !== value ? value : void 0;
     }, Persist.prototype.rm = function(key) {
         if (null == key) throw "key missing";
-        return this.storage.removeItem(key);
+        return this.storage.removeItem(Persist.PREFIX + "." + key);
     }, Persist.prototype.clear = function(exceptions, withDefaults) {
         var results, storage;
         null == exceptions && (exceptions = []), null == withDefaults && (withDefaults = !1), 
         exceptions instanceof Array || (exceptions = [ exceptions ]), results = [];
         for (storage in this.storage) storage.endsWith("." + Persist.DEFAULT_SUFFIX) && withDefaults === !1 || (exceptions.includes(storage) ? results.push(void 0) : results.push(this.rm(storage)));
         return results;
+    }, Persist.getJson = function(key) {
+        return new Persist().getJson(key);
     }, Persist.get = function(key) {
         return new Persist().get(key);
+    }, Persist.setJson = function(key, value, def) {
+        return new Persist().setJson(key, value, def);
     }, Persist.set = function(key, value, def) {
         return new Persist().set(key, value, def);
     }, Persist["default"] = function(key, value) {
         return new Persist()["default"](key, value);
+    }, Persist.defaultJson = function(key, value) {
+        return new Persist().defaultJson(key, value);
     }, Persist.rm = function(key) {
         return new Persist().rm(key);
     }, Persist.clear = function(exceptions, withDefaults) {
@@ -564,6 +578,22 @@ Array.prototype.isEmpty = function() {
     var e, j, len, sum;
     for (sum = 0, j = 0, len = this.length; len > j; j++) e = this[j], sum += e;
     return sum;
+}, Array.prototype.where = function(hash) {
+    return this.filter(function(d) {
+        var found, item, j, key, len, ok, ref;
+        ok = !0;
+        for (key in hash) if (found = !1, hash[key] instanceof Array) {
+            for (ref = hash[key], j = 0, len = ref.length; len > j; j++) if (item = ref[j], 
+            d[key] === item) {
+                found = !0;
+                break;
+            }
+            ok = ok && found;
+        } else ok = ok && d[key] === hash[key];
+        return ok;
+    });
+}, Array.prototype.insert = function(index, item) {
+    this.splice(index, 0, item);
 }, String.prototype.size = function(s) {
     return this.length;
 }, String.prototype.startsWith = function(s) {
@@ -1894,3 +1924,93 @@ var io = "undefined" == typeof module ? {} : module.exports;
         return io;
     });
 }();
+
+var StackOverflow, bezier, bezier1, bezier2, bezierT;
+
+StackOverflow = StackOverflow || {}, StackOverflow.drawBezier = function(options, ctx) {
+    var a, b, c, cDist, curveSample, i, j, k, len, letterPadding, p, point, ref, ribbon, ribbonSpecs, textCurve, totalLength, totalPadding, w, ww, x1, x2, xDist, z;
+    if (null == options && (options = {}), options = Helper.shallowClone(options), null != options.curve && null == options.points && (options.points = options.curve.split(",")), 
+    null == options.text && (options.text = "Text"), null == options.letterPadding && (options.letterPadding = .25), 
+    null == options.fillStyle && (options.fillStyle = "white"), null == options.fillLineWidth && (options.fillLineWidth = 1), 
+    null == options.strokeLineWidth && (options.strokeLineWidth = 10), null == options.strokeStyle && (options.strokeStyle = void 0), 
+    null == options.font && (options.font = "40px Helvetica"), null == options.points && (options.points = []), 
+    null == options.drawText && (options.drawText = !0), null == options.drawCurve && (options.drawCurve = !1), 
+    null == options.maxChar && (options.maxChar = 50), null == options.x && (options.x = 0), 
+    null == options.y && (options.y = 0), 8 !== options.points.length) throw "needs 8 points";
+    for (options.points = options.points.map(function(item) {
+        return parseFloat(item);
+    }), i = 0, ref = options.points, k = 0, len = ref.length; len > k; k++) point = ref[k], 
+    i % 2 === 0 ? options.points[i] += options.x : options.points[i] += options.y, i += 1;
+    if (ribbonSpecs = {
+        maxChar: options.maxChar,
+        startX: options.points[0],
+        startY: options.points[1],
+        control1X: options.points[2],
+        control1Y: options.points[3],
+        control2X: options.points[4],
+        control2Y: options.points[5],
+        endX: options.points[6],
+        endY: options.points[7]
+    }, options.drawCurve && (ctx.save(), ctx.beginPath(), ctx.moveTo(ribbonSpecs.startX, ribbonSpecs.startY), 
+    ctx.bezierCurveTo(ribbonSpecs.control1X, ribbonSpecs.control1Y, ribbonSpecs.control2X, ribbonSpecs.control2Y, ribbonSpecs.endX, ribbonSpecs.endY), 
+    ctx.stroke(), ctx.restore()), options.drawText) {
+        for (textCurve = [], ribbon = options.text.substring(0, ribbonSpecs.maxChar), curveSample = 1e3, 
+        xDist = 0, i = 0, i = 0; curveSample > i; ) a = new bezier2(i / curveSample, ribbonSpecs.startX, ribbonSpecs.startY, ribbonSpecs.control1X, ribbonSpecs.control1Y, ribbonSpecs.control2X, ribbonSpecs.control2Y, ribbonSpecs.endX, ribbonSpecs.endY), 
+        b = new bezier2((i + 1) / curveSample, ribbonSpecs.startX, ribbonSpecs.startY, ribbonSpecs.control1X, ribbonSpecs.control1Y, ribbonSpecs.control2X, ribbonSpecs.control2Y, ribbonSpecs.endX, ribbonSpecs.endY), 
+        c = new bezier(a, b), textCurve.push({
+            bezier: a,
+            curve: c.curve
+        }), i++;
+        for (letterPadding = ctx.measureText(" ").width * options.letterPadding, w = ribbon.length, 
+        ww = Math.round(ctx.measureText(ribbon).width), totalPadding = (w - 1) * letterPadding, 
+        totalLength = ww + totalPadding, p = 0, cDist = textCurve[curveSample - 1].curve.cDist, 
+        z = cDist / 2 - totalLength / 2, i = 0; curveSample > i; ) {
+            if (textCurve[i].curve.cDist >= z) {
+                p = i;
+                break;
+            }
+            i++;
+        }
+        for (i = 0; w > i; ) {
+            for (ctx.save(), ctx.translate(textCurve[p].bezier.point.x, textCurve[p].bezier.point.y), 
+            ctx.rotate(textCurve[p].curve.rad), ctx.font = options.font, null != options.strokeStyle && (ctx.strokeStyle = options.strokeStyle, 
+            ctx.lineWidth = options.strokeLineWidth, ctx.strokeText(ribbon[i], 0, 0)), ctx.fillStyle = options.fillStyle, 
+            ctx.lineWidth = options.fillLineWidth, ctx.fillText(ribbon[i], 0, 0), ctx.restore(), 
+            x1 = ctx.measureText(ribbon[i]).width + letterPadding, x2 = 0, j = p; curveSample > j; ) {
+                if (x2 += textCurve[j].curve.dist, x2 >= x1) {
+                    p = j;
+                    break;
+                }
+                j++;
+            }
+            i++;
+        }
+    }
+}, bezier = function(b1, b2) {
+    var dx, dx2, xDist;
+    this.rad = Math.atan(b1.point.mY / b1.point.mX), this.b2 = b2, this.b1 = b1, dx = b2.x - b1.x, 
+    dx2 = (b2.x - b1.x) * (b2.x - b1.x), this.dist = Math.sqrt((b2.x - b1.x) * (b2.x - b1.x) + (b2.y - b1.y) * (b2.y - b1.y)), 
+    xDist += this.dist, this.curve = {
+        rad: this.rad,
+        dist: this.dist,
+        cDist: xDist
+    };
+}, bezierT = function(t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY) {
+    this.mx = 3 * (1 - t) * (1 - t) * (control1X - startX) + 6 * (1 - t) * t * (control2X - control1X) + 3 * t * t * (endX - control2X), 
+    this.my = 3 * (1 - t) * (1 - t) * (control1Y - startY) + 6 * (1 - t) * t * (control2Y - control1Y) + 3 * t * t * (endY - control2Y);
+}, bezier2 = function(t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY) {
+    this.Bezier1 = new bezier1(t, startX, startY, control1X, control1Y, control2X, control2Y), 
+    this.Bezier2 = new bezier1(t, control1X, control1Y, control2X, control2Y, endX, endY), 
+    this.x = (1 - t) * this.Bezier1.x + t * this.Bezier2.x, this.y = (1 - t) * this.Bezier1.y + t * this.Bezier2.y, 
+    this.slope = new bezierT(t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY), 
+    this.point = {
+        t: t,
+        x: this.x,
+        y: this.y,
+        mX: this.slope.mx,
+        mY: this.slope.my
+    };
+}, bezier1 = function(t, startX, startY, control1X, control1Y, control2X, control2Y) {
+    this.x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * control1X + t * t * control2X, 
+    this.y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * control1Y + t * t * control2Y;
+};

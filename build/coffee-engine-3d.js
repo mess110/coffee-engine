@@ -11518,52 +11518,44 @@ SPE.Emitter = function(options) {
 
 for (var i in SPE.utils) SPE.Emitter.prototype[i] = SPE.utils[i];
 
-var THREEx = THREEx || {};
+var THREEx;
 
-THREEx.DynamicTexture = function(width, height) {
-    var canvas = document.createElement("canvas");
-    canvas.width = width, canvas.height = height, this.canvas = canvas;
-    var context = canvas.getContext("2d");
-    this.context = context;
-    var texture = new THREE.Texture(canvas);
-    this.texture = texture;
+THREEx = THREEx || {}, THREEx.DynamicTexture = function(width, height) {
+    var canvas, context, texture;
+    canvas = document.createElement("canvas"), canvas.width = width, canvas.height = height, 
+    this.canvas = canvas, context = canvas.getContext("2d"), this.context = context, 
+    texture = new THREE.Texture(canvas), this.texture = texture;
 }, THREEx.DynamicTexture.prototype.clear = function(fillStyle) {
     return void 0 !== fillStyle ? (this.context.fillStyle = fillStyle, this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)) : this.context.clearRect(0, 0, this.canvas.width, this.canvas.height), 
     this.texture.needsUpdate = !0, this;
 }, THREEx.DynamicTexture.prototype.drawText = function(text, x, y, fillStyle, contextFont) {
-    if (void 0 !== contextFont && (this.context.font = contextFont), void 0 === x || null === x) {
-        var textSize = this.context.measureText(text);
-        x = (this.canvas.width - textSize.width) / 2;
-    }
-    return this.context.fillStyle = fillStyle, this.context.fillText(text, x, y), this.texture.needsUpdate = !0, 
-    this;
+    var textSize;
+    return void 0 !== contextFont && (this.context.font = contextFont), void 0 !== x && null !== x || (textSize = this.context.measureText(text), 
+    x = (this.canvas.width - textSize.width) / 2), this.context.fillStyle = fillStyle, 
+    this.context.fillText(text, x, y), this.texture.needsUpdate = !0, this;
 }, THREEx.DynamicTexture.prototype.drawTextCooked = function(options) {
-    function computeMaxTextLength(text) {
-        for (var maxText = "", maxWidth = (1 - 2 * params.margin) * canvas.width; maxText.length !== text.length; ) {
-            var textSize = context.measureText(maxText);
-            if (textSize.width > maxWidth) break;
-            maxText += text.substr(maxText.length, 1);
-        }
+    var canvas, computeMaxTextLength, context, maxText, params, text, textSize, x, y;
+    for (context = this.context, canvas = this.canvas, computeMaxTextLength = function(text) {
+        var maxText, maxWidth, textSize;
+        for (maxText = "", maxWidth = (1 - 2 * params.margin) * canvas.width; maxText.length !== text.length && (textSize = context.measureText(maxText), 
+        !(textSize.width > maxWidth)); ) maxText += text.substr(maxText.length, 1);
         return maxText;
-    }
-    var context = this.context, canvas = this.canvas;
-    options = options || {};
-    var text = options.text, params = {
+    }, options = options || {}, text = options.text, params = {
         margin: void 0 !== options.margin ? options.margin : .1,
         lineHeight: void 0 !== options.lineHeight ? options.lineHeight : .1,
         align: void 0 !== options.align ? options.align : "left",
         fillStyle: void 0 !== options.fillStyle ? options.fillStyle : "black",
-        font: void 0 !== options.font ? options.font : "bold 102.4px Arial"
-    };
-    console.assert("string" == typeof text), context.save(), context.fillStyle = params.fillStyle, 
-    context.font = params.font;
-    for (var y = (params.lineHeight + params.margin) * canvas.height; text.length > 0; ) {
-        var maxText = computeMaxTextLength(text);
-        text = text.substr(maxText.length);
-        var textSize = context.measureText(maxText);
-        if ("left" === params.align) var x = params.margin * canvas.width; else if ("right" === params.align) var x = (1 - params.margin) * canvas.width - textSize.width; else if ("center" === params.align) var x = (canvas.width - textSize.width) / 2; else console.assert(!1);
-        this.context.fillText(maxText, x, y), y += params.lineHeight * canvas.height;
-    }
+        fillLineWidth: null != options.fillLineWidth ? options.fillLineWidth : 1,
+        strokeLineWidth: null != options.strokeLineWidth ? options.strokeLineWidth : 20,
+        font: void 0 !== options.font ? options.font : "bold 102.4px Arial",
+        strokeStyle: void 0
+    }, console.assert("string" == typeof text), context.save(), context.fillStyle = params.fillStyle, 
+    null != options.strokeStyle && (context.miterLimit = 2, context.lineJoin = "circle", 
+    context.strokeStyle = options.strokeStyle), context.font = params.font, y = (params.lineHeight + params.margin) * canvas.height; text.length > 0; ) maxText = computeMaxTextLength(text), 
+    text = text.substr(maxText.length), textSize = context.measureText(maxText), "left" === params.align ? x = params.margin * canvas.width : "right" === params.align ? x = (1 - params.margin) * canvas.width - textSize.width : "center" === params.align ? x = (canvas.width - textSize.width) / 2 : console.assert(!1), 
+    null != options.strokeStyle && (this.context.lineWidth = params.strokeLineWidth, 
+    this.context.strokeText(maxText, x, y)), this.context.lineWidth = params.fillLineWidth, 
+    this.context.fillText(maxText, x, y), y += params.lineHeight * canvas.height;
     return context.restore(), this.texture.needsUpdate = !0, this;
 }, THREEx.DynamicTexture.prototype.drawImage = function() {
     return this.context.drawImage.apply(this.context, arguments), this.texture.needsUpdate = !0, 
@@ -11852,7 +11844,11 @@ exports = void 0, "undefined" != typeof exports && null !== exports || (exports 
 Singleton = function() {
     function Singleton() {}
     return Singleton;
-}();
+}(), THREE.Object3D.prototype.clear = function() {
+    var child, children, i;
+    for (children = this.children, i = children.length - 1; i >= 0; ) child = children[i], 
+    child.clear(), this.remove(child), i--;
+};
 
 var SceneManager;
 
@@ -11910,11 +11906,18 @@ NetworkManager = function() {
         }, NetworkManager.prototype.on = function(event, func) {
             return this.socket.on(event, func);
         }, NetworkManager.prototype.rawEmit = function(name, data) {
+            return null == data && (data = {}), data = this._prepareData(data), this.socket.emit(name, data);
+        }, NetworkManager.prototype.fakeEmit = function(name, data) {
+            return null == data && (data = {}), this._prepareData(data);
+        }, NetworkManager.prototype._prepareData = function(data) {
             return null == data && (data = {}), data.timestamp = new Date().getTime(), data.inputId = this.inputId, 
-            this.socket.emit(name, data), this.inputId += 1;
+            this.inputId += 1, data;
         }, NetworkManager.prototype.emit = function(data) {
             if (null == data && null == data.type) throw "data.type missing";
             return this.rawEmit("data", data);
+        }, NetworkManager.prototype.fake = function(data) {
+            if (null == data && null == data.type) throw "data.type missing";
+            return this.fakeEmit("data", data);
         }, NetworkManager;
     }(), NetworkManager.get = function() {
         return null != instance ? instance : instance = new Singleton.NetworkManager();
@@ -12002,11 +12005,19 @@ Persist = function() {
     function Persist() {
         this.storage = localStorage;
     }
-    return Persist.PREFIX = "ce", Persist.DEFAULT_SUFFIX = "default", Persist.prototype.set = function(key, value, def) {
+    return Persist.PREFIX = "ce", Persist.DEFAULT_SUFFIX = "default", Persist.prototype.setJson = function(key, value, def) {
+        return null == def && (def = void 0), value = JSON.stringify(value), null != def && (def = JSON.stringify(def)), 
+        this.set(key, value, def);
+    }, Persist.prototype.set = function(key, value, def) {
         if (null == def && (def = void 0), null == key) throw "key missing";
         return this.storage[Persist.PREFIX + "." + key] = value, null != def ? this["default"](key, def) : void 0;
+    }, Persist.prototype.defaultJson = function(key, value) {
+        return value = JSON.stringify(value), this["default"](key, value);
     }, Persist.prototype["default"] = function(key, value) {
         return this.set(key + "." + Persist.DEFAULT_SUFFIX, value);
+    }, Persist.prototype.getJson = function(key) {
+        var item;
+        return item = this.get(key), null != item ? JSON.parse(item) : void 0;
     }, Persist.prototype.get = function(key) {
         var value;
         return value = this._get(key), null == value ? this._get(key + "." + Persist.DEFAULT_SUFFIX) : value;
@@ -12016,19 +12027,25 @@ Persist = function() {
         return value = this.storage[Persist.PREFIX + "." + key], isNumeric(value) ? Number(value) : [ "true", "false" ].includes(value) ? Boolean(value) : "undefined" !== value ? value : void 0;
     }, Persist.prototype.rm = function(key) {
         if (null == key) throw "key missing";
-        return this.storage.removeItem(key);
+        return this.storage.removeItem(Persist.PREFIX + "." + key);
     }, Persist.prototype.clear = function(exceptions, withDefaults) {
         var results, storage;
         null == exceptions && (exceptions = []), null == withDefaults && (withDefaults = !1), 
         exceptions instanceof Array || (exceptions = [ exceptions ]), results = [];
         for (storage in this.storage) storage.endsWith("." + Persist.DEFAULT_SUFFIX) && withDefaults === !1 || (exceptions.includes(storage) ? results.push(void 0) : results.push(this.rm(storage)));
         return results;
+    }, Persist.getJson = function(key) {
+        return new Persist().getJson(key);
     }, Persist.get = function(key) {
         return new Persist().get(key);
+    }, Persist.setJson = function(key, value, def) {
+        return new Persist().setJson(key, value, def);
     }, Persist.set = function(key, value, def) {
         return new Persist().set(key, value, def);
     }, Persist["default"] = function(key, value) {
         return new Persist()["default"](key, value);
+    }, Persist.defaultJson = function(key, value) {
+        return new Persist().defaultJson(key, value);
     }, Persist.rm = function(key) {
         return new Persist().rm(key);
     }, Persist.clear = function(exceptions, withDefaults) {
@@ -12151,7 +12168,7 @@ TextureManager = function() {
             this;
         }, TextureManager.prototype.hasFinishedLoading = function() {
             return this.loadCount === Object.keys(this.items).size();
-        }, TextureManager.prototype._load = function() {
+        }, TextureManager.prototype._load = function(image) {
             return window.TextureManager.get().loadCount += 1;
         }, TextureManager;
     }(), TextureManager.get = function() {
@@ -12163,12 +12180,18 @@ var BaseScene;
 
 BaseScene = function() {
     function BaseScene() {}
-    return BaseScene.prototype.scene = new THREE.Scene(), BaseScene.prototype.lastMousePosition = void 0, 
-    BaseScene.prototype.keyboard = new THREEx.KeyboardState(), BaseScene.prototype.loaded = !1, 
-    BaseScene.prototype.uptime = 0, BaseScene.prototype.fullTick = function(tpf) {
+    return BaseScene.prototype.scene = new THREE.Scene(), BaseScene.prototype.jmm = JsonModelManager.get(), 
+    BaseScene.prototype.lastMousePosition = void 0, BaseScene.prototype.keyboard = new THREEx.KeyboardState(), 
+    BaseScene.prototype.loaded = !1, BaseScene.prototype.uptime = 0, BaseScene.prototype.fullTick = function(tpf) {
         return this.uptime += tpf, this.tick(tpf);
     }, BaseScene.prototype.init = function() {
         throw "scene.init not implemented";
+    }, BaseScene.prototype.uninit = function() {
+        return this.clear();
+    }, BaseScene.prototype.clear = function() {
+        var child, children, i;
+        for (children = this.scene.children, i = this.scene.children.length - 1; i >= 0; ) child = children[i], 
+        child.clear(), this.scene.remove(child), i--;
     }, BaseScene.prototype.tick = function(tpf) {
         throw "scene.tick not implemented";
     }, BaseScene.prototype.doMouseEvent = function(event, raycaster) {
@@ -12198,14 +12221,52 @@ BaseModel = function() {
     function BaseModel() {}
     return BaseModel.prototype.visible = !0, BaseModel.prototype.mesh = void 0, BaseModel.prototype.setScale = function(i) {
         return this.mesh.scale.set(i, i, i);
+    }, BaseModel.prototype.setOpacity = function(opacity) {
+        return this.mesh.material.opacity = opacity;
+    }, BaseModel.prototype.setPosition = function(pos) {
+        return this.mesh.position.set(pos.x, pos.y, pos.z);
     }, BaseModel.prototype.setVisible = function(value) {
         return this.mesh.traverse(function(object) {
             return object.visible = value;
         }), this.visible = value;
     }, BaseModel.prototype.toggleWireframe = function() {
-        return null != this.mesh || null != this.mesh.material ? this.mesh.material.wireframe = !this.mesh.material.wireframe : void 0;
+        var j, k, len, len1, material, mesh, ref, ref1, results;
+        if (null != this.mesh) {
+            if (null != this.mesh.material) {
+                if (this.mesh.material.wireframe = !this.mesh.material.wireframe, null != this.mesh.material.materials) for (ref = this.mesh.material.materials, 
+                j = 0, len = ref.length; len > j; j++) material = ref[j], material.wireframe = !material.wireframe;
+                return this.mesh.material.wireframe;
+            }
+            if (null != this.mesh.children) {
+                for (ref1 = this.mesh.children, results = [], k = 0, len1 = ref1.length; len1 > k; k++) mesh = ref1[k], 
+                null != mesh.material && results.push(mesh.material.wireframe = !mesh.material.wireframe);
+                return results;
+            }
+        }
     }, BaseModel.prototype.isHovered = function(raycaster) {
-        return raycaster.intersectObject(this.mesh).length > 0;
+        return raycaster.intersectObject(this.mesh).length > 0 || raycaster.intersectObjects(this.mesh.children).length > 0;
+    }, BaseModel.prototype.animate = function(animationName, options) {
+        var anim, reverseLoopBug;
+        return null == options && (options = {}), null == options.loop && (options.loop = !0), 
+        null == options.reverse && (options.reverse = !1), null == options.timeScale && (options.timeScale = 1), 
+        null == options.preStopMs && (options.preStopMs = 50), options.reverse && (options.loop || (reverseLoopBug = !0), 
+        options.timeScale *= -1), anim = this.animation(animationName), anim.isPlaying && anim.stop(), 
+        anim.timeScale = options.timeScale, anim.loop = options.loop, reverseLoopBug && (anim.loop = !0), 
+        anim.play(), reverseLoopBug && setTimeout(function() {
+            return anim.stop();
+        }, 1e3 * anim.data.length - options.preStopMs), anim;
+    }, BaseModel.prototype.isPlaying = function(animationName) {
+        return this.animation(animationName).isPlaying;
+    }, BaseModel.prototype.animation = function(animationName) {
+        var animation, animationIndex, j, len, ref;
+        if (!(this.mesh instanceof THREE.SkinnedMesh)) throw "@mesh is not a THREE.SkinnedMesh";
+        if (isNumeric(animationName)) {
+            if (animationIndex = parseInt(animationName), animationIndex >= this.mesh.animations.size()) throw "Animation index " + animationIndex + " out of bounds";
+            return this.mesh.animations[animationIndex];
+        }
+        for (ref = this.mesh.animations, j = 0, len = ref.length; len > j; j++) if (animation = ref[j], 
+        animation.data.name === animationName) return animation;
+        throw animationName + " not found";
     }, BaseModel;
 }();
 
@@ -12265,7 +12326,8 @@ Config = function() {
         Config.prototype.antialias = !0, Config.prototype.anaglyph = !1, Config.prototype.resize = !1, 
         Config.prototype.width = 1280, Config.prototype.height = 1024, Config.prototype.soundEnabled = !1, 
         Config.prototype.debug = !1, Config.prototype.preventDefaultMouseEvents = !0, Config.prototype.animate = !0, 
-        Config.prototype.transparentBackground = !1, Config.prototype.fillWindow = function() {
+        Config.prototype.transparentBackground = !1, Config.prototype.sortObjects = !0, 
+        Config.prototype.fillWindow = function() {
             return this.resize = !0, this.width = window.innerWidth, this.height = window.innerHeight;
         }, Config.prototype.toggleAnaglyph = function() {
             return this.anaglyph = !this.anaglyph;
@@ -12290,19 +12352,28 @@ Helper = function() {
     return Helper.zero = new THREE.Vector3(0, 0, 0), Helper.one = new THREE.Vector3(1, 1, 1), 
     Helper.up = new THREE.Vector3(0, 1, 0), Helper.down = new THREE.Vector3(0, -1, 0), 
     Helper.toggleFullScreen = Utils.toggleFullScreen, Helper.guid = Utils.guid, Helper.setCursor = Utils.setCursor, 
-    Helper.rgbToHex = Utils.rgbToHex, Helper.camera = function(options) {
+    Helper.rgbToHex = Utils.rgbToHex, Helper.shallowClone = function(json) {
+        return JSON.parse(JSON.stringify(json));
+    }, Helper.random = function(n) {
+        return Math.floor(Math.random() * n);
+    }, Helper.distanceTo = function(v1, v2) {
+        var dx, dy, dz;
+        return dx = v1.x - v2.x, dy = v1.y - v2.y, dz = v1.z - v2.z, Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }, Helper.camera = function(options) {
         var config;
         return null == options && (options = {}), config = Config.get(), null == options.view_angle && (options.view_angle = 45), 
         null == options.aspect && (options.aspect = config.width / config.height), null == options.near && (options.near = 1), 
         null == options.far && (options.far = 1e4), options.type || (options.type = "PerspectiveCamera"), 
         new THREE[options.type](options.view_angle, options.aspect, options.near, options.far);
-    }, Helper.light = function() {
+    }, Helper.light = function(options) {
         var light;
-        return light = new THREE.DirectionalLight(16777215), light.position.set(0, 100, 60), 
-        light.castShadow = !0, light.shadowCameraLeft = -60, light.shadowCameraTop = -60, 
-        light.shadowCameraRight = 60, light.shadowCameraBottom = 60, light.shadowCameraNear = 1, 
-        light.shadowCameraFar = 1e3, light.shadowBias = -1e-4, light.shadowMapWidth = light.shadowMapHeight = 1024, 
-        light.shadowDarkness = .7, light;
+        return null == options && (options = {}), null == options.x && (options.x = 0), 
+        null == options.y && (options.y = 100), null == options.z && (options.z = 60), light = new THREE.DirectionalLight(16777215), 
+        light.position.set(options.x, options.y, options.z), light.castShadow = !0, light.shadowCameraLeft = -60, 
+        light.shadowCameraTop = -60, light.shadowCameraRight = 60, light.shadowCameraBottom = 60, 
+        light.shadowCameraNear = 1, light.shadowCameraFar = 1e3, light.shadowBias = -1e-4, 
+        light.shadowMapWidth = light.shadowMapHeight = 1024, light.shadowDarkness = .7, 
+        light;
     }, Helper.ambientLight = function(color) {
         return null == color && (color = 4210752), new THREE.AmbientLight(color);
     }, Helper.cube = function(options) {
@@ -12313,15 +12384,15 @@ Helper = function() {
             color: options.color
         }), new THREE.Mesh(box, mat);
     }, Helper.plane = function(options) {
-        var geometry, material;
+        var geometry;
         return null == options && (options = {}), null == options.width && (options.width = 5), 
         null == options.height && (options.height = 5), null == options.wSegments && (options.wSegments = 1), 
         null == options.hSegments && (options.hSegments = 1), null == options.color && (options.color = 16711680), 
-        geometry = new THREE.PlaneBufferGeometry(options.width, options.height, options.wSegments, options.hSegments), 
-        material = new THREE.MeshBasicMaterial({
+        null == options["class"] && (options["class"] = "PlaneBufferGeometry"), null == options.material && (options.material = new THREE.MeshBasicMaterial({
             color: options.color,
             side: THREE.DoubleSide
-        }), new THREE.Mesh(geometry, material);
+        })), geometry = new THREE[options["class"]](options.width, options.height, options.wSegments, options.hSegments), 
+        new THREE.Mesh(geometry, options.material);
     }, Helper.fancyShadows = function(renderer) {
         return renderer.shadowMapEnabled = !0, renderer.shadowMapSoft = !0, renderer.shadowMapType = THREE.PCFShadowMap, 
         renderer.shadowMapAutoUpdate = !0;
@@ -12357,6 +12428,34 @@ Helper = function() {
         null == options.step && (options.step = 1), null == options.color && (options.color = 16777215), 
         null == options.colorCenterLine && (options.colorCenterLine = options.color), grid = new THREE.GridHelper(options.size, options.step), 
         grid.setColors(options.colorCenterLine, options.color), grid;
+    }, Helper.materialFromCanvas = function(canvas) {
+        var texture;
+        return texture = new THREE.Texture(canvas), texture.needsUpdate = !0, new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: !0
+        });
+    }, Helper.intersectPlane = function() {
+        return new THREE.Plane(new THREE.Vector3(0, 0, 1), -1);
+    }, Helper.tween = function(options) {
+        var base, base1, base2, base3, base4, base5, e, i, j, len, len1, ref, ref1, tween;
+        if (null == options && (options = {}), null == options.target) throw new Error("options.target missing");
+        if (null == options.mesh) throw new Error("options.mesh missing");
+        if (null == options.relative && (options.relative = !1), null == options.duration && (options.duration = 1e3), 
+        null == options.kind && (options.kind = "Linear"), null == options.direction && (options.direction = "None"), 
+        null == options.position && (options.position = options.mesh.position.clone()), 
+        options.position.rX = options.mesh.rotation.x, options.position.rY = options.mesh.rotation.y, 
+        options.position.rZ = options.mesh.rotation.z, options.relative) {
+            for (ref = [ "x", "y", "z" ], i = 0, len = ref.length; len > i; i++) e = ref[i], 
+            null != options.target[e] ? options.target[e] += options.mesh.position[e] : options.target[e] = options.mesh.position[e];
+            for (ref1 = [ "rX", "rY", "rZ" ], j = 0, len1 = ref1.length; len1 > j; j++) e = ref1[j], 
+            null != options.target[e] ? options.target[e] += options.mesh.rotation[e.toLowerCase()[1]] : options.target[e] = options.mesh.rotation[e.toLowerCase()[1]];
+        } else null == (base = options.target).x && (base.x = options.position.x), null == (base1 = options.target).y && (base1.y = options.position.y), 
+        null == (base2 = options.target).z && (base2.z = options.position.z), null == (base3 = options.target).rX && (base3.rX = options.position.rX), 
+        null == (base4 = options.target).rY && (base4.rY = options.position.rY), null == (base5 = options.target).rZ && (base5.rZ = options.position.rZ);
+        if (options.position === options.target) throw new Error("target same as position");
+        return tween = new TWEEN.Tween(options.position).to(options.target, options.duration).easing(TWEEN.Easing[options.kind][options.direction]).onUpdate(function() {
+            return options.mesh.position.set(this.x, this.y, this.z), options.mesh.rotation.set(this.rX, this.rY, this.rZ);
+        });
     }, Helper;
 }();
 
@@ -12526,19 +12625,22 @@ LoadingScene = function(superClass) {
         var i, interval, len, url;
         if (null == hasFinishedLoading && (hasFinishedLoading = void 0), LoadingScene.__super__.constructor.call(this), 
         !(urls instanceof Array)) throw "urls needs to be an array";
-        for (this.hasFinishedLoading = hasFinishedLoading, i = 0, len = urls.length; len > i; i++) url = urls[i], 
+        for (this.hasFinishedLoading = hasFinishedLoading, this.preStart(), i = 0, len = urls.length; len > i; i++) url = urls[i], 
         url.endsWithAny(Utils.JSON_URLS) && this._loadJsonModel(url), url.endsWithAny(Utils.IMG_URLS) && this._loadTexture(url), 
         url.endsWithAny(Utils.SAVE_URLS) && this._loadSaveObject(url);
         interval = setInterval(function(_this) {
             return function() {
-                return _this.jmm.hasFinishedLoading() && _this.tm.hasFinishedLoading() && _this.som.hasFinishedLoading() ? (clearInterval(interval), 
-                _this.config.debug && console.log("Finished loading"), _this.hasFinishedLoading()) : void 0;
+                return _this.isLoadingDone() ? (clearInterval(interval), _this.config.debug && console.log("Finished loading"), 
+                _this.hasFinishedLoading()) : void 0;
             };
         }(this), 100);
     }
     return extend(LoadingScene, superClass), LoadingScene.prototype.jmm = JsonModelManager.get(), 
     LoadingScene.prototype.tm = TextureManager.get(), LoadingScene.prototype.som = SaveObjectManager.get(), 
-    LoadingScene.prototype.config = Config.get(), LoadingScene.prototype._loadJsonModel = function(url) {
+    LoadingScene.prototype.config = Config.get(), LoadingScene.prototype.preStart = function() {}, 
+    LoadingScene.prototype.isLoadingDone = function() {
+        return this.jmm.hasFinishedLoading() && this.tm.hasFinishedLoading() && this.som.hasFinishedLoading();
+    }, LoadingScene.prototype._loadJsonModel = function(url) {
         var name;
         return name = Utils.getKeyName(url, Utils.JSON_URLS), this.config.debug && console.log("Loading model '" + name + "' from '" + url + "'"), 
         this.jmm.load(name, url);
@@ -12558,6 +12660,103 @@ LoadingScene = function(superClass) {
     }, LoadingScene;
 }(BaseScene);
 
+var ArtGenerator;
+
+ArtGenerator = function() {
+    function ArtGenerator(options) {
+        this.options = options, this.canvas = document.createElement("canvas"), this.canvas.width = options.width, 
+        this.canvas.height = options.height, this.ctx = this.canvas.getContext("2d");
+    }
+    return ArtGenerator.prototype.tm = TextureManager.get(), ArtGenerator.prototype.fromJson = function(json) {
+        var i, item, len, ref, results;
+        for (this.clear(), ref = json.items, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
+        "image" === item.type && this.drawImage(item), "text" === item.type && this.drawText(item), 
+        "bezier" === item.type ? results.push(this.drawBezier(item)) : results.push(void 0);
+        return results;
+    }, ArtGenerator.prototype.drawBezier = function(options) {
+        return StackOverflow.drawBezier(options, this.ctx);
+    }, ArtGenerator.prototype.drawText = function(options) {
+        if (null == options && (options = {}), null == options.text) throw "options.text missing";
+        return null == options.fillStyle && (options.fillStyle = "white"), null == options.fillLineWidth && (options.fillLineWidth = 1), 
+        null == options.strokeLineWidth && (options.strokeLineWidth = 7), null == options.strokeStyle && (options.strokeStyle = void 0), 
+        null == options.font && (options.font = "40px Helvetica"), null == options.x && (options.x = 0), 
+        null == options.y && (options.y = 0), this.ctx.save(), this.ctx.font = options.font, 
+        null != options.strokeStyle && (this.ctx.miterLimit = 2, this.ctx.lineJoin = "circle", 
+        this.ctx.strokeStyle = options.strokeStyle, this.ctx.lineWidth = options.strokeLineWidth, 
+        this.ctx.strokeText(options.text, options.x, options.y)), this.ctx.lineWidth = options.fillLineWidth, 
+        this.ctx.fillStyle = options.fillStyle, this.ctx.fillText(options.text, options.x, options.y), 
+        this.ctx.restore();
+    }, ArtGenerator.prototype.drawImage = function(options) {
+        var image, x, y;
+        if (null == options && (options = {}), null == options.key) throw "key not found";
+        return null == options.x && (options.x = 0), null == options.y && (options.y = 0), 
+        null == options.angle && (options.angle = 0), x = options.x, y = options.y, image = this.tm.items[options.key].image, 
+        0 !== options.angle && (this.ctx.save(), this.ctx.translate(options.x + image.width / 2, options.y + image.height / 2), 
+        this.ctx.rotate(options.angle * Math.PI / 180), x = -(image.width / 2), y = -(image.height / 2)), 
+        this.ctx.drawImage(image, x, y), 0 !== options.angle ? this.ctx.restore() : void 0;
+    }, ArtGenerator.prototype.clear = function() {
+        return this.ctx.clearRect(0, 0, this.options.width, this.options.height);
+    }, ArtGenerator;
+}();
+
+var FadeInModifier, FadeModifier, NoticeMeModifier, ShakeModifier;
+
+FadeInModifier = function() {
+    function FadeInModifier(model) {
+        var tween;
+        tween = new TWEEN.Tween({
+            x: .5
+        }).to({
+            x: 1
+        }, 700).easing(TWEEN.Easing.Exponential.Out), tween.onUpdate(function() {
+            return model.setOpacity(this.x);
+        }).start();
+    }
+    return FadeInModifier;
+}(), FadeModifier = function() {
+    function FadeModifier(model, srcX, destX, t) {
+        var tween;
+        tween = new TWEEN.Tween({
+            x: srcX
+        }).to({
+            x: destX
+        }, t).easing(TWEEN.Easing.Exponential.Out), tween.onUpdate(function() {
+            return model.setOpacity(this.x);
+        }).start();
+    }
+    return FadeModifier;
+}(), ShakeModifier = function() {
+    function ShakeModifier(model, t) {
+        var ease, originalRZ, tween;
+        ease = TWEEN.Easing.Linear.None, originalRZ = model.mesh.rotation.z, tween = new TWEEN.Tween({
+            x: 0
+        }).to({
+            x: t
+        }, t).easing(ease), tween.onUpdate(function() {
+            return model.mesh.rotation.z += Math.random() - .5, 1 === this.x ? model.mesh.rotation.z = originalRZ : void 0;
+        }).start();
+    }
+    return ShakeModifier;
+}(), NoticeMeModifier = function() {
+    function NoticeMeModifier(model, srcX, destX, t) {
+        var ease, tween;
+        ease = TWEEN.Easing.Linear.None, tween = new TWEEN.Tween({
+            x: srcX
+        }).to({
+            x: destX
+        }, t / 2).easing(ease), tween.onUpdate(function() {
+            return model.mesh.scale.set(this.x, this.x, this.x);
+        }).start(), tween = new TWEEN.Tween({
+            x: destX
+        }).to({
+            x: srcX
+        }, t / 2).easing(ease), tween.onUpdate(function() {
+            return model.mesh.scale.set(this.x, this.x, this.x);
+        }).delay(t / 2).start();
+    }
+    return NoticeMeModifier;
+}();
+
 var Engine3D, bind = function(fn, me) {
     return function() {
         return fn.apply(me, arguments);
@@ -12566,30 +12765,53 @@ var Engine3D, bind = function(fn, me) {
 
 Engine3D = function() {
     function Engine3D() {
-        this.render = bind(this.render, this), this.onDocumentKeyboardEvent = bind(this.onDocumentKeyboardEvent, this), 
-        this.onDocumentMouseEvent = bind(this.onDocumentMouseEvent, this);
+        this.render = bind(this.render, this), this.keyboardHandler = bind(this.keyboardHandler, this), 
+        this.mouseHandler = bind(this.mouseHandler, this);
         var camera;
         this.width = this.config.width, this.height = this.config.height, this.renderer = new THREE.WebGLRenderer({
             antialias: this.config.antialias,
-            alpha: this.config.transparentBackground
-        }), this.renderer.setSize(this.width, this.height), document.body.appendChild(this.renderer.domElement), 
-        camera = Helper.camera({
+            alpha: this.config.transparentBackground,
+            logarithmicDepthBuffer: !1
+        }), this.renderer.sortObjects = config.sortObjects, this.renderer.setSize(this.width, this.height), 
+        document.body.appendChild(this.renderer.domElement), camera = Helper.camera({
             aspect: this.width / this.height,
             near: .5,
             far: 1e6
         }), this.setCamera(camera), this.camera.position.z = 10, this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), 
         this.anaglyphEffect.setSize(this.width, this.height), this.sceneManager = SceneManager.get(), 
-        document.addEventListener("mouseup", this.onDocumentMouseEvent, !1), document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), 
-        document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), 
-        document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
+        document.addEventListener("mouseup", this.mouseHandler, !1), document.addEventListener("mousedown", this.mouseHandler, !1), 
+        document.addEventListener("mousemove", this.mouseHandler, !1), document.addEventListener("keydown", this.keyboardHandler, !1), 
+        document.addEventListener("keyup", this.keyboardHandler, !1), document.addEventListener("touchstart", this.touchHandler, !0), 
+        document.addEventListener("touchmove", this.touchHandler, !0), document.addEventListener("touchend", this.touchHandler, !0), 
+        document.addEventListener("touchcancel", this.touchHandler, !0), this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
             return e.preventDefault();
         }, !1), this.statsManager = StatsManager.get(), this.config.showStatsOnLoad && this.statsManager.toggle();
     }
     return Engine3D.prototype.time = void 0, Engine3D.prototype.uptime = 0, Engine3D.prototype.config = Config.get(), 
-    Engine3D.prototype.onDocumentMouseEvent = function(event) {
+    Engine3D.prototype.touchHandler = function(event) {
+        var first, simulatedEvent, touches, type;
+        switch (touches = event.changedTouches, first = touches[0], type = "", event.type) {
+          case "touchstart":
+            type = "mousedown";
+            break;
+
+          case "touchmove":
+            type = "mousemove";
+            break;
+
+          case "touchend":
+            type = "mouseup";
+            break;
+
+          default:
+            return;
+        }
+        simulatedEvent = document.createEvent("MouseEvent"), simulatedEvent.initMouseEvent(type, !0, !0, window, 1, first.screenX, first.screenY, first.clientX, first.clientY, !1, !1, !1, !1, 0, null), 
+        first.target.dispatchEvent(simulatedEvent), event.preventDefault();
+    }, Engine3D.prototype.mouseHandler = function(event) {
         var raycaster;
         return raycaster = this._parseMouseEvent(event), null != raycaster ? this.sceneManager.currentScene().doMouseEvent(event, raycaster) : void 0;
-    }, Engine3D.prototype.onDocumentKeyboardEvent = function(event) {
+    }, Engine3D.prototype.keyboardHandler = function(event) {
         return this.sceneManager.currentScene().doKeyboardEvent(event);
     }, Engine3D.prototype.setCamera = function(camera) {
         return this.camera = camera, this.config.resize ? this.winResize = new THREEx.WindowResize(this.renderer, this.camera) : void 0;
@@ -12597,6 +12819,10 @@ Engine3D = function() {
         return this.renderer.setClearColor(color, alpha);
     }, Engine3D.prototype.addScene = function(scene) {
         return this.sceneManager.addScene(scene), null == this.sceneManager.currentSceneIndex ? this.sceneManager.setScene(scene) : void 0;
+    }, Engine3D.prototype.initScene = function(scene) {
+        var currentScene;
+        return currentScene = this.sceneManager.currentScene(), null != currentScene && currentScene.uninit(), 
+        scene.init(), this.sceneManager.setScene(scene);
     }, Engine3D.prototype.removeScene = function(scene) {
         return this.sceneManager.removeScene(scene);
     }, Engine3D.prototype.render = function() {
@@ -12606,6 +12832,10 @@ Engine3D = function() {
         this.uptime += tpf, this.sceneManager.tick(tpf), this.config.animate && THREE.AnimationHandler.update(tpf), 
         this.statsManager.update(this.renderer), TWEEN.update(), this.renderer.render(this.sceneManager.currentScene().scene, this.camera), 
         this.config.anaglyph ? this.anaglyphEffect.render(this.sceneManager.currentScene().scene, this.camera) : void 0;
+    }, Engine3D.prototype.unproject = function(x, y) {
+        var mouseX, mouseY, vector;
+        return mouseX = x / this.width * 2 - 1, mouseY = 2 * -(y / this.height) + 1, vector = new THREE.Vector3(mouseX, mouseY, .5), 
+        vector.unproject(this.camera), new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
     }, Engine3D.prototype._parseMouseEvent = function(event) {
         var mouseX, mouseY, vector;
         return this.config.preventDefaultMouseEvents && event.preventDefault(), event.target === this.renderer.domElement ? (mouseX = event.layerX / this.width * 2 - 1, 
@@ -12659,6 +12889,22 @@ Array.prototype.isEmpty = function() {
     var e, j, len, sum;
     for (sum = 0, j = 0, len = this.length; len > j; j++) e = this[j], sum += e;
     return sum;
+}, Array.prototype.where = function(hash) {
+    return this.filter(function(d) {
+        var found, item, j, key, len, ok, ref;
+        ok = !0;
+        for (key in hash) if (found = !1, hash[key] instanceof Array) {
+            for (ref = hash[key], j = 0, len = ref.length; len > j; j++) if (item = ref[j], 
+            d[key] === item) {
+                found = !0;
+                break;
+            }
+            ok = ok && found;
+        } else ok = ok && d[key] === hash[key];
+        return ok;
+    });
+}, Array.prototype.insert = function(index, item) {
+    this.splice(index, 0, item);
 }, String.prototype.size = function(s) {
     return this.length;
 }, String.prototype.startsWith = function(s) {
@@ -13989,3 +14235,93 @@ var io = "undefined" == typeof module ? {} : module.exports;
         return io;
     });
 }();
+
+var StackOverflow, bezier, bezier1, bezier2, bezierT;
+
+StackOverflow = StackOverflow || {}, StackOverflow.drawBezier = function(options, ctx) {
+    var a, b, c, cDist, curveSample, i, j, k, len, letterPadding, p, point, ref, ribbon, ribbonSpecs, textCurve, totalLength, totalPadding, w, ww, x1, x2, xDist, z;
+    if (null == options && (options = {}), options = Helper.shallowClone(options), null != options.curve && null == options.points && (options.points = options.curve.split(",")), 
+    null == options.text && (options.text = "Text"), null == options.letterPadding && (options.letterPadding = .25), 
+    null == options.fillStyle && (options.fillStyle = "white"), null == options.fillLineWidth && (options.fillLineWidth = 1), 
+    null == options.strokeLineWidth && (options.strokeLineWidth = 10), null == options.strokeStyle && (options.strokeStyle = void 0), 
+    null == options.font && (options.font = "40px Helvetica"), null == options.points && (options.points = []), 
+    null == options.drawText && (options.drawText = !0), null == options.drawCurve && (options.drawCurve = !1), 
+    null == options.maxChar && (options.maxChar = 50), null == options.x && (options.x = 0), 
+    null == options.y && (options.y = 0), 8 !== options.points.length) throw "needs 8 points";
+    for (options.points = options.points.map(function(item) {
+        return parseFloat(item);
+    }), i = 0, ref = options.points, k = 0, len = ref.length; len > k; k++) point = ref[k], 
+    i % 2 === 0 ? options.points[i] += options.x : options.points[i] += options.y, i += 1;
+    if (ribbonSpecs = {
+        maxChar: options.maxChar,
+        startX: options.points[0],
+        startY: options.points[1],
+        control1X: options.points[2],
+        control1Y: options.points[3],
+        control2X: options.points[4],
+        control2Y: options.points[5],
+        endX: options.points[6],
+        endY: options.points[7]
+    }, options.drawCurve && (ctx.save(), ctx.beginPath(), ctx.moveTo(ribbonSpecs.startX, ribbonSpecs.startY), 
+    ctx.bezierCurveTo(ribbonSpecs.control1X, ribbonSpecs.control1Y, ribbonSpecs.control2X, ribbonSpecs.control2Y, ribbonSpecs.endX, ribbonSpecs.endY), 
+    ctx.stroke(), ctx.restore()), options.drawText) {
+        for (textCurve = [], ribbon = options.text.substring(0, ribbonSpecs.maxChar), curveSample = 1e3, 
+        xDist = 0, i = 0, i = 0; curveSample > i; ) a = new bezier2(i / curveSample, ribbonSpecs.startX, ribbonSpecs.startY, ribbonSpecs.control1X, ribbonSpecs.control1Y, ribbonSpecs.control2X, ribbonSpecs.control2Y, ribbonSpecs.endX, ribbonSpecs.endY), 
+        b = new bezier2((i + 1) / curveSample, ribbonSpecs.startX, ribbonSpecs.startY, ribbonSpecs.control1X, ribbonSpecs.control1Y, ribbonSpecs.control2X, ribbonSpecs.control2Y, ribbonSpecs.endX, ribbonSpecs.endY), 
+        c = new bezier(a, b), textCurve.push({
+            bezier: a,
+            curve: c.curve
+        }), i++;
+        for (letterPadding = ctx.measureText(" ").width * options.letterPadding, w = ribbon.length, 
+        ww = Math.round(ctx.measureText(ribbon).width), totalPadding = (w - 1) * letterPadding, 
+        totalLength = ww + totalPadding, p = 0, cDist = textCurve[curveSample - 1].curve.cDist, 
+        z = cDist / 2 - totalLength / 2, i = 0; curveSample > i; ) {
+            if (textCurve[i].curve.cDist >= z) {
+                p = i;
+                break;
+            }
+            i++;
+        }
+        for (i = 0; w > i; ) {
+            for (ctx.save(), ctx.translate(textCurve[p].bezier.point.x, textCurve[p].bezier.point.y), 
+            ctx.rotate(textCurve[p].curve.rad), ctx.font = options.font, null != options.strokeStyle && (ctx.strokeStyle = options.strokeStyle, 
+            ctx.lineWidth = options.strokeLineWidth, ctx.strokeText(ribbon[i], 0, 0)), ctx.fillStyle = options.fillStyle, 
+            ctx.lineWidth = options.fillLineWidth, ctx.fillText(ribbon[i], 0, 0), ctx.restore(), 
+            x1 = ctx.measureText(ribbon[i]).width + letterPadding, x2 = 0, j = p; curveSample > j; ) {
+                if (x2 += textCurve[j].curve.dist, x2 >= x1) {
+                    p = j;
+                    break;
+                }
+                j++;
+            }
+            i++;
+        }
+    }
+}, bezier = function(b1, b2) {
+    var dx, dx2, xDist;
+    this.rad = Math.atan(b1.point.mY / b1.point.mX), this.b2 = b2, this.b1 = b1, dx = b2.x - b1.x, 
+    dx2 = (b2.x - b1.x) * (b2.x - b1.x), this.dist = Math.sqrt((b2.x - b1.x) * (b2.x - b1.x) + (b2.y - b1.y) * (b2.y - b1.y)), 
+    xDist += this.dist, this.curve = {
+        rad: this.rad,
+        dist: this.dist,
+        cDist: xDist
+    };
+}, bezierT = function(t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY) {
+    this.mx = 3 * (1 - t) * (1 - t) * (control1X - startX) + 6 * (1 - t) * t * (control2X - control1X) + 3 * t * t * (endX - control2X), 
+    this.my = 3 * (1 - t) * (1 - t) * (control1Y - startY) + 6 * (1 - t) * t * (control2Y - control1Y) + 3 * t * t * (endY - control2Y);
+}, bezier2 = function(t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY) {
+    this.Bezier1 = new bezier1(t, startX, startY, control1X, control1Y, control2X, control2Y), 
+    this.Bezier2 = new bezier1(t, control1X, control1Y, control2X, control2Y, endX, endY), 
+    this.x = (1 - t) * this.Bezier1.x + t * this.Bezier2.x, this.y = (1 - t) * this.Bezier1.y + t * this.Bezier2.y, 
+    this.slope = new bezierT(t, startX, startY, control1X, control1Y, control2X, control2Y, endX, endY), 
+    this.point = {
+        t: t,
+        x: this.x,
+        y: this.y,
+        mX: this.slope.mx,
+        mY: this.slope.my
+    };
+}, bezier1 = function(t, startX, startY, control1X, control1Y, control2X, control2Y) {
+    this.x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * control1X + t * t * control2X, 
+    this.y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * control1Y + t * t * control2Y;
+};
