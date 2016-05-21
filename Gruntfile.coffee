@@ -101,9 +101,9 @@ module.exports = (grunt) ->
           template = grunt.option('template')
 
           if !output? and !template?
-            'echo \nExample usage:\n\n  grunt new --template=3d/project --output=foo'
+            'echo "\nExample usage:\n\n  grunt new --template=3d/project --output=foo"'
           else if !output?
-            'echo \noutput argument missing.\nIt is the name of your project.\nA new folder will be created.'
+            'echo "\noutput argument missing.\nIt is the name of your project.\nA new folder will be created."'
           else if !template?
             [
               'echo'
