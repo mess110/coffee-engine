@@ -29,6 +29,7 @@
     "threex.dynamictexture": "*",
     "file-saver": "*",
     "virtualjoystick.js": "git@github.com:mess110/virtualjoystick.js.git#patch-1",
-    "socket.io-client": "~0.9.16"
+    "socket.io-client": "~0.9.16",
+    "howler.js": "howler#~1.1.29"
   }
 }

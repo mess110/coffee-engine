@@ -2,6 +2,11 @@
   "engine": {
     "camera": 0
   },
+  "assets": [
+    "assets/grass.png",
+    "assets/bunny.json",
+    "assets/SuperHero_original.ogg"
+  ],
   "cameras": [
     {
       "position": {
@@ -48,6 +53,17 @@
     {
       "actions": [
         {
+          "sound": {
+            "type": "stop",
+            "key": "SuperHero_original"
+
+          }
+        }
+      ]
+    },
+    {
+      "actions": [
+        {
           "target": "bunny",
           "animate": {
             "name": 0,
@@ -55,18 +71,33 @@
           }
         },
         {
-          "delay": 1000,
+          "delay": 2000,
           "target": "bunny",
           "tween": {
             "relative": true,
             "duration": 2000,
             "target": {
-              "x": 1
+              "x": 5
             }
+          },
+          "animate": {
+            "name": 1,
+            "stopOtherAnimations": true
           },
           "lookAt": {
             "offsetY": 0,
             "x": 2
+          }
+        }
+      ]
+    },
+    {
+      "actions": [
+        {
+          "target": "bunny",
+          "animate": {
+            "name": 0,
+            "stopOtherAnimations": true
           }
         }
       ]

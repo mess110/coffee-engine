@@ -3,6 +3,7 @@ class Utils
   @JSON_URLS = ['.json']
   @IMG_URLS = ['.png', '.jpg', '.jpeg']
   @SAVE_URLS = ['.save.json']
+  @AUDIO_URLS = ['.mp3', '.ogg', '.wav']
 
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.

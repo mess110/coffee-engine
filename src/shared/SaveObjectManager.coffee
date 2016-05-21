@@ -28,6 +28,7 @@ class SaveObjectManager
     # @param [String] key
     # @param [String] url of the object
     load: (key, url) ->
+      return if @items[key] != undefined
       @items[key] = null
 
       request = new XMLHttpRequest

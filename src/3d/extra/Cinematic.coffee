@@ -73,7 +73,11 @@ class Cinematic
   # Process an action from a script
   processAction: (action) ->
     action.delay ?= 0
-    throw new Error('action.target required') unless action.target?
+
+    if action.sound?
+      SoundManager.get().cmd(action.sound)
+
+    return unless action.target?
     target = @items.where(ceId: action.target).first()
     throw new Error("action.target #{action.target} not found") unless target?
     setTimeout =>
@@ -81,6 +85,8 @@ class Cinematic
         vector = @getLookAtVector(action.lookAt)
         target.mesh.lookAt(vector)
       if action.animate?
+        if action.animate.stopOtherAnimations?
+          target.stopAnimations()
         target.animate(null, action.animate)
       if action.tween?
         action.tween.mesh = target.mesh

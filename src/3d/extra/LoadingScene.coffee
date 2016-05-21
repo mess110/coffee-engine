@@ -11,6 +11,7 @@ class LoadingScene extends BaseScene
   tm: TextureManager.get()
   som: SaveObjectManager.get()
   config: Config.get()
+  sm: SoundManager.get()
 
   # You can either override the method hasFinishedLoading or you can
   # pass it as a param. It will be called once JsonModelManager has
@@ -26,7 +27,9 @@ class LoadingScene extends BaseScene
     @hasFinishedLoading = hasFinishedLoading
 
     @preStart()
+    @loadAssets(urls)
 
+  loadAssets: (urls) ->
     for url in urls
       if url.endsWithAny(Utils.SAVE_URLS)
         @_loadSaveObject(url)
@@ -34,6 +37,8 @@ class LoadingScene extends BaseScene
         @_loadJsonModel(url)
       else if url.endsWithAny(Utils.IMG_URLS)
         @_loadTexture(url)
+      else if url.endsWithAny(Utils.AUDIO_URLS)
+        @_loadAudio(url)
       else
         console.log "WARNING: #{url} is not a valid format"
 
@@ -49,7 +54,7 @@ class LoadingScene extends BaseScene
 
   # checks if the managers have finished loading
   isLoadingDone: ->
-    @jmm.hasFinishedLoading() and @tm.hasFinishedLoading() and @som.hasFinishedLoading()
+    @jmm.hasFinishedLoading() and @tm.hasFinishedLoading() and @som.hasFinishedLoading() and @sm.hasFinishedLoading()
 
   # assumes the url has been validated as a json model
   _loadJsonModel: (url) ->
@@ -68,6 +73,12 @@ class LoadingScene extends BaseScene
     name = Utils.getKeyName(url, Utils.SAVE_URLS)
     console.log "Loading save object '#{name}' from '#{url}'" if @config.debug
     @som.load(name, url)
+
+  # assumes the url has been validated as a sound
+  _loadAudio: (url) ->
+    name = Utils.getKeyName(url, Utils.AUDIO_URLS)
+    console.log "Loading audio '#{name}' from '#{url}'" if @config.debug
+    @sm.load(name, url)
 
   # @nodoc
   init: ->

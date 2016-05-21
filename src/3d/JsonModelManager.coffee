@@ -21,7 +21,9 @@ class JsonModelManager
     #    jmm = JsonModelManager.get()
     #    jmm.load('key', 'url/to/file.json')
     load: (key, url, callback = -> {}) ->
-      @loadCount += 1
+      return if @items[key] != undefined
+      @items[key] = null
+
       @loader.load "#{@baseUrl}#{url}", (geometry, materials) ->
         jmm = window.JsonModelManager.get()
 
@@ -33,6 +35,7 @@ class JsonModelManager
 
         mesh = jmm.initAnimations(mesh)
         jmm.items[key] = mesh
+        jmm.loadCount += 1
         callback(mesh)
         @
 

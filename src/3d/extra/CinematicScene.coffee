@@ -20,3 +20,6 @@ class CinematicScene extends BaseScene
 
   # @nodoc
   doMouseEvent: (event, ray) ->
+
+  @getAssets: (key) ->
+    SaveObjectManager.get().items[key].assets

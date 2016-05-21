@@ -13,8 +13,12 @@ class TextureManager
     # @param [String] key
     # @param [String] url of the texture
     load: (key, url) ->
-      texture = THREE.ImageUtils.loadTexture(url, {}, @_load)
-      @items[key] = texture
+      return if @items[key] != undefined
+      @items[key] = null
+
+      texture = THREE.ImageUtils.loadTexture(url, {}, (image) ->
+        window.TextureManager.get()._load(image, key)
+      )
       @
 
     # Checks if all the textures have finished loading
@@ -22,7 +26,8 @@ class TextureManager
       @loadCount == Object.keys(@items).size()
 
     # @nodoc
-    _load: (image) ->
+    _load: (image, key) ->
+      window.TextureManager.get().items[key] = image
       window.TextureManager.get().loadCount += 1
 
   @get: () ->

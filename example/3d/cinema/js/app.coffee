@@ -6,13 +6,12 @@ engine = new Engine3D()
 
 loadingScene = new LoadingScene([
   "assets/cinematic1.save.json"
-
-  "assets/grass.png"
-  "assets/bunny.json"
 ], ->
-  scene = CinematicScene.fromSaveObjectKey('cinematic1')
-  engine.addScene(scene)
-  engine.sceneManager.setScene(scene)
+  loadingScene.hasFinishedLoading = ->
+    scene = CinematicScene.fromSaveObjectKey('cinematic1')
+    engine.addScene(scene)
+    engine.sceneManager.setScene(scene)
+  loadingScene.loadAssets(CinematicScene.getAssets('cinematic1'))
 )
 engine.addScene(loadingScene)
 

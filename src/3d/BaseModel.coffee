@@ -89,6 +89,11 @@ class BaseModel
       , anim.data.length * 1000 - options.preStopMs
     anim
 
+  # stops all animations
+  stopAnimations: ->
+    for animation in @mesh.animations
+      animation.stop()
+
   # checks if an animation is playing
   #
   # @param [String] animationName
