@@ -2,7 +2,7 @@
 class Utils
   @JSON_URLS = ['.json']
   @IMG_URLS = ['.png', '.jpg', '.jpeg']
-  @SAVE_URLS = ['.save']
+  @SAVE_URLS = ['.save.json']
 
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.

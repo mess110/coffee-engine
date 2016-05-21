@@ -59,6 +59,8 @@ class BaseModel
     options.loop ?= true
     options.reverse ?= false
     options.timeScale ?= 1
+    options.name ?= animationName
+
     # ms to stop the animation before the normal end period
     options.preStopMs ?= 50
     if options.reverse
@@ -67,7 +69,7 @@ class BaseModel
       # options.loop = false
       options.timeScale *= -1
 
-    anim = @animation(animationName)
+    anim = @animation(options.name)
     anim.stop() if anim.isPlaying
     # throw 'already playing' if anim.isPlaying
     anim.timeScale = options.timeScale

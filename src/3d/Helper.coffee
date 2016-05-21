@@ -23,6 +23,8 @@ class Helper
   @setCursor: Utils.setCursor
   @rgbToHex: Utils.rgbToHex
 
+  @defaultTweenDuration = 1000
+
   @shallowClone: (json) ->
     JSON.parse(JSON.stringify(json))
 
@@ -62,12 +64,14 @@ class Helper
 
   # Create lights
   @light: (options = {}) ->
-    options.x ?= 0
-    options.y ?= 100
-    options.z ?= 60
+    options.position ?= {}
+    options.position.x ?= 0
+    options.position.y ?= 100
+    options.position.z ?= 60
+    options.color ?= 0xffffff
 
-    light = new (THREE.DirectionalLight)(0xffffff)
-    light.position.set options.x, options.y, options.z
+    light = new (THREE.DirectionalLight)(options.color)
+    light.position.set options.position.x, options.position.y, options.position.z
     light.castShadow = true
     light.shadowCameraLeft = -60
     light.shadowCameraTop = -60
@@ -83,8 +87,10 @@ class Helper
   # Create ambient lights
   #
   # @param [Color] color
-  @ambientLight: (color = 0x404040) ->
-    new (THREE.AmbientLight)(color)
+  @ambientLight: (options = {}) ->
+    options.color ?= 0x404040
+
+    new (THREE.AmbientLight)(options.color)
 
   # Create cubes with lambert material
   #
@@ -96,6 +102,10 @@ class Helper
     box = new (THREE.BoxGeometry)(options.size, options.size, options.size)
     mat = new (THREE[options.material])(color: options.color)
     new (THREE.Mesh)(box, mat)
+
+  @model: (options = {}) ->
+    throw new Error("key missing for: #{JSON.stringify(options)}") unless options.key?
+    JsonModelManager.get().clone(options.key)
 
   # Creates a plane
   #
@@ -114,6 +124,10 @@ class Helper
     options.material ?= new (THREE.MeshBasicMaterial)(
       color: options.color
       side: THREE.DoubleSide)
+    if options.map?
+      options.material = new (THREE.MeshBasicMaterial)(
+        map: TextureManager.get().items[options.map]
+        side: THREE.DoubleSide)
 
     geometry = new (THREE[options.class])(options.width, options.height, options.wSegments, options.hSegments)
     new (THREE.Mesh)(geometry, options.material)
@@ -130,20 +144,23 @@ class Helper
 
   # Add a sky sphere from an image
   #
-  # @param [String] imgUrl for the image displayed
-  # @param [Number] radius of the sphere
-  # @param [Number] segments of the sphere
+  # @param [options] json object for options
   #
   # @example
   #
-  #   Utils.skySphere('', 450000, 64)
-  @skySphere: (options) ->
-    throw 'options.textureUrl not defined' unless options.textureUrl?
+  #   Utils.skySphere(textureUrl: 'url_to_image.png', radius: 450000, segments: 64)
+  #   Utils.skySphere(map: 'texture_manager_key')
+  @skySphere: (options = {}) ->
+    throw 'options.textureUrl or options.map not defined' if !options.textureUrl? && !options.map?
     options.radius ?= 450000
     options.segments ?= 64
 
     geom = new (THREE.SphereGeometry)(options.radius, options.segments, options.segments)
-    name = Utils.getKeyName(options.textureUrl, Utils.IMG_URLS)
+    if options.map?
+      name = options.map
+    else
+      name = Utils.getKeyName(options.textureUrl, Utils.IMG_URLS)
+
     mat = new (THREE.MeshBasicMaterial)(
       map: TextureManager.get().items[name]
       side: THREE.BackSide
@@ -234,7 +251,7 @@ class Helper
     throw new Error('options.mesh missing') unless options.mesh?
 
     options.relative ?= false
-    options.duration ?= 1000
+    options.duration ?= Helper.defaultTweenDuration
     options.kind ?= 'Linear'
     options.direction ?= 'None'
 

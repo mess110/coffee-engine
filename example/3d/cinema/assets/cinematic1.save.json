@@ -1,0 +1,71 @@
+{
+  "engine": {
+    "camera": 0
+  },
+  "cameras": [
+    {
+      "position": {
+        "y": 5,
+        "z": 25
+      },
+      "lookAt": {}
+    }
+  ],
+  "items": [
+    {
+      "type": "cube",
+      "position": {
+        "x": 5
+      }
+    },
+    {
+      "type": "plane",
+      "map": "grass",
+      "rotation": {
+        "x": "PI / 2"
+      }
+    },
+    {
+      "type": "model",
+      "key": "bunny",
+      "id": "bunny"
+    },
+    {
+      "type": "ambientLight"
+    },
+    {
+      "type": "light"
+    },
+    {
+      "type": "skySphere",
+      "map": "grass"
+    }
+  ],
+  "scripts": [
+    {
+      "actions": [
+        {
+          "target": "bunny",
+          "animate": {
+            "name": 0
+          }
+        },
+        {
+          "delay": 1000,
+          "target": "bunny",
+          "tween": {
+            "relative": true,
+            "duration": 2000,
+            "target": {
+              "x": 1
+            }
+          },
+          "lookAt": {
+            "offsetY": 0,
+            "x": 2
+          }
+        }
+      ]
+    }
+  ]
+}

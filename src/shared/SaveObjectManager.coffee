@@ -36,7 +36,11 @@ class SaveObjectManager
       request.onload = ->
         if request.status >= 200 and request.status < 400
           # Success!
-          data = JSON.parse(request.responseText)
+          try
+            data = JSON.parse(request.responseText)
+          catch
+            console.log "invalid json #{url}"
+            return
 
           som = window.SaveObjectManager.get()
           som.items[key] = data

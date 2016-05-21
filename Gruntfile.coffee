@@ -69,6 +69,7 @@ module.exports = (grunt) ->
 
   extras = [
     "src/shared/SyntaxSugar.js"
+    "src/shared/Cinematic.js"
     "bower_components/socket.io-client/dist/socket.io.js"
     "src/vendor/drawBezier.js"
   ]

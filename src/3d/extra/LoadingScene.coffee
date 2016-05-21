@@ -28,12 +28,12 @@ class LoadingScene extends BaseScene
     @preStart()
 
     for url in urls
-      if url.endsWithAny(Utils.JSON_URLS)
+      if url.endsWithAny(Utils.SAVE_URLS)
+        @_loadSaveObject(url)
+      else if url.endsWithAny(Utils.JSON_URLS)
         @_loadJsonModel(url)
       else if url.endsWithAny(Utils.IMG_URLS)
         @_loadTexture(url)
-      else if url.endsWithAny(Utils.SAVE_URLS)
-        @_loadSaveObject(url)
       else
         console.log "WARNING: #{url} is not a valid format"
 
