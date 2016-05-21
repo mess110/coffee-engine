@@ -101,8 +101,12 @@ class Helper
   #
   # @param [Object] options
   @plane: (options = {}) ->
-    options.width ?= 5
-    options.height ?= 5
+    if options.size?
+      options.width = options.size
+      options.height = options.size
+    else
+      options.width ?= 5
+      options.height ?= 5
     options.wSegments ?= 1
     options.hSegments ?= 1
     options.color ?= 0xff0000

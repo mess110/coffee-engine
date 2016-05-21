@@ -28,17 +28,17 @@ class Engine3D
 
     @sceneManager = SceneManager.get()
 
-    document.addEventListener "mouseup", @mouseHandler, false
-    document.addEventListener "mousedown", @mouseHandler, false
-    document.addEventListener "mousemove", @mouseHandler, false
+    @renderer.domElement.addEventListener "mouseup", @mouseHandler, false
+    @renderer.domElement.addEventListener "mousedown", @mouseHandler, false
+    @renderer.domElement.addEventListener "mousemove", @mouseHandler, false
 
-    document.addEventListener "keydown", @keyboardHandler, false
-    document.addEventListener "keyup", @keyboardHandler, false
+    @renderer.domElement.addEventListener "keydown", @keyboardHandler, false
+    @renderer.domElement.addEventListener "keyup", @keyboardHandler, false
 
-    document.addEventListener("touchstart", @touchHandler, true)
-    document.addEventListener("touchmove", @touchHandler, true)
-    document.addEventListener("touchend", @touchHandler, true)
-    document.addEventListener("touchcancel", @touchHandler, true)
+    @renderer.domElement.addEventListener "touchstart", @touchHandler, false
+    @renderer.domElement.addEventListener "touchmove", @touchHandler, false
+    @renderer.domElement.addEventListener "touchend", @touchHandler, false
+    @renderer.domElement.addEventListener "touchcancel", @touchHandler, false
 
     if @config.contextMenuDisabled
       document.addEventListener "contextmenu", (e) ->
