@@ -95,6 +95,39 @@ module.exports = (grunt) ->
         command: "./node_modules/.bin/codo -u -o ./doc/server/ -r README_SERVER.md src/server/ src/shared/Utils.coffee"
       "tools":
         command: "npm run start"
+      "new":
+        command: ->
+          output = grunt.option('output')
+          template = grunt.option('template')
+
+          if !output? and !template?
+            'echo \nExample usage:\n\n  grunt new --template=3d/project --output=foo'
+          else if !output?
+            'echo \noutput argument missing.\nIt is the name of your project.\nA new folder will be created.'
+          else if !template?
+            [
+              'echo'
+              'echo "Example:"'
+              'echo'
+              'echo "  grunt new --template 3d/project"'
+              'echo'
+              'echo "Templates:"'
+              'echo'
+              'echo 2d:'
+              'echo `ls example/2d/`'
+              'echo'
+              'echo 3d:'
+              'echo `ls example/3d/`'
+            ].join(' && ')
+          else
+            [
+              "cp -a example/#{template} #{output}"
+              'echo'
+              "echo Game created in #{output}."
+              'echo To view a list of coffee-engine commands run in the project folder.'
+              'echo'
+              'echo "  npm run"'
+            ].join(' && ')
 
     uglify:
       engine:
@@ -111,6 +144,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask "build", ["compile:coffee", "uglify:engine"]
   grunt.registerTask "dev", ["compile:coffee:watch"]
+
+  grunt.registerTask "new", ["shell:new"]
 
   grunt.registerTask "doc", ["shell:doc-3d", "shell:doc-2d", "shell:doc-server"]
   grunt.registerTask "tools", ["shell:tools"]
