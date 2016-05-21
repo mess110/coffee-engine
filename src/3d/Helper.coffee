@@ -25,12 +25,15 @@ class Helper
 
   @defaultTweenDuration = 1000
 
+  # Use JSON to clone an object
   @shallowClone: (json) ->
     JSON.parse(JSON.stringify(json))
 
+  # Get a random number smaller than n
   @random: (n) ->
     Math.floor(Math.random() * n)
 
+  # Calculate the distance between 2 vectors
   @distanceTo: (v1, v2) ->
     dx = v1.x - (v2.x)
     dy = v1.y - (v2.y)
@@ -103,6 +106,7 @@ class Helper
     mat = new (THREE[options.material])(color: options.color)
     new (THREE.Mesh)(box, mat)
 
+  # Clones a JsonModel from the JsonModelManager
   @model: (options = {}) ->
     throw new Error("key missing for: #{JSON.stringify(options)}") unless options.key?
     JsonModelManager.get().clone(options.key)
@@ -121,12 +125,14 @@ class Helper
     options.hSegments ?= 1
     options.color ?= 0xff0000
     options.class ?= 'PlaneBufferGeometry'
-    options.material ?= new (THREE.MeshBasicMaterial)(
-      color: options.color
-      side: THREE.DoubleSide)
+
     if options.map?
       options.material = new (THREE.MeshBasicMaterial)(
         map: TextureManager.get().items[options.map]
+        side: THREE.DoubleSide)
+    else
+      options.material ?= new (THREE.MeshBasicMaterial)(
+        color: options.color
         side: THREE.DoubleSide)
 
     geometry = new (THREE[options.class])(options.width, options.height, options.wSegments, options.hSegments)

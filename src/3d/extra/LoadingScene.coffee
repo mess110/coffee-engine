@@ -44,8 +44,10 @@ class LoadingScene extends BaseScene
         @hasFinishedLoading()
     , 100
 
+  # Override this to add more code which should be executed before loading starts
   preStart: ->
 
+  # checks if the managers have finished loading
   isLoadingDone: ->
     @jmm.hasFinishedLoading() and @tm.hasFinishedLoading() and @som.hasFinishedLoading()
 

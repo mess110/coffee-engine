@@ -83,6 +83,7 @@ Array::sum = ->
     sum += e
   sum
 
+# Query for array elements
 Array::where = (hash) ->
   @.filter (d) ->
     ok = true
@@ -98,6 +99,7 @@ Array::where = (hash) ->
         ok = ok && d[key] == hash[key]
     ok
 
+# Add an item at a specific position
 Array::insert = (index, item) ->
   @splice index, 0, item
   return

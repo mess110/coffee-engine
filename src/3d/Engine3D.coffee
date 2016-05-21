@@ -48,6 +48,7 @@ class Engine3D
     @statsManager = StatsManager.get()
     @statsManager.toggle() if @config.showStatsOnLoad
 
+  # Delegate touches to mouse events
   touchHandler: (event) ->
     touches = event.changedTouches
     first = touches[0]
@@ -156,6 +157,7 @@ class Engine3D
     if @config.anaglyph
       @anaglyphEffect.render @sceneManager.currentScene().scene, @camera
 
+  # Create a Raycaster from camera and x,y coordinates
   unproject: (x, y) ->
     mouseX = (x / @width) * 2 - 1
     mouseY = -(y / @height) * 2 + 1

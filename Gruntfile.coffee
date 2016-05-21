@@ -48,6 +48,8 @@ module.exports = (grunt) ->
     "src/3d/extra/SpotLight.js"
     "src/3d/extra/Mirror.js"
     "src/3d/extra/LoadingScene.js"
+    "src/3d/extra/Cinematic.js"
+    "src/3d/extra/CinematicScene.js"
     "src/3d/extra/ArtGenerator.js"
     "src/3d/extra/Modifiers.js"
 
@@ -69,7 +71,6 @@ module.exports = (grunt) ->
 
   extras = [
     "src/shared/SyntaxSugar.js"
-    "src/shared/Cinematic.js"
     "bower_components/socket.io-client/dist/socket.io.js"
     "src/vendor/drawBezier.js"
   ]

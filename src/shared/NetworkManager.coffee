@@ -44,9 +44,11 @@ class NetworkManager
       data = @_prepareData(data)
       @socket.emit(name, data)
 
+    # Fake emitting an event
     fakeEmit: (name, data={}) ->
       @_prepareData(data)
 
+    # @nodoc
     _prepareData: (data={}) ->
       data.timestamp = new Date().getTime()
       data.inputId = @inputId
@@ -62,6 +64,7 @@ class NetworkManager
       throw 'data.type missing' unless data? or data.type?
       @rawEmit('data', data)
 
+    # Fake an event
     fake: (data) ->
       throw 'data.type missing' unless data? or data.type?
       @fakeEmit('data', data)

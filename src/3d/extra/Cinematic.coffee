@@ -1,14 +1,17 @@
-# BaseScene can either be from 3d or 2d engine
-class Cinematic extends BaseScene
-  @fromJson: (json) ->
-    new Cinematic(json)
+# Base class for holding cinematic data
+class Cinematic
+  # Constructor
+  #
+  # If the scene parameter is given, it will add the items to the
+  # scene automatically
+  #
+  # @param [JSON] json
+  # @param [Scene] scene
+  constructor: (json, scene) ->
+    @loaded = false
 
-  @fromSaveObjectKey: (key) ->
-    json = SaveObjectManager.get().items[key]
-    @fromJson(json)
-
-  constructor: (json) ->
-    super()
+    if scene?
+      @scene = scene
 
     @cameras = []
     @items = []
@@ -19,9 +22,9 @@ class Cinematic extends BaseScene
       @setId(camera, item)
       @setXYZProp('position', camera, item)
       @setXYZProp('rotation', camera, item)
-      # if item.lookAt?
-        # vector = @getLookAtVector(item.lookAt)
-        # camera.lookAt(vector)
+      if item.lookAt?
+        vector = @getLookAtVector(item.lookAt)
+        camera.lookAt(vector)
       @cameras.push camera
 
     for item in @json.items
@@ -38,18 +41,24 @@ class Cinematic extends BaseScene
           @setXYZProp('scale', obj, item, 1)
           if item.lookAt?
             camera.lookAt(@toVector3(item.lookAt))
-          @scene.add obj
           @items.push baseModel
+          @scene.add baseModel.mesh if @scene
         else
           console.log "unknown item type #{item.type}"
 
-    if json.engine.camera?
-      engine.setCamera(@cameras[json.engine.camera])
+    if @json.engine.camera?
+      engine.setCamera(@cameras[@json.engine.camera])
 
     @loaded = true
 
+  # Add all items to a scene
+  addAll: (scene) ->
+    for item in @items
+      scene.add item.mesh
+
+  # tick event
   tick: (tpf) ->
-    return if @loaded = false
+    return if @loaded != true
 
     return if @json.scripts.where(processing: true).any()
     script = @json.scripts.where(processed: undefined).first()
@@ -61,9 +70,7 @@ class Cinematic extends BaseScene
       @processAction(action)
     @setNotProcessing(script)
 
-
-  doMouseEvent: (event, ray) ->
-
+  # Process an action from a script
   processAction: (action) ->
     action.delay ?= 0
     throw new Error('action.target required') unless action.target?
@@ -80,12 +87,14 @@ class Cinematic extends BaseScene
         Helper.tween(action.tween).start()
     , action.delay
 
+  # @nodoc
   setNotProcessing: (script) ->
     duration = @getScriptDuration(script)
     setTimeout =>
       script.processing = false
     , duration
 
+  # Returns the ms duration of a script
   getScriptDuration: (script) ->
     longestTween = 0
     for action in script.actions
@@ -95,21 +104,25 @@ class Cinematic extends BaseScene
           longestTween = actionDuration
     longestTween
 
+  # @nodoc
   getLookAtVector: (json) ->
     vector = @toVector3(json)
     for coord in ['x', 'y', 'z']
       vector[coord] += json["offset#{coord.toUpperCase()}"] || 0
     vector
 
+  # @nodoc
   toVector3: (hash) ->
     hash.x ?= 0
     hash.y ?= 0
     hash.z ?= 0
     new THREE.Vector3(hash.x, hash.y, hash.z)
 
+  # @nodoc
   setId: (object, json) ->
     object.ceId = json.id
 
+  # @nodoc
   setXYZProp: (prop, object, json, def = 0) ->
     json[prop] ?= {}
     for coordinate in ['x', 'y', 'z']

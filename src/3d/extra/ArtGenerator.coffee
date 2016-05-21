@@ -17,6 +17,7 @@
 class ArtGenerator
   tm: TextureManager.get()
 
+  # @nodoc
   constructor: (options) ->
     @options = options
 
@@ -63,9 +64,25 @@ class ArtGenerator
       if item.type == 'bezier'
         @drawBezier(item)
 
+  # Used to overlay a bezier curve on a canvas
+  #
+  # @see StackOverflow.drawBezier
+  # @see draw bezier tool
+  #
+  # @example
+  #   @drawBezier(
+  #     curve: '99.2,207.2,130.02,60.0,300.5,276.2,300.7,176.2'
+  #     text: 'hello world'
+  #     strokeStyle: 'black'
+  #     letterPadding: 4
+  #   )
   drawBezier: (options) ->
     StackOverflow.drawBezier(options, @ctx)
 
+  # Overlay text on a canvas
+  #
+  # @example
+  #   @drawText(text: 'foo', y: 60, strokeStyle: 'black')
   drawText: (options = {}) ->
     throw 'options.text missing' unless options.text?
     options.fillStyle ?= 'white'
@@ -91,6 +108,12 @@ class ArtGenerator
     @ctx.fillText options.text, options.x, options.y
     @ctx.restore()
 
+  # Used to overlay an image on the canvas
+  #
+  # @example
+  #   @drawImage(key: 'corb')
+  #   @drawImage(key: 'template')
+  #
   drawImage: (options = {}) ->
     throw 'key not found' unless options.key?
     options.x ?= 0
@@ -114,5 +137,6 @@ class ArtGenerator
     if options.angle != 0
       @ctx.restore()
 
+  # clear the canvas context
   clear: ->
     @ctx.clearRect(0, 0, @options.width, @options.height)

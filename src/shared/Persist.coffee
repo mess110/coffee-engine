@@ -29,6 +29,9 @@ class Persist
   constructor: () ->
     @storage = localStorage
 
+  # sets a json value to the storage
+  #
+  # @see set
   setJson: (key, value, def=undefined) ->
     value = JSON.stringify(value)
     def = JSON.stringify(def) if def?
@@ -43,6 +46,7 @@ class Persist
     @storage["#{Persist.PREFIX}.#{key}"] = value
     @default(key, def) if def?
 
+  # set the default json for a key
   defaultJson: (key, value) ->
     value = JSON.stringify(value)
     @default(key, value)
@@ -58,6 +62,9 @@ class Persist
   default: (key, value) ->
     @set("#{key}.#{Persist.DEFAULT_SUFFIX}", value)
 
+  # Get a json value from the storage.
+  #
+  # @see get
   getJson: (key) ->
     item = @get(key)
     if item?
@@ -120,6 +127,7 @@ class Persist
   @default: (key, value) ->
     new Persist().default(key, value)
 
+  # @see defaultJson
   @defaultJson: (key, value) ->
     new Persist().defaultJson(key, value)
 

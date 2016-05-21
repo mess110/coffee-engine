@@ -10,7 +10,7 @@ loadingScene = new LoadingScene([
   "assets/grass.png"
   "assets/bunny.json"
 ], ->
-  scene = Cinematic.fromSaveObjectKey('cinematic1')
+  scene = CinematicScene.fromSaveObjectKey('cinematic1')
   engine.addScene(scene)
   engine.sceneManager.setScene(scene)
 )
