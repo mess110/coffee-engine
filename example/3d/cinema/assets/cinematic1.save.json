@@ -50,7 +50,8 @@
         {
           "target": "bunny",
           "animate": {
-            "name": 0
+            "name": 0,
+            "waitScript": 0
           }
         },
         {

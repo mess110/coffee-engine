@@ -96,13 +96,21 @@ class Cinematic
 
   # Returns the ms duration of a script
   getScriptDuration: (script) ->
-    longestTween = 0
+    longestDuration = 0
     for action in script.actions
+      if action.animate?
+        if action.animate.loop == false
+          animateDuration = action.animate.waitScript || 0
+          animateDuration += action.delay || 0
+          if animateDuration > longestDuration
+            longestDuration = animateDuration
+
       if action.tween?
         actionDuration = action.tween.duration || Helper.defaultTweenDuration
-        if actionDuration > longestTween
-          longestTween = actionDuration
-    longestTween
+        actionDuration += action.delay || 0
+        if actionDuration > longestDuration
+          longestDuration = actionDuration
+    longestDuration
 
   # @nodoc
   getLookAtVector: (json) ->
