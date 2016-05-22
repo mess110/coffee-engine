@@ -58,11 +58,11 @@ class Helper
   # @see Engine3D.setCamera
   @camera: (options={}) ->
     config = Config.get()
-    options.view_angle = 45 unless options.view_angle?
+    options.view_angle = Utils.CAMERA_DEFAULT_VIEW_ANGLE unless options.view_angle?
     options.aspect = config.width / config.height unless options.aspect?
-    options.near = 1 unless options.near?
-    options.far = 10000 unless options.far?
-    options.type = 'PerspectiveCamera' unless options.type
+    options.near = Utils.CAMERA_DEFAULT_NEAR  unless options.near?
+    options.far = Utils.CAMERA_DEFAULT_FAR unless options.far?
+    options.type = Utils.CAMERA_DEFAULT_TYPE unless options.type
     new THREE[options.type](options.view_angle, options.aspect, options.near, options.far)
 
   # Create lights

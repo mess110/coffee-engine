@@ -5,6 +5,11 @@ class Utils
   @SAVE_URLS = ['.save.json']
   @AUDIO_URLS = ['.mp3', '.ogg', '.wav']
 
+  @CAMERA_DEFAULT_VIEW_ANGLE = 45
+  @CAMERA_DEFAULT_NEAR = 1
+  @CAMERA_DEFAULT_FAR = 10000
+  @CAMERA_DEFAULT_TYPE = 'PerspectiveCamera'
+
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.
   #

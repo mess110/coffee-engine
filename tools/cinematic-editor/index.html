@@ -1,0 +1,199 @@
+<html ng-app="MyApp">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+        <title>cinematic editor</title>
+
+        <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.css" type="application/css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic" />
+
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body ng-controller="MainController">
+        <div ng-cloak="" class="tabsdemoDynamicHeight">
+            <md-content>
+                <md-tabs md-dynamic-height="" md-border-bottom="">
+                    <md-tab label="editor">
+                        <md-content class="md-padding" layout="row" layout-align="center center">
+                            <md-card>
+                                <md-card-content>
+                                    <div>
+                                        <md-input-container>
+                                            <label>Title</label>
+                                            <input ng-model="json.title">
+                                        </md-input-container>
+                                        <md-input-container>
+                                            <label>Author</label>
+                                            <input ng-model="json.author">
+                                        </md-input-container>
+                                    </div>
+                                    <div>
+                                        <md-input-container class="md-block">
+                                            <label>Description</label>
+                                            <textarea ng-model="json.description" md-maxlength="150" rows="5" md-select-on-focus></textarea>
+                                        </md-input-container>
+                                    </div>
+                                    <div>
+                                        <md-input-container class="md-block" flex-gt-xs>
+                                            <label>Path</label>
+                                            <input ng-model="json.path">
+                                        </md-input-container>
+                                    </div>
+                                </md-card-content>
+                                <md-card-actions layout="row" layout-align="end center">
+                                    <input class="ng-hide" id="input-file-id" type="file" ng-model="file.data" file-select="data" file-loaded="loaded()" file-error="myError($error)" file-progress="myProgress($total,$loaded)">
+                                    <label for="input-file-id" class="md-button">Load</label>
+                                    <md-button ng-click="save()">save</md-button>
+                                </md-card-actions>
+                            </md-card>
+                            <!-- <h1 class="md-display-2">Tab Three</h1> -->
+                            <!-- <p>Integer turpis erat, porttitor vitae mi faucibus, laoreet interdum tellus. Curabitur posuere molestie dictum. Morbi eget congue risus, quis rhoncus quam. Suspendisse vitae hendrerit erat, at posuere mi. Cras eu fermentum nunc. Sed id ante eu orci commodo volutpat non ac est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p> -->
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="assets">
+                        <md-content class="md-padding">
+                            <md-card ng-show="json.assets.length == 0">
+                                <md-card-content>
+                                    <span>No assets</span>
+                                </md-card-content>
+                            </md-card>
+                            <md-card ng-repeat="asset in json.assets track by $index">
+                                <md-card-content>
+                                    <md-input-container class="md-block no-bottom" flex-gt-xs>
+                                        <label>Asset</label>
+                                        <input ng-model="json.assets[$index]">
+                                    </md-input-container>
+                                </md-card-content>
+                                <md-card-actions layout="row" layout-align="end center">
+                                    <md-button ng-click="removeAsset(asset)">delete</md-button>
+                                </md-card-actions>
+                            </md-card>
+                        </md-content>
+                        <md-button class="md-fab md-fab-bottom-right" ng-disabled="false" aria-label="Add asset" ng-click="addAsset()">
+                            <md-icon md-svg-src="ic_add_48px.svg"></md-icon>
+                        </md-button>
+                    </md-tab>
+                    <md-tab label="cameras">
+                        <md-content class="md-padding">
+                            <md-card ng-show="json.cameras.length == 0">
+                                <md-card-content>
+                                    <span>No cameras</span>
+                                </md-card-content>
+                            </md-card>
+                            <md-card ng-repeat="camera in json.cameras">
+                                <md-card-content layout="row">
+                                    <md-input-container>
+                                        <label>Type</label>
+                                        <md-select ng-model="camera.type">
+                                            <md-option ng-repeat="type in cameraTypes" value="{{ type }}">
+                                                {{ type }}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container class="md-block no-bottom" flex-gt-xs>
+                                        <label>Camera View Angle</label>
+                                        <input ng-model="camera.view_angle">
+                                    </md-input-container>
+                                    <md-input-container class="md-block no-bottom" flex-gt-xs>
+                                        <label>Camera Near</label>
+                                        <input ng-model="camera.near">
+                                    </md-input-container>
+                                    <md-input-container class="md-block no-bottom" flex-gt-xs>
+                                        <label>Camera Far</label>
+                                        <input ng-model="camera.far">
+                                    </md-input-container>
+                                </md-card-content>
+                                <md-card-actions layout="row" layout-align="end center">
+                                    <md-button ng-click="defaultCamera(camera)">default</md-button>
+                                    <md-button ng-click="removeCamera(camera)">delete</md-button>
+                                </md-card-actions>
+                            </md-card>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="items">
+                        <md-content class="md-padding">
+                            <md-card ng-show="json.items.length == 0">
+                                <md-card-content>
+                                    <span>No items</span>
+                                </md-card-content>
+                            </md-card>
+                            <md-card ng-repeat="item in json.items">
+                                <md-card-content layout="row">
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                        <label>id</label>
+                                        <input ng-model="item.id">
+                                    </md-input-container>
+                                    <md-input-container flex>
+                                        <label>Type</label>
+                                        <md-select ng-model="item.type">
+                                            <md-option ng-repeat="type in itemTypes" value="{{ type }}">
+                                                {{ type }}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container flex ng-if="hasMapAttr(item.type)">
+                                        <label>Map</label>
+                                        <md-select ng-model="item.map">
+                                            <md-option ng-repeat="asset in json.assets | filter: mapFilter" value="{{ getKeyName(asset) }}">
+                                                {{ getKeyName(asset) }}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                </md-card-content>
+                                <md-card-actions layout="row" layout-align="end center">
+                                    <md-button ng-click="removeItem(item)">delete</md-button>
+                                </md-card-actions>
+                            </md-card>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="scripts">
+                        <md-content class="md-padding">
+                            <md-card ng-show="json.scripts.length == 0">
+                                <md-card-content>
+                                    <span>No scripts</span>
+                                </md-card-content>
+                            </md-card>
+                            <md-card ng-repeat="script in json.scripts">
+                                <md-card-content>
+                                    <span>{{ script }}</span>
+                                </md-card-content>
+                            </md-card>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="engine">
+                        <md-content class="md-padding">
+                            <md-card ng-show="json.cameras.length == 0">
+                                <md-card-content>
+                                    <span>Please add a camera</span>
+                                </md-card-content>
+                            </md-card>
+                            <md-card ng-show="json.cameras.length != 0">
+                                <md-card-content layout="row">
+                                    <md-switch flex ng-model="ui.preset_camera" aria-label="Switch 1">
+                                        Preset camera
+                                    </md-switch>
+                                    <md-input-container flex>
+                                        <label>Index</label>
+                                        <md-select ng-model="json.engine.camera" ng-disabled="!ui.preset_camera">
+                                            <md-option ng-repeat="camera in json.cameras" ng-value="{{ $index }}">
+                                                {{ $index }}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                </md-card-content>
+                            </md-card>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="../../build/coffee-engine-3d.js"></script>
+        <script src="app.js" type="text/javascript" charset="utf-8"></script>
+    </body>
+</html>

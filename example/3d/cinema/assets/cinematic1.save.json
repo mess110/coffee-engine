@@ -15,7 +15,11 @@
       },
       "lookAt": {
         "offsetY": 5
-      }
+      },
+      "type": "PerspectiveCamera",
+      "view_angle": 45,
+      "near": 1,
+      "far": 10000
     }
   ],
   "items": [
@@ -56,7 +60,6 @@
           "sound": {
             "type": "stop",
             "key": "SuperHero_original"
-
           }
         }
       ]
@@ -102,5 +105,9 @@
         }
       ]
     }
-  ]
+  ],
+  "path": "example/3d/cinema/assets/cinematic1.save.json",
+  "author": "kiki",
+  "title": "test cinematic",
+  "description": "first cinematic"
 }
