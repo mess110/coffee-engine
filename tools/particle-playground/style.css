@@ -9,3 +9,11 @@ canvas {
   position: absolute;
   z-index: 0;
 }
+
+md-input-container {
+  margin-bottom: 0px;
+}
+
+md-content {
+  overflow-x: hidden;
+}

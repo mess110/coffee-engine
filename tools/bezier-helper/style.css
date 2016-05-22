@@ -8,6 +8,7 @@ body {
 canvas {
   position: absolute;
   z-index: 0;
+  top: 204px;
 }
 
 md-input-container {

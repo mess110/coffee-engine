@@ -13,13 +13,15 @@
     </head>
     <body ng-controller="MainController">
         <md-sidenav class="md-whiteframe-z2" md-component-id="right" md-is-locked-open="true" style="position: fixed; z-index: 2; right: 0px; left: inherit">
-            <md-content layout-padding layout="column">
-                <md-input-container>
-                    <md-button ng-click="toggleStats()">toggle stats</md-button>
-                </md-input-container>
-                <md-input-container>
+            <md-content layout-padding>
+                <div layout="column">
+                    <md-switch ng-model="ui.stats" aria-label="Stats" ng-click="toggleStats()">
+                        Stats
+                    </md-switch>
+                </div>
+                <div layout="column">
                     <div md-color-picker ng-model="options.clearColor"></div>
-                </md-input-container>
+                </div>
                 <md-input-container class="md-block">
                     <label>Max Age</label>
                     <input type="number" ng-model="particle.particleGroup.maxAge">
@@ -82,16 +84,16 @@
                         <input type="number" ng-model="particle.emitter.radiusScale[coord]">
                     </md-input-container>
                 </div>
-                <div layout="row" ng-repeat="pair in [['sizeStart', 'sizeStartSpread'], ['sizeMiddle', 'sizeMiddleSpread'], ['sizeEnd', 'sizeEndSpread'], ['angleStart', 'angleStartSpread'], ['angleMiddle', 'angleMiddleSpread'], 'angleEnd', 'angleEndSpread']">
+                <div layout="row" ng-repeat="pair in [['sizeStart', 'sizeStartSpread'], ['sizeMiddle', 'sizeMiddleSpread'], ['sizeEnd', 'sizeEndSpread'], ['angleStart', 'angleStartSpread'], ['angleMiddle', 'angleMiddleSpread'], ['angleEnd', 'angleEndSpread']]">
                     <md-input-container class="md-block" ng-repeat="size in pair">
                         <label>{{ size }}</label>
                         <input type="number" ng-model="particle.emitter[size]">
                     </md-input-container>
                 </div>
                 <div layout="column" ng-repeat="specialColor in ['colorStart', 'colorMiddle', 'colorEnd']">
-                    <md-input-container>
+                    <div layout="column">
                         <div md-color-picker ng-model="options.emitter[specialColor]"></div>
-                    </md-input-container>
+                    </div>
                     <div layout="row">
                         <md-input-container class="md-block" ng-repeat="coord in ['x', 'y', 'z']">
                             <label>{{ specialColor + ' - ' + coord }}</label>

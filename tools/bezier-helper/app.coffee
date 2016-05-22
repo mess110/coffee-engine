@@ -60,7 +60,8 @@ config.fillWindow()
 config.preventDefaultMouseEvents = false
 
 engine = new Engine3D()
-engine.camera.position.set 0, 0, 10
+engine.camera.position.set 0, 0, 11
+config.height = config.height - 204
 
 bezierScene = new BezierScene()
 engine.addScene(bezierScene)

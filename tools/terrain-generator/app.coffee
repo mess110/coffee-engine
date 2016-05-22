@@ -65,7 +65,7 @@ class TerrainGeneratorScene extends BaseScene
 config = Config.get()
 config.fillWindow()
 config.preventDefaultMouseEvents = false
-# config.width = config.width * 6 / 10
+config.width = config.width - 320
 
 engine = new Engine3D()
 engine.camera.position.set 0, 15, 100
