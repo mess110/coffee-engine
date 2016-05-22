@@ -11,7 +11,8 @@ loadingScene = new LoadingScene([
     scene = CinematicScene.fromSaveObjectKey('cinematic1')
     engine.addScene(scene)
     engine.sceneManager.setScene(scene)
-  loadingScene.loadAssets(CinematicScene.getAssets('cinematic1'))
+  assets = CinematicScene.getAssets('cinematic1')
+  loadingScene.loadAssets(assets)
 )
 engine.addScene(loadingScene)
 

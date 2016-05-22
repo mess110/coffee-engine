@@ -58,11 +58,11 @@
                                     <span>No assets</span>
                                 </md-card-content>
                             </md-card>
-                            <md-card ng-repeat="asset in json.assets track by $index">
+                            <md-card ng-repeat="asset in json.assets">
                                 <md-card-content>
                                     <md-input-container class="md-block no-bottom" flex-gt-xs>
                                         <label>Asset</label>
-                                        <input ng-model="json.assets[$index]">
+                                        <input ng-model="asset.destPath">
                                     </md-input-container>
                                 </md-card-content>
                                 <md-card-actions layout="row" layout-align="end center">
@@ -159,16 +159,16 @@
                                     <md-input-container flex ng-if="hasMapAttr(item.type)">
                                         <label>Map</label>
                                         <md-select ng-model="item.map">
-                                            <md-option ng-repeat="asset in json.assets | filter: mapFilter" value="{{ getKeyName(asset) }}">
-                                                {{ getKeyName(asset) }}
+                                            <md-option ng-repeat="asset in json.assets | filter: mapFilter" value="{{ getKeyName(asset.destPath) }}">
+                                                {{ getKeyName(asset.destPath) }}
                                             </md-option>
                                         </md-select>
                                     </md-input-container>
                                     <md-input-container flex ng-if="item.type == 'model'">
                                         <label>Key</label>
                                         <md-select ng-model="item.key">
-                                            <md-option ng-repeat="asset in json.assets | filter: modelFilter" value="{{ getKeyName(asset) }}">
-                                                {{ getKeyName(asset) }}
+                                            <md-option ng-repeat="asset in json.assets | filter: modelFilter" value="{{ getKeyName(asset.destPath) }}">
+                                                {{ getKeyName(asset.destPath) }}
                                             </md-option>
                                         </md-select>
                                     </md-input-container>
@@ -361,8 +361,8 @@
                                         <md-input-container flex>
                                             <label>Sound</label>
                                             <md-select ng-model="action.sound.key">
-                                                <md-option ng-repeat="asset in json.assets | filter: soundsFilter" value="{{ getKeyName(asset) }}">
-                                                    {{ getKeyName(asset) }}
+                                                <md-option ng-repeat="asset in json.assets | filter: soundsFilter" value="{{ getKeyName(asset.destPath) }}">
+                                                    {{ getKeyName(asset.destPath) }}
                                                 </md-option>
                                             </md-select>
                                         </md-input-container>

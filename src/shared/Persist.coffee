@@ -8,7 +8,7 @@
 # * auto converts number and boolean values
 #
 # @example
-#   Persist.PREFIX = 'coffee.engine.'
+#   Persist.PREFIX = 'coffee.engine'
 #   Persist.set('hello', 'dear')
 #   Persist.get('hello') # returns dear
 #

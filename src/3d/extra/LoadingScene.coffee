@@ -29,8 +29,21 @@ class LoadingScene extends BaseScene
     @preStart()
     @loadAssets(urls)
 
-  loadAssets: (urls) ->
-    for url in urls
+  # Loads assets
+  #
+  # @example
+  #   loadingScene.loadAssets(['asset1.png'])
+  #
+  # @example
+  #   loadingScene.loadAssets([ { destPath: 'asset1.png' } ])
+  #
+  loadAssets: (assets) ->
+    for asset in assets
+      if typeof asset == 'string'
+        url = asset
+      else
+        url = asset.destPath
+
       if url.endsWithAny(Utils.SAVE_URLS)
         @_loadSaveObject(url)
       else if url.endsWithAny(Utils.JSON_URLS)

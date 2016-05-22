@@ -1,0 +1,46 @@
+<html ng-app="MyApp">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+        <title>settings</title>
+
+        <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.css" type="application/css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic" />
+        <link rel="stylesheet" href="../../bower_components/md-color-picker/dist/mdColorPicker.css" type="text/css" charset="utf-8"></link>
+
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body ng-controller="MainController" ng-keypress="shortcut($event)">
+        <div ng-cloak="" class="tabsdemoDynamicHeight">
+            <md-content>
+                <md-tabs md-dynamic-height="" md-border-bottom="">
+                    <md-tab label="workspace">
+                        <md-card>
+                            <md-card-content layout="column">
+                                <div layout="row" layout-align="center center" ng-repeat="dir in ui.workspaceDirs">
+                                    <md-input-container flex>
+                                        <label>{{ dir.key }}</label>
+                                        <input ng-model="json[dir.key]" ng-change="dir.method({ target: { files: [{path: json[dir.key] }]}})" ng-model-options="{ debounce: 500 }">
+                                    </md-input-container>
+                                    <input class="ng-hide" id="input-file-id" multiple type="file" aria-label="Choose directory" webkitdirectory directory custom-on-change="dir.method"/>
+                                    <label for="input-file-id" class="md-button md-raised md-primary">Choose directory</label>
+                                </div>
+                            </md-card-content>
+                        </md-card>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="../../bower_components/tinycolor/tinycolor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../bower_components/md-color-picker/dist/mdColorPicker.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="../../build/coffee-engine-3d.js"></script>
+        <script src="app.js" type="text/javascript" charset="utf-8"></script>
+    </body>
+</html>

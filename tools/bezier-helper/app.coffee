@@ -33,7 +33,7 @@ class BezierScene extends BaseScene
     @art = new ArtGenerator(width: 512, height: 512)
 
     @plane = new BaseModel()
-    @plane.mesh = Helper.plane(width: 10, height: 10)
+    @plane.mesh = Helper.plane(width: 10, height: 10, wSegments: 20, hSegments: 20)
     @scene.add @plane.mesh
 
     @controls = Helper.orbitControls(engine)

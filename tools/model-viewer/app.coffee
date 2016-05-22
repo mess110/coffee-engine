@@ -1,41 +1,32 @@
 glob = require('glob')
 
+Persist.PREFIX = 'ce.editor'
+
 app = angular.module 'MyApp', [
   'ngMaterial'
-  'ngStorage'
 ]
 
-app.directive 'customOnChange', ->
-  {
-    restrict: 'A'
-    link: (scope, element, attrs) ->
-      onChangeHandler = scope.$eval(attrs.customOnChange)
-      element.bind 'change', onChangeHandler
-      return
+app.controller 'MainController', ($scope) ->
+  $scope.workspace = Persist.getJson('workspace') || {}
+  modelRepository = $scope.workspace.modelRepository
+  if modelRepository.startsWith('/')
+    $scope.loadedPath = modelRepository
+  else
+    $scope.loadedPath = "../../#{modelRepository}"
+  $scope.loadedPath = modelRepository
 
-  }
-
-app.controller 'MainController', ($scope, $localStorage) ->
-
-  $scope.loadDir = (event) ->
-    if event?
-      s = event.target.files[0].path
-      $localStorage.loadedPath = s
-    else
-      s = $localStorage.loadedPath
-
-    $scope.loadedPath = s
-
-    glob("#{s}/**/*.json", {}, (er, files) ->
-      $scope.files = files
-      $scope.$apply()
-    )
+  glob("#{$scope.loadedPath}/**/*.json", {}, (er, files) ->
+    $scope.files = files
+    $scope.$apply()
+  )
 
   $scope.search = ''
   $scope.searchFilter = (item) ->
     item.contains($scope.search)
 
   $scope.viewModel = (path) ->
+    if !path.startsWith('/')
+      path = "../../#{path}"
     modelViewerScene.viewModel($scope.nameFromPath(path), path)
 
   $scope.animate = (animationIndex) ->
@@ -53,9 +44,6 @@ app.controller 'MainController', ($scope, $localStorage) ->
 
   $scope.toggleStats = ->
     config.toggleStats()
-
-  if $localStorage.loadedPath?
-    $scope.loadDir()
 
 class ModelViewerScene extends BaseScene
   constructor: ->

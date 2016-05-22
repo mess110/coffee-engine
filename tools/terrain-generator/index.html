@@ -11,42 +11,44 @@
         <link rel="stylesheet" href="style.css" />
     </head>
     <body ng-cloak="" ng-controller="MainController">
-        <md-sidenav layout-padding class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="true" style="position: fixed; z-index: 1">
-            <md-input-container>
-                <label>Heightmap</label>
-                <input ng-model="options.heightmapUrl" ng-change="updateTerrain()">
-            </md-input-container>
-            <img class="heightmap" ng-src="{{options.heightmapUrl}}">
-            <md-input-container>
-                <label>Texture</label>
-                <input ng-model="options.textureUrl" ng-change="updateTerrain()">
-            </md-input-container>
-            <img class="heightmap" ng-src="{{options.textureUrl}}">
-            <div layout="row">
-                <md-input-container flex>
-                    <label>Width</label>
-                    <input type="number" ng-model="options.width" ng-change="updateTerrain()">
+        <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="true" style="position: fixed; z-index: 1">
+            <md-content layout-padding layout="column">
+                <md-input-container>
+                    <label>Heightmap</label>
+                    <input ng-model="options.heightmapUrl" ng-change="updateTerrain()">
                 </md-input-container>
-                <md-input-container flex>
-                    <label>Height</label>
-                    <input type="number" ng-model="options.height" ng-change="updateTerrain()">
+                <img class="heightmap" ng-src="{{options.heightmapUrl}}">
+                <md-input-container>
+                    <label>Texture</label>
+                    <input ng-model="options.textureUrl" ng-change="updateTerrain()">
                 </md-input-container>
-            </div>
-            <div layout="row">
-                <md-input-container flex>
-                    <label>Width Segments</label>
-                    <input type="number" ng-model="options.wSegments" ng-change="updateTerrain()">
+                <img class="heightmap" ng-src="{{options.textureUrl}}">
+                <div layout="row">
+                    <md-input-container>
+                        <label>Width</label>
+                        <input type="number" ng-model="options.width" ng-change="updateTerrain()">
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Height</label>
+                        <input type="number" ng-model="options.height" ng-change="updateTerrain()">
+                    </md-input-container>
+                </div>
+                <div layout="row">
+                    <md-input-container>
+                        <label>Width Segments</label>
+                        <input type="number" ng-model="options.wSegments" ng-change="updateTerrain()">
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Height Segments</label>
+                        <input type="number" ng-model="options.hSegments" ng-change="updateTerrain()">
+                    </md-input-container>
+                </div>
+                <md-input-container>
+                    <label>Scale</label>
+                    <input type="number" ng-model="options.scale" ng-change="updateTerrain()">
                 </md-input-container>
-                <md-input-container flex>
-                    <label>Height Segments</label>
-                    <input type="number" ng-model="options.hSegments" ng-change="updateTerrain()">
-                </md-input-container>
-            </div>
-            <md-input-container flex>
-                <label>Scale</label>
-                <input type="number" ng-model="options.scale" ng-change="updateTerrain()">
-            </md-input-container>
-            <md-button ng-click="saveJson()">save</md-button>
+                <md-button ng-click="saveJson()">save</md-button>
+            </md-content>
         </md-sidenav>
 
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js" type="text/javascript" charset="utf-8"></script>

@@ -78,7 +78,6 @@ app.controller 'MainController', ['$scope', '$mdToast', ($scope, $mdToast) ->
       delete $scope.json.engine.camera
 
   $scope.shortcut = (event) ->
-    console.log event.which
     if event.ctrlKey and event.which == 19
       $scope.save()
 
@@ -117,16 +116,19 @@ app.controller 'MainController', ['$scope', '$mdToast', ($scope, $mdToast) ->
       asset
 
   $scope.mapFilter = (item) ->
-    item.endsWithAny(Utils.IMG_URLS)
+    return false unless item.destPath
+    item.destPath.endsWithAny(Utils.IMG_URLS)
 
   $scope.modelFilter = (item) ->
-    item.endsWithAny(Utils.JSON_URLS) && !item.endsWithAny(Utils.SAVE_URLS)
+    return false unless item.destPath
+    item.destPath.endsWithAny(Utils.JSON_URLS) && !item.destPath.endsWithAny(Utils.SAVE_URLS)
 
   $scope.itemWithIdFilter = (item) ->
     item.id?
 
   $scope.soundsFilter = (item) ->
-    item.endsWithAny(Utils.AUDIO_URLS)
+    return false unless item.destPath
+    item.destPath.endsWithAny(Utils.AUDIO_URLS)
 
   $scope.save = ->
     unless $scope.json.path?
@@ -145,7 +147,7 @@ app.controller 'MainController', ['$scope', '$mdToast', ($scope, $mdToast) ->
       return
 
   $scope.addAsset = ->
-    $scope.json.assets.push ''
+    $scope.json.assets.push {}
 
   $scope.removeAsset = (asset) ->
     $scope.json.assets.remove(asset)

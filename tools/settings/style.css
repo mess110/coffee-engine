@@ -1,0 +1,25 @@
+.tabsdemoDynamicHeight md-content {
+background-color: transparent !important; }
+.tabsdemoDynamicHeight md-content md-tabs {
+  background: #f6f6f6;
+border: 1px solid #e1e1e1; }
+.tabsdemoDynamicHeight md-content md-tabs md-tabs-wrapper {
+background: white; }
+.tabsdemoDynamicHeight md-content h1:first-child {
+margin-top: 0; }
+
+.no-bottom {
+  margin-bottom: 0px;
+}
+
+fieldset.standard {
+  border-style: solid;
+  border-width: 1px;
+}
+legend {
+  color: #3F51B5;
+}
+legend code {
+  color: #3F51B5;
+  font-weight: normal;
+}

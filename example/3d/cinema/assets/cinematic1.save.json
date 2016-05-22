@@ -3,9 +3,18 @@
     "camera": 0
   },
   "assets": [
-    "assets/grass.png",
-    "assets/bunny.json",
-    "assets/SuperHero_original.ogg"
+    {
+      "destPath": "assets/grass.png",
+      "libPath": ""
+    },
+    {
+      "destPath": "assets/bunny.json",
+      "libPath": ""
+    },
+    {
+      "destPath": "assets/SuperHero_original.ogg",
+      "libPath": ""
+    }
   ],
   "cameras": [
     {
@@ -27,15 +36,21 @@
     {
       "type": "cube",
       "position": {
-        "x": 5
+        "x": 7,
+        "y": 1
       }
     },
     {
       "type": "plane",
-      "map": "grass",
       "rotation": {
         "x": 1.57
-      }
+      },
+      "color": "#ff0000",
+      "width": 1500,
+      "height": 1500,
+      "wSegments": 4,
+      "hSegments": 4,
+      "map": "grass"
     },
     {
       "type": "model",
@@ -50,8 +65,9 @@
     },
     {
       "type": "skySphere",
-      "radius": 10000,
-      "map": "grass"
+      "radius": "1000",
+      "map": "grass",
+      "segments": 64
     }
   ],
   "scripts": [
@@ -124,7 +140,7 @@
             "kind": "Bounce",
             "direction": "InOut",
             "target": {
-              "y": 1,
+              "y": 10,
               "x": 1,
               "z": 1
             }
