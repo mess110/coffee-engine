@@ -1,6 +1,9 @@
 glob = require('glob')
 
-app = angular.module('app', ['ngStorage'])
+app = angular.module 'MyApp', [
+  'ngMaterial'
+  'ngStorage'
+]
 
 app.directive 'customOnChange', ->
   {
@@ -28,6 +31,10 @@ app.controller 'MainController', ($scope, $localStorage) ->
       $scope.$apply()
     )
 
+  $scope.search = ''
+  $scope.searchFilter = (item) ->
+    item.contains($scope.search)
+
   $scope.viewModel = (path) ->
     modelViewerScene.viewModel($scope.nameFromPath(path), path)
 
@@ -39,7 +46,7 @@ app.controller 'MainController', ($scope, $localStorage) ->
   $scope.updateAnimations = (animations) ->
     $scope.animations = []
     $scope.animations.push animation.data.name for animation in animations
-    $scope.$apply()
+    $scope.$digest()
 
   $scope.nameFromPath = (path) ->
     path.split('/').last().split('.json').first()
@@ -68,12 +75,11 @@ class ModelViewerScene extends BaseScene
 
   viewModel: (name, url) ->
     @scene.remove(@mesh) if @mesh?
+    JsonModelManager.get().items[name] = undefined
     JsonModelManager.get().load(name, url, (mesh) =>
       @scene.add mesh
-      # mesh.animations[1].play()
       @mesh = mesh
       @loaded = true
-
       angular.element(document.body).scope().updateAnimations(mesh.animations)
     )
 
@@ -88,7 +94,7 @@ config = Config.get()
 config.fillWindow()
 
 engine = new Engine3D()
-engine.camera.position.set 0, 10, 10
+engine.camera.position.set 7.4, 11.8, 10.1
 
 modelViewerScene = new ModelViewerScene()
 engine.addScene(modelViewerScene)

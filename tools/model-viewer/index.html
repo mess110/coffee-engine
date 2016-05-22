@@ -1,30 +1,87 @@
-<!DOCTYPE HTML>
-<html lang="en" ng-app="app">
-  <head>
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>coffee-engine model-viewer</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body ng-controller="MainController">
-    <div class="ctrl-panel">
-      <input type="button" ng-click="toggleStats()" value="toggle stats" />
-      <input id="selectedFile" type="file" webkitdirectory directory custom-on-change="loadDir"/>
-      <input type="button" value="model directory" onclick="document.getElementById('selectedFile').click();" />
-      <span>{{loadedPath}}</span>
-    </div>
-    <div class="file-browser">
-      <h3>Models</h3>
-      <p ng-click="viewModel(file)" ng-repeat="file in files">{{nameFromPath(file)}}</p>
-    </div>
+<!-- <!DOCTYPE HTML> -->
+<!-- <html lang="en" ng-app="app"> -->
+    <!-- <head> -->
+        <!-- <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"> -->
+        <!-- <title>coffee-engine model-viewer</title> -->
+        <!-- <link rel="stylesheet" href="style.css" /> -->
+        <!-- </head> -->
+<!-- <body ng-controller="MainController"> -->
+    <!-- <div class="ctrl-panel"> -->
+        <!-- <input type="button" ng-click="toggleStats()" value="toggle stats" /> -->
+        <!-- <input id="selectedFile" type="file" webkitdirectory directory custom-on-change="loadDir"/> -->
+        <!-- <input type="button" value="model directory" onclick="document.getElementById('selectedFile').click();" /> -->
+        <!-- <span>{{loadedPath}}</span> -->
+        <!-- </div> -->
+    <!-- <div class="file-browser"> -->
+        <!-- <h3>Models</h3> -->
+        <!-- <p ng-click="viewModel(file)" ng-repeat="file in files">{{nameFromPath(file)}}</p> -->
+        <!-- </div> -->
 
-    <div class="animation-browser">
-      <h3>Animations</h3>
-      <p ng-click="animate($index)" ng-repeat="animation in animations track by $index">{{animation}}</p>
-    </div>
+    <!-- <div class="animation-browser"> -->
+        <!-- <h3>Animations</h3> -->
+        <!-- <p ng-click="animate($index)" ng-repeat="animation in animations track by $index">{{animation}}</p> -->
+        <!-- </div> -->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.6/ngStorage.min.js"></script>
-    <script src="../../build/coffee-engine-3d.js"></script>
-    <script src="app.js"></script>
-  </body>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.6/ngStorage.min.js"></script> -->
+    <!-- <script src="../../build/coffee-engine-3d.js"></script> -->
+    <!-- <script src="app.js"></script> -->
+    <!-- </body> -->
+<!-- </html> -->
+<html ng-app="MyApp">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+        <title>model-viewer</title>
+
+        <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.css" type="application/css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic" />
+        <link rel="stylesheet" href="../../bower_components/md-color-picker/dist/mdColorPicker.css" type="text/css" charset="utf-8"></link>
+
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body ng-controller="MainController" ng-keypress="shortcut($event)">
+        <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="true" style="position: fixed; z-index: 1">
+            <md-toolbar layout-padding style="background-color: white; min-height: 96px">
+                <!-- <h1 class="md-toolbar-tools">Models</h1> -->
+                <md-input-container class="md-block" flex>
+                    <label>Search</label>
+                    <input ng-model="search">
+                </md-input-container>
+            </md-toolbar>
+            <md-content layout-padding layout="column">
+                <md-list>
+                    <md-list-item class="md-1-line" ng-repeat="file in files | filter: searchFilter" ng-click="viewModel(file)">
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="md-list-item-text" layout="column">
+                                {{ nameFromPath(file) }}
+                            </div>
+                        </md-item-content>
+                    </md-list-item>
+                </md-list>
+            </md-content>
+        </md-sidenav>
+        <md-sidenav class="md-whiteframe-z2" md-component-id="right" md-is-locked-open="true" style="position: fixed; z-index: 2; right: 0px; left: inherit;" ng-show="animations.any()">
+            <md-content layout-padding layout="column">
+                <md-list>
+                    <md-list-item class="md-1-line" ng-repeat="animation in animations track by $index" ng-click="animate($index)">
+                        <md-item-content md-ink-ripple layout="row" layout-align="start center">
+                            <div class="md-list-item-text" layout="column">
+                                {{ animation }}
+                            </div>
+                        </md-item-content>
+                    </md-list-item>
+                </md-list>
+            </md-content>
+        </md-sidenav>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.6/ngStorage.min.js"></script>
+
+        <script src="../../build/coffee-engine-3d.js"></script>
+        <script src="app.js" type="text/javascript" charset="utf-8"></script>
+    </body>
 </html>

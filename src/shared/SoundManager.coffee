@@ -64,7 +64,7 @@ class SoundManager
 
     # fadeIn a sound by key
     fadeIn: (key, to) ->
-      @cmd(type: 'fadeIn', key: key, to: 1, duration: duration)
+      @cmd(type: 'fadeIn', key: key, to: to, duration: duration)
 
     # fadeOut a sound by key
     fadeOut: (key, to) ->

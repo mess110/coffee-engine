@@ -6,14 +6,15 @@
 
         <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.css" type="application/css" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic" />
+        <link rel="stylesheet" href="../../bower_components/md-color-picker/dist/mdColorPicker.css" type="text/css" charset="utf-8"></link>
 
         <link rel="stylesheet" href="style.css" />
     </head>
-    <body ng-controller="MainController">
+    <body ng-controller="MainController" ng-keypress="shortcut($event)">
         <div ng-cloak="" class="tabsdemoDynamicHeight">
             <md-content>
                 <md-tabs md-dynamic-height="" md-border-bottom="">
-                    <md-tab label="editor">
+                    <md-tab label="cinematic">
                         <md-content class="md-padding" layout="row" layout-align="center center">
                             <md-card>
                                 <md-card-content>
@@ -91,16 +92,37 @@
                                         </md-select>
                                     </md-input-container>
                                     <md-input-container class="md-block no-bottom" flex-gt-xs>
+                                        <label>Id</label>
+                                        <input ng-model="camera.id">
+                                    </md-input-container>
+                                </md-card-content>
+                                <md-card-content layout="row">
+                                    <md-input-container class="md-block no-bottom" flex-gt-xs>
                                         <label>Camera View Angle</label>
-                                        <input ng-model="camera.view_angle">
+                                        <input type="number" ng-model="camera.view_angle">
                                     </md-input-container>
                                     <md-input-container class="md-block no-bottom" flex-gt-xs>
                                         <label>Camera Near</label>
-                                        <input ng-model="camera.near">
+                                        <input type="number" ng-model="camera.near">
                                     </md-input-container>
                                     <md-input-container class="md-block no-bottom" flex-gt-xs>
                                         <label>Camera Far</label>
-                                        <input ng-model="camera.far">
+                                        <input type="number" ng-model="camera.far">
+                                    </md-input-container>
+                                </md-card-content>
+                                <md-card-content layout="row" ng-repeat="prop in ['position', 'rotation', 'lookAt']">
+                                    <span flex layout="row" layout-align="center center">{{ prop }}</span>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                        <label>x</label>
+                                        <input type="number" ng-model="item[prop].x">
+                                    </md-input-container>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                        <label>y</label>
+                                        <input type="number" ng-model="item[prop].y">
+                                    </md-input-container>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                        <label>z</label>
+                                        <input type="number" ng-model="item[prop].z">
                                     </md-input-container>
                                 </md-card-content>
                                 <md-card-actions layout="row" layout-align="end center">
@@ -108,6 +130,9 @@
                                     <md-button ng-click="removeCamera(camera)">delete</md-button>
                                 </md-card-actions>
                             </md-card>
+                            <md-button class="md-fab md-fab-bottom-right" ng-disabled="false" aria-label="Add camera" ng-click="addCamera()">
+                                <md-icon md-svg-src="ic_add_48px.svg"></md-icon>
+                            </md-button>
                         </md-content>
                     </md-tab>
                     <md-tab label="items">
@@ -139,12 +164,68 @@
                                             </md-option>
                                         </md-select>
                                     </md-input-container>
+                                    <md-input-container flex ng-if="item.type == 'model'">
+                                        <label>Key</label>
+                                        <md-select ng-model="item.key">
+                                            <md-option ng-repeat="asset in json.assets | filter: modelFilter" value="{{ getKeyName(asset) }}">
+                                                {{ getKeyName(asset) }}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                </md-card-content>
+                                <md-card-content layout="row" ng-repeat="prop in ['position', 'rotation', 'scale', 'lookAt']" ng-show="hasCoordinates(item.type)">
+                                    <span flex layout="row" layout-align="center center">{{ prop }}</span>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                        <label>x</label>
+                                        <input type="number" ng-model="item[prop].x">
+                                    </md-input-container>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                        <label>y</label>
+                                        <input type="number" ng-model="item[prop].y">
+                                    </md-input-container>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                        <label>z</label>
+                                        <input type="number" ng-model="item[prop].z">
+                                    </md-input-container>
+                                </md-card-content>
+                                <md-card-content layout="row" ng-show="item.type == 'plane' || hasColor(item)">
+                                    <div md-color-picker ng-model="item.color" ng-show="hasColor(item)"></div>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs ng-show="item.type == 'plane'">
+                                        <label>Width</label>
+                                        <input type="number" ng-model="item.width">
+                                    </md-input-container>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs ng-show="item.type == 'plane'">
+                                        <label>Height</label>
+                                        <input type="number" ng-model="item.height">
+                                    </md-input-container>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs ng-show="item.type == 'plane'">
+                                        <label>Width Segments</label>
+                                        <input type="number" ng-model="item.wSegments">
+                                    </md-input-container>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs ng-show="item.type == 'plane'">
+                                        <label>Height Segments</label>
+                                        <input type="number" ng-model="item.hSegments">
+                                    </md-input-container>
+                                </md-card-content>
+                                <md-card-content layout="row" ng-show="hasRadiusAndSegments(item.type)">
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                        <label>Radius</label>
+                                        <input ng-model="item.radius">
+                                    </md-input-container>
+                                    <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                        <label>Segments</label>
+                                        <input ng-model="item.segments">
+                                    </md-input-container>
                                 </md-card-content>
                                 <md-card-actions layout="row" layout-align="end center">
+                                    <md-button ng-click="defaultItem(item)">default</md-button>
                                     <md-button ng-click="removeItem(item)">delete</md-button>
                                 </md-card-actions>
                             </md-card>
                         </md-content>
+                        <md-button class="md-fab md-fab-bottom-right" ng-disabled="false" aria-label="Add item" ng-click="addItem()">
+                            <md-icon md-svg-src="ic_add_48px.svg"></md-icon>
+                        </md-button>
                     </md-tab>
                     <md-tab label="scripts">
                         <md-content class="md-padding">
@@ -154,11 +235,176 @@
                                 </md-card-content>
                             </md-card>
                             <md-card ng-repeat="script in json.scripts">
-                                <md-card-content>
-                                    <span>{{ script }}</span>
+                                <md-card-content ng-repeat="action in script.actions" layout="column">
+                                    <md-toolbar class="md-theme-light">
+                                        <h2 class="md-toolbar-tools">
+                                            <span>Action</span>
+                                        </h2>
+                                    </md-toolbar>
+                                    <div layout="row">
+                                        <md-input-container class="md-block no-bottom" flex-gt-xs>
+                                            <label>Delay</label>
+                                            <input ng-model="action.delay">
+                                        </md-input-container>
+                                        <md-input-container flex>
+                                            <label>Target</label>
+                                            <md-select ng-model="action.target">
+                                                <md-option ng-repeat="obj in targetableObjects() | filter: itemWithIdFilter" value="{{ obj.id }}">
+                                                    {{ obj.id }}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" ng-show="action.target && hasAnimate(action.target)">
+                                        <md-input-container flex>
+                                            <label>Animate</label>
+                                            <input type="number" ng-model="action.animate.name">
+                                        </md-input-container>
+                                        <md-input-container flex>
+                                            <md-switch flex ng-model="action.animate.loop" aria-label="Loop">
+                                                Loop
+                                            </md-switch>
+                                        </md-input-container>
+                                        <md-input-container flex>
+                                            <md-switch flex ng-model="action.animate.reverse" aria-label="Reverse">
+                                                Reverse
+                                            </md-switch>
+                                        </md-input-container>
+                                        <md-input-container flex>
+                                            <md-switch flex ng-model="action.animate.stopOtherAnimations" aria-label="Stop other animations">
+                                                Stop other animations
+                                            </md-switch>
+                                        </md-input-container>
+                                        <md-input-container flex>
+                                            <label>Time Scale</label>
+                                            <input ng-model="action.animate.timeScale">
+                                        </md-input-container>
+                                        <md-input-container flex>
+                                            <label>Wait Script</label>
+                                            <input type="number" ng-model="action.animate.waitScript">
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" ng-show="action.target">
+                                        <span flex layout="row" layout-align="center center">Tween</span>
+                                        <md-input-container flex>
+                                            <md-switch flex ng-model="action.tween.relative" aria-label="Relative">
+                                                Relative
+                                            </md-switch>
+                                        </md-input-container>
+                                        <md-input-container flex>
+                                            <label>Duration</label>
+                                            <input type="number" ng-model="action.tween.duration">
+                                        </md-input-container>
+                                        <md-input-container flex>
+                                            <label>Kind</label>
+                                            <md-select ng-model="action.tween.kind">
+                                                <md-option ng-repeat="kind in tweenKinds" value="{{ kind }}">
+                                                    {{ kind }}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                        <md-input-container flex>
+                                            <label>Direction</label>
+                                            <md-select ng-model="action.tween.direction">
+                                                <md-option ng-repeat="direction in directionTypes" value="{{ direction }}">
+                                                    {{ direction }}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" ng-show="action.target">
+                                        <span flex layout="row" layout-align="center center">Position</span>
+                                        <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                            <label>x</label>
+                                            <input type="number" ng-model="action.tween.target.x">
+                                        </md-input-container>
+                                        <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                            <label>y</label>
+                                            <input type="number" ng-model="action.tween.target.y">
+                                        </md-input-container>
+                                        <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                            <label>z</label>
+                                            <input type="number" ng-model="action.tween.target.z">
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" ng-show="action.target">
+                                        <span flex layout="row" layout-align="center center">Rotation</span>
+                                        <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                            <label>rX</label>
+                                            <input type="number" ng-model="action.tween.target.rX">
+                                        </md-input-container>
+                                        <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                            <label>rY</label>
+                                            <input type="number" ng-model="action.tween.target.rY">
+                                        </md-input-container>
+                                        <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                            <label>rZ</label>
+                                            <input type="number" ng-model="action.tween.target.rZ">
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row" ng-show="action.target">
+                                        <span flex layout="row" layout-align="center center">Look At</span>
+                                        <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                            <label>x</label>
+                                            <input type="number" ng-model="action.lookAt.x">
+                                        </md-input-container>
+                                        <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                            <label>y</label>
+                                            <input type="number" ng-model="action.lookAt.y">
+                                        </md-input-container>
+                                        <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                                            <label>z</label>
+                                            <input type="number" ng-model="action.lookAt.z">
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row">
+                                        <md-input-container flex>
+                                            <label>Sound</label>
+                                            <md-select ng-model="action.sound.key">
+                                                <md-option ng-repeat="asset in json.assets | filter: soundsFilter" value="{{ getKeyName(asset) }}">
+                                                    {{ getKeyName(asset) }}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                        <md-input-container flex>
+                                            <label>Type</label>
+                                            <md-select ng-model="action.sound.type">
+                                                <md-option ng-repeat="type in soundTypes" value="{{ type }}">
+                                                    {{ type }}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                        <md-input-container flex ng-show="['fadeIn', 'fadeOut'].includes(action.sound.type)">
+                                            <label>To</label>
+                                            <input type="number" ng-model="action.sound.to">
+                                        </md-input-container>
+                                        <md-input-container flex ng-show="['fadeIn', 'fadeOut'].includes(action.sound.type)">
+                                            <label>Duration</label>
+                                            <input type="number" ng-model="action.sound.duration">
+                                        </md-input-container>
+                                        <md-input-container flex ng-show="['loop'].includes(action.sound.type)">
+                                            <md-switch flex ng-model="action.sound.loop" aria-label="Loop">
+                                                Loop
+                                            </md-switch>
+                                        </md-input-container>
+                                        <md-input-container flex ng-show="['volume', 'volumeAll'].includes(action.sound.type)">
+                                            <label>Volume</label>
+                                            <input type="number" ng-model="action.sound.volume">
+                                        </md-input-container>
+                                    </div>
                                 </md-card-content>
+                                <md-card-content ng-show="script.actions.length == 0">
+                                    No actions
+                                </md-card-content>
+                                <md-card-actions layout="row" layout-align="end center">
+                                    <md-button ng-click="addScriptAction(script)">add action</md-button>
+                                    <md-button ng-click="removeScript(script)">delete</md-button>
+                                </md-card-actions>
                             </md-card>
                         </md-content>
+                        <md-button class="md-fab md-fab-bottom-right" ng-disabled="false" aria-label="Add camera" ng-click="addScript()">
+                            <md-icon md-svg-src="ic_add_48px.svg"></md-icon>
+                        </md-button>
                     </md-tab>
                     <md-tab label="engine">
                         <md-content class="md-padding">
@@ -173,10 +419,10 @@
                                         Preset camera
                                     </md-switch>
                                     <md-input-container flex>
-                                        <label>Index</label>
+                                        <label>Camera</label>
                                         <md-select ng-model="json.engine.camera" ng-disabled="!ui.preset_camera">
                                             <md-option ng-repeat="camera in json.cameras" ng-value="{{ $index }}">
-                                                {{ $index }}
+                                                {{ camera.id || $index }}
                                             </md-option>
                                         </md-select>
                                     </md-input-container>
@@ -192,6 +438,9 @@
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="../../bower_components/tinycolor/tinycolor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../bower_components/md-color-picker/dist/mdColorPicker.js" type="text/javascript" charset="utf-8"></script>
 
         <script src="../../build/coffee-engine-3d.js"></script>
         <script src="app.js" type="text/javascript" charset="utf-8"></script>

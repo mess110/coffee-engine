@@ -19,7 +19,8 @@
       "type": "PerspectiveCamera",
       "view_angle": 45,
       "near": 1,
-      "far": 10000
+      "far": 10000,
+      "id": "camera1"
     }
   ],
   "items": [
@@ -33,7 +34,7 @@
       "type": "plane",
       "map": "grass",
       "rotation": {
-        "x": "PI / 2"
+        "x": 1.57
       }
     },
     {
@@ -58,8 +59,10 @@
       "actions": [
         {
           "sound": {
-            "type": "stop",
-            "key": "SuperHero_original"
+            "type": "fadeIn",
+            "key": "SuperHero_original",
+            "to": 0.5,
+            "duration": 5000
           }
         }
       ]
@@ -85,7 +88,8 @@
           },
           "animate": {
             "name": 1,
-            "stopOtherAnimations": true
+            "stopOtherAnimations": true,
+            "waitScript": null
           },
           "lookAt": {
             "offsetY": 0,
@@ -100,7 +104,52 @@
           "target": "bunny",
           "animate": {
             "name": 0,
-            "stopOtherAnimations": true
+            "stopOtherAnimations": true,
+            "waitScript": 2000
+          }
+        }
+      ]
+    },
+    {
+      "actions": [
+        {
+          "target": "bunny",
+          "animate": {
+            "stopOtherAnimations": true,
+            "name": 2
+          },
+          "tween": {
+            "relative": true,
+            "duration": 5000,
+            "kind": "Bounce",
+            "direction": "InOut",
+            "target": {
+              "y": 1,
+              "x": 1,
+              "z": 1
+            }
+          }
+        },
+        {
+          "sound": {
+            "key": "SuperHero_original",
+            "type": "fadeOut",
+            "to": 0,
+            "duration": 2500
+          }
+        },
+        {
+          "target": "camera1",
+          "tween": {
+            "relative": true,
+            "duration": 3000,
+            "kind": "Linear",
+            "direction": "None",
+            "target": {
+              "y": null,
+              "x": null,
+              "z": -5
+            }
           }
         }
       ]
@@ -109,5 +158,9 @@
   "path": "example/3d/cinema/assets/cinematic1.save.json",
   "author": "kiki",
   "title": "test cinematic",
-  "description": "first cinematic"
+  "description": "first cinematic",
+  "sound": {
+    "duration": 5000,
+    "to": 1
+  }
 }

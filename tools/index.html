@@ -1,77 +1,35 @@
-<!DOCTYPE html>
-<html>
+<html ng-app="MyApp">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
-        <title>coffee-engine</title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+        <title>coffee-engine ui</title>
+
+        <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.css" type="application/css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic" />
+        <link rel="stylesheet" href="../bower_components/md-color-picker/dist/mdColorPicker.css" type="text/css" charset="utf-8"></link>
+
+        <link rel="stylesheet" href="style.css" />
     </head>
-    <style type="text/css" media="all">
-        html, body {
-            width: 100%;
-            height: 100%;
-            margin: 0px;
-            padding: 0px;
-        }
-        .tile {
-            float: left;
-            width: 25%;
-            height: 100%;
-        }
-        .tile div {
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        a {
-            text-align: center;
-        }
-    </style>
-    <body>
-        <div class="tile">
-            <div>
-                <a href="model-viewer/index.html">
-                    <!-- <img src="particle-playground" alt="" /> -->
-                    <!-- <br /> -->
-                    model-viewer
-                </a>
-            </div>
+    <body ng-controller="MainController" ng-keypress="shortcut($event)">
+        <div ng-cloak>
+            <md-content layout="row" layout-align="center center">
+                <md-card>
+                    <md-card-content layout="column">
+                        <md-button ng-repeat="menuItem in menu" class="md-raised md-primary" ng-click="goToMenuItem(menuItem)">{{ menuItem.name }}</md-button>
+                    </md-card-content>
+                </md-card>
+            </md-content>
         </div>
-        <div class="tile">
-            <div>
-                <a href="particle-playground/index.html">
-                    <!-- <img src="particle-playground" alt="" /> -->
-                    <!-- <br /> -->
-                    particle-playground
-                </a>
-            </div>
-        </div>
-        <div class="tile">
-            <div>
-                <a href="terrain-generator/index.html">
-                    <!-- <img src="particle-playground" alt="" /> -->
-                    <!-- <br /> -->
-                    terrain-generator
-                </a>
-            </div>
-        </div>
-        <div class="tile">
-            <div>
-                <a href="bezier-helper/index.html">
-                    <!-- <img src="particle-playground" alt="" /> -->
-                    <!-- <br /> -->
-                    bezier-helper
-                </a>
-            </div>
-        </div>
-        <div class="tile">
-            <div>
-                <a href="cinematic-editor/index.html">
-                    <!-- <img src="particle-playground" alt="" /> -->
-                    <!-- <br /> -->
-                    cinematic-editor
-                </a>
-            </div>
-        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="../bower_components/tinycolor/tinycolor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../bower_components/md-color-picker/dist/mdColorPicker.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="../build/coffee-engine-3d.js"></script>
+        <script src="app.js" type="text/javascript" charset="utf-8"></script>
     </body>
 </html>

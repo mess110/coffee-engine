@@ -68,10 +68,10 @@ class Helper
   # Create lights
   @light: (options = {}) ->
     options.position ?= {}
-    options.position.x ?= 0
-    options.position.y ?= 100
-    options.position.z ?= 60
-    options.color ?= 0xffffff
+    options.position.x ?= Utils.LIGHT_DEFAULT_POSITION_X
+    options.position.y ?= Utils.LIGHT_DEFAULT_POSITION_Y
+    options.position.z ?= Utils.LIGHT_DEFAULT_POSITION_Z
+    options.color ?= Utils.LIGHT_DEFAULT_COLOR
 
     light = new (THREE.DirectionalLight)(options.color)
     light.position.set options.position.x, options.position.y, options.position.z
@@ -91,7 +91,7 @@ class Helper
   #
   # @param [Color] color
   @ambientLight: (options = {}) ->
-    options.color ?= 0x404040
+    options.color ?= Utils.AMBIENT_LIGHT_DEFAULT_COLOR
 
     new (THREE.AmbientLight)(options.color)
 
@@ -119,11 +119,11 @@ class Helper
       options.width = options.size
       options.height = options.size
     else
-      options.width ?= 5
-      options.height ?= 5
-    options.wSegments ?= 1
-    options.hSegments ?= 1
-    options.color ?= 0xff0000
+      options.width ?= Utils.PLANE_DEFAULT_WIDTH
+      options.height ?= Utils.PLANE_DEFAULT_HEIGHT
+    options.wSegments ?= Utils.PLANE_DEFAULT_W_SEGMENTS
+    options.hSegments ?= Utils.PLANE_DEFAULT_H_SEGMENTS
+    options.color ?= Utils.PLANE_DEFAULT_COLOR
     options.class ?= 'PlaneBufferGeometry'
 
     if options.map?
@@ -158,8 +158,8 @@ class Helper
   #   Utils.skySphere(map: 'texture_manager_key')
   @skySphere: (options = {}) ->
     throw 'options.textureUrl or options.map not defined' if !options.textureUrl? && !options.map?
-    options.radius ?= 450000
-    options.segments ?= 64
+    options.radius ?= Utils.SKY_SPHERE_DEFAULT_RADIUS
+    options.segments ?= Utils.SKY_SPHERE_DEFAULT_SEGMENTS
 
     geom = new (THREE.SphereGeometry)(options.radius, options.segments, options.segments)
     if options.map?

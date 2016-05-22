@@ -79,12 +79,15 @@ class Cinematic
 
     return unless action.target?
     target = @items.where(ceId: action.target).first()
-    throw new Error("action.target #{action.target} not found") unless target?
+    unless target?
+      target = { mesh: @cameras.where(ceId: action.target).first() }
+      isCamera = true
+      throw new Error("action.target #{action.target} not found") unless target.mesh?
     setTimeout =>
       if action.lookAt?
         vector = @getLookAtVector(action.lookAt)
         target.mesh.lookAt(vector)
-      if action.animate?
+      if action.animate? and isCamera != true
         if action.animate.stopOtherAnimations?
           target.stopAnimations()
         target.animate(null, action.animate)
@@ -96,6 +99,7 @@ class Cinematic
   # @nodoc
   setNotProcessing: (script) ->
     duration = @getScriptDuration(script)
+    console.log duration
     setTimeout =>
       script.processing = false
     , duration
@@ -105,7 +109,8 @@ class Cinematic
     longestDuration = 0
     for action in script.actions
       if action.animate?
-        if action.animate.loop == false
+        if action.animate.loop != true
+          # HACK: should not convert to number
           animateDuration = action.animate.waitScript || 0
           animateDuration += action.delay || 0
           if animateDuration > longestDuration

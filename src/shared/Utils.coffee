@@ -10,6 +10,22 @@ class Utils
   @CAMERA_DEFAULT_FAR = 10000
   @CAMERA_DEFAULT_TYPE = 'PerspectiveCamera'
 
+  @SKY_SPHERE_DEFAULT_RADIUS = 450000
+  @SKY_SPHERE_DEFAULT_SEGMENTS = 64
+
+  @PLANE_DEFAULT_COLOR = '#ff0000'
+  @PLANE_DEFAULT_WIDTH = 5
+  @PLANE_DEFAULT_HEIGHT = 5
+  @PLANE_DEFAULT_W_SEGMENTS = 1
+  @PLANE_DEFAULT_H_SEGMENTS = 1
+
+  @AMBIENT_LIGHT_DEFAULT_COLOR = '#404040'
+
+  @LIGHT_DEFAULT_COLOR = '#ffffff'
+  @LIGHT_DEFAULT_POSITION_X = 0
+  @LIGHT_DEFAULT_POSITION_Y = 100
+  @LIGHT_DEFAULT_POSITION_Z = 60
+
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.
   #
