@@ -6,6 +6,8 @@ app = angular.module 'MyApp', [
 
 app.controller 'MainController', ['$scope', '$mdToast', ($scope, $mdToast) ->
 
+  $scope.ui = {}
+
   $scope.itemTypes = [
     'cube'
     'plane'
@@ -34,6 +36,8 @@ app.controller 'MainController', ['$scope', '$mdToast', ($scope, $mdToast) ->
   $scope.loaded = ->
     data = atob($scope.file.data.toString().replace('data:;base64,', ''))
     $scope.json = JSON.parse(data)
+    if $scope.json.engine.camera?
+      $scope.ui.preset_camera = true
     $scope.$digest()
 
   $scope.$watch 'ui.preset_camera', (newValue, oldValue) ->
