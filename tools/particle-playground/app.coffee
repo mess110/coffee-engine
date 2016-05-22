@@ -1,4 +1,7 @@
-app = angular.module('app', [])
+app = angular.module 'MyApp', [
+  'ngMaterial'
+  'mdColorPicker'
+]
 
 app.controller 'MainController', ($scope) ->
   $scope.options =
@@ -65,7 +68,7 @@ class ParticlePlaygroundScene extends BaseScene
 config = Config.get()
 config.fillWindow()
 config.preventDefaultMouseEvents = false
-config.width = config.width * 6 / 10
+# config.width = config.width * 6 / 10
 
 engine = new Engine3D()
 engine.camera.position.set 0, 5, 10

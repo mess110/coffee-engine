@@ -131,6 +131,7 @@ String::endsWith = (suffix) ->
 # @param [Array] suffixes
 String::endsWithAny = (suffixes) ->
   endsWith = false
+  return false unless suffixes?
   for suffix in suffixes
     endsWith = true if @.endsWith(suffix)
   endsWith

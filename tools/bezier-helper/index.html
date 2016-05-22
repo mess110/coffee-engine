@@ -1,23 +1,56 @@
 <!DOCTYPE HTML>
-<html lang="en" ng-app="app">
-  <head>
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>coffee-engine bezier-helper</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body ng-controller="MainController">
-    <div class="ctrl-panel">
-      <input type="text" ng-model="json.curve" class="curve"/>
-      <br />
-      <br />
-      <input type="text" ng-model="json.text"/>
-      <input type="text" ng-model="json.letterPadding"/>
-      <a ng-click="json.drawCurve = !json.drawCurve"/>{{json.drawCurve}}</a>
-      <a ng-click="wireframe = !wireframe"/>{{wireframe}}</a>
-    </div>
+<html lang="en" ng-app="MyApp">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>coffee-engine bezier-helper</title>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
-    <script src="../../build/coffee-engine-3d.js"></script>
-    <script src="app.js"></script>
-  </body>
+        <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.css" type="application/css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic" />
+        <link rel="stylesheet" href="../../bower_components/md-color-picker/dist/mdColorPicker.css" type="text/css" charset="utf-8"></link>
+
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body ng-cloak="" ng-controller="MainController">
+        <md-content>
+            <md-card layout="column">
+                <md-card-content layout="row">
+                    <md-input-container flex>
+                        <label>Curve</label>
+                        <input ng-model="json.curve">
+                    </md-input-container>
+                </md-card-content>
+                <md-card-content layout="row">
+                    <md-input-container flex>
+                        <label>Text</label>
+                        <input ng-model="json.text">
+                    </md-input-container>
+                    <md-input-container flex>
+                        <label>Letter Padding</label>
+                        <input ng-model="json.letterPadding">
+                    </md-input-container>
+                    <md-input-container flex>
+                        <md-switch ng-model="json.drawCurve" aria-label="Draw curve">
+                            Draw curve
+                        </md-switch>
+                    </md-input-container>
+                    <md-input-container flex>
+                        <md-switch ng-model="wireframe" aria-label="wireframe">
+                            Wireframe
+                        </md-switch>
+                    </md-input-container>
+                </md-card-content>
+            </md-card>
+        </md-content>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="../../bower_components/tinycolor/tinycolor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../bower_components/md-color-picker/dist/mdColorPicker.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="../../build/coffee-engine-3d.js"></script>
+        <script src="app.js" type="text/javascript" charset="utf-8"></script>
+    </body>
 </html>

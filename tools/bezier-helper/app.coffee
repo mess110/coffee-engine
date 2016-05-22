@@ -1,4 +1,6 @@
-app = angular.module('app', [])
+app = angular.module 'MyApp', [
+  'ngMaterial'
+]
 
 app.controller 'MainController', ($scope) ->
   $scope.wireframe = false
