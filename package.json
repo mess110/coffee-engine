@@ -2,7 +2,7 @@
   "name": "coffee-engine",
   "version": "0.0.1",
   "description": "thin layer over three.js in coffeescript",
-  "private": true,
+  "private": false,
   "main": "tools/index.html",
   "scripts": {
     "postinstall": "./node_modules/.bin/bower install && grunt doc",
