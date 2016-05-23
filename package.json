@@ -1,7 +1,7 @@
 {
   "name": "coffee-engine",
   "version": "0.0.1",
-  "description": "",
+  "description": "thin layer over three.js in coffeescript",
   "private": true,
   "main": "tools/index.html",
   "scripts": {
