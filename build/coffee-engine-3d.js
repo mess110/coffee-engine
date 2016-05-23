@@ -11954,16 +11954,88 @@ SoundManager = function() {
     var instance;
     return instance = null, Singleton.SoundManager = function() {
         function SoundManager() {}
-        return SoundManager.prototype.sounds = {}, SoundManager.prototype.add = function(key, url) {
-            var audio, source;
-            return audio = document.createElement("audio"), source = document.createElement("source"), 
-            source.src = url, audio.appendChild(source), audio.playbackRate = 1, this.sounds[key] = audio;
+        return SoundManager.prototype.sounds = {}, SoundManager.prototype.loadCount = 0, 
+        SoundManager.prototype.load = function(key, url) {
+            var howl;
+            if (void 0 === this.sounds[key]) return this.sounds[key] = null, howl = new Howl({
+                autoplay: !1,
+                urls: [ url ],
+                onload: function() {
+                    return window.SoundManager.get().sounds[key] = howl, window.SoundManager.get().loadCount += 1;
+                }
+            });
+        }, SoundManager.prototype.cmd = function(options) {
+            if (null == options && (options = {}), null == options.type) throw new Error("options.type missing");
+            if (null == options.key) throw new Error("options.key missing");
+            if (!(options.key in this.sounds)) throw new Error("Sound with key: " + options.key + " not found!");
+            switch (options.type) {
+              case "play":
+              case "pause":
+              case "stop":
+                return this.sounds[options.key][options.type]();
+
+              case "fadeIn":
+              case "fadeOut":
+                return null == options.to && (options.to = 1), null == options.duration && (options.duration = 1e3), 
+                this.sounds[options.key][options.type](options.to, options.duration);
+
+              case "volume":
+              case "volumeAll":
+                return null == options.volume && (options.volume = 1), "volume" === options.type ? this.sounds[options.key][options.type](options.volume) : this.volumeAll(options.key, options.volume);
+
+              case "loop":
+                return null == options.loop && (options.loop = !1), this.sounds[options.key][options.type](options.loop);
+
+              default:
+                throw new Error("unknown options.type " + options.type);
+            }
         }, SoundManager.prototype.play = function(key) {
-            return key in this.sounds ? this.sounds[key].play() : console.log("Sound with key: " + key + " not found!");
-        }, SoundManager.prototype.updateGlobalVolume = function(i) {
+            return this.cmd({
+                type: "play",
+                key: key
+            });
+        }, SoundManager.prototype.pause = function(key) {
+            return this.cmd({
+                type: "pause",
+                key: key
+            });
+        }, SoundManager.prototype.stop = function(key) {
+            return this.cmd({
+                type: "stop",
+                key: key
+            });
+        }, SoundManager.prototype.fadeIn = function(key, to) {
+            return this.cmd({
+                type: "fadeIn",
+                key: key,
+                to: to,
+                duration: duration
+            });
+        }, SoundManager.prototype.fadeOut = function(key, to) {
+            return this.cmd({
+                type: "fadeOut",
+                key: key,
+                to: to,
+                duration: duration
+            });
+        }, SoundManager.prototype.volume = function(key, volume) {
+            return this.cmd({
+                type: "volume",
+                key: key,
+                volume: volume
+            });
+        }, SoundManager.prototype.looping = function(key, looping) {
+            return this.cmd({
+                type: "loop",
+                key: key,
+                loop: looping
+            });
+        }, SoundManager.prototype.hasFinishedLoading = function() {
+            return this.loadCount === Object.keys(this.sounds).size();
+        }, SoundManager.prototype.volumeAll = function(i) {
             var key;
             0 > i && (i = 0), i > 1 && (i = 1);
-            for (key in this.sounds) this.sounds[key].volume = i;
+            for (key in this.sounds) this.volume(key, i);
             return i;
         }, SoundManager;
     }(), SoundManager.get = function() {
@@ -11981,11 +12053,17 @@ SaveObjectManager = function() {
         return SaveObjectManager.prototype.items = {}, SaveObjectManager.prototype.loadCount = 0, 
         SaveObjectManager.prototype.load = function(key, url) {
             var request;
-            return this.items[key] = null, request = new XMLHttpRequest(), request.open("GET", url, !0), 
-            request.onload = function() {
+            if (void 0 === this.items[key]) return this.items[key] = null, request = new XMLHttpRequest(), 
+            request.open("GET", url, !0), request.onload = function() {
                 var data, som;
-                request.status >= 200 && request.status < 400 && (data = JSON.parse(request.responseText), 
-                som = window.SaveObjectManager.get(), som.items[key] = data, som._load());
+                if (request.status >= 200 && request.status < 400) {
+                    try {
+                        data = JSON.parse(request.responseText);
+                    } catch (error) {
+                        return void console.log("invalid json " + url);
+                    }
+                    som = window.SaveObjectManager.get(), som.items[key] = data, som._load();
+                }
             }, request.onerror = function() {
                 console.log("error loading " + url);
             }, request.send(), this;
@@ -12058,7 +12136,14 @@ var Utils;
 Utils = function() {
     function Utils() {}
     return Utils.JSON_URLS = [ ".json" ], Utils.IMG_URLS = [ ".png", ".jpg", ".jpeg" ], 
-    Utils.SAVE_URLS = [ ".save" ], Utils.toggleFullScreen = function() {
+    Utils.SAVE_URLS = [ ".save.json" ], Utils.AUDIO_URLS = [ ".mp3", ".ogg", ".wav" ], 
+    Utils.CAMERA_DEFAULT_VIEW_ANGLE = 45, Utils.CAMERA_DEFAULT_NEAR = 1, Utils.CAMERA_DEFAULT_FAR = 1e4, 
+    Utils.CAMERA_DEFAULT_TYPE = "PerspectiveCamera", Utils.SKY_SPHERE_DEFAULT_RADIUS = 45e4, 
+    Utils.SKY_SPHERE_DEFAULT_SEGMENTS = 64, Utils.PLANE_DEFAULT_COLOR = "#ff0000", Utils.PLANE_DEFAULT_WIDTH = 5, 
+    Utils.PLANE_DEFAULT_HEIGHT = 5, Utils.PLANE_DEFAULT_W_SEGMENTS = 1, Utils.PLANE_DEFAULT_H_SEGMENTS = 1, 
+    Utils.AMBIENT_LIGHT_DEFAULT_COLOR = "#404040", Utils.LIGHT_DEFAULT_COLOR = "#ffffff", 
+    Utils.LIGHT_DEFAULT_POSITION_X = 0, Utils.LIGHT_DEFAULT_POSITION_Y = 100, Utils.LIGHT_DEFAULT_POSITION_Z = 60, 
+    Utils.toggleFullScreen = function() {
         document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }, Utils.guid = function() {
         var s4;
@@ -12127,13 +12212,14 @@ JsonModelManager = function() {
         JsonModelManager.prototype.load = function(key, url, callback) {
             return null == callback && (callback = function() {
                 return {};
-            }), this.loadCount += 1, this.loader.load("" + this.baseUrl + url, function(geometry, materials) {
+            }), void 0 === this.items[key] ? (this.items[key] = null, this.loader.load("" + this.baseUrl + url, function(geometry, materials) {
                 var i, jmm, len, mat, mesh;
                 for (jmm = window.JsonModelManager.get(), mesh = new THREE.SkinnedMesh(geometry, new THREE.MeshFaceMaterial(materials)), 
                 i = 0, len = materials.length; len > i; i++) mat = materials[i], mat.skinning = !0;
                 if (null != mesh.animations) throw "mesh already has animations. not overwriting default behaviour";
-                return mesh = jmm.initAnimations(mesh), jmm.items[key] = mesh, callback(mesh), this;
-            });
+                return mesh = jmm.initAnimations(mesh), jmm.items[key] = mesh, jmm.loadCount += 1, 
+                callback(mesh), this;
+            })) : void 0;
         }, JsonModelManager.prototype.initAnimations = function(mesh) {
             var anim, animation, i, len, ref;
             if (mesh.animations = [], null != mesh.geometry.animations) for (ref = mesh.geometry.animations, 
@@ -12164,12 +12250,13 @@ TextureManager = function() {
         return TextureManager.prototype.items = {}, TextureManager.prototype.loadCount = 0, 
         TextureManager.prototype.load = function(key, url) {
             var texture;
-            return texture = THREE.ImageUtils.loadTexture(url, {}, this._load), this.items[key] = texture, 
-            this;
+            if (void 0 === this.items[key]) return this.items[key] = null, texture = THREE.ImageUtils.loadTexture(url, {}, function(image) {
+                return window.TextureManager.get()._load(image, key);
+            }), this;
         }, TextureManager.prototype.hasFinishedLoading = function() {
             return this.loadCount === Object.keys(this.items).size();
-        }, TextureManager.prototype._load = function(image) {
-            return window.TextureManager.get().loadCount += 1;
+        }, TextureManager.prototype._load = function(image, key) {
+            return window.TextureManager.get().items[key] = image, window.TextureManager.get().loadCount += 1;
         }, TextureManager;
     }(), TextureManager.get = function() {
         return null != instance ? instance : instance = new Singleton.TextureManager();
@@ -12249,12 +12336,17 @@ BaseModel = function() {
         var anim, reverseLoopBug;
         return null == options && (options = {}), null == options.loop && (options.loop = !0), 
         null == options.reverse && (options.reverse = !1), null == options.timeScale && (options.timeScale = 1), 
-        null == options.preStopMs && (options.preStopMs = 50), options.reverse && (options.loop || (reverseLoopBug = !0), 
-        options.timeScale *= -1), anim = this.animation(animationName), anim.isPlaying && anim.stop(), 
-        anim.timeScale = options.timeScale, anim.loop = options.loop, reverseLoopBug && (anim.loop = !0), 
-        anim.play(), reverseLoopBug && setTimeout(function() {
+        null == options.name && (options.name = animationName), null == options.preStopMs && (options.preStopMs = 50), 
+        options.reverse && (options.loop || (reverseLoopBug = !0), options.timeScale *= -1), 
+        anim = this.animation(options.name), anim.isPlaying && anim.stop(), anim.timeScale = options.timeScale, 
+        anim.loop = options.loop, reverseLoopBug && (anim.loop = !0), anim.play(), reverseLoopBug && setTimeout(function() {
             return anim.stop();
         }, 1e3 * anim.data.length - options.preStopMs), anim;
+    }, BaseModel.prototype.stopAnimations = function() {
+        var animation, j, len, ref, results;
+        for (ref = this.mesh.animations, results = [], j = 0, len = ref.length; len > j; j++) animation = ref[j], 
+        results.push(animation.stop());
+        return results;
     }, BaseModel.prototype.isPlaying = function(animationName) {
         return this.animation(animationName).isPlaying;
     }, BaseModel.prototype.animation = function(animationName) {
@@ -12352,7 +12444,7 @@ Helper = function() {
     return Helper.zero = new THREE.Vector3(0, 0, 0), Helper.one = new THREE.Vector3(1, 1, 1), 
     Helper.up = new THREE.Vector3(0, 1, 0), Helper.down = new THREE.Vector3(0, -1, 0), 
     Helper.toggleFullScreen = Utils.toggleFullScreen, Helper.guid = Utils.guid, Helper.setCursor = Utils.setCursor, 
-    Helper.rgbToHex = Utils.rgbToHex, Helper.shallowClone = function(json) {
+    Helper.rgbToHex = Utils.rgbToHex, Helper.defaultTweenDuration = 1e3, Helper.shallowClone = function(json) {
         return JSON.parse(JSON.stringify(json));
     }, Helper.random = function(n) {
         return Math.floor(Math.random() * n);
@@ -12361,21 +12453,25 @@ Helper = function() {
         return dx = v1.x - v2.x, dy = v1.y - v2.y, dz = v1.z - v2.z, Math.sqrt(dx * dx + dy * dy + dz * dz);
     }, Helper.camera = function(options) {
         var config;
-        return null == options && (options = {}), config = Config.get(), null == options.view_angle && (options.view_angle = 45), 
-        null == options.aspect && (options.aspect = config.width / config.height), null == options.near && (options.near = 1), 
-        null == options.far && (options.far = 1e4), options.type || (options.type = "PerspectiveCamera"), 
+        return null == options && (options = {}), config = Config.get(), null == options.view_angle && (options.view_angle = Utils.CAMERA_DEFAULT_VIEW_ANGLE), 
+        null == options.aspect && (options.aspect = config.width / config.height), null == options.near && (options.near = Utils.CAMERA_DEFAULT_NEAR), 
+        null == options.far && (options.far = Utils.CAMERA_DEFAULT_FAR), options.type || (options.type = Utils.CAMERA_DEFAULT_TYPE), 
         new THREE[options.type](options.view_angle, options.aspect, options.near, options.far);
     }, Helper.light = function(options) {
-        var light;
-        return null == options && (options = {}), null == options.x && (options.x = 0), 
-        null == options.y && (options.y = 100), null == options.z && (options.z = 60), light = new THREE.DirectionalLight(16777215), 
-        light.position.set(options.x, options.y, options.z), light.castShadow = !0, light.shadowCameraLeft = -60, 
-        light.shadowCameraTop = -60, light.shadowCameraRight = 60, light.shadowCameraBottom = 60, 
-        light.shadowCameraNear = 1, light.shadowCameraFar = 1e3, light.shadowBias = -1e-4, 
-        light.shadowMapWidth = light.shadowMapHeight = 1024, light.shadowDarkness = .7, 
-        light;
-    }, Helper.ambientLight = function(color) {
-        return null == color && (color = 4210752), new THREE.AmbientLight(color);
+        var base, base1, base2, light;
+        return null == options && (options = {}), null == options.position && (options.position = {}), 
+        null == (base = options.position).x && (base.x = Utils.LIGHT_DEFAULT_POSITION_X), 
+        null == (base1 = options.position).y && (base1.y = Utils.LIGHT_DEFAULT_POSITION_Y), 
+        null == (base2 = options.position).z && (base2.z = Utils.LIGHT_DEFAULT_POSITION_Z), 
+        null == options.color && (options.color = Utils.LIGHT_DEFAULT_COLOR), light = new THREE.DirectionalLight(options.color), 
+        light.position.set(options.position.x, options.position.y, options.position.z), 
+        light.castShadow = !0, light.shadowCameraLeft = -60, light.shadowCameraTop = -60, 
+        light.shadowCameraRight = 60, light.shadowCameraBottom = 60, light.shadowCameraNear = 1, 
+        light.shadowCameraFar = 1e3, light.shadowBias = -1e-4, light.shadowMapWidth = light.shadowMapHeight = 1024, 
+        light.shadowDarkness = .7, light;
+    }, Helper.ambientLight = function(options) {
+        return null == options && (options = {}), null == options.color && (options.color = Utils.AMBIENT_LIGHT_DEFAULT_COLOR), 
+        new THREE.AmbientLight(options.color);
     }, Helper.cube = function(options) {
         var box, mat;
         return null == options && (options = {}), null == options.size && (options.size = 1), 
@@ -12383,12 +12479,20 @@ Helper = function() {
         box = new THREE.BoxGeometry(options.size, options.size, options.size), mat = new THREE[options.material]({
             color: options.color
         }), new THREE.Mesh(box, mat);
+    }, Helper.model = function(options) {
+        if (null == options && (options = {}), null == options.key) throw new Error("key missing for: " + JSON.stringify(options));
+        return JsonModelManager.get().clone(options.key);
     }, Helper.plane = function(options) {
         var geometry;
-        return null == options && (options = {}), null == options.width && (options.width = 5), 
-        null == options.height && (options.height = 5), null == options.wSegments && (options.wSegments = 1), 
-        null == options.hSegments && (options.hSegments = 1), null == options.color && (options.color = 16711680), 
-        null == options["class"] && (options["class"] = "PlaneBufferGeometry"), null == options.material && (options.material = new THREE.MeshBasicMaterial({
+        return null == options && (options = {}), null != options.size ? (options.width = options.size, 
+        options.height = options.size) : (null == options.width && (options.width = Utils.PLANE_DEFAULT_WIDTH), 
+        null == options.height && (options.height = Utils.PLANE_DEFAULT_HEIGHT)), null == options.wSegments && (options.wSegments = Utils.PLANE_DEFAULT_W_SEGMENTS), 
+        null == options.hSegments && (options.hSegments = Utils.PLANE_DEFAULT_H_SEGMENTS), 
+        null == options.color && (options.color = Utils.PLANE_DEFAULT_COLOR), null == options["class"] && (options["class"] = "PlaneBufferGeometry"), 
+        null != options.map ? options.material = new THREE.MeshBasicMaterial({
+            map: TextureManager.get().items[options.map],
+            side: THREE.DoubleSide
+        }) : null == options.material && (options.material = new THREE.MeshBasicMaterial({
             color: options.color,
             side: THREE.DoubleSide
         })), geometry = new THREE[options["class"]](options.width, options.height, options.wSegments, options.hSegments), 
@@ -12398,10 +12502,12 @@ Helper = function() {
         renderer.shadowMapAutoUpdate = !0;
     }, Helper.skySphere = function(options) {
         var geom, mat, name;
-        if (null == options.textureUrl) throw "options.textureUrl not defined";
-        return null == options.radius && (options.radius = 45e4), null == options.segments && (options.segments = 64), 
+        if (null == options && (options = {}), null == options.textureUrl && null == options.map) throw "options.textureUrl or options.map not defined";
+        return null == options.radius && (options.radius = Utils.SKY_SPHERE_DEFAULT_RADIUS), 
+        null == options.segments && (options.segments = Utils.SKY_SPHERE_DEFAULT_SEGMENTS), 
         geom = new THREE.SphereGeometry(options.radius, options.segments, options.segments), 
-        name = Utils.getKeyName(options.textureUrl, Utils.IMG_URLS), mat = new THREE.MeshBasicMaterial({
+        name = null != options.map ? options.map : Utils.getKeyName(options.textureUrl, Utils.IMG_URLS), 
+        mat = new THREE.MeshBasicMaterial({
             map: TextureManager.get().items[name],
             side: THREE.BackSide
         }), new THREE.Mesh(geom, mat);
@@ -12440,7 +12546,7 @@ Helper = function() {
         var base, base1, base2, base3, base4, base5, e, i, j, len, len1, ref, ref1, tween;
         if (null == options && (options = {}), null == options.target) throw new Error("options.target missing");
         if (null == options.mesh) throw new Error("options.mesh missing");
-        if (null == options.relative && (options.relative = !1), null == options.duration && (options.duration = 1e3), 
+        if (null == options.relative && (options.relative = !1), null == options.duration && (options.duration = Helper.defaultTweenDuration), 
         null == options.kind && (options.kind = "Linear"), null == options.direction && (options.direction = "None"), 
         null == options.position && (options.position = options.mesh.position.clone()), 
         options.position.rX = options.mesh.rotation.x, options.position.rY = options.mesh.rotation.y, 
@@ -12622,24 +12728,25 @@ var LoadingScene, extend = function(child, parent) {
 
 LoadingScene = function(superClass) {
     function LoadingScene(urls, hasFinishedLoading) {
-        var i, interval, len, url;
         if (null == hasFinishedLoading && (hasFinishedLoading = void 0), LoadingScene.__super__.constructor.call(this), 
         !(urls instanceof Array)) throw "urls needs to be an array";
-        for (this.hasFinishedLoading = hasFinishedLoading, this.preStart(), i = 0, len = urls.length; len > i; i++) url = urls[i], 
-        url.endsWithAny(Utils.JSON_URLS) && this._loadJsonModel(url), url.endsWithAny(Utils.IMG_URLS) && this._loadTexture(url), 
-        url.endsWithAny(Utils.SAVE_URLS) && this._loadSaveObject(url);
-        interval = setInterval(function(_this) {
+        this.hasFinishedLoading = hasFinishedLoading, this.preStart(), this.loadAssets(urls);
+    }
+    return extend(LoadingScene, superClass), LoadingScene.prototype.jmm = JsonModelManager.get(), 
+    LoadingScene.prototype.tm = TextureManager.get(), LoadingScene.prototype.som = SaveObjectManager.get(), 
+    LoadingScene.prototype.config = Config.get(), LoadingScene.prototype.sm = SoundManager.get(), 
+    LoadingScene.prototype.loadAssets = function(assets) {
+        var asset, i, interval, len, url;
+        for (i = 0, len = assets.length; len > i; i++) asset = assets[i], url = "string" == typeof asset ? asset : asset.destPath, 
+        url.endsWithAny(Utils.SAVE_URLS) ? this._loadSaveObject(url) : url.endsWithAny(Utils.JSON_URLS) ? this._loadJsonModel(url) : url.endsWithAny(Utils.IMG_URLS) ? this._loadTexture(url) : url.endsWithAny(Utils.AUDIO_URLS) ? this._loadAudio(url) : console.log("WARNING: " + url + " is not a valid format");
+        return interval = setInterval(function(_this) {
             return function() {
                 return _this.isLoadingDone() ? (clearInterval(interval), _this.config.debug && console.log("Finished loading"), 
                 _this.hasFinishedLoading()) : void 0;
             };
         }(this), 100);
-    }
-    return extend(LoadingScene, superClass), LoadingScene.prototype.jmm = JsonModelManager.get(), 
-    LoadingScene.prototype.tm = TextureManager.get(), LoadingScene.prototype.som = SaveObjectManager.get(), 
-    LoadingScene.prototype.config = Config.get(), LoadingScene.prototype.preStart = function() {}, 
-    LoadingScene.prototype.isLoadingDone = function() {
-        return this.jmm.hasFinishedLoading() && this.tm.hasFinishedLoading() && this.som.hasFinishedLoading();
+    }, LoadingScene.prototype.preStart = function() {}, LoadingScene.prototype.isLoadingDone = function() {
+        return this.jmm.hasFinishedLoading() && this.tm.hasFinishedLoading() && this.som.hasFinishedLoading() && this.sm.hasFinishedLoading();
     }, LoadingScene.prototype._loadJsonModel = function(url) {
         var name;
         return name = Utils.getKeyName(url, Utils.JSON_URLS), this.config.debug && console.log("Loading model '" + name + "' from '" + url + "'"), 
@@ -12652,12 +12759,144 @@ LoadingScene = function(superClass) {
         var name;
         return name = Utils.getKeyName(url, Utils.SAVE_URLS), this.config.debug && console.log("Loading save object '" + name + "' from '" + url + "'"), 
         this.som.load(name, url);
+    }, LoadingScene.prototype._loadAudio = function(url) {
+        var name;
+        return name = Utils.getKeyName(url, Utils.AUDIO_URLS), this.config.debug && console.log("Loading audio '" + name + "' from '" + url + "'"), 
+        this.sm.load(name, url);
     }, LoadingScene.prototype.init = function() {}, LoadingScene.prototype.tick = function(tpf) {}, 
     LoadingScene.prototype.doMouseEvent = function(event, raycaster) {}, LoadingScene.prototype.doKeyboardEvent = function(event) {}, 
     LoadingScene.prototype.hasFinishedLoading = function() {
         if (null != this.hasFinishedLoading) return this.hasFinishedLoading();
         throw "not implemented";
     }, LoadingScene;
+}(BaseScene);
+
+var Cinematic;
+
+Cinematic = function() {
+    function Cinematic(json, scene) {
+        var baseModel, camera, i, item, j, len, len1, obj, ref, ref1, vector;
+        for (this.loaded = !1, null != scene && (this.scene = scene), this.cameras = [], 
+        this.items = [], this.json = json, ref = this.json.cameras, i = 0, len = ref.length; len > i; i++) item = ref[i], 
+        camera = Helper.camera(item), this.setId(camera, item), this.setXYZProp("position", camera, item), 
+        this.setXYZProp("rotation", camera, item), null != item.lookAt && (vector = this.getLookAtVector(item.lookAt), 
+        camera.lookAt(vector)), this.cameras.push(camera);
+        for (ref1 = this.json.items, j = 0, len1 = ref1.length; len1 > j; j++) switch (item = ref1[j], 
+        item.type) {
+          case "cube":
+          case "plane":
+          case "model":
+          case "ambientLight":
+          case "light":
+          case "skySphere":
+            obj = Helper[item.type](item), baseModel = new BaseModel(), baseModel.mesh = obj, 
+            this.setId(baseModel, item), this.setId(obj, item), this.setXYZProp("position", obj, item), 
+            this.setXYZProp("rotation", obj, item), this.setXYZProp("scale", obj, item, 1), 
+            null != item.lookAt && camera.lookAt(this.toVector3(item.lookAt)), this.items.push(baseModel), 
+            this.scene && this.scene.add(baseModel.mesh);
+            break;
+
+          default:
+            console.log("unknown item type " + item.type);
+        }
+        null != this.json.engine.camera && engine.setCamera(this.cameras[this.json.engine.camera]), 
+        this.loaded = !0;
+    }
+    return Cinematic.prototype.addAll = function(scene) {
+        var i, item, len, ref, results;
+        for (ref = this.items, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
+        results.push(scene.add(item.mesh));
+        return results;
+    }, Cinematic.prototype.tick = function(tpf) {
+        var action, i, len, ref, script;
+        if (this.loaded === !0 && !this.json.scripts.where({
+            processing: !0
+        }).any() && (script = this.json.scripts.where({
+            processed: void 0
+        }).first(), null != script)) {
+            for (script.processed = !0, script.processing = !0, ref = script.actions, i = 0, 
+            len = ref.length; len > i; i++) action = ref[i], this.processAction(action);
+            return this.setNotProcessing(script);
+        }
+    }, Cinematic.prototype.processAction = function(action) {
+        var isCamera, target;
+        if (null == action.delay && (action.delay = 0), null != action.sound && SoundManager.get().cmd(action.sound), 
+        null != action.target) {
+            if (target = this.items.where({
+                ceId: action.target
+            }).first(), null == target && (target = {
+                mesh: this.cameras.where({
+                    ceId: action.target
+                }).first()
+            }, isCamera = !0, null == target.mesh)) throw new Error("action.target " + action.target + " not found");
+            return setTimeout(function(_this) {
+                return function() {
+                    var vector;
+                    return null != action.lookAt && (vector = _this.getLookAtVector(action.lookAt), 
+                    target.mesh.lookAt(vector)), null != action.animate && isCamera !== !0 && (null != action.animate.stopOtherAnimations && target.stopAnimations(), 
+                    target.animate(null, action.animate)), null != action.tween ? (action.tween.mesh = target.mesh, 
+                    Helper.tween(action.tween).start()) : void 0;
+                };
+            }(this), action.delay);
+        }
+    }, Cinematic.prototype.setNotProcessing = function(script) {
+        var duration;
+        return duration = this.getScriptDuration(script), console.log(duration), setTimeout(function(_this) {
+            return function() {
+                return script.processing = !1;
+            };
+        }(this), duration);
+    }, Cinematic.prototype.getScriptDuration = function(script) {
+        var action, actionDuration, animateDuration, i, len, longestDuration, ref;
+        for (longestDuration = 0, ref = script.actions, i = 0, len = ref.length; len > i; i++) action = ref[i], 
+        null != action.animate && action.animate.loop !== !0 && (animateDuration = action.animate.waitScript || 0, 
+        animateDuration += action.delay || 0, animateDuration > longestDuration && (longestDuration = animateDuration)), 
+        null != action.tween && (actionDuration = action.tween.duration || Helper.defaultTweenDuration, 
+        actionDuration += action.delay || 0, actionDuration > longestDuration && (longestDuration = actionDuration));
+        return longestDuration;
+    }, Cinematic.prototype.getLookAtVector = function(json) {
+        var coord, i, len, ref, vector;
+        for (vector = this.toVector3(json), ref = [ "x", "y", "z" ], i = 0, len = ref.length; len > i; i++) coord = ref[i], 
+        vector[coord] += json["offset" + coord.toUpperCase()] || 0;
+        return vector;
+    }, Cinematic.prototype.toVector3 = function(hash) {
+        return null == hash.x && (hash.x = 0), null == hash.y && (hash.y = 0), null == hash.z && (hash.z = 0), 
+        new THREE.Vector3(hash.x, hash.y, hash.z);
+    }, Cinematic.prototype.setId = function(object, json) {
+        return object.ceId = json.id;
+    }, Cinematic.prototype.setXYZProp = function(prop, object, json, def) {
+        var base, coordinate, i, len, newJs, ref;
+        for (null == def && (def = 0), null == json[prop] && (json[prop] = {}), ref = [ "x", "y", "z" ], 
+        i = 0, len = ref.length; len > i; i++) coordinate = ref[i], null == (base = json[prop])[coordinate] && (base[coordinate] = def), 
+        "string" == typeof json[prop][coordinate] && json[prop][coordinate].contains("PI") && (newJs = json[prop][coordinate].replace("PI", "Math.PI"), 
+        json[prop][coordinate] = eval(newJs));
+        return object[prop].set(json[prop].x, json[prop].y, json[prop].z);
+    }, Cinematic;
+}();
+
+var CinematicScene, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+CinematicScene = function(superClass) {
+    function CinematicScene(json) {
+        CinematicScene.__super__.constructor.call(this), this.cinematic = new Cinematic(json, this.scene);
+    }
+    return extend(CinematicScene, superClass), CinematicScene.fromJson = function(json) {
+        return new CinematicScene(json);
+    }, CinematicScene.fromSaveObjectKey = function(key) {
+        var json;
+        return json = SaveObjectManager.get().items[key], this.fromJson(json);
+    }, CinematicScene.prototype.tick = function(tpf) {
+        return this.cinematic.tick(tpf);
+    }, CinematicScene.prototype.doMouseEvent = function(event, ray) {}, CinematicScene.getAssets = function(key) {
+        return SaveObjectManager.get().items[key].assets;
+    }, CinematicScene;
 }(BaseScene);
 
 var ArtGenerator;
@@ -12779,11 +13018,12 @@ Engine3D = function() {
             far: 1e6
         }), this.setCamera(camera), this.camera.position.z = 10, this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), 
         this.anaglyphEffect.setSize(this.width, this.height), this.sceneManager = SceneManager.get(), 
-        document.addEventListener("mouseup", this.mouseHandler, !1), document.addEventListener("mousedown", this.mouseHandler, !1), 
-        document.addEventListener("mousemove", this.mouseHandler, !1), document.addEventListener("keydown", this.keyboardHandler, !1), 
-        document.addEventListener("keyup", this.keyboardHandler, !1), document.addEventListener("touchstart", this.touchHandler, !0), 
-        document.addEventListener("touchmove", this.touchHandler, !0), document.addEventListener("touchend", this.touchHandler, !0), 
-        document.addEventListener("touchcancel", this.touchHandler, !0), this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
+        this.renderer.domElement.addEventListener("mouseup", this.mouseHandler, !1), this.renderer.domElement.addEventListener("mousedown", this.mouseHandler, !1), 
+        this.renderer.domElement.addEventListener("mousemove", this.mouseHandler, !1), this.renderer.domElement.addEventListener("keydown", this.keyboardHandler, !1), 
+        this.renderer.domElement.addEventListener("keyup", this.keyboardHandler, !1), this.renderer.domElement.addEventListener("touchstart", this.touchHandler, !1), 
+        this.renderer.domElement.addEventListener("touchmove", this.touchHandler, !1), this.renderer.domElement.addEventListener("touchend", this.touchHandler, !1), 
+        this.renderer.domElement.addEventListener("touchcancel", this.touchHandler, !1), 
+        this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
             return e.preventDefault();
         }, !1), this.statsManager = StatsManager.get(), this.config.showStatsOnLoad && this.statsManager.toggle();
     }
@@ -12918,8 +13158,8 @@ Array.prototype.isEmpty = function() {
     return -1 !== this.indexOf(suffix, this.length - suffix.length);
 }, String.prototype.endsWithAny = function(suffixes) {
     var endsWith, j, len, suffix;
-    for (endsWith = !1, j = 0, len = suffixes.length; len > j; j++) suffix = suffixes[j], 
-    this.endsWith(suffix) && (endsWith = !0);
+    if (endsWith = !1, null == suffixes) return !1;
+    for (j = 0, len = suffixes.length; len > j; j++) suffix = suffixes[j], this.endsWith(suffix) && (endsWith = !0);
     return endsWith;
 }, String.prototype.replaceAny = function(sources, dest) {
     var j, len, source, tmp;
@@ -12936,7 +13176,403 @@ Array.prototype.isEmpty = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }, isNumeric = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
-};
+}, function() {
+    var cache = {}, ctx = null, usingWebAudio = !0, noAudio = !1;
+    try {
+        "undefined" != typeof AudioContext ? ctx = new AudioContext() : "undefined" != typeof webkitAudioContext ? ctx = new webkitAudioContext() : usingWebAudio = !1;
+    } catch (e) {
+        usingWebAudio = !1;
+    }
+    if (!usingWebAudio) if ("undefined" != typeof Audio) try {
+        new Audio();
+    } catch (e) {
+        noAudio = !0;
+    } else noAudio = !0;
+    if (usingWebAudio) {
+        var masterGain = "undefined" == typeof ctx.createGain ? ctx.createGainNode() : ctx.createGain();
+        masterGain.gain.value = 1, masterGain.connect(ctx.destination);
+    }
+    var HowlerGlobal = function(codecs) {
+        this._volume = 1, this._muted = !1, this.usingWebAudio = usingWebAudio, this.ctx = ctx, 
+        this.noAudio = noAudio, this._howls = [], this._codecs = codecs, this.iOSAutoEnable = !0;
+    };
+    HowlerGlobal.prototype = {
+        volume: function(vol) {
+            var self = this;
+            if (vol = parseFloat(vol), vol >= 0 && 1 >= vol) {
+                self._volume = vol, usingWebAudio && (masterGain.gain.value = vol);
+                for (var key in self._howls) if (self._howls.hasOwnProperty(key) && self._howls[key]._webAudio === !1) for (var i = 0; i < self._howls[key]._audioNode.length; i++) self._howls[key]._audioNode[i].volume = self._howls[key]._volume * self._volume;
+                return self;
+            }
+            return usingWebAudio ? masterGain.gain.value : self._volume;
+        },
+        mute: function() {
+            return this._setMuted(!0), this;
+        },
+        unmute: function() {
+            return this._setMuted(!1), this;
+        },
+        _setMuted: function(muted) {
+            var self = this;
+            self._muted = muted, usingWebAudio && (masterGain.gain.value = muted ? 0 : self._volume);
+            for (var key in self._howls) if (self._howls.hasOwnProperty(key) && self._howls[key]._webAudio === !1) for (var i = 0; i < self._howls[key]._audioNode.length; i++) self._howls[key]._audioNode[i].muted = muted;
+        },
+        codecs: function(ext) {
+            return this._codecs[ext];
+        },
+        _enableiOSAudio: function() {
+            var self = this;
+            if (!ctx || !self._iOSEnabled && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                self._iOSEnabled = !1;
+                var unlock = function() {
+                    var buffer = ctx.createBuffer(1, 1, 22050), source = ctx.createBufferSource();
+                    source.buffer = buffer, source.connect(ctx.destination), "undefined" == typeof source.start ? source.noteOn(0) : source.start(0), 
+                    setTimeout(function() {
+                        source.playbackState !== source.PLAYING_STATE && source.playbackState !== source.FINISHED_STATE || (self._iOSEnabled = !0, 
+                        self.iOSAutoEnable = !1, window.removeEventListener("touchend", unlock, !1));
+                    }, 0);
+                };
+                return window.addEventListener("touchend", unlock, !1), self;
+            }
+        }
+    };
+    var audioTest = null, codecs = {};
+    noAudio || (audioTest = new Audio(), codecs = {
+        mp3: !!audioTest.canPlayType("audio/mpeg;").replace(/^no$/, ""),
+        opus: !!audioTest.canPlayType('audio/ogg; codecs="opus"').replace(/^no$/, ""),
+        ogg: !!audioTest.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/, ""),
+        wav: !!audioTest.canPlayType('audio/wav; codecs="1"').replace(/^no$/, ""),
+        aac: !!audioTest.canPlayType("audio/aac;").replace(/^no$/, ""),
+        m4a: !!(audioTest.canPlayType("audio/x-m4a;") || audioTest.canPlayType("audio/m4a;") || audioTest.canPlayType("audio/aac;")).replace(/^no$/, ""),
+        mp4: !!(audioTest.canPlayType("audio/x-mp4;") || audioTest.canPlayType("audio/mp4;") || audioTest.canPlayType("audio/aac;")).replace(/^no$/, ""),
+        weba: !!audioTest.canPlayType('audio/webm; codecs="vorbis"').replace(/^no$/, "")
+    });
+    var Howler = new HowlerGlobal(codecs), Howl = function(o) {
+        var self = this;
+        self._autoplay = o.autoplay || !1, self._buffer = o.buffer || !1, self._duration = o.duration || 0, 
+        self._format = o.format || null, self._loop = o.loop || !1, self._loaded = !1, self._sprite = o.sprite || {}, 
+        self._src = o.src || "", self._pos3d = o.pos3d || [ 0, 0, -.5 ], self._volume = void 0 !== o.volume ? o.volume : 1, 
+        self._urls = o.urls || [], self._rate = o.rate || 1, self._model = o.model || null, 
+        self._onload = [ o.onload || function() {} ], self._onloaderror = [ o.onloaderror || function() {} ], 
+        self._onend = [ o.onend || function() {} ], self._onpause = [ o.onpause || function() {} ], 
+        self._onplay = [ o.onplay || function() {} ], self._onendTimer = [], self._webAudio = usingWebAudio && !self._buffer, 
+        self._audioNode = [], self._webAudio && self._setupAudioNode(), "undefined" != typeof ctx && ctx && Howler.iOSAutoEnable && Howler._enableiOSAudio(), 
+        Howler._howls.push(self), self.load();
+    };
+    if (Howl.prototype = {
+        load: function() {
+            var self = this, url = null;
+            if (noAudio) return void self.on("loaderror", new Error("No audio support."));
+            for (var i = 0; i < self._urls.length; i++) {
+                var ext, urlItem;
+                if (self._format) ext = self._format; else {
+                    if (urlItem = self._urls[i], ext = /^data:audio\/([^;,]+);/i.exec(urlItem), ext || (ext = /\.([^.]+)$/.exec(urlItem.split("?", 1)[0])), 
+                    !ext) return void self.on("loaderror", new Error("Could not extract format from passed URLs, please add format parameter."));
+                    ext = ext[1].toLowerCase();
+                }
+                if (codecs[ext]) {
+                    url = self._urls[i];
+                    break;
+                }
+            }
+            if (!url) return void self.on("loaderror", new Error("No codec support for selected audio sources."));
+            if (self._src = url, self._webAudio) loadBuffer(self, url); else {
+                var newNode = new Audio();
+                newNode.addEventListener("error", function() {
+                    newNode.error && 4 === newNode.error.code && (HowlerGlobal.noAudio = !0), self.on("loaderror", {
+                        type: newNode.error ? newNode.error.code : 0
+                    });
+                }, !1), self._audioNode.push(newNode), newNode.src = url, newNode._pos = 0, newNode.preload = "auto", 
+                newNode.volume = Howler._muted ? 0 : self._volume * Howler.volume();
+                var listener = function() {
+                    self._duration = Math.ceil(10 * newNode.duration) / 10, 0 === Object.getOwnPropertyNames(self._sprite).length && (self._sprite = {
+                        _default: [ 0, 1e3 * self._duration ]
+                    }), self._loaded || (self._loaded = !0, self.on("load")), self._autoplay && self.play(), 
+                    newNode.removeEventListener("canplaythrough", listener, !1);
+                };
+                newNode.addEventListener("canplaythrough", listener, !1), newNode.load();
+            }
+            return self;
+        },
+        urls: function(urls) {
+            var self = this;
+            return urls ? (self.stop(), self._urls = "string" == typeof urls ? [ urls ] : urls, 
+            self._loaded = !1, self.load(), self) : self._urls;
+        },
+        play: function(sprite, callback) {
+            var self = this;
+            return "function" == typeof sprite && (callback = sprite), sprite && "function" != typeof sprite || (sprite = "_default"), 
+            self._loaded ? self._sprite[sprite] ? (self._inactiveNode(function(node) {
+                node._sprite = sprite;
+                var pos = node._pos > 0 ? node._pos : self._sprite[sprite][0] / 1e3, duration = 0;
+                self._webAudio ? (duration = self._sprite[sprite][1] / 1e3 - node._pos, node._pos > 0 && (pos = self._sprite[sprite][0] / 1e3 + pos)) : duration = self._sprite[sprite][1] / 1e3 - (pos - self._sprite[sprite][0] / 1e3);
+                var timerId, loop = !(!self._loop && !self._sprite[sprite][2]), soundId = "string" == typeof callback ? callback : Math.round(Date.now() * Math.random()) + "";
+                if (function() {
+                    var data = {
+                        id: soundId,
+                        sprite: sprite,
+                        loop: loop
+                    };
+                    timerId = setTimeout(function() {
+                        !self._webAudio && loop && self.stop(data.id).play(sprite, data.id), self._webAudio && !loop && (self._nodeById(data.id).paused = !0, 
+                        self._nodeById(data.id)._pos = 0, self._clearEndTimer(data.id)), self._webAudio || loop || self.stop(data.id), 
+                        self.on("end", soundId);
+                    }, duration / self._rate * 1e3), self._onendTimer.push({
+                        timer: timerId,
+                        id: data.id
+                    });
+                }(), self._webAudio) {
+                    var loopStart = self._sprite[sprite][0] / 1e3, loopEnd = self._sprite[sprite][1] / 1e3;
+                    node.id = soundId, node.paused = !1, refreshBuffer(self, [ loop, loopStart, loopEnd ], soundId), 
+                    self._playStart = ctx.currentTime, node.gain.value = self._volume, "undefined" == typeof node.bufferSource.start ? loop ? node.bufferSource.noteGrainOn(0, pos, 86400) : node.bufferSource.noteGrainOn(0, pos, duration) : loop ? node.bufferSource.start(0, pos, 86400) : node.bufferSource.start(0, pos, duration);
+                } else {
+                    if (4 !== node.readyState && (node.readyState || !navigator.isCocoonJS)) return self._clearEndTimer(soundId), 
+                    function() {
+                        var sound = self, playSprite = sprite, fn = callback, newNode = node, listener = function() {
+                            sound.play(playSprite, fn), newNode.removeEventListener("canplaythrough", listener, !1);
+                        };
+                        newNode.addEventListener("canplaythrough", listener, !1);
+                    }(), self;
+                    node.readyState = 4, node.id = soundId, node.currentTime = pos, node.muted = Howler._muted || node.muted, 
+                    node.volume = self._volume * Howler.volume(), setTimeout(function() {
+                        node.play();
+                    }, 0);
+                }
+                return self.on("play"), "function" == typeof callback && callback(soundId), self;
+            }), self) : ("function" == typeof callback && callback(), self) : (self.on("load", function() {
+                self.play(sprite, callback);
+            }), self);
+        },
+        pause: function(id) {
+            var self = this;
+            if (!self._loaded) return self.on("play", function() {
+                self.pause(id);
+            }), self;
+            self._clearEndTimer(id);
+            var activeNode = id ? self._nodeById(id) : self._activeNode();
+            if (activeNode) if (activeNode._pos = self.pos(null, id), self._webAudio) {
+                if (!activeNode.bufferSource || activeNode.paused) return self;
+                activeNode.paused = !0, "undefined" == typeof activeNode.bufferSource.stop ? activeNode.bufferSource.noteOff(0) : activeNode.bufferSource.stop(0);
+            } else activeNode.pause();
+            return self.on("pause"), self;
+        },
+        stop: function(id) {
+            var self = this;
+            if (!self._loaded) return self.on("play", function() {
+                self.stop(id);
+            }), self;
+            self._clearEndTimer(id);
+            var activeNode = id ? self._nodeById(id) : self._activeNode();
+            if (activeNode) if (activeNode._pos = 0, self._webAudio) {
+                if (!activeNode.bufferSource || activeNode.paused) return self;
+                activeNode.paused = !0, "undefined" == typeof activeNode.bufferSource.stop ? activeNode.bufferSource.noteOff(0) : activeNode.bufferSource.stop(0);
+            } else isNaN(activeNode.duration) || (activeNode.pause(), activeNode.currentTime = 0);
+            return self;
+        },
+        mute: function(id) {
+            var self = this;
+            if (!self._loaded) return self.on("play", function() {
+                self.mute(id);
+            }), self;
+            var activeNode = id ? self._nodeById(id) : self._activeNode();
+            return activeNode && (self._webAudio ? activeNode.gain.value = 0 : activeNode.muted = !0), 
+            self;
+        },
+        unmute: function(id) {
+            var self = this;
+            if (!self._loaded) return self.on("play", function() {
+                self.unmute(id);
+            }), self;
+            var activeNode = id ? self._nodeById(id) : self._activeNode();
+            return activeNode && (self._webAudio ? activeNode.gain.value = self._volume : activeNode.muted = !1), 
+            self;
+        },
+        volume: function(vol, id) {
+            var self = this;
+            if (vol = parseFloat(vol), vol >= 0 && 1 >= vol) {
+                if (self._volume = vol, !self._loaded) return self.on("play", function() {
+                    self.volume(vol, id);
+                }), self;
+                var activeNode = id ? self._nodeById(id) : self._activeNode();
+                return activeNode && (self._webAudio ? activeNode.gain.value = vol : activeNode.volume = vol * Howler.volume()), 
+                self;
+            }
+            return self._volume;
+        },
+        loop: function(loop) {
+            var self = this;
+            return "boolean" == typeof loop ? (self._loop = loop, self) : self._loop;
+        },
+        sprite: function(sprite) {
+            var self = this;
+            return "object" == typeof sprite ? (self._sprite = sprite, self) : self._sprite;
+        },
+        pos: function(pos, id) {
+            var self = this;
+            if (!self._loaded) return self.on("load", function() {
+                self.pos(pos);
+            }), "number" == typeof pos ? self : self._pos || 0;
+            pos = parseFloat(pos);
+            var activeNode = id ? self._nodeById(id) : self._activeNode();
+            if (activeNode) return pos >= 0 ? (self.pause(id), activeNode._pos = pos, self.play(activeNode._sprite, id), 
+            self) : self._webAudio ? activeNode._pos + (ctx.currentTime - self._playStart) : activeNode.currentTime;
+            if (pos >= 0) return self;
+            for (var i = 0; i < self._audioNode.length; i++) if (self._audioNode[i].paused && 4 === self._audioNode[i].readyState) return self._webAudio ? self._audioNode[i]._pos : self._audioNode[i].currentTime;
+        },
+        pos3d: function(x, y, z, id) {
+            var self = this;
+            if (y = "undefined" != typeof y && y ? y : 0, z = "undefined" != typeof z && z ? z : -.5, 
+            !self._loaded) return self.on("play", function() {
+                self.pos3d(x, y, z, id);
+            }), self;
+            if (!(x >= 0 || 0 > x)) return self._pos3d;
+            if (self._webAudio) {
+                var activeNode = id ? self._nodeById(id) : self._activeNode();
+                activeNode && (self._pos3d = [ x, y, z ], activeNode.panner.setPosition(x, y, z), 
+                activeNode.panner.panningModel = self._model || "HRTF");
+            }
+            return self;
+        },
+        fade: function(from, to, len, callback, id) {
+            var self = this, diff = Math.abs(from - to), dir = from > to ? "down" : "up", steps = diff / .01, stepTime = len / steps;
+            if (!self._loaded) return self.on("load", function() {
+                self.fade(from, to, len, callback, id);
+            }), self;
+            self.volume(from, id);
+            for (var i = 1; steps >= i; i++) !function() {
+                var change = self._volume + ("up" === dir ? .01 : -.01) * i, vol = Math.round(1e3 * change) / 1e3, toVol = to;
+                setTimeout(function() {
+                    self.volume(vol, id), vol === toVol && callback && callback();
+                }, stepTime * i);
+            }();
+        },
+        fadeIn: function(to, len, callback) {
+            return this.volume(0).play().fade(0, to, len, callback);
+        },
+        fadeOut: function(to, len, callback, id) {
+            var self = this;
+            return self.fade(self._volume, to, len, function() {
+                callback && callback(), self.pause(id), self.on("end");
+            }, id);
+        },
+        _nodeById: function(id) {
+            for (var self = this, node = self._audioNode[0], i = 0; i < self._audioNode.length; i++) if (self._audioNode[i].id === id) {
+                node = self._audioNode[i];
+                break;
+            }
+            return node;
+        },
+        _activeNode: function() {
+            for (var self = this, node = null, i = 0; i < self._audioNode.length; i++) if (!self._audioNode[i].paused) {
+                node = self._audioNode[i];
+                break;
+            }
+            return self._drainPool(), node;
+        },
+        _inactiveNode: function(callback) {
+            for (var self = this, node = null, i = 0; i < self._audioNode.length; i++) if (self._audioNode[i].paused && 4 === self._audioNode[i].readyState) {
+                callback(self._audioNode[i]), node = !0;
+                break;
+            }
+            if (self._drainPool(), !node) {
+                var newNode;
+                if (self._webAudio) newNode = self._setupAudioNode(), callback(newNode); else {
+                    self.load(), newNode = self._audioNode[self._audioNode.length - 1];
+                    var listenerEvent = navigator.isCocoonJS ? "canplaythrough" : "loadedmetadata", listener = function() {
+                        newNode.removeEventListener(listenerEvent, listener, !1), callback(newNode);
+                    };
+                    newNode.addEventListener(listenerEvent, listener, !1);
+                }
+            }
+        },
+        _drainPool: function() {
+            var i, self = this, inactive = 0;
+            for (i = 0; i < self._audioNode.length; i++) self._audioNode[i].paused && inactive++;
+            for (i = self._audioNode.length - 1; i >= 0 && !(5 >= inactive); i--) self._audioNode[i].paused && (self._webAudio && self._audioNode[i].disconnect(0), 
+            inactive--, self._audioNode.splice(i, 1));
+        },
+        _clearEndTimer: function(soundId) {
+            for (var self = this, index = -1, i = 0; i < self._onendTimer.length; i++) if (self._onendTimer[i].id === soundId) {
+                index = i;
+                break;
+            }
+            var timer = self._onendTimer[index];
+            timer && (clearTimeout(timer.timer), self._onendTimer.splice(index, 1));
+        },
+        _setupAudioNode: function() {
+            var self = this, node = self._audioNode, index = self._audioNode.length;
+            return node[index] = "undefined" == typeof ctx.createGain ? ctx.createGainNode() : ctx.createGain(), 
+            node[index].gain.value = self._volume, node[index].paused = !0, node[index]._pos = 0, 
+            node[index].readyState = 4, node[index].connect(masterGain), node[index].panner = ctx.createPanner(), 
+            node[index].panner.panningModel = self._model || "equalpower", node[index].panner.setPosition(self._pos3d[0], self._pos3d[1], self._pos3d[2]), 
+            node[index].panner.connect(node[index]), node[index];
+        },
+        on: function(event, fn) {
+            var self = this, events = self["_on" + event];
+            if ("function" == typeof fn) events.push(fn); else for (var i = 0; i < events.length; i++) fn ? events[i].call(self, fn) : events[i].call(self);
+            return self;
+        },
+        off: function(event, fn) {
+            var self = this, events = self["_on" + event];
+            if (fn) {
+                for (var i = 0; i < events.length; i++) if (fn === events[i]) {
+                    events.splice(i, 1);
+                    break;
+                }
+            } else self["_on" + event] = [];
+            return self;
+        },
+        unload: function() {
+            for (var self = this, nodes = self._audioNode, i = 0; i < self._audioNode.length; i++) nodes[i].paused || (self.stop(nodes[i].id), 
+            self.on("end", nodes[i].id)), self._webAudio ? nodes[i].disconnect(0) : nodes[i].src = "";
+            for (i = 0; i < self._onendTimer.length; i++) clearTimeout(self._onendTimer[i].timer);
+            var index = Howler._howls.indexOf(self);
+            null !== index && index >= 0 && Howler._howls.splice(index, 1), delete cache[self._src], 
+            self = null;
+        }
+    }, usingWebAudio) var loadBuffer = function(obj, url) {
+        if (url in cache) return obj._duration = cache[url].duration, void loadSound(obj);
+        if (/^data:[^;]+;base64,/.test(url)) {
+            for (var data = atob(url.split(",")[1]), dataView = new Uint8Array(data.length), i = 0; i < data.length; ++i) dataView[i] = data.charCodeAt(i);
+            decodeAudioData(dataView.buffer, obj, url);
+        } else {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url, !0), xhr.responseType = "arraybuffer", xhr.onload = function() {
+                decodeAudioData(xhr.response, obj, url);
+            }, xhr.onerror = function() {
+                obj._webAudio && (obj._buffer = !0, obj._webAudio = !1, obj._audioNode = [], delete obj._gainNode, 
+                delete cache[url], obj.load());
+            };
+            try {
+                xhr.send();
+            } catch (e) {
+                xhr.onerror();
+            }
+        }
+    }, decodeAudioData = function(arraybuffer, obj, url) {
+        ctx.decodeAudioData(arraybuffer, function(buffer) {
+            buffer && (cache[url] = buffer, loadSound(obj, buffer));
+        }, function(err) {
+            obj.on("loaderror", err);
+        });
+    }, loadSound = function(obj, buffer) {
+        obj._duration = buffer ? buffer.duration : obj._duration, 0 === Object.getOwnPropertyNames(obj._sprite).length && (obj._sprite = {
+            _default: [ 0, 1e3 * obj._duration ]
+        }), obj._loaded || (obj._loaded = !0, obj.on("load")), obj._autoplay && obj.play();
+    }, refreshBuffer = function(obj, loop, id) {
+        var node = obj._nodeById(id);
+        node.bufferSource = ctx.createBufferSource(), node.bufferSource.buffer = cache[obj._src], 
+        node.bufferSource.connect(node.panner), node.bufferSource.loop = loop[0], loop[0] && (node.bufferSource.loopStart = loop[1], 
+        node.bufferSource.loopEnd = loop[1] + loop[2]), node.bufferSource.playbackRate.value = obj._rate;
+    };
+    "function" == typeof define && define.amd && define(function() {
+        return {
+            Howler: Howler,
+            Howl: Howl
+        };
+    }), "undefined" != typeof exports && (exports.Howler = Howler, exports.Howl = Howl), 
+    "undefined" != typeof window && (window.Howler = Howler, window.Howl = Howl);
+}();
 
 var io = "undefined" == typeof module ? {} : module.exports;
 
