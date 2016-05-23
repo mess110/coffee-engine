@@ -1,7 +1,8 @@
 {
   "name": "coffee-engine",
   "version": "0.0.1",
-  "description": "thin layer over three.js in coffeescript",
+  "description": "game engine - thin layer over three.js in coffeescript",
+  "homepage": "https://github.com/mess110/coffee-engine",
   "private": false,
   "main": "tools/index.html",
   "scripts": {
