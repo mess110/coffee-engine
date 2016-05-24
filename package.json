@@ -9,6 +9,15 @@
     "postinstall": "./node_modules/.bin/bower install && grunt doc",
     "start": "./node_modules/nw/bin/nw"
   },
+  "window": {
+    "title": "coffee-engine tools",
+    "toolbar": true,
+    "frame": true,
+    "fullscreen": false,
+    "position": "center",
+    "width": 1280,
+    "height": 720
+  },
   "dependencies": {
     "express.io": "^1.1.13",
     "coffee-script": "^1.10.0",

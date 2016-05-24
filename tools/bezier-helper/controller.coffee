@@ -20,11 +20,3 @@ app.controller 'BezierController', ($scope) ->
   for w in ['curve', 'text', 'letterPadding', 'drawCurve']
     $scope.$watch "json.#{w}", (newValue, oldValue) ->
       bezierScene.updateCurve($scope.json)
-
-# config = Config.get()
-# config.fillWindow()
-# config.preventDefaultMouseEvents = false
-
-# engine = new Engine3D()
-# engine.camera.position.set 0, 0, 11
-# config.height = config.height - 204

@@ -1,4 +1,6 @@
 app.controller 'SettingsController', ['$scope', '$mdToast', ($scope, $mdToast) ->
+  EngineHolder.get().engine.removeDom()
+
   $scope.ui = {
     workspaceDirsKeys: ['gamesDir', 'localLib', 'modelRepository']
     workspaceDirs: []
