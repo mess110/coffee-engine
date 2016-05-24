@@ -1,0 +1,21 @@
+<md-content>
+    <md-card>
+        <md-card-content layout="row">
+            <md-input-container flex>
+                <label>Name</label>
+                <input ng-model="json.name" ng-required>
+            </md-input-container>
+            <md-input-container flex>
+                <label>Template</label>
+                <md-select ng-model="json.template">
+                    <md-option ng-repeat="template in templates" value="{{ template }}">
+                        {{ template }}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+        </md-card-content>
+        <md-card-actions layout="row" layout-align="end center">
+            <md-button ng-click="newGame()">create</md-button>
+        </md-card-actions>
+    </md-card>
+</md-content>

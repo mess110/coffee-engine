@@ -16,13 +16,7 @@ class TerrainGeneratorScene extends BaseScene
     @controls = Helper.orbitControls(engine)
 
     options = DEFAULT_OPTIONS
-    # TODO: fix strange hack
-    # needed because Terrain.heightmap can not be run twice without crashing because
-    # of ImageUtils.loadTexture
-    try
-      Terrain.heightmap(options.heightmapUrl, options.heightmapUrl, options.width, options.height, options.wSegments, options.hSegments, options.scale)
-    catch e
-      @updateTerrain(options)
+    Terrain.heightmap(options.heightmapUrl, options.heightmapUrl, options.width, options.height, options.wSegments, options.hSegments, options.scale, @)
 
   uninit: ->
     super()

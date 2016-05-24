@@ -18,7 +18,7 @@
                     <!-- <md-icon md-svg-icon="call:chat"></md-icon> -->
                 </md-toolbar-filler>
                 <div>
-                    <h2 class="md-toolbar-tools">Untitled document</h2>
+                    <h2 class="md-toolbar-tools">{{ ui.project.name }}</h2>
                     <md-menu-bar>
                         <md-menu>
                             <button ng-click="$mdOpenMenu()">
@@ -26,9 +26,9 @@
                             </button>
                             <md-menu-content>
                                 <md-menu-item>
-                                    <md-button ng-click="goTo('landing')">
+                                    <md-button ng-click="goTo('game-maker/new')">
                                         New
-                                        <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span>
+                                        <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
@@ -326,12 +326,12 @@
         <script src="../bower_components/socket.io-client/dist/socket.io.js"></script>
         <script src="../src/vendor/drawBezier.js"></script>
 
+
         <script src="app.js" type="text/javascript" charset="utf-8"></script>
+
         <script src="utils/directives.js" type="text/javascript" charset="utf-8"></script>
         <script src="utils/filters.js" type="text/javascript" charset="utf-8"></script>
         <script src="utils/MainController.js" type="text/javascript" charset="utf-8"></script>
-
-        <script src="landing/controller.js" type="text/javascript" charset="utf-8"></script>
 
         <script src="model-viewer/controller.js" type="text/javascript" charset="utf-8"></script>
         <script src="model-viewer/scene.js" type="text/javascript" charset="utf-8"></script>
@@ -346,6 +346,8 @@
 
         <script src="particle-playground/controller.js" type="text/javascript" charset="utf-8"></script>
         <script src="particle-playground/scene.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="game-maker/controller.js" type="text/javascript" charset="utf-8"></script>
 
         <script src="cinematic-editor/controller.js" type="text/javascript" charset="utf-8"></script>
 

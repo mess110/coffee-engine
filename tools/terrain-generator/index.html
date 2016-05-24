@@ -1,14 +1,18 @@
 <md-sidenav class="md-sidenav-left md-whiteframe-z2 terrain-generator" md-component-id="left" md-is-locked-open="true" style="position: fixed; z-index: 1">
-    <md-content layout-padding layout="column">
-        <md-input-container>
-            <label>Heightmap</label>
-            <input ng-model="options.heightmapUrl" ng-change="updateTerrain()">
-        </md-input-container>
+    <md-content layout-padding>
+        <div layout="row">
+            <md-input-container flex>
+                <label>Heightmap</label>
+                <input ng-model="options.heightmapUrl" ng-change="updateTerrain()">
+            </md-input-container>
+        </div>
         <img class="heightmap" ng-src="{{options.heightmapUrl}}">
-        <md-input-container>
-            <label>Texture</label>
-            <input ng-model="options.textureUrl" ng-change="updateTerrain()">
-        </md-input-container>
+        <div layout="row">
+            <md-input-container>
+                <label>Texture</label>
+                <input ng-model="options.textureUrl" ng-change="updateTerrain()">
+            </md-input-container>
+        </div>
         <img class="heightmap" ng-src="{{options.textureUrl}}">
         <div layout="row">
             <md-input-container>
@@ -30,10 +34,12 @@
                 <input type="number" ng-model="options.hSegments" ng-change="updateTerrain()">
             </md-input-container>
         </div>
-        <md-input-container>
-            <label>Scale</label>
-            <input type="number" ng-model="options.scale" ng-change="updateTerrain()">
-        </md-input-container>
+        <div layout="row">
+            <md-input-container flex>
+                <label>Scale</label>
+                <input type="number" ng-model="options.scale" ng-change="updateTerrain()">
+            </md-input-container>
+        </div>
         <md-button ng-click="saveJson()">save</md-button>
     </md-content>
 </md-sidenav>

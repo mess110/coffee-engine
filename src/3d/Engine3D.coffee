@@ -172,6 +172,7 @@ class Engine3D
     return new THREE.Raycaster(@camera.position, vector.sub(@camera.position).normalize())
 
   removeDom: ->
+    return if @renderer.domElement.parentNode == null
     try
       document.body.removeChild @renderer.domElement
     catch e

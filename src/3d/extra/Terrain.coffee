@@ -66,8 +66,9 @@ class Terrain extends BaseModel
   # @param [Number] wSegments
   # @param [Number] hSegments
   # @param [Number] scale
+  # @param [Scene] scene
   @heightmap: (textureUrl, heightmapUrl, width, height, wSegments, hSegments, scale=1, scene) ->
-    hm = THREE.ImageUtils.loadTexture(heightmapUrl, THREE.UVMapping, () =>
+    THREE.ImageUtils.loadTexture(heightmapUrl, THREE.UVMapping, (hm) =>
       hm.heightData = Terrain.getHeightData(hm.image, scale)
 
       terrain = new Terrain(textureUrl, width, height, wSegments, hSegments)
