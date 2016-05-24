@@ -10,26 +10,87 @@
 
         <link rel="stylesheet" href="style.css" />
     </head>
-    <body ng-controller="MainController" ng-keypress="shortcut($event)">
-        <div ng-cloak>
-            <md-content layout="row" layout-align="center center">
-                <md-card>
-                    <md-card-content layout="column">
-                        <md-button ng-repeat="menuItem in menu" class="md-raised md-primary" ng-click="goToMenuItem(menuItem)">{{ menuItem.name }}</md-button>
-                    </md-card-content>
-                </md-card>
-            </md-content>
-        </div>
+    <body ng-cloak="" ng-controller="MainController" ng-keypress="shortcut($event)">
+        <div id="my-view" ng-view ng-class="{ 'canvas-hidden': canvasHidden }"></div>
 
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js" type="text/javascript" charset="utf-8"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.6/ngStorage.min.js"></script>
+
 
         <script src="../bower_components/tinycolor/tinycolor.js" type="text/javascript" charset="utf-8"></script>
         <script src="../bower_components/md-color-picker/dist/mdColorPicker.js" type="text/javascript" charset="utf-8"></script>
 
-        <script src="../build/coffee-engine-3d.js"></script>
+        <!-- <script src="../build/coffee-engine-3d.js"></script> -->
+        <!-- this needs to be kept in sync with files_3d from Gruntfile -->
+        <script src="../bower_components/stats.js/src/Stats.js"></script>
+        <script src="../bower_components/tweenjs/src/Tween.js"></script>
+
+        <script src="../bower_components/threejs/build/three.js"></script>
+
+        <script src="../bower_components/threejs/examples/js/effects/AnaglyphEffect.js"></script>
+        <script src="../bower_components/threejs/examples/js/controls/OrbitControls.js"></script>
+        <script src="../bower_components/threejs/examples/js/Mirror.js"></script>
+
+        <script src="../bower_components/threex.windowresize/threex.windowresize.js"></script>
+        <script src="../bower_components/threex.rendererstats/threex.rendererstats.js"></script>
+        <script src="../bower_components/threex.universalloader/threex.universalloader.js"></script>
+        <script src="../bower_components/threex.keyboardstate/threex.keyboardstate.js"></script>
+        <script src="../bower_components/threex.volumetricspotlight/threex.volumetricspotlightmaterial.js"></script>
+        <script src="../bower_components/ocean/water-material.js"></script>
+        <script src="../bower_components/ShaderParticleEngine/build/ShaderParticles.js"></script>
+        <script src="../src/vendor/threex.dynamictexture.js"></script>
+
+        <script src="../bower_components/file-saver/FileSaver.js"></script>
+        <script src="../bower_components/virtualjoystick.js/virtualjoystick.js"></script>
+
+        <script src="../src/3d/Hack.js"></script>
+
+        <script src="../src/shared/SceneManager.js"></script>
+        <script src="../src/shared/NetworkManager.js"></script>
+        <script src="../src/shared/StatsManager.js"></script>
+        <script src="../src/shared/SoundManager.js"></script>
+        <script src="../src/shared/SaveObjectManager.js"></script>
+        <script src="../src/shared/Persist.js"></script>
+        <script src="../src/shared/Utils.js"></script>
+        <script src="../src/shared/VirtualController.js"></script>
+
+        <script src="../src/3d/JsonModelManager.js"></script>
+        <script src="../src/3d/TextureManager.js"></script>
+        <script src="../src/3d/BaseScene.js"></script>
+        <script src="../src/3d/BaseModel.js"></script>
+        <script src="../src/3d/BaseParticle.js"></script>
+        <script src="../src/3d/Config.js"></script>
+        <script src="../src/3d/Helper.js"></script>
+
+        <script src="../src/3d/extra/Water.js"></script>
+        <script src="../src/3d/extra/Terrain.js"></script>
+        <script src="../src/3d/extra/SpotLight.js"></script>
+        <script src="../src/3d/extra/Mirror.js"></script>
+        <script src="../src/3d/extra/LoadingScene.js"></script>
+        <script src="../src/3d/extra/Cinematic.js"></script>
+        <script src="../src/3d/extra/CinematicScene.js"></script>
+        <script src="../src/3d/extra/ArtGenerator.js"></script>
+        <script src="../src/3d/extra/Modifiers.js"></script>
+
+        <script src="../src/3d/Engine3D.js"></script>
+
+        <script src="../src/shared/SyntaxSugar.js"></script>
+        <script src="../src/shared/EngineHolder.js"></script>
+        <script src="../bower_components/socket.io-client/dist/socket.io.js"></script>
+        <script src="../src/vendor/drawBezier.js"></script>
+
         <script src="app.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="menu/controller.js" type="text/javascript" charset="utf-8"></script>
+        <script src="model-viewer/controller.js" type="text/javascript" charset="utf-8"></script>
+        <script src="bezier-helper/controller.js" type="text/javascript" charset="utf-8"></script>
+        <script src="terrain-generator/controller.js" type="text/javascript" charset="utf-8"></script>
+        <script src="settings/controller.js" type="text/javascript" charset="utf-8"></script>
+        <script src="particle-playground/controller.js" type="text/javascript" charset="utf-8"></script>
+        <script src="cinematic-editor/controller.js" type="text/javascript" charset="utf-8"></script>
     </body>
 </html>

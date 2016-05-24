@@ -15,9 +15,10 @@ class Engine3D
       logarithmicDepthBuffer: false
     )
     # @renderer.context.disable(@renderer.context.DEPTH_TEST)
-    @renderer.sortObjects = config.sortObjects
+    @renderer.sortObjects = @config.sortObjects
     @renderer.setSize @width, @height
-    document.body.appendChild @renderer.domElement
+    @appendDom()
+    @renderer.domElement.setAttribute('id', 'coffee-engine-dom')
 
     camera = Helper.camera(aspect: @width / @height, near: 0.5, far: 1000000)
     @setCamera(camera)
@@ -139,6 +140,7 @@ class Engine3D
   # * updating tweens
   # * rendering the scene
   render: =>
+    return if @stop
     requestAnimationFrame this.render
 
     @width = window.innerWidth
@@ -157,6 +159,10 @@ class Engine3D
     if @config.anaglyph
       @anaglyphEffect.render @sceneManager.currentScene().scene, @camera
 
+  implode: =>
+    @stop = true
+    @removeDom()
+
   # Create a Raycaster from camera and x,y coordinates
   unproject: (x, y) ->
     mouseX = (x / @width) * 2 - 1
@@ -164,6 +170,15 @@ class Engine3D
     vector = new THREE.Vector3(mouseX, mouseY, 0.5)
     vector.unproject @camera
     return new THREE.Raycaster(@camera.position, vector.sub(@camera.position).normalize())
+
+  removeDom: ->
+    try
+      document.body.removeChild @renderer.domElement
+    catch e
+      console.log e
+
+  appendDom: ->
+    document.body.appendChild @renderer.domElement
 
   # @nodoc
   _parseMouseEvent: (event) ->

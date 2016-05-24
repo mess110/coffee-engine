@@ -1,18 +1,16 @@
-app = angular.module 'MyApp', [
-  'ngMaterial'
-  'mdColorPicker'
-]
+app.controller 'ParticlePlaygroundController', ($scope) ->
+  eng = EngineHolder.get().engine
+  if eng?
+    eng.appendDom()
+    eng.initScene(particlePlaygroundScene)
+    $scope.particle = particlePlaygroundScene.particle
 
-app.controller 'MainController', ($scope) ->
   $scope.options =
     clearColor: '#000000'
     emitter:
       colorStart: '#ff0000'
       colorMiddle: '#ffffff'
       colorEnd: '#0000ff'
-
-  $scope.particle = particlePlaygroundScene.particle
-  console.log $scope.particle
 
   $scope.$watch 'options.clearColor', (newValue, oldValue) ->
     engine.renderer.setClearColor(newValue)
@@ -39,40 +37,3 @@ app.controller 'MainController', ($scope) ->
         todo: 'todo'
     }
     Utils.saveFile(hash, 'particle.save')
-
-
-class ParticlePlaygroundScene extends BaseScene
-  constructor: ->
-    super()
-
-    @scene.fog = Helper.fog(far: 40, color: 'black')
-    @scene.add Helper.grid(size: 200, step: 10, color: 'gray')
-    engine.setClearColor(@scene.fog.color, 1)
-
-    @controls = Helper.orbitControls(engine)
-
-    @particle = new BaseParticle('star.png')
-    @scene.add @particle.mesh
-
-    @loaded = true
-
-  tick: (tpf) ->
-    return unless @loaded
-
-    @particle.tick(tpf)
-
-  doMouseEvent: (event, raycaster) ->
-
-  doKeyboardEvent: (event) ->
-
-config = Config.get()
-config.fillWindow()
-config.preventDefaultMouseEvents = false
-config.width = config.width - 320
-
-engine = new Engine3D()
-engine.camera.position.set 0, 5, 10
-
-particlePlaygroundScene = new ParticlePlaygroundScene()
-engine.addScene(particlePlaygroundScene)
-engine.render()

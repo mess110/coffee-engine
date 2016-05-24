@@ -1,15 +1,4 @@
-fs = require('fs')
-glob = require('glob')
-
-Persist.PREFIX = 'ce.editor'
-
-app = angular.module 'MyApp', [
-  'ngMaterial'
-  'mdColorPicker'
-]
-
-app.controller 'MainController', ['$scope', '$mdToast', ($scope, $mdToast) ->
-
+app.controller 'SettingsController', ['$scope', '$mdToast', ($scope, $mdToast) ->
   $scope.ui = {
     workspaceDirsKeys: ['gamesDir', 'localLib', 'modelRepository']
     workspaceDirs: []
@@ -37,13 +26,3 @@ app.controller 'MainController', ['$scope', '$mdToast', ($scope, $mdToast) ->
     if event.ctrlKey and event.which == 19
       $scope.save()
 ]
-
-app.directive 'customOnChange', ->
-  {
-    restrict: 'A'
-    link: (scope, element, attrs) ->
-      onChangeHandler = scope.$eval(attrs.customOnChange)
-      element.bind 'change', onChangeHandler
-      return
-
-  }

@@ -1,65 +1,40 @@
-<!DOCTYPE HTML>
-<html lang="en" ng-app="MyApp">
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <title>coffee-engine terrain-generator</title>
-
-        <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.css" type="application/css" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic" />
-        <link rel="stylesheet" href="../../bower_components/md-color-picker/dist/mdColorPicker.css" type="text/css" charset="utf-8"></link>
-
-        <link rel="stylesheet" href="style.css" />
-    </head>
-    <body ng-cloak="" ng-controller="MainController">
-        <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="true" style="position: fixed; z-index: 1">
-            <md-content layout-padding layout="column">
-                <md-input-container>
-                    <label>Heightmap</label>
-                    <input ng-model="options.heightmapUrl" ng-change="updateTerrain()">
-                </md-input-container>
-                <img class="heightmap" ng-src="{{options.heightmapUrl}}">
-                <md-input-container>
-                    <label>Texture</label>
-                    <input ng-model="options.textureUrl" ng-change="updateTerrain()">
-                </md-input-container>
-                <img class="heightmap" ng-src="{{options.textureUrl}}">
-                <div layout="row">
-                    <md-input-container>
-                        <label>Width</label>
-                        <input type="number" ng-model="options.width" ng-change="updateTerrain()">
-                    </md-input-container>
-                    <md-input-container>
-                        <label>Height</label>
-                        <input type="number" ng-model="options.height" ng-change="updateTerrain()">
-                    </md-input-container>
-                </div>
-                <div layout="row">
-                    <md-input-container>
-                        <label>Width Segments</label>
-                        <input type="number" ng-model="options.wSegments" ng-change="updateTerrain()">
-                    </md-input-container>
-                    <md-input-container>
-                        <label>Height Segments</label>
-                        <input type="number" ng-model="options.hSegments" ng-change="updateTerrain()">
-                    </md-input-container>
-                </div>
-                <md-input-container>
-                    <label>Scale</label>
-                    <input type="number" ng-model="options.scale" ng-change="updateTerrain()">
-                </md-input-container>
-                <md-button ng-click="saveJson()">save</md-button>
-            </md-content>
-        </md-sidenav>
-
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js" type="text/javascript" charset="utf-8"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.0.8/angular-material.js" type="text/javascript" charset="utf-8"></script>
-
-        <script src="../../bower_components/tinycolor/tinycolor.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../../bower_components/md-color-picker/dist/mdColorPicker.js" type="text/javascript" charset="utf-8"></script>
-
-        <script src="../../build/coffee-engine-3d.js"></script>
-        <script src="app.js" type="text/javascript" charset="utf-8"></script>
-    </body>
-</html>
+<md-sidenav class="md-sidenav-left md-whiteframe-z2 terrain-generator" md-component-id="left" md-is-locked-open="true" style="position: fixed; z-index: 1">
+    <md-content layout-padding layout="column">
+        <md-input-container>
+            <label>Heightmap</label>
+            <input ng-model="options.heightmapUrl" ng-change="updateTerrain()">
+        </md-input-container>
+        <img class="heightmap" ng-src="{{options.heightmapUrl}}">
+        <md-input-container>
+            <label>Texture</label>
+            <input ng-model="options.textureUrl" ng-change="updateTerrain()">
+        </md-input-container>
+        <img class="heightmap" ng-src="{{options.textureUrl}}">
+        <div layout="row">
+            <md-input-container>
+                <label>Width</label>
+                <input type="number" ng-model="options.width" ng-change="updateTerrain()">
+            </md-input-container>
+            <md-input-container>
+                <label>Height</label>
+                <input type="number" ng-model="options.height" ng-change="updateTerrain()">
+            </md-input-container>
+        </div>
+        <div layout="row">
+            <md-input-container>
+                <label>Width Segments</label>
+                <input type="number" ng-model="options.wSegments" ng-change="updateTerrain()">
+            </md-input-container>
+            <md-input-container>
+                <label>Height Segments</label>
+                <input type="number" ng-model="options.hSegments" ng-change="updateTerrain()">
+            </md-input-container>
+        </div>
+        <md-input-container>
+            <label>Scale</label>
+            <input type="number" ng-model="options.scale" ng-change="updateTerrain()">
+        </md-input-container>
+        <md-button ng-click="saveJson()">save</md-button>
+        <md-button ng-click="goTo('menu')">back</md-button>
+    </md-content>
+</md-sidenav>
