@@ -12373,34 +12373,65 @@ var BaseParticle, extend = function(child, parent) {
 
 BaseParticle = function(superClass) {
     function BaseParticle(texturePath) {
-        var json, key;
-        "string" == typeof texturePath ? json = {
+        var i, json, key, len, ref;
+        if (json = {}, "string" == typeof texturePath) json = {
             group: {
-                maxAge: .2,
-                colorize: !0,
-                hasPerspective: !0,
-                blending: 2,
-                transparent: !0,
-                alphaTest: .5,
                 texture: THREE.ImageUtils.loadTexture(texturePath)
             }
-        } : (json = texturePath, key = Utils.getKeyName(json.group.textureUrl, Utils.IMG_URLS), 
-        json.group.texture = TextureManager.get().items[key]), this.particleGroup = new SPE.Group(json.group), 
-        this.emitter = new SPE.Emitter({
-            position: new THREE.Vector3(0, 0, 0),
-            positionSpread: new THREE.Vector3(0, 0, 0),
-            acceleration: new THREE.Vector3(0, -10, 0),
-            accelerationSpread: new THREE.Vector3(10, 0, 10),
-            velocity: new THREE.Vector3(0, 25, 0),
-            velocitySpread: new THREE.Vector3(10, 7.5, 10),
-            colorStart: new THREE.Color("white"),
-            colorEnd: new THREE.Color("red"),
-            sizeStart: 1,
-            sizeEnd: 1,
-            particleCount: 2e3
-        }), this.particleGroup.addEmitter(this.emitter), this.mesh = this.particleGroup.mesh;
+        }; else {
+            if (json = texturePath, null == json.group && (json.group = {}), null == json.group.textureUrl) throw new Error("json.group.textureUrl is required");
+            key = Utils.getKeyName(json.group.textureUrl, Utils.IMG_URLS), json.group.texture = TextureManager.get().items[key];
+        }
+        json = this.formatDefaults(json), this.particleGroup = new SPE.Group(json.group);
+        for (key in json.emitter) if ("object" == typeof json.emitter[key]) {
+            if (null == json.emitter[key]) continue;
+            null != json.emitter[key].x && (json.emitter[key] = Helper.toVector3(json.emitter[key]));
+        }
+        for (ref = [ "colorStart", "colorMiddle", "colorEnd" ], i = 0, len = ref.length; len > i; i++) key = ref[i], 
+        null != json.emitter[key] && (json.emitter[key] = new THREE.Color(json.emitter[key]));
+        this.emitter = new SPE.Emitter(json.emitter), this.particleGroup.addEmitter(this.emitter), 
+        this.mesh = this.particleGroup.mesh;
     }
-    return extend(BaseParticle, superClass), BaseParticle.prototype.tick = function(tpf) {
+    return extend(BaseParticle, superClass), BaseParticle.prototype.formatDefaults = function(json) {
+        var attr, base, base1, base10, base11, base12, base13, base14, base15, base16, base17, base18, base19, base2, base20, base21, base22, base23, base24, base25, base26, base27, base28, base29, base3, base30, base31, base32, base33, base34, base35, base36, base37, base38, base39, base4, base40, base41, base42, base43, base44, base45, base46, base47, base48, base49, base5, base50, base51, base52, base53, base54, base55, base56, base57, base6, base7, base8, base9, coord, i, j, len, len1, ref, ref1;
+        for (null == json && (json = {}), null == json.group && (json.group = {}), null == (base = json.group).maxAge && (base.maxAge = 3), 
+        null == (base1 = json.group).hasPerspective && (base1.hasPerspective = !0), null == (base2 = json.group).colorize && (base2.colorize = !0), 
+        null == (base3 = json.group).blending && (base3.blending = 2), null == (base4 = json.group).transparent && (base4.transparent = !0), 
+        null == (base5 = json.group).alphaTest && (base5.alphaTest = .5), null == (base6 = json.group).depthWrite && (base6.depthWrite = !1), 
+        null == (base7 = json.group).depthTest && (base7.depthTest = !0), null != json.group.fixedTimeStep && null == (base8 = json.group).fixedTimeStep && (base8.fixedTimeStep = .016), 
+        null == (base9 = json.group).fog && (base9.fog = !0), null == json.emitter && (json.emitter = {}), 
+        null == (base10 = json.emitter).type && (base10.type = "cube"), ref = [ "position", "positionSpread", "acceleration", "accelerationSpread", "velocity", "velocitySpread" ], 
+        i = 0, len = ref.length; len > i; i++) for (attr = ref[i], null == (base11 = json.emitter)[attr] && (base11[attr] = {}), 
+        ref1 = [ "x", "y", "z" ], j = 0, len1 = ref1.length; len1 > j; j++) coord = ref1[j], 
+        null == (base12 = json.emitter[attr])[coord] && (base12[coord] = 0);
+        return null == (base13 = json.emitter).radius && (base13.radius = 10), null == (base14 = json.emitter).radiusScale && (base14.radiusScale = {}), 
+        null == (base15 = json.emitter.radiusScale).x && (base15.x = 1), null == (base16 = json.emitter.radiusScale).y && (base16.y = 1), 
+        null == (base17 = json.emitter.radiusScale).z && (base17.z = 1), null == (base18 = json.emitter).speed && (base18.speed = 0), 
+        null == (base19 = json.emitter).speedSpread && (base19.speedSpread = 0), null == (base20 = json.emitter).sizeStart && (base20.sizeStart = 10), 
+        null == (base21 = json.emitter).sizeStartSpread && (base21.sizeStartSpread = 0), 
+        null == (base22 = json.emitter).sizeMiddle && (base22.sizeMiddle = 10), null == (base23 = json.emitter).sizeMiddleSpread && (base23.sizeMiddleSpread = 0), 
+        null == (base24 = json.emitter).sizeEnd && (base24.sizeEnd = 10), null == (base25 = json.emitter).sizeEndSpread && (base25.sizeEndSpread = 0), 
+        null == (base26 = json.emitter).angleStart && (base26.angleStart = 0), null == (base27 = json.emitter).angleStartSpread && (base27.angleStartSpread = 0), 
+        null == (base28 = json.emitter).angleMiddle && (base28.angleMiddle = 0), null == (base29 = json.emitter).angleMiddleSpread && (base29.angleMiddleSpread = 0), 
+        null == (base30 = json.emitter).angleEnd && (base30.angleEnd = 0), null == (base31 = json.emitter).angleEndSpread && (base31.angleEndSpread = 0), 
+        null == (base32 = json.emitter).angleAlignVelocity && (base32.angleAlignVelocity = !1), 
+        null == (base33 = json.emitter).colorStart && (base33.colorStart = "white"), null == (base34 = json.emitter).colorStartSpread && (base34.colorStartSpread = {}), 
+        null == (base35 = json.emitter.colorStartSpread).x && (base35.x = 0), null == (base36 = json.emitter.colorStartSpread).y && (base36.y = 0), 
+        null == (base37 = json.emitter.colorStartSpread).z && (base37.z = 0), null == (base38 = json.emitter).colorMiddle && (base38.colorMiddle = "white"), 
+        null == (base39 = json.emitter).colorMiddleSpread && (base39.colorMiddleSpread = {}), 
+        null == (base40 = json.emitter.colorMiddleSpread).x && (base40.x = 0), null == (base41 = json.emitter.colorMiddleSpread).y && (base41.y = 0), 
+        null == (base42 = json.emitter.colorMiddleSpread).z && (base42.z = 0), null == (base43 = json.emitter).colorEnd && (base43.colorEnd = "blue"), 
+        null == (base44 = json.emitter).colorEndSpread && (base44.colorEndSpread = {}), 
+        null == (base45 = json.emitter.colorEndSpread).x && (base45.x = 0), null == (base46 = json.emitter.colorEndSpread).y && (base46.y = 0), 
+        null == (base47 = json.emitter.colorEndSpread).z && (base47.z = 0), null == (base48 = json.emitter).opacityStart && (base48.opacityStart = 1), 
+        null == (base49 = json.emitter).opacityStartSpread && (base49.opacityStartSpread = 0), 
+        null == (base50 = json.emitter).opacityMiddle && (base50.opacityMiddle = .5), null == (base51 = json.emitter).opacityMiddleSpread && (base51.opacityMiddleSpread = 0), 
+        null == (base52 = json.emitter).opacityEnd && (base52.opacityEnd = 0), null == (base53 = json.emitter).opacityEndSpread && (base53.opacityEndSpread = 0), 
+        null == (base54 = json.emitter).particlesPerSecond && (base54.particlesPerSecond = 100), 
+        null == (base55 = json.emitter).emitterDuration && (base55.emitterDuration = null), 
+        null == (base56 = json.emitter).alive && (base56.alive = 1), null == (base57 = json.emitter).isStatic && (base57.isStatic = 0), 
+        json;
+    }, BaseParticle.prototype.tick = function(tpf) {
         return this.particleGroup.tick(tpf);
     }, BaseParticle.fromJson = function(json) {
         return new BaseParticle(json);
@@ -12444,7 +12475,9 @@ Helper = function() {
     return Helper.zero = new THREE.Vector3(0, 0, 0), Helper.one = new THREE.Vector3(1, 1, 1), 
     Helper.up = new THREE.Vector3(0, 1, 0), Helper.down = new THREE.Vector3(0, -1, 0), 
     Helper.toggleFullScreen = Utils.toggleFullScreen, Helper.guid = Utils.guid, Helper.setCursor = Utils.setCursor, 
-    Helper.rgbToHex = Utils.rgbToHex, Helper.defaultTweenDuration = 1e3, Helper.shallowClone = function(json) {
+    Helper.rgbToHex = Utils.rgbToHex, Helper.defaultTweenDuration = 1e3, Helper.toVector3 = function(json) {
+        return new THREE.Vector3(json.x, json.y, json.z);
+    }, Helper.shallowClone = function(json) {
         return JSON.parse(JSON.stringify(json));
     }, Helper.random = function(n) {
         return Math.floor(Math.random() * n);
@@ -12624,9 +12657,8 @@ Terrain = function(superClass) {
         vertice.z = imageData[i], results.push(i++);
         return results;
     }, Terrain.heightmap = function(textureUrl, heightmapUrl, width, height, wSegments, hSegments, scale, scene) {
-        var hm;
-        return null == scale && (scale = 1), hm = THREE.ImageUtils.loadTexture(heightmapUrl, THREE.UVMapping, function(_this) {
-            return function() {
+        return null == scale && (scale = 1), THREE.ImageUtils.loadTexture(heightmapUrl, THREE.UVMapping, function(_this) {
+            return function(hm) {
                 var terrain;
                 return hm.heightData = Terrain.getHeightData(hm.image, scale), terrain = new Terrain(textureUrl, width, height, wSegments, hSegments), 
                 terrain.applyHeightmap(hm.heightData), null == scene && (scene = SceneManager.get().currentScene()), 
@@ -13004,15 +13036,16 @@ var Engine3D, bind = function(fn, me) {
 
 Engine3D = function() {
     function Engine3D() {
-        this.render = bind(this.render, this), this.keyboardHandler = bind(this.keyboardHandler, this), 
-        this.mouseHandler = bind(this.mouseHandler, this);
+        this.implode = bind(this.implode, this), this.render = bind(this.render, this), 
+        this.keyboardHandler = bind(this.keyboardHandler, this), this.mouseHandler = bind(this.mouseHandler, this);
         var camera;
         this.width = this.config.width, this.height = this.config.height, this.renderer = new THREE.WebGLRenderer({
             antialias: this.config.antialias,
             alpha: this.config.transparentBackground,
             logarithmicDepthBuffer: !1
-        }), this.renderer.sortObjects = config.sortObjects, this.renderer.setSize(this.width, this.height), 
-        document.body.appendChild(this.renderer.domElement), camera = Helper.camera({
+        }), this.renderer.sortObjects = this.config.sortObjects, this.renderer.setSize(this.width, this.height), 
+        this.appendDom(), this.renderer.domElement.setAttribute("id", "coffee-engine-dom"), 
+        camera = Helper.camera({
             aspect: this.width / this.height,
             near: .5,
             far: 1e6
@@ -13028,7 +13061,11 @@ Engine3D = function() {
         }, !1), this.statsManager = StatsManager.get(), this.config.showStatsOnLoad && this.statsManager.toggle();
     }
     return Engine3D.prototype.time = void 0, Engine3D.prototype.uptime = 0, Engine3D.prototype.config = Config.get(), 
-    Engine3D.prototype.touchHandler = function(event) {
+    Engine3D.prototype.setWidthHeight = function(width, height) {
+        return this.width = width, this.height = height, this.config.width = width, this.config.height = height, 
+        this.camera.aspect = this.width / this.height, this.camera.updateProjectionMatrix(), 
+        this.renderer.setSize(this.width, this.height);
+    }, Engine3D.prototype.touchHandler = function(event) {
         var first, simulatedEvent, touches, type;
         switch (touches = event.changedTouches, first = touches[0], type = "", event.type) {
           case "touchstart":
@@ -13067,15 +13104,26 @@ Engine3D = function() {
         return this.sceneManager.removeScene(scene);
     }, Engine3D.prototype.render = function() {
         var now, tpf;
-        return requestAnimationFrame(this.render), this.width = window.innerWidth, this.height = window.innerHeight, 
-        now = new Date().getTime(), tpf = (now - (this.time || now)) / 1e3, this.time = now, 
-        this.uptime += tpf, this.sceneManager.tick(tpf), this.config.animate && THREE.AnimationHandler.update(tpf), 
+        if (!this.stop) return requestAnimationFrame(this.render), this.width = window.innerWidth, 
+        this.height = window.innerHeight, now = new Date().getTime(), tpf = (now - (this.time || now)) / 1e3, 
+        this.time = now, this.uptime += tpf, this.sceneManager.tick(tpf), this.config.animate && THREE.AnimationHandler.update(tpf), 
         this.statsManager.update(this.renderer), TWEEN.update(), this.renderer.render(this.sceneManager.currentScene().scene, this.camera), 
         this.config.anaglyph ? this.anaglyphEffect.render(this.sceneManager.currentScene().scene, this.camera) : void 0;
+    }, Engine3D.prototype.implode = function() {
+        return this.stop = !0, this.removeDom();
     }, Engine3D.prototype.unproject = function(x, y) {
         var mouseX, mouseY, vector;
         return mouseX = x / this.width * 2 - 1, mouseY = 2 * -(y / this.height) + 1, vector = new THREE.Vector3(mouseX, mouseY, .5), 
         vector.unproject(this.camera), new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+    }, Engine3D.prototype.removeDom = function() {
+        var e, error;
+        if (null !== this.renderer.domElement.parentNode) try {
+            return document.body.removeChild(this.renderer.domElement);
+        } catch (error) {
+            return e = error, console.log(e);
+        }
+    }, Engine3D.prototype.appendDom = function() {
+        return document.body.appendChild(this.renderer.domElement);
     }, Engine3D.prototype._parseMouseEvent = function(event) {
         var mouseX, mouseY, vector;
         return this.config.preventDefaultMouseEvents && event.preventDefault(), event.target === this.renderer.domElement ? (mouseX = event.layerX / this.width * 2 - 1, 
@@ -13176,7 +13224,20 @@ Array.prototype.isEmpty = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }, isNumeric = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
-}, function() {
+};
+
+var EngineHolder;
+
+EngineHolder = function() {
+    function EngineHolder() {}
+    var instance;
+    return instance = null, Singleton.EngineHolder = function() {
+        function EngineHolder() {}
+        return EngineHolder;
+    }(), EngineHolder.get = function() {
+        return null != instance ? instance : instance = new Singleton.EngineHolder();
+    }, EngineHolder;
+}(), function() {
     var cache = {}, ctx = null, usingWebAudio = !0, noAudio = !1;
     try {
         "undefined" != typeof AudioContext ? ctx = new AudioContext() : "undefined" != typeof webkitAudioContext ? ctx = new webkitAudioContext() : usingWebAudio = !1;

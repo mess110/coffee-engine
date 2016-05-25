@@ -1,6 +1,8 @@
 class BezierScene extends BaseScene
 
   init: ->
+    engine.setWidthHeight(window.innerWidth, window.innerHeight - 276 - 80)
+
     @engine = EngineHolder.get().engine
 
     @light1 = Helper.ambientLight()
@@ -8,7 +10,6 @@ class BezierScene extends BaseScene
 
     @scene.fog = Helper.fog(far: 70, color: 'white')
     @grid = Helper.grid(size: 200, step: 10, color: 'gray')
-    @grid.position.y = -3
     @scene.add @grid
     @engine.setClearColor(@scene.fog.color, 1)
     @engine.camera.position.set 0, 0, 11
@@ -17,7 +18,6 @@ class BezierScene extends BaseScene
 
     @plane = new BaseModel()
     @plane.mesh = Helper.plane(width: 10, height: 10, wSegments: 20, hSegments: 20)
-    @plane.mesh.position.y = -3
     @scene.add @plane.mesh
 
     @controls = Helper.orbitControls(@engine)

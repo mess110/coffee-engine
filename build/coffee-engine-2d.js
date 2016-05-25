@@ -632,7 +632,20 @@ Array.prototype.isEmpty = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }, isNumeric = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
-}, function() {
+};
+
+var EngineHolder;
+
+EngineHolder = function() {
+    function EngineHolder() {}
+    var instance;
+    return instance = null, Singleton.EngineHolder = function() {
+        function EngineHolder() {}
+        return EngineHolder;
+    }(), EngineHolder.get = function() {
+        return null != instance ? instance : instance = new Singleton.EngineHolder();
+    }, EngineHolder;
+}(), function() {
     var cache = {}, ctx = null, usingWebAudio = !0, noAudio = !1;
     try {
         "undefined" != typeof AudioContext ? ctx = new AudioContext() : "undefined" != typeof webkitAudioContext ? ctx = new webkitAudioContext() : usingWebAudio = !1;

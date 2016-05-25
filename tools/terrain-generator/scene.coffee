@@ -1,5 +1,6 @@
 class TerrainGeneratorScene extends BaseScene
   init: ->
+    engine.setWidthHeight(window.innerWidth - 320, window.innerHeight)
     @scene.fog = Helper.fog(far: 300, color: 'white')
     @grid = Helper.grid(size: 2000, step: 20, color: 'gray')
     @scene.add @grid

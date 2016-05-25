@@ -1,17 +1,29 @@
 class ParticlePlaygroundScene extends BaseScene
   init: ->
-    @scene.fog = Helper.fog(far: 40, color: 'black')
+    engine.setWidthHeight(window.innerWidth - 320, window.innerHeight)
+
+    @scene.fog = Helper.fog(far: 100, color: 'black')
     @grid = Helper.grid(size: 200, step: 10, color: 'gray')
     @scene.add @grid
     engine.setClearColor(@scene.fog.color, 1)
-    engine.camera.position.set 0, 5, 10
+    engine.camera.position.set 0, 5, 50
 
     @controls = Helper.orbitControls(engine)
 
-    @particle = new BaseParticle('particle-playground/star.png')
+    url = 'particle-playground/star.png'
+    TextureManager.get().load('star', url)
+
+    @particle = new BaseParticle(url)
+    console.log @particle
     @scene.add @particle.mesh
 
     @loaded = true
+
+  refresh: (json) ->
+    @scene.remove(@particle.mesh)
+    part = BaseParticle.fromJson(json)
+    @scene.add part.mesh
+    @particle = part
 
   uninit: ->
     super()
@@ -21,7 +33,7 @@ class ParticlePlaygroundScene extends BaseScene
   tick: (tpf) ->
     return unless @loaded
 
-    @particle.tick(tpf)
+    @particle.tick(tpf) if @particle?
 
   doMouseEvent: (event, raycaster) ->
 

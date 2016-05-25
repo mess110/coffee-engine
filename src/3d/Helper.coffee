@@ -25,6 +25,9 @@ class Helper
 
   @defaultTweenDuration = 1000
 
+  @toVector3: (json) ->
+    new (THREE.Vector3)(json.x, json.y, json.z)
+
   # Use JSON to clone an object
   @shallowClone: (json) ->
     JSON.parse(JSON.stringify(json))

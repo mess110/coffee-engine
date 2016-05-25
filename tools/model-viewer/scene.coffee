@@ -1,6 +1,8 @@
 class ModelViewerScene extends BaseScene
 
   init: ->
+    engine.setWidthHeight(window.innerWidth, window.innerHeight)
+
     @light1 = Helper.ambientLight()
     @scene.add @light1
     @light2 = Helper.ambientLight()
@@ -10,12 +12,12 @@ class ModelViewerScene extends BaseScene
     @light4 = Helper.ambientLight()
     @scene.add @light4
 
-    @scene.fog = Helper.fog(far: 70, color: 'white')
+    @scene.fog = Helper.fog(far: 90, color: 'white')
     @grid = Helper.grid(size: 200, step: 10, color: 'gray')
     @scene.add @grid
     @engine = EngineHolder.get().engine
 
-    engine.camera.position.set 0, 5, 10
+    engine.camera.position.set 0, 5, 25
     @engine.setClearColor(@scene.fog.color, 1)
 
     @controls = Helper.orbitControls(@engine)

@@ -8,7 +8,7 @@
         </div>
         <img class="heightmap" ng-src="{{options.heightmapUrl}}">
         <div layout="row">
-            <md-input-container>
+            <md-input-container flex>
                 <label>Texture</label>
                 <input ng-model="options.textureUrl" ng-change="updateTerrain()">
             </md-input-container>
@@ -43,3 +43,9 @@
         <md-button ng-click="saveJson()">save</md-button>
     </md-content>
 </md-sidenav>
+
+<style type="text/css" media="all">
+    canvas {
+        left: 320px;
+    }
+</style>

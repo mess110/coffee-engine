@@ -49,6 +49,15 @@ class Engine3D
     @statsManager = StatsManager.get()
     @statsManager.toggle() if @config.showStatsOnLoad
 
+  setWidthHeight: (width, height) ->
+    @width = width
+    @height = height
+    @config.width = width
+    @config.height = height
+    @camera.aspect = @width / @height
+    @camera.updateProjectionMatrix()
+    @renderer.setSize @width, @height
+
   # Delegate touches to mouse events
   touchHandler: (event) ->
     touches = event.changedTouches

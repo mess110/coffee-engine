@@ -23,39 +23,102 @@ class BaseParticle extends BaseModel
   #
   # @param [String] texturePath
   constructor: (texturePath) ->
+    json = {}
     if typeof(texturePath) == 'string'
       json =
         group:
-          maxAge: 0.2
-          colorize: true
-          hasPerspective: true
-          blending: 2 # AdditiveBlending
-          transparent: true
-          alphaTest: 0.5
           texture: THREE.ImageUtils.loadTexture(texturePath)
     else
       json = texturePath
+      json.group ?= {}
+      throw new Error('json.group.textureUrl is required') unless json.group.textureUrl?
       key = Utils.getKeyName(json.group.textureUrl, Utils.IMG_URLS)
       json.group.texture = TextureManager.get().items[key]
 
+    json = @formatDefaults(json)
+
     @particleGroup = new (SPE.Group)(json.group)
 
-    # TODO: ability to save
-    @emitter = new (SPE.Emitter)(
-      position: new (THREE.Vector3)(0, 0, 0)
-      positionSpread: new (THREE.Vector3)(0, 0, 0)
-      acceleration: new (THREE.Vector3)(0, -10, 0)
-      accelerationSpread: new (THREE.Vector3)(10, 0, 10)
-      velocity: new (THREE.Vector3)(0, 25, 0)
-      velocitySpread: new (THREE.Vector3)(10, 7.5, 10)
-      colorStart: new (THREE.Color)('white')
-      colorEnd: new (THREE.Color)('red')
-      sizeStart: 1
-      sizeEnd: 1
-      particleCount: 2000)
+    for key of json.emitter
+      if typeof json.emitter[key] == 'object'
+        continue unless json.emitter[key]?
+        if json.emitter[key].x?
+          json.emitter[key] = Helper.toVector3(json.emitter[key])
+    for key in ['colorStart', 'colorMiddle', 'colorEnd']
+      json.emitter[key] = new (THREE.Color)(json.emitter[key]) if json.emitter[key]?
+
+    @emitter = new (SPE.Emitter)(json.emitter)
 
     @particleGroup.addEmitter @emitter
     @mesh = @particleGroup.mesh
+
+  # @see https://github.com/squarefeet/ShaderParticleEngine/tree/Release-0.8.1
+  formatDefaults: (json = {}) ->
+    json.group ?= {}
+    json.group.maxAge ?= 3
+    json.group.hasPerspective ?= true
+    json.group.colorize ?= true
+    json.group.blending ?= 2 # AdditiveBlending
+    json.group.transparent ?= true
+    json.group.alphaTest ?= 0.5
+    json.group.depthWrite ?= false
+    json.group.depthTest ?= true
+    json.group.fixedTimeStep ?= 0.016 if json.group.fixedTimeStep?
+    json.group.fog ?= true
+
+    json.emitter ?= {}
+    json.emitter.type ?= 'cube'
+    for attr in ['position', 'positionSpread', 'acceleration', 'accelerationSpread', 'velocity', 'velocitySpread']
+      json.emitter[attr] ?= {}
+      for coord in ['x', 'y', 'z']
+        json.emitter[attr][coord] ?= 0
+    json.emitter.radius ?= 10
+    json.emitter.radiusScale ?= {}
+    json.emitter.radiusScale.x ?= 1
+    json.emitter.radiusScale.y ?= 1
+    json.emitter.radiusScale.z ?= 1
+    json.emitter.speed ?= 0
+    json.emitter.speedSpread ?= 0
+    json.emitter.sizeStart ?= 10
+    json.emitter.sizeStartSpread ?= 0
+    json.emitter.sizeMiddle ?= 10
+    json.emitter.sizeMiddleSpread ?= 0
+    json.emitter.sizeEnd ?= 10
+    json.emitter.sizeEndSpread ?= 0
+    json.emitter.angleStart ?= 0
+    json.emitter.angleStartSpread ?= 0
+    json.emitter.angleMiddle ?= 0
+    json.emitter.angleMiddleSpread ?= 0
+    json.emitter.angleEnd ?= 0
+    json.emitter.angleEndSpread ?= 0
+    json.emitter.angleAlignVelocity ?= false # not implemented, implement it
+    json.emitter.colorStart ?= 'white'
+    json.emitter.colorStartSpread ?= {}
+    json.emitter.colorStartSpread.x ?= 0
+    json.emitter.colorStartSpread.y ?= 0
+    json.emitter.colorStartSpread.z ?= 0
+    json.emitter.colorMiddle ?= 'white'
+    json.emitter.colorMiddleSpread ?= {}
+    json.emitter.colorMiddleSpread.x ?= 0
+    json.emitter.colorMiddleSpread.y ?= 0
+    json.emitter.colorMiddleSpread.z ?= 0
+    json.emitter.colorEnd ?= 'blue'
+    json.emitter.colorEndSpread ?= {}
+    json.emitter.colorEndSpread.x ?= 0
+    json.emitter.colorEndSpread.y ?= 0
+    json.emitter.colorEndSpread.z ?= 0
+    json.emitter.opacityStart ?= 1
+    json.emitter.opacityStartSpread ?= 0
+    json.emitter.opacityMiddle ?= 0.5
+    json.emitter.opacityMiddleSpread ?= 0
+    json.emitter.opacityEnd ?= 0
+    json.emitter.opacityEndSpread ?= 0
+    json.emitter.particlesPerSecond ?= 100
+    json.emitter.emitterDuration ?= null
+    json.emitter.alive ?= 1.0
+    json.emitter.isStatic ?= 0
+
+    json
 
   # Used to animate the particle
   #
