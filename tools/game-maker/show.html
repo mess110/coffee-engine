@@ -1,23 +1,37 @@
 <div ng-cloak="">
     <md-content>
         <md-tabs md-dynamic-height="" md-border-bottom="">
-            <md-tab label="game">
-                <md-content class="md-padding" layout="row" layout-align="center center">
+            <md-tab label="scenes">
+                <md-content class="md-padding">
+                    <md-card ng-hide="scenes.length != 0">
+                        <md-card-content>
+                            <span>No scenes</span>
+                        </md-card-content>
+                    </md-card>
                     <md-card>
                         <md-card-content>
+                            <md-input-container class="md-block">
+                                <label>Filename</label>
+                                <input ng-model="ui.newFilename">
+                            </md-input-container>
                         </md-card-content>
                         <md-card-actions layout="row" layout-align="end center">
+                            <md-button ng-click="newScene(scene)">new</md-button>
                         </md-card-actions>
                     </md-card>
-                </md-content>
-            </md-tab>
-            <md-tab label="scenes">
-                <md-content class="md-padding" layout="row" layout-align="center center">
-                    <md-card>
+                    <md-card ng-show="scenes.length != 0">
                         <md-card-content>
+                            <div ng-repeat="scene in scenes" layout="row">
+                                <md-input-container flex>
+                                    <label>Scene</label>
+                                    <input ng-model="scene" ng-readonly="true">
+                                </md-input-container>
+                                <md-button ng-click="editScene(scene)">edit</md-button>
+                            </div>
                         </md-card-content>
-                        <md-card-actions layout="row" layout-align="end center">
-                        </md-card-actions>
+                        <!-- <md-card-actions layout="row" layout-align="end center"> -->
+                            <!-- <md-button ng-click="editScene(scene)">edit</md-button> -->
+                            <!-- </md-card-actions> -->
                     </md-card>
                 </md-content>
             </md-tab>

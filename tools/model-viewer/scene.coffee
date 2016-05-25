@@ -28,10 +28,10 @@ class ModelViewerScene extends BaseScene
     super()
     @controls.enabled = false if @controls?
 
-  viewModel: (name, url) ->
+  viewModel: (model) ->
     @scene.remove(@mesh) if @mesh?
-    JsonModelManager.get().items[name] = undefined
-    JsonModelManager.get().load(name, url, (mesh) =>
+    JsonModelManager.get().items[model.key] = undefined
+    JsonModelManager.get().load(model.key, model.libPath, (mesh) =>
       @scene.add mesh
       @mesh = mesh
       @loaded = true

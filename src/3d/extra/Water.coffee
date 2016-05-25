@@ -24,7 +24,8 @@ class Water extends BaseModel
     options.water.betaVersion ?= 0
     options.water.side ?= THREE.DoubleSide
 
-    waterNormals = TextureManager.get().items[Utils.getKeyName(options.textureUrl, Utils.IMG_URLS)]
+    key = Utils.getKeyName(options.textureUrl, Utils.IMG_URLS)
+    waterNormals = TextureManager.get().items[key]
     waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping
 
     options.water.waterNormals = waterNormals

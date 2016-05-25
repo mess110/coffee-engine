@@ -121,11 +121,11 @@ class Engine3D
       @sceneManager.setScene scene
 
   # Used to switch betweens scenes with init and uninit
-  initScene: (scene) ->
+  initScene: (scene, options = {}) ->
     currentScene = @sceneManager.currentScene()
     if currentScene?
       currentScene.uninit()
-    scene.init()
+    scene.init(options)
     @sceneManager.setScene(scene)
 
   # Remove a scene

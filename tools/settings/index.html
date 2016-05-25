@@ -7,7 +7,7 @@
                         <div layout="row" layout-align="center center" ng-repeat="dir in ui.workspaceDirs">
                             <md-input-container flex>
                                 <label>{{ dir.key }}</label>
-                                <input ng-model="json[dir.key]" ng-change="dir.method({ target: { files: [{path: json[dir.key] }]}})" ng-model-options="{ debounce: 500 }">
+                                <input ng-model="workspace[dir.key]" ng-change="dir.method({ target: { files: [{path: workspace[dir.key] }]}})" ng-model-options="{ debounce: 500 }">
                             </md-input-container>
                             <input class="ng-hide" id="input-file-id" multiple type="file" aria-label="Choose directory" webkitdirectory directory custom-on-change="dir.method"/>
                             <label for="input-file-id" class="md-button md-raised md-primary">Choose directory</label>

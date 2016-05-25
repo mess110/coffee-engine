@@ -9,14 +9,9 @@ app.controller 'MainController', ['$scope', '$mdToast', '$location', ($scope, $m
     { name: 'Bezier Helper', href: 'bezier-helper' }
   ]
 
-  $scope.workspace = Persist.getJson('workspace')
-
   $scope.refreshProjects = ->
-    path = "#{$scope.workspace.gamesDir}**/.coffee-engine"
-    glob(path, {}, (er, projects) ->
-      $scope.projects = []
-      for project in projects
-        $scope.projects.push project.split('/').slice(-2, -1)[0]
+    WorkspaceQuery.getProjects($scope.workspace, (err, projects) ->
+      $scope.projects = projects
       $scope.$apply()
     )
 
@@ -33,6 +28,15 @@ app.controller 'MainController', ['$scope', '$mdToast', '$location', ($scope, $m
     else
       $scope.goTo(menuItem.href)
       # window.location.href = menuItem.href
+
+  $scope.saveWorkspace = ->
+    Persist.setJson('workspace', $scope.workspace)
+
+  $scope.goToGame = ->
+    if $scope.workspace.lastOpenedProject?
+      $scope.goTo("/game-maker/#{$scope.workspace.lastOpenedProject}")
+    else
+      $scope.goTo('/')
 
   $scope.exit = ->
     win = gui.Window.get()

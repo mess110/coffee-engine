@@ -10,15 +10,13 @@ app.controller 'SettingsController', ['$scope', '$mdToast', ($scope, $mdToast) -
     methodName = "load_#{key}"
     $scope[methodName]= (event) ->
       s = event.target.files[0].path
-      $scope.json[key] = s
-      Persist.setJson('workspace', $scope.json)
+      $scope.workspace[key] = s
+      Persist.setJson('workspace', $scope.workspace)
       $scope.$apply()
 
     $scope.ui.workspaceDirs.push {
       key: key, method: $scope[methodName]
     }
-
-  $scope.json = Persist.getJson('workspace') || {}
 
   $scope.toast = (message) ->
     simple = $mdToast.simple().textContent(message).position('bottom left').hideDelay(3000)

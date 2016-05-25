@@ -1,16 +1,26 @@
 app.controller 'ParticlePlaygroundController', ($scope) ->
-  eng = EngineHolder.get().engine
-  if eng?
-    eng.appendDom()
-    eng.initScene(particlePlaygroundScene)
-    $scope.particle = particlePlaygroundScene.particle
+  defaultTexture = 'workspace/lib/textures/star.png'
 
   $scope.options =
     clearColor: '#000000'
+    textureFile:
+      key: Utils.getKeyName(defaultTexture, Utils.IMG_URLS)
+      libPath: defaultTexture
     emitter:
       colorStart: '#ff0000'
       colorMiddle: '#ffffff'
       colorEnd: '#0000ff'
+
+  WorkspaceQuery.getTextures($scope.workspace, (err, files) ->
+    $scope.textures = files
+    $scope.$apply()
+  )
+
+  eng = EngineHolder.get().engine
+  if eng?
+    eng.appendDom()
+    eng.initScene(particlePlaygroundScene, url: "../#{$scope.options.textureFile.libPath}")
+    $scope.particle = particlePlaygroundScene.particle
 
   $scope.updateColor = (specialColor) ->
     newColor = $scope.options.emitter[specialColor]
@@ -22,10 +32,24 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
   $scope.toggleStats = ->
     config.toggleStats()
 
-  $scope.refresh = ->
-    json = formatJson()
+  $scope.refresh = (json) ->
+    json = formatJson() unless json?
     particlePlaygroundScene.refresh(json)
     $scope.particle = particlePlaygroundScene.particle
+
+  $scope.refreshTexture = ->
+    file = "../#{$scope.options.textureFile.libPath}"
+    key = Utils.getKeyName(file, Utils.IMG_URLS)
+    json = formatJson()
+    json.group.textureUrl = file
+
+    if TextureManager.get().items[key]?
+      $scope.refresh(json)
+    else
+      TextureManager.get().load(key, file, (key) ->
+        $scope.refresh(json)
+        $scope.$apply()
+      )
 
   formatJson = () ->
     {

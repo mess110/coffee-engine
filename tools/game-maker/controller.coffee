@@ -1,7 +1,28 @@
 app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$routeParams', ($scope, $mdToast, $location, $routeParams) ->
   EngineHolder.get().engine.removeDom()
 
+  $scope.workspace.lastOpenedProject = $routeParams.id
+  $scope.saveWorkspace()
+
+  $scope.scenes = []
   $scope.ui.project.name = $routeParams.id
+  $scope.ui.newFilename = ''
+
+  WorkspaceQuery.getScenes($scope.workspace, $scope.ui.project.name, (err, scenes) ->
+    $scope.scenes = scenes
+    $scope.$apply()
+  )
+
+  $scope.newScene = ->
+    return unless $scope.ui.newFilename?
+    return if $scope.ui.newFilename == ''
+
+    newScene = fileSystem.newScene($scope.workspace, $scope.ui.newFilename)
+    $scope.editScene(newScene.path)
+
+  $scope.editScene = (scene) ->
+    $scope.workspace.lastOpenedScene = scene
+    $scope.goTo('cinematic-editor')
 ]
 
 app.controller 'NewGameController', ['$scope', '$mdToast', '$location', ($scope, $mdToast, $location) ->
@@ -17,17 +38,6 @@ app.controller 'NewGameController', ['$scope', '$mdToast', '$location', ($scope,
   ]
 
   $scope.newGame = ->
-    return unless $scope.json.name?
-
-    src = "example/3d/#{$scope.json.template}"
-    dest = "workspace/games/"
-    finalDest = "#{dest}/#{$scope.json.name}"
-
-    try
-      fs.accessSync finalDest, fs.F_OK
-    catch e
-      copyFolderRecursiveSync(src, dest)
-      fs.renameSync("#{dest}/#{$scope.json.template}", finalDest)
-
-    $scope.goTo("game-maker/#{$scope.json.name}")
+    success = fileSystem.newGame($scope.json)
+    $scope.goTo("game-maker/#{$scope.json.name}") if success
 ]

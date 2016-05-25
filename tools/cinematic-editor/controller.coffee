@@ -1,4 +1,4 @@
-app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdToast) ->
+app.controller 'CinematicEditorController', ['$scope', '$mdToast', '$mdDialog', ($scope, $mdToast, $mdDialog) ->
 
   $scope.ui = {}
 
@@ -43,10 +43,21 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
     'skySphere'
   ]
 
+  $scope.assetTypes = [
+    'sound'
+    'model'
+    'texture'
+  ]
+
   $scope.cameraTypes = [
     'PerspectiveCamera'
     'OrthographicCamera'
   ]
+
+  onLoad = (data) ->
+    $scope.json = JSON.parse(data)
+    if $scope.json.engine.camera?
+      $scope.ui.preset_camera = true
 
   $scope.json =
     engine: {}
@@ -55,15 +66,18 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
     items: []
     scripts: []
 
+  if $scope.workspace.lastOpenedScene?
+    file = $scope.workspace.lastOpenedScene
+    data = fs.readFileSync(file, 'utf8')
+    onLoad(data)
+
   $scope.toast = (message) ->
     simple = $mdToast.simple().textContent(message).position('bottom left').hideDelay(3000)
     $mdToast.show simple
 
   $scope.loaded = ->
     data = atob($scope.file.data.toString().replace('data:;base64,', ''))
-    $scope.json = JSON.parse(data)
-    if $scope.json.engine.camera?
-      $scope.ui.preset_camera = true
+    onLoad(data)
     $scope.$digest()
 
   $scope.$watch 'ui.preset_camera', (newValue, oldValue) ->
@@ -133,9 +147,9 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
 
     string = JSON.stringify(angular.copy($scope.json), null, 2)
     fs.writeFile $scope.json.path, string, (err) ->
-      $scope.$digest()
       if err
         return console.log(err)
+      $scope.$digest()
       $scope.toast('saved')
       return
 
@@ -193,4 +207,88 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
 
   $scope.removeScript = (script) ->
     $scope.json.scripts.remove(script)
+
+  $scope.openAssetSearch = ($event, asset) ->
+    $mdDialog.show(
+      controller: AssetSearchController
+      controllerAs: 'ctrl'
+      templateUrl: 'cinematic-editor/asset_search.tmpl.html'
+      parent: angular.element(document.body)
+      targetEvent: $event
+      clickOutsideToClose: true
+      locals:
+        asset: asset
+    ).then((result) ->
+      asset.libPath = result.libPath
+      unless asset.destPath?
+        asset.destPath = "assets/#{asset.libPath.split('/').last()}"
+
+      fileSystem.copyAssetSemiSync($scope.workspace, asset)
+    )
+  return
 ]
+
+AssetSearchController = ($timeout, $q, $scope, $mdDialog, asset) ->
+  self = this
+  # list of `state` value/display objects
+  # ******************************
+  # Internal methods
+  # ******************************
+
+  ###*
+  # Search for states... use $timeout to simulate
+  # remote dataservice call.
+  ###
+
+  querySearch = (query) ->
+    if query then self.states.filter(createFilterFor(query)) else self.states
+
+  ###*
+  # Build `states` list of key/value pairs
+  ###
+
+  loadAll = ->
+    workspace = Persist.getJson('workspace')
+    switch asset.type
+      when 'texture'
+        WorkspaceQuery.getTextures(workspace, (err, textures) ->
+          self.states = textures
+          $scope.$apply()
+        )
+      when 'model'
+        WorkspaceQuery.getJsonModels(workspace, (err, models) ->
+          self.states = models
+          $scope.$apply()
+        )
+      when 'sound'
+        WorkspaceQuery.getSounds(workspace, (err, sounds) ->
+          self.states = sounds
+          $scope.$apply()
+        )
+      else
+        console.log 'unknown asset type'
+
+  ###*
+  # Create filter function for a query string
+  ###
+
+  createFilterFor = (query) ->
+    lowercaseQuery = angular.lowercase(query)
+    (state) ->
+      state.libPath.contains(lowercaseQuery)
+
+  loadAll()
+  self.querySearch = querySearch
+  # ******************************
+  # Template methods
+  # ******************************
+
+  self.cancel = ($event) ->
+    $mdDialog.cancel()
+    return
+
+  self.finish = ($event) ->
+    $mdDialog.hide(self.selectedItem)
+    return
+
+  return

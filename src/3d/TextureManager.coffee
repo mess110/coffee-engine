@@ -12,12 +12,13 @@ class TextureManager
     #
     # @param [String] key
     # @param [String] url of the texture
-    load: (key, url) ->
+    load: (key, url, callback = -> {}) ->
       return if @items[key] != undefined
       @items[key] = null
 
-      texture = THREE.ImageUtils.loadTexture(url, {}, (image) ->
+      THREE.ImageUtils.loadTexture(url, {}, (image) ->
         window.TextureManager.get()._load(image, key)
+        callback(key)
       )
       @
 

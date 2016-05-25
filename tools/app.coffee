@@ -2,6 +2,7 @@ glob = require('glob')
 fs = require('fs')
 gui = require('nw.gui')
 path = require('path')
+fileSystem = new FileSystem()
 
 app = angular.module 'MyApp', [
   'ngMaterial'
@@ -23,7 +24,7 @@ app.config ['$routeProvider', ($routeProvider) ->
   return
 ]
 
-app.run [ ->
+app.run ['$rootScope', ($rootScope) ->
   Persist.PREFIX = 'ce.editor'
 
   Persist.defaultJson('workspace',
@@ -31,31 +32,6 @@ app.run [ ->
     localLib: 'workspace/lib/'
     modelRepository: 'workspace/lib/models/'
   )
+
+  $rootScope.workspace = Persist.getJson('workspace') || {}
 ]
-
-copyFileSync = (source, target) ->
-  targetFile = target
-  #if target is a directory a new file with the same name will be created
-  if fs.existsSync(target)
-    if fs.lstatSync(target).isDirectory()
-      targetFile = path.join(target, path.basename(source))
-  fs.writeFileSync targetFile, fs.readFileSync(source)
-  return
-
-copyFolderRecursiveSync = (source, target) ->
-  files = []
-  #check if folder needs to be created or integrated
-  targetFolder = path.join(target, path.basename(source))
-  if !fs.existsSync(targetFolder)
-    fs.mkdirSync targetFolder
-  #copy
-  if fs.lstatSync(source).isDirectory()
-    files = fs.readdirSync(source)
-    files.forEach (file) ->
-      curSource = path.join(source, file)
-      if fs.lstatSync(curSource).isDirectory()
-        copyFolderRecursiveSync curSource, targetFolder
-      else
-        copyFileSync curSource, targetFolder
-      return
-  return

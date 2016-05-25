@@ -4,28 +4,19 @@ app.controller 'ModelViewerController', ($scope) ->
     eng.appendDom()
     eng.initScene(modelViewerScene)
 
-  $scope.workspace = Persist.getJson('workspace') || {}
-
-  modelRepository = $scope.workspace.modelRepository
-  if modelRepository.startsWith('/')
-    $scope.loadedPath = modelRepository
-  else
-    $scope.loadedPath = "../../#{modelRepository}"
-  $scope.loadedPath = modelRepository
-
-  glob("#{$scope.loadedPath}/**/*.json", {}, (er, files) ->
+  WorkspaceQuery.getJsonModels($scope.workspace, (err, files) ->
     $scope.files = files
     $scope.$apply()
   )
 
   $scope.search = ''
   $scope.searchFilter = (item) ->
-    item.contains($scope.search)
+    item.key.contains($scope.search)
 
-  $scope.viewModel = (path) ->
-    if !path.startsWith('/')
-      path = "../#{path}"
-    modelViewerScene.viewModel($scope.nameFromPath(path), path)
+  $scope.viewModel = (model) ->
+    if !model.libPath.startsWith('/')
+      model.libPath = "../#{model.libPath}"
+    modelViewerScene.viewModel(model)
 
   $scope.animate = (animationIndex) ->
     for animation in modelViewerScene.mesh.animations
@@ -36,9 +27,6 @@ app.controller 'ModelViewerController', ($scope) ->
     $scope.animations = []
     $scope.animations.push animation.data.name for animation in animations
     $scope.$digest()
-
-  $scope.nameFromPath = (path) ->
-    path.split('/').last().split('.json').first()
 
   $scope.toggleStats = ->
     config.toggleStats()

@@ -11,7 +11,7 @@
             <md-list-item class="md-1-line" ng-repeat="file in files | filter: searchFilter" ng-click="viewModel(file)">
                 <md-item-content md-ink-ripple layout="row" layout-align="start center">
                     <div class="md-list-item-text" layout="column">
-                        {{ nameFromPath(file) }}
+                        {{ file.key }}
                     </div>
                 </md-item-content>
             </md-list-item>

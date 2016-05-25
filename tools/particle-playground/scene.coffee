@@ -1,5 +1,5 @@
 class ParticlePlaygroundScene extends BaseScene
-  init: ->
+  init: (options) ->
     engine.setWidthHeight(window.innerWidth - 320, window.innerHeight)
 
     @scene.fog = Helper.fog(far: 100, color: 'black')
@@ -10,7 +10,7 @@ class ParticlePlaygroundScene extends BaseScene
 
     @controls = Helper.orbitControls(engine)
 
-    url = 'particle-playground/star.png'
+    url = options.url
     TextureManager.get().load('star', url)
 
     @particle = new BaseParticle(url)

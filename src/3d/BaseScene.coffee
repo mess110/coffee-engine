@@ -21,7 +21,7 @@ class BaseScene
     @tick(tpf)
 
   # Used to init the scene
-  init: ->
+  init: (options) ->
     throw 'scene.init not implemented'
 
   # used to uninit the scene

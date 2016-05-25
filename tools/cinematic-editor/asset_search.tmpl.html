@@ -1,0 +1,31 @@
+<md-dialog aria-label="Autocomplete Dialog Example" ng-cloak>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Choose an asset</h2>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <form ng-submit="$event.preventDefault()">
+                <p>This is just a long placeholder text so the UI looks pretty. Too lazy for CSS fix.</p>
+                <md-autocomplete
+                    md-selected-item="ctrl.selectedItem"
+                    md-search-text="ctrl.searchText"
+                    md-items="item in ctrl.querySearch(ctrl.searchText)"
+                    md-item-text="item.key"
+                    md-min-length="0"
+                    placeholder="Name">
+                    <md-item-template>
+                        <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.key}}</span>
+                    </md-item-template>
+                    <md-not-found>
+                        No assets matching "{{ctrl.searchText}}" were found.
+                    </md-not-found>
+                </md-autocomplete>
+            </form>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions>
+        <md-button aria-label="Import" ng-click="ctrl.finish($event)">Import</md-button>
+    </md-dialog-actions>
+</md-dialog>
