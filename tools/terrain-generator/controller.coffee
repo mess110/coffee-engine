@@ -18,6 +18,7 @@ app.controller 'TerrainGeneratorController', ($scope) ->
     eng.appendDom()
     eng.initScene(terrainGeneratorScene, defaultOptions)
 
+  $scope.ui.project.name = 'Terrain Generator'
   $scope.options = defaultOptions
 
   $scope.updateTerrain = ->

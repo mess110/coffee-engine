@@ -1,12 +1,13 @@
 app.controller 'SettingsController', ['$scope', '$mdToast', ($scope, $mdToast) ->
   EngineHolder.get().engine.removeDom()
 
-  $scope.ui = {
+  $scope.ui.project.name = 'Settings'
+  $scope.settings = {
     workspaceDirsKeys: ['gamesDir', 'localLib', 'modelRepository']
     workspaceDirs: []
   }
 
-  for key in $scope.ui.workspaceDirsKeys
+  for key in $scope.settings.workspaceDirsKeys
     methodName = "load_#{key}"
     $scope[methodName]= (event) ->
       s = event.target.files[0].path
@@ -14,7 +15,7 @@ app.controller 'SettingsController', ['$scope', '$mdToast', ($scope, $mdToast) -
       Persist.setJson('workspace', $scope.workspace)
       $scope.$apply()
 
-    $scope.ui.workspaceDirs.push {
+    $scope.settings.workspaceDirs.push {
       key: key, method: $scope[methodName]
     }
 

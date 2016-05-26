@@ -1,4 +1,6 @@
 app.controller 'BezierController', ($scope) ->
+
+  $scope.ui.project.name = 'Bezier Helper'
   eng = EngineHolder.get().engine
   if eng?
     eng.appendDom()

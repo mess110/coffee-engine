@@ -1,6 +1,6 @@
 app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdToast) ->
 
-  $scope.ui = {}
+  $scope.ui.project.name = $scope.workspace.lastOpenedProject
 
   $scope.tweenKinds = [
     'Linear'

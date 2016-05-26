@@ -4,7 +4,7 @@
             <md-tab label="workspace">
                 <md-card>
                     <md-card-content layout="column">
-                        <div layout="row" layout-align="center center" ng-repeat="dir in ui.workspaceDirs">
+                        <div layout="row" layout-align="center center" ng-repeat="dir in settings.workspaceDirs">
                             <md-input-container flex>
                                 <label>{{ dir.key }}</label>
                                 <input ng-model="workspace[dir.key]" ng-change="dir.method({ target: { files: [{path: workspace[dir.key] }]}})" ng-model-options="{ debounce: 500 }">

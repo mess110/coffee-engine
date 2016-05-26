@@ -28,6 +28,7 @@ app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$rout
 app.controller 'NewGameController', ['$scope', '$mdToast', '$location', ($scope, $mdToast, $location) ->
   EngineHolder.get().engine.removeDom()
 
+  $scope.ui.project.name = 'coffee-engine'
   $scope.json =
     name: 'Mario'
     template: 'project'

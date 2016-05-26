@@ -1,6 +1,7 @@
 app.controller 'ParticlePlaygroundController', ($scope) ->
   defaultTexture = 'workspace/lib/textures/star.png'
 
+  $scope.ui.project.name = 'Particle Playground'
   $scope.options =
     clearColor: '#000000'
     textureFile:

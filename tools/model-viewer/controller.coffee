@@ -9,6 +9,7 @@ app.controller 'ModelViewerController', ($scope) ->
     $scope.$apply()
   )
 
+  $scope.ui.project.name = 'Model Viewer'
   $scope.search = ''
   $scope.searchFilter = (item) ->
     item.key.contains($scope.search)
