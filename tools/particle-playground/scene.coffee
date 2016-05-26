@@ -20,7 +20,7 @@ class ParticlePlaygroundScene extends BaseScene
 
   refresh: (json) ->
     @scene.remove(@particle.mesh)
-    part = BaseParticle.fromJson(json)
+    part = new BaseParticle(json)
     @scene.add part.mesh
     @particle = part
 
