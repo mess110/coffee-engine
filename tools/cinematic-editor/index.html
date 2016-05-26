@@ -188,6 +188,14 @@
                                     </md-option>
                                 </md-select>
                             </md-input-container>
+                            <md-input-container flex ng-if="item.type == 'particle'">
+                                <label>Key</label>
+                                <md-select ng-model="item.key">
+                                    <md-option ng-repeat="asset in json.assets | filter: particleFilter" value="{{ getKeyName(asset.destPath) }}">
+                                        {{ getKeyName(asset.destPath) }}
+                                    </md-option>
+                                </md-select>
+                            </md-input-container>
                         </md-card-content>
                         <md-card-content layout="row" ng-repeat="prop in ['position', 'rotation', 'scale', 'lookAt']" ng-show="hasCoordinates(item.type)">
                             <span flex layout="row" layout-align="center center">{{ prop }}</span>

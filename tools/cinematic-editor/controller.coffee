@@ -39,9 +39,10 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
     'plane'
     'model'
     'terrain'
+    'skySphere'
     'ambientLight'
     'light'
-    'skySphere'
+    'particle'
   ]
 
   $scope.assetTypes = [
@@ -49,6 +50,7 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
     'model'
     'texture'
     'terrain'
+    'particle'
   ]
 
   $scope.cameraTypes = [
@@ -100,7 +102,7 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
     ['plane', 'skySphere'].includes(type)
 
   $scope.hasCoordinates = (type) ->
-    ['cube', 'plane', 'model', 'light', 'terrain'].includes(type)
+    ['cube', 'plane', 'model', 'light', 'terrain', 'particle'].includes(type)
 
   $scope.hasRadiusAndSegments = (type) ->
     ['skySphere'].includes(type)
@@ -135,6 +137,10 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
   $scope.terrainFilter = (item) ->
     return false unless item.destPath
     item.type == 'terrain'
+
+  $scope.particleFilter = (item) ->
+    return false unless item.destPath
+    item.type == 'particle'
 
   $scope.itemWithIdFilter = (item) ->
     item.id?

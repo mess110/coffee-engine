@@ -39,6 +39,16 @@ class FileSystem
     data = fs.readFileSync dest, 'utf8'
     json = JSON.parse(data)
 
+    # particle
+    if json.group?
+      if json.group.asset?
+        if json.group.asset.libPath?
+          from = json.group.asset.libPath
+          to = "#{destDir}#{json.group.asset.destPath}"
+
+          @copyFileSync(from, to)
+          toReturn.push json.group.asset
+
     # terrain
     if json.heightmap?
       for s in ['heightmap', 'texture']

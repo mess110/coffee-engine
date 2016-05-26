@@ -118,6 +118,10 @@ class Helper
   @terrain: (options = {}) ->
     Terrain.fromJson(options)
 
+  # Creates a particle group and mesh
+  @particle: (options = {}) ->
+    BaseParticle.fromJson(options)
+
   # Creates a plane
   #
   # @param [Object] options

@@ -14,7 +14,6 @@ class ParticlePlaygroundScene extends BaseScene
     TextureManager.get().load('star', url)
 
     @particle = new BaseParticle(url)
-    console.log @particle
     @scene.add @particle.mesh
 
     @loaded = true

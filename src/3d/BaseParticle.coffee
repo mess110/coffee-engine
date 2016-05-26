@@ -31,8 +31,10 @@ class BaseParticle extends BaseModel
     else
       json = texturePath
       json.group ?= {}
-      throw new Error('json.group.textureUrl is required') unless json.group.textureUrl?
-      key = Utils.getKeyName(json.group.textureUrl, Utils.IMG_URLS)
+      json.group.asset ?= {}
+      throw new Error('json.group.asset.libPath is required') unless json.group.asset.libPath?
+      key = Utils.getKeyName(json.group.asset.libPath, Utils.IMG_URLS)
+      console.log key
       json.group.texture = TextureManager.get().items[key]
 
     json = @formatDefaults(json)
@@ -127,5 +129,9 @@ class BaseParticle extends BaseModel
     @particleGroup.tick(tpf)
 
   # Load particle with TextureManager
-  @fromJson = (json) ->
+  @fromJson = (assetJson) ->
+    throw new Error('not a particle') if assetJson.type != 'particle'
+    throw new Error('key missing') unless assetJson.key?
+
+    json = SaveObjectManager.get().items[assetJson.key]
     new BaseParticle(json)

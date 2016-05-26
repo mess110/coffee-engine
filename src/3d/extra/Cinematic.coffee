@@ -29,7 +29,7 @@ class Cinematic
 
     for item in @json.items
       switch item.type
-        when 'terrain'
+        when 'terrain', 'particle'
           baseModel = Helper[item.type](item)
           obj = baseModel.mesh
           @cinemize(item, baseModel, obj)
@@ -69,6 +69,10 @@ class Cinematic
   tick: (tpf) ->
     return if @loaded != true
 
+    for item in @items
+      if item instanceof BaseParticle
+        item.tick(tpf)
+
     return if @json.scripts.where(processing: true).any()
     script = @json.scripts.where(processed: undefined).first()
     return unless script?
@@ -77,6 +81,7 @@ class Cinematic
 
     for action in script.actions
       @processAction(action)
+
     @setNotProcessing(script)
 
   # Process an action from a script

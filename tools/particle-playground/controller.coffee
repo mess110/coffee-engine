@@ -19,7 +19,9 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
   eng = EngineHolder.get().engine
   if eng?
     eng.appendDom()
-    eng.initScene(particlePlaygroundScene, url: "../#{$scope.options.textureFile.libPath}")
+    options =
+      url: "../#{$scope.options.textureFile.libPath}"
+    eng.initScene(particlePlaygroundScene, options)
     $scope.particle = particlePlaygroundScene.particle
 
   $scope.updateColor = (specialColor) ->
@@ -41,7 +43,7 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
     file = "../#{$scope.options.textureFile.libPath}"
     key = Utils.getKeyName(file, Utils.IMG_URLS)
     json = formatJson()
-    json.group.textureUrl = file
+    json.group.asset.libPath = file
 
     if TextureManager.get().items[key]?
       $scope.refresh(json)
@@ -52,9 +54,13 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
       )
 
   formatJson = () ->
+    zeUrl = $scope.particle.particleGroup.texture.sourceFile
+    fileName = zeUrl.split('/').last()
     {
       group:
-        textureUrl: $scope.particle.particleGroup.texture.sourceFile
+        asset:
+          libPath: zeUrl
+          destPath: "assets/#{fileName}"
         maxAge: $scope.particle.particleGroup.maxAge
         colorize: $scope.particle.particleGroup.colorize
         hasPerspective: $scope.particle.particleGroup.hasPerspective
@@ -138,4 +144,7 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
 
   $scope.saveJson = ->
     hash = formatJson()
+    if hash.group.asset.libPath.startsWith('../')
+      hash.group.asset.libPath = hash.group.asset.libPath.substring(3)
+      hash.group.asset.type = 'texture'
     Utils.saveFile(hash, 'particle.save')

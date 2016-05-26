@@ -32,6 +32,13 @@ class WorkspaceQuery
       callback(err, files)
     )
 
+  getParticles: (workspace, callback) ->
+    terrainPaths = "#{workspace.localLib}/particles/**/*.save.json"
+    glob(terrainPaths, {}, (err, files) ->
+      files = WorkspaceQuery._keify(files, Utils.SAVE_URLS)
+      callback(err, files)
+    )
+
   getTerrains: (workspace, callback) ->
     terrainPaths = "#{workspace.localLib}/terrains/**/*.save.json"
     glob(terrainPaths, {}, (err, files) ->
