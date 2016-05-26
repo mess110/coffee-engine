@@ -1,5 +1,5 @@
 class TerrainGeneratorScene extends BaseScene
-  init: ->
+  init: (options) ->
     engine.setWidthHeight(window.innerWidth - 320, window.innerHeight)
     @scene.fog = Helper.fog(far: 300, color: 'white')
     @grid = Helper.grid(size: 2000, step: 20, color: 'gray')
@@ -16,8 +16,7 @@ class TerrainGeneratorScene extends BaseScene
     engine.camera.position.set 0, 15, 100
     @controls = Helper.orbitControls(engine)
 
-    options = DEFAULT_OPTIONS
-    Terrain.heightmap(options.heightmapUrl, options.heightmapUrl, options.width, options.height, options.wSegments, options.hSegments, options.scale, @)
+    Terrain.heightmap(options.texture.libPath, options.heightmap.libPath, options.width, options.height, options.wSegments, options.hSegments, options.scale, @)
 
   uninit: ->
     super()
@@ -25,7 +24,7 @@ class TerrainGeneratorScene extends BaseScene
 
   updateTerrain: (options) ->
     @scene.remove(@terrain.mesh) if @terrain?
-    Terrain.heightmap_blocking(options)
+    Terrain.heightmap(options.texture.libPath, options.heightmap.libPath, options.width, options.height, options.wSegments, options.hSegments, options.scale, @)
 
   tick: (tpf) ->
     return unless @loaded

@@ -26,33 +26,50 @@ class FileSystem
     fs.writeFileSync scene.path, string
     scene
 
-  # The asset it copied sync but any asset the asset uses is copied
-  # async
-  copyAssetSemiSync: (workspace, asset) ->
+  # returns array of asset dependencies for the asset
+  copyAssetSync: (workspace, asset) ->
+    toReturn = []
+
     src = asset.libPath
     destDir = "#{workspace.gamesDir}#{workspace.lastOpenedProject}/"
     dest = "#{destDir}#{asset.destPath}"
 
     @copyFileSync(src, dest)
     return unless dest.endsWith('.json')
-    fs.readFile dest, 'utf8', (err, data) ->
-      if err
-        return console.log(err)
-      json = JSON.parse(data)
+    data = fs.readFileSync dest, 'utf8'
+    json = JSON.parse(data)
 
-      # blender model
-      if json.materials?
-        for material in json.materials
-          for key of material
-            continue unless typeof material[key] == 'string'
-            if material[key].endsWithAny(Utils.IMG_URLS)
-              to = "#{destDir}assets/#{material[key]}"
-              from = asset.libPath.split('/')
-              from.pop()
-              from = "#{from.join('/')}/#{material[key]}"
-              fileSystem.copyFileSync from, to
+    # terrain
+    if json.heightmap?
+      for s in ['heightmap', 'texture']
+        from = json[s].libPath
+        fileName = json[s].libPath.split('/').last()
+        toRelativeToGame = "assets/#{fileName}"
+        to = "#{destDir}#{toRelativeToGame}"
 
-      return
+        fileSystem.copyFileSync(from, to)
+
+        aaa = JSON.parse(fs.readFileSync(dest, 'utf8'))
+        aaa[s].destPath = toRelativeToGame
+        aaa[s].type = 'texture'
+        string = JSON.stringify(aaa, null, 2)
+
+        fs.writeFileSync dest, string
+        toReturn.push aaa[s]
+
+    # blender model
+    if json.materials?
+      for material in json.materials
+        for key of material
+          continue unless typeof material[key] == 'string'
+          if material[key].endsWithAny(Utils.IMG_URLS)
+            to = "#{destDir}assets/#{material[key]}"
+            from = asset.libPath.split('/')
+            from.pop()
+            from = "#{from.join('/')}/#{material[key]}"
+            fileSystem.copyFileSync from, to
+
+    toReturn
 
   copyFileSync: (source, target) ->
     targetFile = target

@@ -1,0 +1,13 @@
+{
+  "width": 10,
+  "height": 10,
+  "scale": 5,
+  "texture": {
+    "libPath": "workspace/lib/textures/grass.png",
+    "destPath": "assets/grass.png"
+  },
+  "heightmap": {
+    "libPath": "workspace/lib/textures/heightmap.png",
+    "destPath": "assets/heightmap.png"
+  }
+}

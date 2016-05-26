@@ -1,4 +1,4 @@
-app.controller 'MainController', ['$scope', '$mdToast', '$location', ($scope, $mdToast, $location) ->
+app.controller 'MainController', ['$scope', '$location', '$mdToast', '$mdDialog', ($scope, $location, $mdToast, $mdDialog) ->
   $scope.ui =
     project:
       name: ''
@@ -10,7 +10,7 @@ app.controller 'MainController', ['$scope', '$mdToast', '$location', ($scope, $m
   ]
 
   $scope.refreshProjects = ->
-    WorkspaceQuery.getProjects($scope.workspace, (err, projects) ->
+    workspaceQuery.getProjects($scope.workspace, (err, projects) ->
       $scope.projects = projects
       $scope.$apply()
     )
@@ -45,6 +45,20 @@ app.controller 'MainController', ['$scope', '$mdToast', '$location', ($scope, $m
   $scope.loadProject = (project) ->
     $scope.goTo("/game-maker/#{project}")
     $scope.refreshProjects()
+
+  $scope.openAssetSearch = ($event, asset, callback) ->
+    $mdDialog.show(
+      controller: AssetSearchController
+      controllerAs: 'ctrl'
+      templateUrl: 'asset_search.tmpl.html'
+      parent: angular.element(document.body)
+      targetEvent: $event
+      clickOutsideToClose: true
+      locals:
+        asset: asset
+    ).then((result) ->
+      callback(asset, result)
+    )
 
   $scope.refreshProjects()
 ]

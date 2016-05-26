@@ -1,4 +1,4 @@
-app.controller 'CinematicEditorController', ['$scope', '$mdToast', '$mdDialog', ($scope, $mdToast, $mdDialog) ->
+app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdToast) ->
 
   $scope.ui = {}
 
@@ -38,6 +38,7 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', '$mdDialog', 
     'cube'
     'plane'
     'model'
+    'terrain'
     'ambientLight'
     'light'
     'skySphere'
@@ -47,6 +48,7 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', '$mdDialog', 
     'sound'
     'model'
     'texture'
+    'terrain'
   ]
 
   $scope.cameraTypes = [
@@ -98,7 +100,7 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', '$mdDialog', 
     ['plane', 'skySphere'].includes(type)
 
   $scope.hasCoordinates = (type) ->
-    ['cube', 'plane', 'model', 'light'].includes(type)
+    ['cube', 'plane', 'model', 'light', 'terrain'].includes(type)
 
   $scope.hasRadiusAndSegments = (type) ->
     ['skySphere'].includes(type)
@@ -129,6 +131,10 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', '$mdDialog', 
   $scope.modelFilter = (item) ->
     return false unless item.destPath
     item.destPath.endsWithAny(Utils.JSON_URLS) && !item.destPath.endsWithAny(Utils.SAVE_URLS)
+
+  $scope.terrainFilter = (item) ->
+    return false unless item.destPath
+    item.type == 'terrain'
 
   $scope.itemWithIdFilter = (item) ->
     item.id?
@@ -208,87 +214,14 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', '$mdDialog', 
   $scope.removeScript = (script) ->
     $scope.json.scripts.remove(script)
 
-  $scope.openAssetSearch = ($event, asset) ->
-    $mdDialog.show(
-      controller: AssetSearchController
-      controllerAs: 'ctrl'
-      templateUrl: 'cinematic-editor/asset_search.tmpl.html'
-      parent: angular.element(document.body)
-      targetEvent: $event
-      clickOutsideToClose: true
-      locals:
-        asset: asset
-    ).then((result) ->
-      asset.libPath = result.libPath
-      unless asset.destPath?
-        asset.destPath = "assets/#{asset.libPath.split('/').last()}"
+  $scope.onAssetSelect = (asset, result) ->
+    asset.libPath = result.libPath
+    unless asset.destPath?
+      asset.destPath = "assets/#{asset.libPath.split('/').last()}"
+    dependencies = fileSystem.copyAssetSync($scope.workspace, asset)
 
-      fileSystem.copyAssetSemiSync($scope.workspace, asset)
-    )
+    for dependency in dependencies
+      $scope.json.assets.push dependency
+
   return
 ]
-
-AssetSearchController = ($timeout, $q, $scope, $mdDialog, asset) ->
-  self = this
-  # list of `state` value/display objects
-  # ******************************
-  # Internal methods
-  # ******************************
-
-  ###*
-  # Search for states... use $timeout to simulate
-  # remote dataservice call.
-  ###
-
-  querySearch = (query) ->
-    if query then self.states.filter(createFilterFor(query)) else self.states
-
-  ###*
-  # Build `states` list of key/value pairs
-  ###
-
-  loadAll = ->
-    workspace = Persist.getJson('workspace')
-    switch asset.type
-      when 'texture'
-        WorkspaceQuery.getTextures(workspace, (err, textures) ->
-          self.states = textures
-          $scope.$apply()
-        )
-      when 'model'
-        WorkspaceQuery.getJsonModels(workspace, (err, models) ->
-          self.states = models
-          $scope.$apply()
-        )
-      when 'sound'
-        WorkspaceQuery.getSounds(workspace, (err, sounds) ->
-          self.states = sounds
-          $scope.$apply()
-        )
-      else
-        console.log 'unknown asset type'
-
-  ###*
-  # Create filter function for a query string
-  ###
-
-  createFilterFor = (query) ->
-    lowercaseQuery = angular.lowercase(query)
-    (state) ->
-      state.libPath.contains(lowercaseQuery)
-
-  loadAll()
-  self.querySearch = querySearch
-  # ******************************
-  # Template methods
-  # ******************************
-
-  self.cancel = ($event) ->
-    $mdDialog.cancel()
-    return
-
-  self.finish = ($event) ->
-    $mdDialog.hide(self.selectedItem)
-    return
-
-  return

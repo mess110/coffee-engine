@@ -3,6 +3,7 @@ fs = require('fs')
 gui = require('nw.gui')
 path = require('path')
 fileSystem = new FileSystem()
+workspaceQuery = new WorkspaceQuery()
 
 app = angular.module 'MyApp', [
   'ngMaterial'
@@ -35,3 +36,44 @@ app.run ['$rootScope', ($rootScope) ->
 
   $rootScope.workspace = Persist.getJson('workspace') || {}
 ]
+
+AssetSearchController = ($timeout, $q, $scope, $mdDialog, asset) ->
+  self = this
+
+  querySearch = (query) ->
+    if query then self.items.filter(createFilterFor(query)) else self.items
+
+  loadAll = ->
+    workspace = Persist.getJson('workspace')
+    throw new Error('missing asset type') unless asset.type?
+    dyno = asset.type.capitalizeFirstLetter()
+    workspaceQuery["get#{dyno}s"](workspace, (err, textures) ->
+      self.items = textures
+      $scope.$apply()
+    )
+
+  ###*
+  # Create filter function for a query string
+  ###
+
+  createFilterFor = (query) ->
+    lowercaseQuery = angular.lowercase(query)
+    (state) ->
+      state.libPath.contains(lowercaseQuery)
+
+  loadAll()
+  self.querySearch = querySearch
+
+  # ******************************
+  # Template methods
+  # ******************************
+
+  self.cancel = ($event) ->
+    $mdDialog.cancel()
+    return
+
+  self.finish = ($event) ->
+    $mdDialog.hide(self.selectedItem)
+    return
+
+  return

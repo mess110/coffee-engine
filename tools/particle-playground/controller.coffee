@@ -11,7 +11,7 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
       colorMiddle: '#ffffff'
       colorEnd: '#0000ff'
 
-  WorkspaceQuery.getTextures($scope.workspace, (err, files) ->
+  workspaceQuery.getTextures($scope.workspace, (err, files) ->
     $scope.textures = files
     $scope.$apply()
   )

@@ -13,6 +13,7 @@ class CinematicScene extends BaseScene
   constructor: (json) ->
     super()
     @cinematic = new Cinematic(json, @scene)
+    @controls = Helper.orbitControls(engine)
 
   # @nodoc
   tick: (tpf) ->

@@ -8,7 +8,7 @@ app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$rout
   $scope.ui.project.name = $routeParams.id
   $scope.ui.newFilename = ''
 
-  WorkspaceQuery.getScenes($scope.workspace, $scope.ui.project.name, (err, scenes) ->
+  workspaceQuery.getScenes($scope.workspace, $scope.ui.project.name, (err, scenes) ->
     $scope.scenes = scenes
     $scope.$apply()
   )

@@ -73,7 +73,7 @@
                             </md-input-container>
                         </md-card-content>
                         <md-card-actions layout="row" layout-align="end center">
-                            <md-button ng-click="openAssetSearch($event, asset)" ng-disabled="!asset.type">Import</md-button>
+                            <md-button ng-click="openAssetSearch($event, asset, onAssetSelect)" ng-disabled="!asset.type">Import</md-button>
                             <md-button ng-click="removeAsset(asset)">delete</md-button>
                         </md-card-actions>
                     </md-card>
@@ -176,6 +176,14 @@
                                 <label>Key</label>
                                 <md-select ng-model="item.key">
                                     <md-option ng-repeat="asset in json.assets | filter: modelFilter" value="{{ getKeyName(asset.destPath) }}">
+                                        {{ getKeyName(asset.destPath) }}
+                                    </md-option>
+                                </md-select>
+                            </md-input-container>
+                            <md-input-container flex ng-if="item.type == 'terrain'">
+                                <label>Key</label>
+                                <md-select ng-model="item.key">
+                                    <md-option ng-repeat="asset in json.assets | filter: terrainFilter" value="{{ getKeyName(asset.destPath) }}">
                                         {{ getKeyName(asset.destPath) }}
                                     </md-option>
                                 </md-select>

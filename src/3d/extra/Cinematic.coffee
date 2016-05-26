@@ -29,20 +29,15 @@ class Cinematic
 
     for item in @json.items
       switch item.type
+        when 'terrain'
+          baseModel = Helper[item.type](item)
+          obj = baseModel.mesh
+          @cinemize(item, baseModel, obj)
         when 'cube', 'plane', 'model', 'ambientLight', 'light', 'skySphere'
           obj = Helper[item.type](item)
           baseModel = new BaseModel()
           baseModel.mesh = obj
-
-          @setId(baseModel, item)
-          @setId(obj, item)
-          @setXYZProp('position', obj, item)
-          @setXYZProp('rotation', obj, item)
-          @setXYZProp('scale', obj, item, 1)
-          if item.lookAt?
-            camera.lookAt(@toVector3(item.lookAt))
-          @items.push baseModel
-          @scene.add baseModel.mesh if @scene
+          @cinemize(item, baseModel, obj)
         else
           console.log "unknown item type #{item.type}"
 
@@ -50,6 +45,20 @@ class Cinematic
       engine.setCamera(@cameras[@json.engine.camera])
 
     @loaded = true
+
+  # set properties generated with the UI
+  cinemize: (item, baseModel, obj) ->
+    @setId(baseModel, item)
+    @setId(obj, item)
+    @setXYZProp('position', obj, item)
+    @setXYZProp('rotation', obj, item)
+    @setXYZProp('scale', obj, item, 1)
+    if item.lookAt?
+      # TODO: find out if this is a bug. should the camera be lookin
+      # or the model?
+      camera.lookAt(@toVector3(item.lookAt))
+    @items.push baseModel
+    @scene.add baseModel.mesh if @scene
 
   # Add all items to a scene
   addAll: (scene) ->

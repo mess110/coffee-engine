@@ -4,7 +4,7 @@ app.controller 'ModelViewerController', ($scope) ->
     eng.appendDom()
     eng.initScene(modelViewerScene)
 
-  WorkspaceQuery.getJsonModels($scope.workspace, (err, files) ->
+  workspaceQuery.getModels($scope.workspace, (err, files) ->
     $scope.files = files
     $scope.$apply()
   )

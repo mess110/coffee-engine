@@ -20,8 +20,9 @@ class Terrain extends BaseModel
   constructor: (textureUrl, width, height, wSegments, hSegments)->
     if arguments.length == 1
       json = textureUrl # rename the param
+      key = Utils.getKeyName(json.texture.destPath, Utils.IMG_URLS)
       mat = new THREE.MeshLambertMaterial(
-        map: TextureManager.get().items[Utils.getKeyName(json.textureUrl, Utils.IMG_URLS)]
+        map: TextureManager.get().items[key]
       )
       geom = new (THREE.PlaneGeometry)(json.width, json.height, json.wSegments, json.hSegments)
     else
@@ -71,6 +72,9 @@ class Terrain extends BaseModel
     THREE.ImageUtils.loadTexture(heightmapUrl, THREE.UVMapping, (hm) =>
       hm.heightData = Terrain.getHeightData(hm.image, scale)
 
+      wSegments = hm.image.width - 1 unless wSegments?
+      hSegments = hm.image.height - 1 unless hSegments?
+
       terrain = new Terrain(textureUrl, width, height, wSegments, hSegments)
       terrain.applyHeightmap(hm.heightData)
 
@@ -79,21 +83,6 @@ class Terrain extends BaseModel
       scene.terrain = terrain
       scene.scene.add terrain.mesh
     )
-
-  # Another hackish way to add a heightmap to the scene
-  #
-  # @param [Object] options
-  @heightmap_blocking: (options) ->
-    hm = THREE.ImageUtils.loadTexture(options.heightmapUrl, THREE.UVMapping)
-    hm.heightData = Terrain.getHeightData(hm.image, options.scale)
-
-    terrain = new Terrain(options.textureUrl, options.width, options.height, options.wSegments, options.hSegments)
-    terrain.applyHeightmap(hm.heightData)
-
-    scene = SceneManager.get().currentScene() unless scene?
-
-    scene.terrain = terrain
-    scene.scene.add terrain.mesh
 
   # Returns height data of an Image object
   #
@@ -124,9 +113,22 @@ class Terrain extends BaseModel
   # Propper way to load a terrain using TextureManager
   #
   # @param [Object] json
-  @fromJson: (json) ->
-    hm = TextureManager.get().items[Utils.getKeyName(json.heightmapUrl, Utils.IMG_URLS)]
+  @fromJson: (assetJson) ->
+    throw new Error('not a terrain') if assetJson.type != 'terrain'
+    throw new Error('key missing') unless assetJson.key?
+
+    json = SaveObjectManager.get().items[assetJson.key]
+
+    for key in ['width', 'height', 'scale', 'texture', 'heightmap']
+      throw new Error("#{key} missing for terrain") unless json[key]?
+    for key in ['texture', 'heightmap']
+      throw new Error("#{key}.destPath missing for terrain") unless json[key].destPath?
+
+    key = Utils.getKeyName(json.heightmap.destPath, Utils.IMG_URLS)
+    hm = TextureManager.get().items[key]
     hm.heightData = Terrain.getHeightData(hm.image, json.scale)
+    json.wSegments ?= hm.image.width - 1
+    json.hSegments ?= hm.image.height - 1
     terrain = new Terrain(json)
     terrain.applyHeightmap(hm.heightData)
     terrain

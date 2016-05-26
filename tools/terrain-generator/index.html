@@ -1,19 +1,13 @@
 <md-sidenav class="md-sidenav-left md-whiteframe-z2 terrain-generator" md-component-id="left" md-is-locked-open="true" style="position: fixed; z-index: 1">
     <md-content layout-padding>
-        <div layout="row">
-            <md-input-container flex>
-                <label>Heightmap</label>
-                <input ng-model="options.heightmapUrl" ng-change="updateTerrain()">
-            </md-input-container>
+        <div layout="row" layout-align="center center">
+            <md-button ng-click="openAssetSearch($event, { type: 'texture' }, heightmapChosen)" aria-label="Choose heightmap">{{ getKeyName(options.heightmap.libPath )}}</md-button>
         </div>
-        <img class="heightmap" ng-src="{{options.heightmapUrl}}">
-        <div layout="row">
-            <md-input-container flex>
-                <label>Texture</label>
-                <input ng-model="options.textureUrl" ng-change="updateTerrain()">
-            </md-input-container>
+        <img class="heightmap" ng-src="{{options.heightmap.libPath}}" ng-click="openAssetSearch($event, { type: 'texture' }, heightmapChosen)">
+        <div layout="row" layout-align="center center">
+            <md-button ng-click="openAssetSearch($event, { type: 'texture' }, textureChosen)" aria-label="Choose texture">{{ getKeyName(options.texture.libPath) }}</md-button>
         </div>
-        <img class="heightmap" ng-src="{{options.textureUrl}}">
+        <img class="heightmap" ng-src="{{options.texture.libPath}}" ng-click="openAssetSearch($event, { type: 'texture' }, textureChosen)">
         <div layout="row">
             <md-input-container>
                 <label>Width</label>

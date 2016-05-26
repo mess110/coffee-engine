@@ -114,6 +114,10 @@ class Helper
     throw new Error("key missing for: #{JSON.stringify(options)}") unless options.key?
     JsonModelManager.get().clone(options.key)
 
+  # Creates a terrain
+  @terrain: (options = {}) ->
+    Terrain.fromJson(options)
+
   # Creates a plane
   #
   # @param [Object] options
