@@ -1,10 +1,7 @@
 app.controller 'BezierController', ($scope) ->
 
   $scope.ui.project.name = 'Bezier Helper'
-  eng = EngineHolder.get().engine
-  if eng?
-    eng.appendDom()
-    eng.initScene(bezierScene)
+  $scope.setScene(bezierScene)
 
   $scope.wireframe = false
   $scope.json =

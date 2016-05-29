@@ -1,6 +1,6 @@
 app.controller 'TerrainGeneratorController', ($scope) ->
   defaultTexture = "../#{$scope.workspace.localLib}textures/grass.png"
-  defaultHeightmap = "../#{$scope.workspace.localLib}textures/heightmap.png"
+  defaultHeightmap = "../#{$scope.workspace.localLib}textures/heightmap3.png"
 
   defaultOptions =
     width: 10
@@ -13,10 +13,7 @@ app.controller 'TerrainGeneratorController', ($scope) ->
     heightmap:
       libPath: defaultHeightmap
 
-  eng = EngineHolder.get().engine
-  if eng?
-    eng.appendDom()
-    eng.initScene(terrainGeneratorScene, defaultOptions)
+  $scope.setScene(terrainGeneratorScene, defaultOptions)
 
   $scope.ui.project.name = 'Terrain Generator'
   $scope.options = defaultOptions

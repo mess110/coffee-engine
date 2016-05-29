@@ -6,6 +6,7 @@ app.controller 'MainController', ['$scope', '$location', '$mdToast', '$mdDialog'
     { name: 'Model Viewer', href: 'model-viewer' }
     { name: 'Particle Playground', href: 'particle-playground' }
     { name: 'Terrain Generator', href: 'terrain-generator' }
+    { name: 'Shader Editor', href: 'shader-editor' }
     { name: 'Bezier Helper', href: 'bezier-helper' }
   ]
 
@@ -14,6 +15,12 @@ app.controller 'MainController', ['$scope', '$location', '$mdToast', '$mdDialog'
       $scope.projects = projects
       $scope.$apply()
     )
+
+  $scope.setScene = (scene, options = {}) ->
+    eng = EngineHolder.get().engine
+    if eng?
+      eng.appendDom()
+      eng.initScene(scene, options)
 
   $scope.goTo = (path, newWindow = false) ->
     if newWindow
@@ -42,9 +49,17 @@ app.controller 'MainController', ['$scope', '$location', '$mdToast', '$mdDialog'
     win = gui.Window.get()
     win.close()
 
+  $scope.showDevTools = ->
+    gui.Window.get().showDevTools()
+
+  $scope.reload = ->
+    gui.Window.get().reload()
+
   $scope.loadProject = (project) ->
     $scope.goTo("/game-maker/#{project}")
     $scope.refreshProjects()
+
+  $scope.shortcut = (event) ->
 
   $scope.openAssetSearch = ($event, asset, callback) ->
     $mdDialog.show(

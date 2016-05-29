@@ -17,5 +17,8 @@ engine.addScene(terrainGeneratorScene)
 particlePlaygroundScene = new ParticlePlaygroundScene()
 engine.addScene(particlePlaygroundScene)
 
+shaderEditorScene = new ShaderEditorScene()
+engine.addScene(shaderEditorScene)
+
 EngineHolder.get().engine.removeDom()
 engine.render()

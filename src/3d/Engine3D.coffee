@@ -201,3 +201,18 @@ class Engine3D
     vector = new THREE.Vector3(mouseX, mouseY, 0.5)
     vector.unproject @camera
     return new THREE.Raycaster(@camera.position, vector.sub(@camera.position).normalize())
+
+  # @nodoc
+  @scenify: ->
+    loadingScene = new LoadingScene([
+      "assets/scenes/start.save.json"
+    ], ->
+      loadingScene.hasFinishedLoading = ->
+        scene = CinematicScene.fromSaveObjectKey('start')
+        engine.addScene(scene)
+        engine.sceneManager.setScene(scene)
+      assets = CinematicScene.getAssets('start')
+      loadingScene.loadAssets(assets)
+    )
+    engine.addScene(loadingScene)
+    loadingScene

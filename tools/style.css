@@ -34,3 +34,13 @@ canvas {
 md-sidenav {
   padding-top: 96px;
 }
+
+.shader-editor {
+  position: absolute;
+  width: 50%;
+  right: 0px;
+}
+
+md-toolbar-filler {
+  width: 96px !important;
+}

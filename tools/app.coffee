@@ -9,6 +9,7 @@ app = angular.module 'MyApp', [
   'ngMaterial'
   'ngRoute'
   'mdColorPicker'
+  'ui.codemirror'
 ]
 
 app.config ['$routeProvider', ($routeProvider) ->
@@ -20,6 +21,7 @@ app.config ['$routeProvider', ($routeProvider) ->
     .when('/terrain-generator', templateUrl: 'terrain-generator/index.html', controller: 'TerrainGeneratorController')
     .when('/particle-playground', templateUrl: 'particle-playground/index.html', controller: 'ParticlePlaygroundController')
     .when('/cinematic-editor', templateUrl: 'cinematic-editor/index.html', controller: 'CinematicEditorController')
+    .when('/shader-editor', templateUrl: 'shader-editor/index.html', controller: 'ShaderEditorController')
     .when('/settings', templateUrl: 'settings/index.html', controller: 'SettingsController')
     .otherwise redirectTo: '/game-maker/new'
   return

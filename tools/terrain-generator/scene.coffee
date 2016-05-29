@@ -15,6 +15,7 @@ class TerrainGeneratorScene extends BaseScene
 
     engine.camera.position.set 0, 15, 100
     @controls = Helper.orbitControls(engine)
+    @controls.noPan = true
 
     Terrain.heightmap(options.texture.libPath, options.heightmap.libPath, options.width, options.height, options.wSegments, options.hSegments, options.scale, @)
 

@@ -22,8 +22,4 @@ app.controller 'SettingsController', ['$scope', '$mdToast', ($scope, $mdToast) -
   $scope.toast = (message) ->
     simple = $mdToast.simple().textContent(message).position('bottom left').hideDelay(3000)
     $mdToast.show simple
-
-  $scope.shortcut = (event) ->
-    if event.ctrlKey and event.which == 19
-      $scope.save()
 ]

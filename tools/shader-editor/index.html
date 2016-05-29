@@ -1,0 +1,14 @@
+<md-content class="shader-editor" layout="column">
+    <md-card>
+        <md-card-content>
+            <p>Vertex Shader</p>
+            <ui-codemirror ng-model="shader.vertex" ui-codemirror-opts="editorOptions" ng-change="update()"></ui-codemirror>
+        </md-card-content>
+    </md-card>
+    <md-card>
+        <md-card-content>
+            <p>Fragment Shader</p>
+            <ui-codemirror ng-model="shader.fragment" ui-codemirror-opts="editorOptions" ng-change="update()"></ui-codemirror>
+        </md-card-content>
+    </md-card>
+</md-content>

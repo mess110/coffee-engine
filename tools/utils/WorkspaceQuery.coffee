@@ -22,11 +22,7 @@ class WorkspaceQuery
     )
 
   getModels: (workspace, callback) ->
-    if workspace.modelRepository.startsWith('/')
-      path = workspace.modelRepository
-    else
-      path = "../../#{workspace.modelRepository}"
-
+    path = workspace.modelRepository
     glob("#{path}/**/*.json", {}, (err, files) ->
       files = WorkspaceQuery._keify(files, Utils.JSON_URLS)
       callback(err, files)

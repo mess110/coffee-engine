@@ -1,13 +1,11 @@
 app.controller 'ModelViewerController', ($scope) ->
-  eng = EngineHolder.get().engine
-  if eng?
-    eng.appendDom()
-    eng.initScene(modelViewerScene)
 
   workspaceQuery.getModels($scope.workspace, (err, files) ->
     $scope.files = files
     $scope.$apply()
   )
+
+  $scope.setScene(modelViewerScene)
 
   $scope.ui.project.name = 'Model Viewer'
   $scope.search = ''

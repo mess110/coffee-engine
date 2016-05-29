@@ -88,10 +88,6 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
     if newValue == false
       delete $scope.json.engine.camera
 
-  $scope.shortcut = (event) ->
-    if event.ctrlKey and event.which == 19
-      $scope.save()
-
   $scope.targetableObjects = ->
     $scope.json.items.concat($scope.json.cameras)
 

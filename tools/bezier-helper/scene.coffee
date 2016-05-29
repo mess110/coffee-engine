@@ -21,6 +21,7 @@ class BezierScene extends BaseScene
     @scene.add @plane.mesh
 
     @controls = Helper.orbitControls(@engine)
+    @controls.noPan = true
     @controls.damping = 0.2
 
   uninit: ->
