@@ -22,6 +22,7 @@ app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$rout
 
   $scope.editScene = (scene) ->
     $scope.workspace.lastOpenedScene = scene
+    $scope.saveWorkspace()
     $scope.goTo('cinematic-editor')
 ]
 

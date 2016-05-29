@@ -34,7 +34,6 @@ class BaseParticle extends BaseModel
       json.group.asset ?= {}
       throw new Error('json.group.asset.libPath is required') unless json.group.asset.libPath?
       key = Utils.getKeyName(json.group.asset.libPath, Utils.IMG_URLS)
-      console.log key
       json.group.texture = TextureManager.get().items[key]
 
     json = @formatDefaults(json)

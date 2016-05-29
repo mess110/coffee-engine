@@ -113,7 +113,6 @@ class Cinematic
   # @nodoc
   setNotProcessing: (script) ->
     duration = @getScriptDuration(script)
-    console.log duration
     setTimeout =>
       script.processing = false
     , duration
