@@ -20,7 +20,7 @@ class Engine3D
     @appendDom()
     @renderer.domElement.setAttribute('id', 'coffee-engine-dom')
 
-    camera = Helper.camera(aspect: @width / @height, near: 0.5, far: 1000000)
+    camera = Helper.camera(aspect: @width / @height, near: Utils.CAMERA_DEFAULT_NEAR, far: Utils.CAMERA_DEFAULT_FAR)
     @setCamera(camera)
     @camera.position.z = 10
 
