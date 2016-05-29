@@ -145,21 +145,29 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
     return false unless item.destPath
     item.destPath.endsWithAny(Utils.AUDIO_URLS)
 
+  $scope.shortcut = (event) ->
+    if event.ctrlKey && event.which == 19
+      $scope.save()
+
   $scope.save = ->
-    unless $scope.json.path?
-      $scope.toast('path missing')
+    unless $scope.json.id?
+      $scope.toast('id missing')
       return
-    unless $scope.json.path.endsWith('.save.json')
+
+    path = fileSystem.getScenePath($scope.workspace, $scope.json.id)
+    unless path.endsWith('.save.json')
       $scope.toast('path must be a .save.json file')
       return
 
+    # set default values
+    for script in $scope.json.scripts
+      for action in script.actions
+        if action.animate?
+          action.animate.loop = false unless action.animate.loop?
+
     string = JSON.stringify(angular.copy($scope.json), null, 2)
-    fs.writeFile $scope.json.path, string, (err) ->
-      if err
-        return console.log(err)
-      $scope.$digest()
-      $scope.toast('saved')
-      return
+    fs.writeFileSync path, string
+    $scope.toast("saved scene '#{$scope.json.id}'")
 
   $scope.addAsset = ->
     $scope.json.assets.push {}

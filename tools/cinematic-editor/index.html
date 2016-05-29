@@ -1,4 +1,4 @@
-<div ng-cloak="">
+<div ng-cloak="" ng-keypress="shortcut($event)">
     <md-content>
         <md-tabs md-dynamic-height="" md-border-bottom="">
             <md-tab label="scene">
@@ -6,13 +6,9 @@
                     <md-card>
                         <md-card-content>
                             <div layout="row">
-                                <md-input-container class="md-block">
-                                    <label>Title</label>
-                                    <input ng-model="json.title">
-                                </md-input-container>
                                 <md-input-container class="md-block" flex-gt-xs>
-                                    <label>Path</label>
-                                    <input ng-model="json.path">
+                                    <label>id</label>
+                                    <input ng-model="json.id">
                                 </md-input-container>
                             </div>
                             <div>

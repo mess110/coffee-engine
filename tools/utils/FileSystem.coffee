@@ -13,18 +13,24 @@ class FileSystem
       fs.renameSync("#{dest}/#{json.template}", finalDest)
     true
 
-  newScene: (workspace, newFilename) ->
-    throw new Error('filename missing') unless newFilename?
+  newScene: (workspace, id) ->
+    throw new Error('id missing') unless id?
+    # path = "#{workspace.gamesDir}#{workspace.lastOpenedProject}/assets/scenes/#{id}.save.json"
+    path = @getScenePath(workspace, id)
+
     scene =
-      path: "#{workspace.gamesDir}#{workspace.lastOpenedProject}/assets/scenes/#{newFilename}.save.json"
+      id: id
       engine: {}
       assets: []
       cameras: []
       items: []
       scripts: []
     string = JSON.stringify(scene, null, 2)
-    fs.writeFileSync scene.path, string
+    fs.writeFileSync path, string
     scene
+
+  getScenePath: (workspace, id) ->
+    "#{workspace.gamesDir}#{workspace.lastOpenedProject}/assets/scenes/#{id}.save.json"
 
   # returns array of asset dependencies for the asset
   copyAssetSync: (workspace, asset) ->

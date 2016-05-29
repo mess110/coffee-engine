@@ -59,8 +59,6 @@ app.controller 'MainController', ['$scope', '$location', '$mdToast', '$mdDialog'
     $scope.goTo("/game-maker/#{project}")
     $scope.refreshProjects()
 
-  $scope.shortcut = (event) ->
-
   $scope.openAssetSearch = ($event, asset, callback) ->
     $mdDialog.show(
       controller: AssetSearchController
