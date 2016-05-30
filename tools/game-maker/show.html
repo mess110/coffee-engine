@@ -10,39 +10,28 @@
                             <span>Make sure you have one.</span>
                         </md-card-content>
                     </md-card>
-                    <md-card>
-                        <md-card-content>
-                            <md-input-container class="md-block">
-                                <label>Name</label>
-                                <input ng-model="ui.newFilename">
-                            </md-input-container>
-                        </md-card-content>
-                        <md-card-actions layout="row" layout-align="end center">
-                            <md-button ng-click="newScene(scene)">new</md-button>
-                        </md-card-actions>
-                    </md-card>
-                    <md-card ng-show="scenes.length != 0">
+                </md-content>
+                <md-content layout="row">
+                    <md-card flex ng-show="scenes.length != 0">
                         <md-card-content>
                             <div ng-repeat="scene in scenes" layout="row">
-                                <md-input-container flex>
-                                    <label>Scene</label>
-                                    <input ng-model="scene" ng-readonly="true">
-                                </md-input-container>
+                                <p flex>{{ getSceneName(scene) }}</p>
                                 <md-button ng-click="editScene(scene)">edit</md-button>
                             </div>
                         </md-card-content>
-                        <!-- <md-card-actions layout="row" layout-align="end center"> -->
-                            <!-- <md-button ng-click="editScene(scene)">edit</md-button> -->
-                            <!-- </md-card-actions> -->
                     </md-card>
-                </md-content>
-            </md-tab>
-            <md-tab label="build">
-                <md-content class="md-padding">
-                    <md-card>
-                        <md-card-content layout="column" layout-align="center center">
-                            <md-button ng-click="run()">run</md-button>
+                    <md-card flex>
+                        <md-card-content flex>
+                            <form name="form" flex>
+                                <md-input-container class="md-block">
+                                    <label>Name</label>
+                                    <input name="name" ng-model="ui.newFilename" ng-required="true" ng-pattern="regex.name">
+                                </md-input-container>
+                            </form>
                         </md-card-content>
+                        <md-card-actions layout="row" layout-align="end center">
+                            <md-button ng-click="newScene(scene)" ng-disabled="!form.name.$valid">new</md-button>
+                        </md-card-actions>
                     </md-card>
                 </md-content>
             </md-tab>

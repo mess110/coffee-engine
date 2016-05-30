@@ -23,13 +23,13 @@
                     <md-menu-bar>
                         <md-menu>
                             <button ng-click="$mdOpenMenu()">
-                                Projects
+                                File
                             </button>
                             <md-menu-content>
                                 <md-menu-item>
                                     <md-button ng-click="goTo('game-maker/new')">
                                         New
-                                        <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span>
+                                        <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
@@ -39,6 +39,11 @@
                                             <md-menu-item ng-repeat="project in projects"><md-button ng-click="loadProject(project)">{{ project }}</md-button></md-menu-item>
                                         </md-menu-content>
                                     </md-menu>
+                                </md-menu-item>
+                                <md-menu-item ng-show="workspace.lastOpenedProject">
+                                    <md-button ng-click="run()">
+                                        Run
+                                    </md-button>
                                 </md-menu-item>
                                 <md-menu-divider></md-menu-divider>
                                 <md-menu-item>
@@ -51,7 +56,7 @@
                                 <md-menu-item>
                                     <md-button ng-click="exit()">
                                         Exit
-                                        <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
+                                        <span class="md-alt-text">Alt+F4</span>
                                     </md-button>
                                 </md-menu-item>
                             </md-menu-content>

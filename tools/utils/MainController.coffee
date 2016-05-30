@@ -1,4 +1,4 @@
-app.controller 'MainController', ['$scope', '$location', '$mdToast', '$mdDialog', ($scope, $location, $mdToast, $mdDialog) ->
+app.controller 'MainController', ['$scope', '$location', '$window', '$mdToast', '$mdDialog', ($scope, $location, $window, $mdToast, $mdDialog) ->
   $scope.ui =
     project:
       name: ''
@@ -9,6 +9,9 @@ app.controller 'MainController', ['$scope', '$location', '$mdToast', '$mdDialog'
     { name: 'Shader Editor', href: 'shader-editor' }
     { name: 'Bezier Helper', href: 'bezier-helper' }
   ]
+
+  $scope.regex =
+    name: /^[a-zA-Z0-9-]+$/
 
   $scope.refreshProjects = ->
     workspaceQuery.getProjects($scope.workspace, (err, projects) ->
@@ -72,6 +75,11 @@ app.controller 'MainController', ['$scope', '$location', '$mdToast', '$mdDialog'
     ).then((result) ->
       callback(asset, result)
     )
+
+  $scope.run = ->
+    gamePath = "http://localhost:8080/workspace/games/#{$scope.workspace.lastOpenedProject}/"
+    $window.open(gamePath)
+    return
 
   $scope.refreshProjects()
 ]

@@ -25,9 +25,8 @@ app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$wind
     $scope.saveWorkspace()
     $scope.goTo('cinematic-editor')
 
-  $scope.run = ->
-    gamePath = "http://localhost:8080/workspace/games/#{$scope.workspace.lastOpenedProject}/"
-    $window.open(gamePath)
+  $scope.getSceneName = (scene) ->
+    scene.split('/').last().split('.').first()
 ]
 
 app.controller 'NewGameController', ['$scope', '$mdToast', '$location', ($scope, $mdToast, $location) ->

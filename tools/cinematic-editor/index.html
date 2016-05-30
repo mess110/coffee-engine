@@ -43,9 +43,9 @@
                 </md-content>
             </md-tab>
             <md-tab label="assets">
-                <md-content class="md-padding">
+                <md-content class="md-padding space-for-button">
                     <md-card ng-show="json.assets.length == 0">
-                        <md-card-content>
+                        <md-card-content layout="row" layout-align="center center">
                             <span>No assets</span>
                         </md-card-content>
                     </md-card>
@@ -79,9 +79,9 @@
                 </md-button>
             </md-tab>
             <md-tab label="cameras">
-                <md-content class="md-padding">
+                <md-content class="md-padding space-for-button">
                     <md-card ng-show="json.cameras.length == 0">
-                        <md-card-content>
+                        <md-card-content layout="row" layout-align="center center">
                             <span>No cameras</span>
                         </md-card-content>
                     </md-card>
@@ -140,9 +140,9 @@
                 </md-content>
             </md-tab>
             <md-tab label="items">
-                <md-content class="md-padding">
+                <md-content class="md-padding space-for-button">
                     <md-card ng-show="json.items.length == 0">
-                        <md-card-content>
+                        <md-card-content layout="row" layout-align="center center">
                             <span>No items</span>
                         </md-card-content>
                     </md-card>
@@ -248,10 +248,10 @@
                 </md-button>
             </md-tab>
             <md-tab label="scripts">
-                <md-content class="md-padding">
+                <md-content class="md-padding space-for-button">
                     <md-card ng-show="json.scripts.length == 0">
-                        <md-card-content>
-                            <span>No scripts</span>
+                        <md-card-content layout="row" layout-align="center center">
+                            <p>No scripts</p>
                         </md-card-content>
                     </md-card>
                     <md-card ng-repeat="script in json.scripts">
@@ -413,7 +413,7 @@
                                 </md-input-container>
                             </div>
                         </md-card-content>
-                        <md-card-content ng-show="script.actions.length == 0">
+                        <md-card-content ng-show="script.actions.length == 0" layout="row" layout-align="center center">
                             No actions
                         </md-card-content>
                         <md-card-actions layout="row" layout-align="end center">

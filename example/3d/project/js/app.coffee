@@ -1,6 +1,6 @@
 config = Config.get()
 config.fillWindow()
-config.toggleStats()
+# config.toggleStats()
 
 nm = NetworkManager.get()
 nm.connect()

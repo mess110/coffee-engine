@@ -44,3 +44,7 @@ md-sidenav {
 md-toolbar-filler {
   width: 96px !important;
 }
+
+.space-for-button {
+  padding-bottom: 100px !important;
+}

@@ -5,7 +5,7 @@
                 <form name="form" flex layout="row">
                     <md-input-container flex>
                         <label>Name</label>
-                        <input name="name" ng-model="json.name" ng-required ng-pattern="/^[a-zA-Z0-9]+$/">
+                        <input name="name" ng-model="json.name" ng-required="true" ng-pattern="regex.name">
                     </md-input-container>
                     <md-input-container flex>
                         <label>Template</label>

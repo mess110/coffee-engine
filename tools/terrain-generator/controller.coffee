@@ -29,7 +29,7 @@ app.controller 'TerrainGeneratorController', ($scope) ->
 
       if toSave[s].libPath.startsWith('../')
         toSave[s].libPath = toSave[s].libPath.substring(3)
-    Utils.saveFile(toSave, 'terrain.save')
+    Utils.saveFile(toSave, 'terrain.save.json')
 
   $scope.toggleStats = ->
     config.toggleStats()

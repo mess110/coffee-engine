@@ -148,4 +148,4 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
     if hash.group.asset.libPath.startsWith('../')
       hash.group.asset.libPath = hash.group.asset.libPath.substring(3)
       hash.group.asset.type = 'texture'
-    Utils.saveFile(hash, 'particle.save')
+    Utils.saveFile(hash, 'particle.save.json')
