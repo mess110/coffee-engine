@@ -1,4 +1,4 @@
-app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$routeParams', ($scope, $mdToast, $location, $routeParams) ->
+app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$window', '$routeParams', ($scope, $mdToast, $location, $window, $routeParams) ->
   EngineHolder.get().engine.removeDom()
 
   $scope.workspace.lastOpenedProject = $routeParams.id
@@ -24,6 +24,10 @@ app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$rout
     $scope.workspace.lastOpenedScene = scene
     $scope.saveWorkspace()
     $scope.goTo('cinematic-editor')
+
+  $scope.run = ->
+    gamePath = "http://localhost:8080/workspace/games/#{$scope.workspace.lastOpenedProject}/"
+    $window.open(gamePath)
 ]
 
 app.controller 'NewGameController', ['$scope', '$mdToast', '$location', ($scope, $mdToast, $location) ->
@@ -32,12 +36,12 @@ app.controller 'NewGameController', ['$scope', '$mdToast', '$location', ($scope,
   $scope.ui.project.name = 'coffee-engine'
   $scope.json =
     name: 'Mario'
-    template: 'project'
+    template: 'cinema'
 
   $scope.templates = [
-    { name: 'project', hint: 'Project template with networking and build tools.'}
-    { name: 'basic', hint: 'Minimal template.' }
     { name: 'cinema', hint: 'Cinematic template for storytelling.' }
+    { name: 'basic', hint: 'Minimal template.' }
+    { name: 'project', hint: 'Project template with networking and build tools.'}
   ]
 
   $scope.newGame = ->

@@ -97,8 +97,10 @@ module.exports = (grunt) ->
         command: "./node_modules/.bin/codo -u -o ./doc/2d/ -r README_2D.md src/2d/ src/shared/"
       "doc-server":
         command: "./node_modules/.bin/codo -u -o ./doc/server/ -r README_SERVER.md src/server/ src/shared/Utils.coffee"
-      "tools":
+      "engine":
         command: "npm run start"
+      "server":
+        command: "./node_modules/.bin/http-server"
       "new":
         command: ->
           output = grunt.option('output')
@@ -152,7 +154,8 @@ module.exports = (grunt) ->
   grunt.registerTask "new", ["shell:new"]
 
   grunt.registerTask "doc", ["shell:doc-3d", "shell:doc-2d", "shell:doc-server"]
-  grunt.registerTask "tools", ["shell:tools"]
+  grunt.registerTask "engine", ["shell:engine"]
+  grunt.registerTask "server", ["shell:server"]
 
   grunt.registerTask "default", ["dev"]
 

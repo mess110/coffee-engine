@@ -14,8 +14,11 @@ your development.
     * entity interpolication
 * tools
   - model-viewer
-  - particle-editor
+  - particle-playground
   - terrain-generator
+  - bezier-editor
+  - shader-editor
+  - game-maker
 * examples
 
 3D
