@@ -1,4 +1,4 @@
-app.controller 'MainController', ['$scope', '$location', '$window', '$mdToast', '$mdDialog', ($scope, $location, $window, $mdToast, $mdDialog) ->
+app.controller 'MainController', ['$document', '$scope', '$location', '$window', '$mdToast', '$mdDialog', ($document, $scope, $location, $window, $mdToast, $mdDialog) ->
   $scope.ui =
     project:
       name: ''
@@ -76,7 +76,12 @@ app.controller 'MainController', ['$scope', '$location', '$window', '$mdToast', 
       callback(asset, result)
     )
 
+  $document.bind 'keypress', (event) ->
+    if event.ctrlKey && event.which == 18
+      $scope.run()
+
   $scope.run = ->
+    return unless $scope.workspace.lastOpenedProject?
     gamePath = "http://localhost:8080/workspace/games/#{$scope.workspace.lastOpenedProject}/"
     $window.open(gamePath)
     return

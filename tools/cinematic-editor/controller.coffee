@@ -1,4 +1,4 @@
-app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdToast) ->
+app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', ($document, $scope, $mdToast) ->
 
   $scope.ui.project.name = $scope.workspace.lastOpenedProject
 
@@ -145,10 +145,6 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
     return false unless item.destPath
     item.destPath.endsWithAny(Utils.AUDIO_URLS)
 
-  $scope.shortcut = (event) ->
-    if event.ctrlKey && event.which == 19
-      $scope.save()
-
   $scope.save = ->
     unless $scope.json.id?
       $scope.toast('id missing')
@@ -232,6 +228,16 @@ app.controller 'CinematicEditorController', ['$scope', '$mdToast', ($scope, $mdT
 
     for dependency in dependencies
       $scope.json.assets.push dependency
+
+  cinematicShortcuts = (event) ->
+    if event.ctrlKey && event.which == 19
+      $scope.save()
+
+  $document.bind 'keypress', cinematicShortcuts
+
+  $scope.$on '$destroy', ->
+    $document.unbind 'keypress', cinematicShortcuts
+    return
 
   return
 ]
