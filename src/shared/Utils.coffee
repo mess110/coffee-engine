@@ -26,6 +26,11 @@ class Utils
   @LIGHT_DEFAULT_POSITION_Y = 100
   @LIGHT_DEFAULT_POSITION_Z = 60
 
+  @MIRROR_DEFAULT_COLOR = '#777777'
+  @MIRROR_DEFAULT_TEXTURE_WIDTH = 512
+  @MIRROR_DEFAULT_TEXTURE_HEIGHT = 512
+  @MIRROR_DEFAULT_CLIP_BIAS = 0.003
+
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.
   #

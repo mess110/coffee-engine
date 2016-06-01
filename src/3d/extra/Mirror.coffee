@@ -8,13 +8,13 @@
 class Mirror extends BaseModel
   # Create a mirror
   constructor: (engine, options = {}) ->
-    options.width ?= 10
-    options.height ?= 10
+    options.width ?= Utils.PLANE_DEFAULT_WIDTH
+    options.height ?= Utils.PLANE_DEFAULT_HEIGHT
     options.mirror ?= {}
-    options.mirror.clipBias ?= 0.003
-    options.mirror.textureHeight ?= 512
-    options.mirror.textureHeight ?= 512
-    options.mirror.color ?= 0x777777
+    options.mirror.clipBias ?= Utils.MIRROR_DEFAULT_CLIP_BIAS
+    options.mirror.textureWidth ?= Utils.MIRROR_DEFAULT_TEXTURE_WIDTH
+    options.mirror.textureHeight ?= Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT
+    options.mirror.color ?= Utils.MIRROR_DEFAULT_COLOR
 
     planeGeo = new (THREE.PlaneBufferGeometry)(options.width, options.height)
     @mirror = new THREE.Mirror(engine.renderer, engine.camera, options.mirror)

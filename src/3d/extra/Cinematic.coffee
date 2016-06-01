@@ -29,6 +29,12 @@ class Cinematic
 
     for item in @json.items
       switch item.type
+        when 'mirror'
+          # recursive hell
+          item.mirror = item
+          baseModel = Helper[item.type](engine, item)
+          obj = baseModel.mesh
+          @cinemize(item, baseModel, obj)
         when 'terrain', 'particle'
           baseModel = Helper[item.type](item)
           obj = baseModel.mesh
@@ -71,6 +77,9 @@ class Cinematic
 
     for item in @items
       if item instanceof BaseParticle
+        item.tick(tpf)
+
+      if item instanceof Mirror
         item.tick(tpf)
 
     return if @json.scripts.where(processing: true).any()

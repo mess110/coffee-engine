@@ -42,6 +42,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', 
     'skySphere'
     'ambientLight'
     'light'
+    'mirror'
     'particle'
   ]
 
@@ -98,7 +99,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', 
     ['plane', 'skySphere'].includes(type)
 
   $scope.hasCoordinates = (type) ->
-    ['cube', 'plane', 'model', 'light', 'terrain', 'particle'].includes(type)
+    ['cube', 'plane', 'model', 'light', 'mirror', 'terrain', 'particle'].includes(type)
 
   $scope.hasRadiusAndSegments = (type) ->
     ['skySphere'].includes(type)
@@ -108,7 +109,10 @@ app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', 
     if item.type == 'plane'
       if item.map?
         planeHasColor = false
-    ['light', 'ambientLight', 'plane'].includes(item.type) && planeHasColor
+    ['light', 'ambientLight', 'plane', 'mirror'].includes(item.type) && planeHasColor
+
+  $scope.hasWidthHeight = (item) ->
+    ['mirror', 'plane'].includes(item.type)
 
   $scope.getKeyName = (asset) ->
     if asset.endsWithAny(Utils.SAVE_URLS)
@@ -204,6 +208,13 @@ app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', 
         x: Utils.LIGHT_DEFAULT_POSITION_X
         y: Utils.LIGHT_DEFAULT_POSITION_Y
         z: Utils.LIGHT_DEFAULT_POSITION_Z
+    if item.type == 'mirror'
+      item.color = Utils.MIRROR_DEFAULT_COLOR
+      item.width = Utils.PLANE_DEFAULT_WIDTH
+      item.height = Utils.PLANE_DEFAULT_HEIGHT
+      item.clipBias = Utils.MIRROR_DEFAULT_CLIP_BIAS
+      item.textureWidth = Utils.MIRROR_DEFAULT_TEXTURE_WIDTH
+      item.textureHeight = Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT
 
   $scope.addItem = ->
     $scope.json.items.push {}

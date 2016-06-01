@@ -122,6 +122,9 @@ class Helper
   @particle: (options = {}) ->
     BaseParticle.fromJson(options)
 
+  @mirror: (engine, options = {}) ->
+    new Mirror(engine, options)
+
   # Creates a plane
   #
   # @param [Object] options

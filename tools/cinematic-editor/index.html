@@ -195,44 +195,56 @@
                         </md-card-content>
                         <md-card-content layout="row" ng-repeat="prop in ['position', 'rotation', 'scale', 'lookAt']" ng-show="hasCoordinates(item.type)">
                             <span flex layout="row" layout-align="center center">{{ prop }}</span>
-                            <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                            <md-input-container flex class="md-block no-bottom">
                                 <label>x</label>
                                 <input type="number" ng-model="item[prop].x">
                             </md-input-container>
-                            <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                            <md-input-container flex class="md-block no-bottom">
                                 <label>y</label>
                                 <input type="number" ng-model="item[prop].y">
                             </md-input-container>
-                            <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                            <md-input-container flex class="md-block no-bottom">
                                 <label>z</label>
                                 <input type="number" ng-model="item[prop].z">
                             </md-input-container>
                         </md-card-content>
                         <md-card-content layout="row" ng-show="item.type == 'plane' || hasColor(item)">
                             <div md-color-picker ng-model="item.color" ng-show="hasColor(item)"></div>
-                            <md-input-container flex class="md-block no-bottom" flex-gt-xs ng-show="item.type == 'plane'">
+                            <md-input-container flex class="md-block no-bottom" ng-show="item.type == 'mirror'">
+                                <label>Clip Bias</label>
+                                <input type="number" ng-model="item.clipBias">
+                            </md-input-container>
+                            <md-input-container flex class="md-block no-bottom" ng-show="hasWidthHeight(item)">
                                 <label>Width</label>
                                 <input type="number" ng-model="item.width">
                             </md-input-container>
-                            <md-input-container flex class="md-block no-bottom" flex-gt-xs ng-show="item.type == 'plane'">
+                            <md-input-container flex class="md-block no-bottom" ng-show="hasWidthHeight(item)">
                                 <label>Height</label>
                                 <input type="number" ng-model="item.height">
                             </md-input-container>
-                            <md-input-container flex class="md-block no-bottom" flex-gt-xs ng-show="item.type == 'plane'">
+                            <md-input-container flex class="md-block no-bottom" ng-show="item.type == 'plane'">
                                 <label>Width Segments</label>
                                 <input type="number" ng-model="item.wSegments">
                             </md-input-container>
-                            <md-input-container flex class="md-block no-bottom" flex-gt-xs ng-show="item.type == 'plane'">
+                            <md-input-container flex class="md-block no-bottom" ng-show="item.type == 'plane'">
                                 <label>Height Segments</label>
                                 <input type="number" ng-model="item.hSegments">
                             </md-input-container>
+                            <md-input-container flex class="md-block no-bottom" ng-show="item.type == 'mirror'">
+                                <label>Texture Width</label>
+                                <input type="number" ng-model="item.textureWidth">
+                            </md-input-container>
+                            <md-input-container flex class="md-block no-bottom" ng-show="item.type == 'mirror'">
+                                <label>Texture Height</label>
+                                <input type="number" ng-model="item.textureHeight">
+                            </md-input-container>
                         </md-card-content>
                         <md-card-content layout="row" ng-show="hasRadiusAndSegments(item.type)">
-                            <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                            <md-input-container flex class="md-block no-bottom">
                                 <label>Radius</label>
                                 <input ng-model="item.radius">
                             </md-input-container>
-                            <md-input-container flex class="md-block no-bottom" flex-gt-xs>
+                            <md-input-container flex class="md-block no-bottom">
                                 <label>Segments</label>
                                 <input ng-model="item.segments">
                             </md-input-container>
