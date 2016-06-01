@@ -208,7 +208,7 @@
                                 <input type="number" ng-model="item[prop].z">
                             </md-input-container>
                         </md-card-content>
-                        <md-card-content layout="row" ng-show="item.type == 'plane' || hasColor(item)">
+                        <md-card-content layout="row" ng-show="hasWidthHeight(item) || hasColor(item)">
                             <div md-color-picker ng-model="item.color" ng-show="hasColor(item)"></div>
                             <md-input-container flex class="md-block no-bottom" ng-show="item.type == 'mirror'">
                                 <label>Clip Bias</label>
@@ -222,21 +222,29 @@
                                 <label>Height</label>
                                 <input type="number" ng-model="item.height">
                             </md-input-container>
-                            <md-input-container flex class="md-block no-bottom" ng-show="item.type == 'plane'">
+                            <md-input-container flex class="md-block no-bottom" ng-show="hasWidthHeightSegments(item)">
                                 <label>Width Segments</label>
                                 <input type="number" ng-model="item.wSegments">
                             </md-input-container>
-                            <md-input-container flex class="md-block no-bottom" ng-show="item.type == 'plane'">
+                            <md-input-container flex class="md-block no-bottom" ng-show="hasWidthHeightSegments(item)">
                                 <label>Height Segments</label>
                                 <input type="number" ng-model="item.hSegments">
                             </md-input-container>
-                            <md-input-container flex class="md-block no-bottom" ng-show="item.type == 'mirror'">
+                            <md-input-container flex class="md-block no-bottom" ng-show="hasTextureWidthHeight(item)">
                                 <label>Texture Width</label>
                                 <input type="number" ng-model="item.textureWidth">
                             </md-input-container>
-                            <md-input-container flex class="md-block no-bottom" ng-show="item.type == 'mirror'">
+                            <md-input-container flex class="md-block no-bottom" ng-show="hasTextureWidthHeight(item)">
                                 <label>Texture Height</label>
                                 <input type="number" ng-model="item.textureHeight">
+                            </md-input-container>
+                        </md-card-content>
+                        <md-card-content layout="row" ng-show="item.type == 'water'">
+                            <div md-color-picker ng-model="item.sunColor"></div>
+                            <div md-color-picker ng-model="item.waterColor"></div>
+                            <md-input-container flex class="md-block no-bottom">
+                                <label>Alpha</label>
+                                <input type="number" ng-model="item.alpha">
                             </md-input-container>
                         </md-card-content>
                         <md-card-content layout="row" ng-show="hasRadiusAndSegments(item.type)">

@@ -20,5 +20,8 @@ engine.addScene(particlePlaygroundScene)
 shaderEditorScene = new ShaderEditorScene()
 engine.addScene(shaderEditorScene)
 
+graffitiPainterScene = new GraffitiPainterScene()
+engine.addScene(graffitiPainterScene)
+
 EngineHolder.get().engine.removeDom()
 engine.render()

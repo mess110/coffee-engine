@@ -31,6 +31,9 @@ class Utils
   @MIRROR_DEFAULT_TEXTURE_HEIGHT = 512
   @MIRROR_DEFAULT_CLIP_BIAS = 0.003
 
+  @WATER_DEFAULT_WATER_COLOR = '#001e0f'
+  @WATER_DEFAULT_ALPHA = 1.0
+
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.
   #

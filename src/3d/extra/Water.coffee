@@ -10,22 +10,22 @@
 class Water extends BaseModel
   # Create water
   constructor: (engine, scene, options = {}) ->
-    options.textureUrl ?= '/bower_components/ocean/assets/img/waternormals.jpg'
-    options.width ?= 2000
-    options.height ?= 2000
-    options.wSegments ?= 10
-    options.hSegments ?= 10
+    throw new Error('map missing. needs to be a TextureManager key') unless options.map?
+    # options.map ?= '/bower_components/ocean/assets/img/waternormals.jpg'
+    options.width ?= Utils.PLANE_DEFAULT_WIDTH
+    options.height ?= Utils.PLANE_DEFAULT_HEIGHT
+    options.wSegments ?= Utils.PLANE_DEFAULT_W_SEGMENTS
+    options.hSegments ?= Utils.PLANE_DEFAULT_H_SEGMENTS
     options.water ?= {}
-    options.water.textureWidth ?= 256
-    options.water.textureHeight ?= 256
-    options.water.alpha ?= 1.0
-    options.water.sunColor ?= 0xffffff
-    options.water.waterColor ?= 0x001e0f
+    options.water.textureWidth ?= Utils.MIRROR_DEFAULT_TEXTURE_WIDTH / 2
+    options.water.textureHeight ?= Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT / 2
+    options.water.alpha ?= Utils.WATER_DEFAULT_ALPHA
+    options.water.sunColor ?= Utils.LIGHT_DEFAULT_COLOR
+    options.water.waterColor ?= Utils.WATER_DEFAULT_WATER_COLOR
     options.water.betaVersion ?= 0
     options.water.side ?= THREE.DoubleSide
 
-    key = Utils.getKeyName(options.textureUrl, Utils.IMG_URLS)
-    waterNormals = TextureManager.get().items[key]
+    waterNormals = TextureManager.get().items[options.map]
     waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping
 
     options.water.waterNormals = waterNormals

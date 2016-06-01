@@ -29,9 +29,15 @@ class Cinematic
 
     for item in @json.items
       switch item.type
+        when 'water'
+          # recursive hell
+          item[item.type] = item
+          baseModel = Helper[item.type](engine, @scene, item)
+          obj = baseModel.mesh
+          @cinemize(item, baseModel, obj)
         when 'mirror'
           # recursive hell
-          item.mirror = item
+          item[item.type] = item
           baseModel = Helper[item.type](engine, item)
           obj = baseModel.mesh
           @cinemize(item, baseModel, obj)
@@ -80,6 +86,9 @@ class Cinematic
         item.tick(tpf)
 
       if item instanceof Mirror
+        item.tick(tpf)
+
+      if item instanceof Water
         item.tick(tpf)
 
     return if @json.scripts.where(processing: true).any()

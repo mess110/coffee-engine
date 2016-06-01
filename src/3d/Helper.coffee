@@ -125,6 +125,9 @@ class Helper
   @mirror: (engine, options = {}) ->
     new Mirror(engine, options)
 
+  @water: (engine, scene, options = {}) ->
+    new Water(engine, scene, options)
+
   # Creates a plane
   #
   # @param [Object] options

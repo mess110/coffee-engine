@@ -22,6 +22,7 @@ app.config ['$routeProvider', ($routeProvider) ->
     .when('/particle-playground', templateUrl: 'particle-playground/index.html', controller: 'ParticlePlaygroundController')
     .when('/cinematic-editor', templateUrl: 'cinematic-editor/index.html', controller: 'CinematicEditorController')
     .when('/shader-editor', templateUrl: 'shader-editor/index.html', controller: 'ShaderEditorController')
+    .when('/graffiti-painter', templateUrl: 'graffiti-painter/index.html', controller: 'GraffitiPainterController')
     .when('/settings', templateUrl: 'settings/index.html', controller: 'SettingsController')
     .otherwise redirectTo: '/game-maker/new'
   return

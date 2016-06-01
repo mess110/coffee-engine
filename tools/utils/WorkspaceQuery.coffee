@@ -15,7 +15,7 @@ class WorkspaceQuery
     )
 
   getTextures: (workspace, callback) ->
-    texturePaths = "#{workspace.localLib}/textures/**/*.png"
+    texturePaths = "#{workspace.localLib}/textures/**/*.*"
     glob(texturePaths, {}, (err, files) ->
       array = WorkspaceQuery._keify(files, Utils.IMG_URLS)
       callback(err, array)

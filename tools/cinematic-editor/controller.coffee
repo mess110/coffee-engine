@@ -43,6 +43,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', 
     'ambientLight'
     'light'
     'mirror'
+    'water'
     'particle'
   ]
 
@@ -96,7 +97,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', 
     $scope.json.items.where(id: id).any()
 
   $scope.hasMapAttr = (type) ->
-    ['plane', 'skySphere'].includes(type)
+    ['plane', 'skySphere', 'water'].includes(type)
 
   $scope.hasCoordinates = (type) ->
     ['cube', 'plane', 'model', 'light', 'mirror', 'terrain', 'particle'].includes(type)
@@ -112,7 +113,13 @@ app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', 
     ['light', 'ambientLight', 'plane', 'mirror'].includes(item.type) && planeHasColor
 
   $scope.hasWidthHeight = (item) ->
-    ['mirror', 'plane'].includes(item.type)
+    ['mirror', 'plane', 'water'].includes(item.type)
+
+  $scope.hasTextureWidthHeight = (item) ->
+    ['mirror', 'water'].includes(item.type)
+
+  $scope.hasWidthHeightSegments = (item) ->
+    ['plane', 'water'].includes(item.type)
 
   $scope.getKeyName = (asset) ->
     if asset.endsWithAny(Utils.SAVE_URLS)
@@ -215,6 +222,16 @@ app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', 
       item.clipBias = Utils.MIRROR_DEFAULT_CLIP_BIAS
       item.textureWidth = Utils.MIRROR_DEFAULT_TEXTURE_WIDTH
       item.textureHeight = Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT
+    if item.type == 'water'
+      item.width = Utils.PLANE_DEFAULT_WIDTH
+      item.height = Utils.PLANE_DEFAULT_HEIGHT
+      item.wSegments = Utils.PLANE_DEFAULT_W_SEGMENTS
+      item.hSegments = Utils.PLANE_DEFAULT_H_SEGMENTS
+      item.textureWidth = Utils.MIRROR_DEFAULT_TEXTURE_WIDTH
+      item.textureHeight = Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT
+      item.sunColor = Utils.LIGHT_DEFAULT_COLOR
+      item.waterColor = Utils.WATER_DEFAULT_WATER_COLOR
+      item.alpha = Utils.WATER_DEFAULT_ALPHA
 
   $scope.addItem = ->
     $scope.json.items.push {}
