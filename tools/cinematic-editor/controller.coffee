@@ -100,7 +100,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', 
     ['plane', 'skySphere', 'water'].includes(type)
 
   $scope.hasCoordinates = (type) ->
-    ['cube', 'plane', 'model', 'light', 'mirror', 'terrain', 'particle'].includes(type)
+    ['cube', 'plane', 'model', 'light', 'mirror', 'water', 'terrain', 'particle'].includes(type)
 
   $scope.hasRadiusAndSegments = (type) ->
     ['skySphere'].includes(type)
