@@ -1,14 +1,13 @@
 <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="true" style="position: fixed; z-index: 1">
     <md-toolbar layout-padding style="background-color: white; min-height: 96px">
-        <!-- <h1 class="md-toolbar-tools">Models</h1> -->
-        <md-input-container class="md-block" flex>
+        <md-input-container flex>
             <label>Search</label>
             <input ng-model="search">
         </md-input-container>
     </md-toolbar>
     <md-content layout-padding layout="column">
         <md-list>
-            <md-list-item class="md-1-line" ng-repeat="file in files | filter: searchFilter" ng-click="viewModel(file)">
+            <md-list-item class="md-1-line" ng-repeat="file in files | filter: searchFilter" ng-click="viewModel(file)" ng-right-click="merge(file)">
                 <md-item-content md-ink-ripple layout="row" layout-align="start center">
                     <div class="md-list-item-text" layout="column">
                         {{ file.key }}

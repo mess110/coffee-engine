@@ -1,4 +1,4 @@
-app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', ($document, $scope, $mdToast) ->
+app.controller 'CinematicEditorController', ['$document', '$scope', ($document, $scope) ->
 
   $scope.ui.project.name = $scope.workspace.lastOpenedProject
 
@@ -76,10 +76,6 @@ app.controller 'CinematicEditorController', ['$document', '$scope', '$mdToast', 
     file = $scope.workspace.lastOpenedScene
     data = fs.readFileSync(file, 'utf8')
     onLoad(data)
-
-  $scope.toast = (message) ->
-    simple = $mdToast.simple().textContent(message).position('bottom left').hideDelay(3000)
-    $mdToast.show simple
 
   $scope.loaded = ->
     data = atob($scope.file.data.toString().replace('data:;base64,', ''))

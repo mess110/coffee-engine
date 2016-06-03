@@ -87,5 +87,9 @@ app.controller 'MainController', ['$document', '$scope', '$location', '$window',
     $window.open(gamePath)
     return
 
+  $scope.toast = (message) ->
+    simple = $mdToast.simple().textContent(message).position('bottom left').hideDelay(3000)
+    $mdToast.show simple
+
   $scope.refreshProjects()
 ]
