@@ -28,6 +28,26 @@ class BaseModel
       object.visible = value
     @visible = value
 
+  # attach a mesh to a bone
+  #
+  # @param [String] boneName
+  # @param [Mesh] mesh
+  attachToBone: (boneName, mesh) ->
+    if @mesh instanceof THREE.SkinnedMesh
+      @mesh.traverse (object) ->
+        if object instanceof THREE.Bone && object.name == boneName
+          object.add mesh
+
+  # detach a mesh from a bone
+  #
+  # @param [String] boneName
+  # @param [Mesh] mesh
+  detachFromBone: (boneName, mesh) ->
+    if @mesh instanceof THREE.SkinnedMesh
+      @mesh.traverse (object) ->
+        if object instanceof THREE.Bone && object.name == boneName
+          object.remove mesh
+
   # Change the skin to a TextureManager texture
   #
   # @param [String] key
