@@ -1,0 +1,13 @@
+{
+  "width": 395,
+  "height": 360,
+  "scale": 2,
+  "texture": {
+    "libPath": "workspace/lib/textures/carpati-map.jpg",
+    "destPath": "assets/carpati-map.jpg"
+  },
+  "heightmap": {
+    "libPath": "workspace/lib/textures/heightmap-carpati.png",
+    "destPath": "assets/heightmap-carpati.png"
+  }
+}

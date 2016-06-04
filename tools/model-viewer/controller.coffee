@@ -1,10 +1,12 @@
 app.controller 'ModelViewerController', ($scope) ->
 
-  workspaceQuery.getModels($scope.workspace, (err, files) ->
-    $scope.files = files
-    $scope.$apply()
-  )
+  $scope.refreshModelList = ->
+    workspaceQuery.getModels($scope.workspace, (err, files) ->
+      $scope.files = files
+      $scope.$apply()
+    )
 
+  $scope.refreshModelList()
   $scope.setScene(modelViewerScene)
 
   $scope.ui.project.name = 'Model Viewer'
@@ -13,8 +15,9 @@ app.controller 'ModelViewerController', ($scope) ->
     item.key.contains($scope.search)
 
   $scope.viewModel = (model) ->
-    if !model.libPath.startsWith('/')
+    if !model.libPath.startsWith('/') && !model.libPath.startsWith('../')
       model.libPath = "../#{model.libPath}"
+    $scope.wireframe = false
     modelViewerScene.viewModel(model)
 
   $scope.animate = (animationIndex) ->
@@ -30,41 +33,61 @@ app.controller 'ModelViewerController', ($scope) ->
   $scope.toggleStats = ->
     config.toggleStats()
 
-  $scope.merge = (file) ->
-    unless $scope.first?
-      $scope.first = file
-      $scope.toast("#{file.key} marked for merge")
+  $scope.toMerge = []
+
+  $scope.markForMerge = (item) ->
+    if $scope.toMerge.includes(item)
+      $scope.toMerge.remove(item)
+    else
+      $scope.toMerge.push(item)
+
+  $scope.merge = () ->
+    if $scope.toMerge.isEmpty()
+      $scope.toast("right click to mark models for merge")
       return
 
-    if $scope.first.libPath == file.libPath
-      $scope.toast('can not merge same file')
+    if $scope.toMerge.size() == 1
+      $scope.toast("need at least 2 models")
       return
 
-    firstName = $scope.first.key.split('_').first()
-    secondName = file.key.split('_').first()
+    for model in $scope.toMerge
+      unless model.key.includes('_')
+        $scope.toast("all models need to be in the format 'key_animation-name'")
+        return
 
-    if firstName != secondName
-      $scope.toast('can not merge objects with different keys')
-      $scope.first = undefined
-      return
+    baseModelName = $scope.toMerge.first().key.split('_').first()
 
-    first = JSON.parse(fs.readFileSync($scope.first.libPath))
-    second = JSON.parse(fs.readFileSync(file.libPath))
+    for model in $scope.toMerge
+      unless model.key.startsWith(baseModelName)
+        $scope.toast('can not merge different models')
+        return
 
-    animationName = $scope.first.key.split('_').last()
-    first.animations[0].name = animationName
+    output = undefined
+    for model in $scope.toMerge
+      animationName = model.key.split('_').last()
+      if output?
+        newAnimation = JSON.parse(fs.readFileSync(model.libPath)).animations.first()
+        newAnimation.name = animationName
+        output.animations.push newAnimation
+      else
+        output = JSON.parse(fs.readFileSync(model.libPath))
+        output.animations[0].name = animationName
 
-    animationName2 = file.key.split('_').last()
-    second.animations[0].name = animationName2
+    outputPath = $scope.toMerge.first().libPath.split('/')
+    outputPath.pop()
 
-    first.animations.push second.animations[0]
-
-    a = $scope.first.libPath.split('/')
-    a.pop()
-
-    filePath = "#{a.join('/')}/#{firstName}.json"
-    string = JSON.stringify(first, null, 2)
+    filePath = "#{outputPath.join('/')}/#{baseModelName}.json"
+    string = JSON.stringify(output, null, 2)
     fs.writeFileSync filePath, string
-    $scope.toast("merged as #{firstName}")
+    $scope.toast("merged as #{baseModelName}")
+    $scope.toMerge = []
+    $scope.refreshModelList()
 
-    $scope.first = undefined
+  $scope.skinChosen = (param, asset) ->
+    TextureManager.get().items[asset.key] = undefined
+    TextureManager.get().load(asset.key, "../#{asset.libPath}", (key) ->
+      modelViewerScene.baseModel.setSkin(key)
+    )
+
+  $scope.toggleWireframe = ->
+    modelViewerScene.toggleWireframe()

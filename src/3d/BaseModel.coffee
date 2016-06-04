@@ -28,6 +28,14 @@ class BaseModel
       object.visible = value
     @visible = value
 
+  # Change the skin to a TextureManager texture
+  #
+  # @param [String] key
+  setSkin: (key) ->
+    tex = TextureManager.get().items[key]
+    throw new Error('texture not loaded') unless tex?
+    @mesh.material.materials[0].map = tex
+
   # Toggles model wireframe
   toggleWireframe: ->
     return unless @mesh?

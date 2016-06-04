@@ -203,7 +203,7 @@ class Engine3D
     return new THREE.Raycaster(@camera.position, vector.sub(@camera.position).normalize())
 
   # @nodoc
-  @scenify: ->
+  @scenify: (callback = -> {})->
     loadingScene = new LoadingScene([
       "assets/scenes/start.save.json"
     ], ->
@@ -211,6 +211,7 @@ class Engine3D
         scene = CinematicScene.fromSaveObjectKey('start')
         engine.addScene(scene)
         engine.sceneManager.setScene(scene)
+        callback()
       assets = CinematicScene.getAssets('start')
       loadingScene.loadAssets(assets)
     )

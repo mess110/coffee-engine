@@ -21,6 +21,12 @@ app.controller 'TerrainGeneratorController', ($scope) ->
   $scope.updateTerrain = ->
     terrainGeneratorScene.updateTerrain($scope.options)
 
+  $scope.refresh = (json) ->
+    json.texture.libPath = "../#{json.texture.libPath}"
+    json.heightmap.libPath = "../#{json.heightmap.libPath}"
+    $scope.options = json
+    $scope.updateTerrain()
+
   $scope.saveJson = ->
     toSave = angular.copy($scope.options)
     for s in ['texture', 'heightmap']
@@ -30,6 +36,10 @@ app.controller 'TerrainGeneratorController', ($scope) ->
       if toSave[s].libPath.startsWith('../')
         toSave[s].libPath = toSave[s].libPath.substring(3)
     Utils.saveFile(toSave, 'terrain.save.json')
+
+  $scope.terrainLoaded = (params, terrain) ->
+    json = JSON.parse(fs.readFileSync(terrain.libPath, 'utf8'))
+    $scope.refresh(json)
 
   $scope.toggleStats = ->
     config.toggleStats()

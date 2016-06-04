@@ -1,0 +1,98 @@
+{
+  "group": {
+    "asset": {
+      "libPath": "workspace/lib/textures/star.png",
+      "destPath": "assets/star.png",
+      "type": "texture"
+    },
+    "maxAge": 3,
+    "colorize": true,
+    "hasPerspective": true,
+    "blending": 2,
+    "transparent": true,
+    "alphaTest": 0.5,
+    "fixedTimeStep": 0.016,
+    "fog": true
+  },
+  "emitter": {
+    "type": "sphere",
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "positionSpread": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "acceleration": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "accelerationSpread": {
+      "x": 2,
+      "y": 2,
+      "z": 2
+    },
+    "velocity": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "velocitySpread": {
+      "x": 3,
+      "y": 3,
+      "z": 3
+    },
+    "radius": 10,
+    "radiusScale": {
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "speed": 0,
+    "speedSpread": 0,
+    "sizeStart": 0.5,
+    "sizeStartSpread": 1,
+    "sizeMiddle": 1,
+    "sizeMiddleSpread": 2,
+    "sizeEnd": 0.5,
+    "sizeEndSpread": 1,
+    "angleStart": 0,
+    "angleStartSpread": 0,
+    "angleMiddle": 0,
+    "angleMiddleSpread": 0,
+    "angleEnd": 0,
+    "angleEndSpread": 0,
+    "angleAlignVelocity": false,
+    "colorStart": "#27a012",
+    "colorStartSpread": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "colorMiddle": "#00c31a",
+    "colorMiddleSpread": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "colorEnd": "#28c43c",
+    "colorEndSpread": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "opacityStart": 0,
+    "opacityStartSpread": 0,
+    "opacityMiddle": 0.5,
+    "opacityMiddleSpread": 0,
+    "opacityEnd": 0,
+    "opacityEndSpread": 0,
+    "particlesPerSecond": 33,
+    "alive": 1,
+    "isStatic": false
+  }
+}

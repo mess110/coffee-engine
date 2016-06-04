@@ -23,12 +23,10 @@ class GameScene extends BaseScene
 
   doKeyboardEvent: (event) ->
 
-gameScene = new GameScene()
-loadingScene = new LoadingScene([], () ->
-  gameScene.init()
-  engine.sceneManager.setScene(gameScene)
+Engine3D.scenify(->
+  gameScene = new GameScene()
+  engine.addScene(gameScene)
+  # gameScene.init()
 )
 
-engine.addScene(loadingScene)
-engine.addScene(gameScene)
 engine.render()

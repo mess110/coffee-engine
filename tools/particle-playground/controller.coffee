@@ -149,3 +149,7 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
       hash.group.asset.libPath = hash.group.asset.libPath.substring(3)
       hash.group.asset.type = 'texture'
     Utils.saveFile(hash, 'particle.save.json')
+
+  $scope.particleLoaded = (params, particle) ->
+    json = JSON.parse(fs.readFileSync(particle.libPath, 'utf8'))
+    $scope.refresh(json)

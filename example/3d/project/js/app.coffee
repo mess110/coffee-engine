@@ -16,15 +16,11 @@ nm.on 'serverTick', (data) ->
 
 engine = new Engine3D()
 
-gameScene = new GameScene()
-loadingScene = new LoadingScene([
-  # Asset urls
-], ->
-  gameScene.init()
-  engine.sceneManager.setScene(gameScene)
+Engine3D.scenify(->
+  # gameScene = new GameScene()
+  # gameScene.init()
+  # engine.sceneManager.setScene(gameScene)
 )
-engine.addScene(loadingScene)
-engine.addScene(gameScene)
 
 engine.render()
 

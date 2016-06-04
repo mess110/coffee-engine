@@ -39,7 +39,7 @@ app.controller 'NewGameController', ['$scope', '$mdToast', '$location', ($scope,
 
   $scope.templates = [
     { name: 'cinema', hint: 'Cinematic template for storytelling.' }
-    { name: 'basic', hint: 'Minimal template.' }
+    { name: 'basic', hint: 'Minimal template. Does not have build tools.' }
     { name: 'project', hint: 'Project template with networking and build tools.'}
   ]
 

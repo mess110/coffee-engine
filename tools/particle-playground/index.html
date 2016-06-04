@@ -144,8 +144,9 @@
                     <!-- </md-input-container> -->
                 <!-- </div> -->
             <!-- </div> -->
-        <md-input-container>
-            <md-button ng-click="saveJson()">save</md-button>
+        <md-input-container layout="row">
+            <md-button flex ng-click="saveJson()">save</md-button>
+            <md-button flex ng-click="openAssetSearch($event, { type: 'particle' }, particleLoaded)">load</md-button>
         </md-input-container>
     </md-content>
 </md-sidenav>

@@ -33,10 +33,18 @@ class ModelViewerScene extends BaseScene
     JsonModelManager.get().items[model.key] = undefined
     JsonModelManager.get().load(model.key, model.libPath, (mesh) =>
       @scene.add mesh
+
+      @baseModel = new BaseModel()
+      @baseModel.mesh = mesh
+
       @mesh = mesh
       @loaded = true
       angular.element(document.getElementById('my-view')).scope().updateAnimations(mesh.animations)
     )
+  
+  toggleWireframe: ->
+    return unless @baseModel?
+    @baseModel.toggleWireframe()
 
   tick: (tpf) ->
     return unless @loaded

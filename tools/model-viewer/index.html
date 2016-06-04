@@ -1,5 +1,8 @@
 <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="true" style="position: fixed; z-index: 1">
-    <md-toolbar layout-padding style="background-color: white; min-height: 96px">
+    <md-toolbar layout-padding style="background-color: white; min-height: 96px" layout="row">
+        <md-input-container ng-click="merge()" ng-hide="toMerge.isEmpty()">
+            <md-icon md-svg-src="cinematic-editor/ic_turned_in_48px.svg" style="color: black"></md-icon>
+        </md-input-container>
         <md-input-container flex>
             <label>Search</label>
             <input ng-model="search">
@@ -7,9 +10,10 @@
     </md-toolbar>
     <md-content layout-padding layout="column">
         <md-list>
-            <md-list-item class="md-1-line" ng-repeat="file in files | filter: searchFilter" ng-click="viewModel(file)" ng-right-click="merge(file)">
+            <md-list-item class="md-1-line" ng-repeat="file in files | filter: searchFilter" ng-click="viewModel(file)" ng-right-click="markForMerge(file)">
                 <md-item-content md-ink-ripple layout="row" layout-align="start center">
-                    <div class="md-list-item-text" layout="column">
+                    <div class="md-list-item-text" layout="row">
+                        <md-icon ng-show="toMerge.includes(file)" md-svg-src="cinematic-editor/ic_turned_in_48px.svg"></md-icon>
                         {{ file.key }}
                     </div>
                 </md-item-content>
@@ -26,6 +30,15 @@
 </md-sidenav>
 <md-sidenav class="md-whiteframe-z2" md-component-id="right" md-is-locked-open="true" style="position: fixed; z-index: 2; right: 0px; left: inherit;" ng-show="animations.any()">
     <md-content layout-padding layout="column">
+        <md-content>
+            <md-input-container layout="row">
+                <md-button ng-click="openAssetSearch($event, { type: 'texture' }, skinChosen)">change skin</md-button>
+                <md-switch ng-model="wireframe" aria-label="wireframe" ng-click="toggleWireframe()">
+                    Wireframe
+                </md-switch>
+            </md-input-container>
+        </md-content>
+        <md-divider></md-divider>
         <md-list>
             <md-list-item class="md-1-line" ng-repeat="animation in animations track by $index" ng-click="animate($index)">
                 <md-item-content md-ink-ripple layout="row" layout-align="start center">
