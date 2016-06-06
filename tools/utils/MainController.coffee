@@ -77,7 +77,15 @@ app.controller 'MainController', ['$document', '$scope', '$location', '$window',
       callback(asset, result)
     )
 
-  $document.bind 'keypress', (event) ->
+  $document.bind 'keydown', (event) ->
+    if event.keyCode == 116
+      event.preventDefault()
+      $scope.reload()
+
+    if event.keyCode == 123
+      event.preventDefault()
+      $scope.showDevTools()
+
     if event.ctrlKey && event.which == 18
       $scope.run()
 

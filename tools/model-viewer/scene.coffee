@@ -7,10 +7,8 @@ class ModelViewerScene extends BaseScene
     @scene.add @light1
     @light2 = Helper.ambientLight()
     @scene.add @light2
-    @light3 = Helper.ambientLight()
-    @scene.add @light3
-    @light4 = Helper.ambientLight()
-    @scene.add @light4
+
+    @setLight()
 
     @scene.fog = Helper.fog(far: 90, color: 'white')
     @grid = Helper.grid(size: 200, step: 10, color: 'gray')
@@ -23,6 +21,17 @@ class ModelViewerScene extends BaseScene
     @controls = Helper.orbitControls(@engine)
     @controls.enabled = true
     @controls.damping = 0.2
+
+  setLight: (value = true) ->
+    if value
+      return if @light?
+      @light = Helper.light(position: { z: 20 })
+      @scene.add @light
+    else
+      return unless @light?
+      @scene.remove @light
+      @light = undefined
+    return
 
   uninit: ->
     super()

@@ -9,3 +9,5 @@ bower_components/
 npm-debug.log
 
 doc/
+
+workspace/games/*
