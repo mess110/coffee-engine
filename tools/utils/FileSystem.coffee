@@ -45,6 +45,19 @@ class FileSystem
     data = fs.readFileSync dest, 'utf8'
     json = JSON.parse(data)
 
+    # graffiti
+    if json.kind? && json.kind == 'graffiti'
+      for item in json.items
+        if item.type == 'image'
+          item.asset.destPath = "assets/#{item.asset.libPath.split('/').last()}"
+          item.asset.type = 'texture'
+
+          from = item.asset.libPath
+          to = "#{destDir}#{item.asset.destPath}"
+
+          @copyFileSync(from, to)
+          toReturn.push item.asset
+
     # particle
     if json.group?
       if json.group.asset?

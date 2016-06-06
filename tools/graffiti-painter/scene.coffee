@@ -1,6 +1,6 @@
 class GraffitiPainterScene extends BaseScene
 
-  init: ->
+  init: (options) ->
     engine.setWidthHeight(window.innerWidth, window.innerHeight)
 
     @light1 = Helper.ambientLight()
@@ -14,13 +14,15 @@ class GraffitiPainterScene extends BaseScene
     engine.camera.position.set 0, 5, 25
     @engine.setClearColor(@scene.fog.color, 1)
 
+    @options = options
     @plane = new BaseModel()
-    @plane.mesh = Helper.plane(width: 10, height: 10, wSegments: 20, hSegments: 20)
+    @plane.mesh = Helper.plane(@options.plane)
     @scene.add @plane.mesh
 
     @controls = Helper.orbitControls(@engine)
     @controls.enabled = true
     @controls.damping = 0.2
+    @controls.noPan = true
 
   uninit: ->
     super()
@@ -35,6 +37,12 @@ class GraffitiPainterScene extends BaseScene
 
     material = Helper.materialFromCanvas(@art.canvas)
     material.map.minFilter = THREE.LinearFilter
+
+    if json.plane != @options
+      @scene.remove @plane.mesh
+      @plane.mesh = Helper.plane(json.plane)
+      @scene.add @plane.mesh
+
     @plane.mesh.material = material
 
   doMouseEvent: (event, raycaster) ->

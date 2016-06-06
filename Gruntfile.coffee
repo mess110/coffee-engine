@@ -37,6 +37,7 @@ module.exports = (grunt) ->
 
     "src/3d/JsonModelManager.js"
     "src/3d/TextureManager.js"
+    "src/3d/MaterialManager.js"
     "src/3d/BaseScene.js"
     "src/3d/BaseModel.js"
     "src/3d/BaseParticle.js"
@@ -101,6 +102,8 @@ module.exports = (grunt) ->
         command: "npm run start"
       "server":
         command: "./node_modules/.bin/http-server"
+      "update":
+        command: "git stash && git pull && git stash pop"
       "new":
         command: ->
           output = grunt.option('output')

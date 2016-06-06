@@ -9,6 +9,26 @@
         <md-divider></md-divider>
         <div layout="row">
             <md-input-container class="md-block">
+                <label>Plane Width</label>
+                <input type="number" ng-model="options.plane.width" ng-change="refresh()">
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label>Plane Height</label>
+                <input type="number" ng-model="options.plane.height" ng-change="refresh()">
+            </md-input-container>
+        </div>
+        <div layout="row">
+            <md-input-container class="md-block">
+                <label>wSegments</label>
+                <input type="number" ng-model="options.plane.wSegments" ng-change="refresh()">
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label>hSemgnets</label>
+                <input type="number" ng-model="options.plane.hSegments" ng-change="refresh()">
+            </md-input-container>
+        </div>
+        <div layout="row">
+            <md-input-container class="md-block">
                 <label>Canvas Width</label>
                 <input type="number" ng-model="options.width" ng-change="refresh()">
             </md-input-container>
@@ -33,13 +53,13 @@
                     <input ng-model="item.text" ng-change="refresh()">
                 </md-input-container>
             </div>
-            <div layout="row" ng-show="hasText(item)">
+            <div layout="row" ng-show="item.type == 'bezier'">
                 <md-input-container flex>
                     <label>Points</label>
                     <input ng-model="item.curve" ng-change="refresh()">
                 </md-input-container>
             </div>
-            <div layout="row" ng-show="hasText(item)">
+            <div layout="row" ng-show="item.type == 'bezier'">
                 <md-input-container flex>
                     <label>letterPadding</label>
                     <input type="number" ng-model="item.letterPadding" ng-change="refresh()">
@@ -62,7 +82,7 @@
                 </md-input-container>
             </div>
             <div layout="row" layout-align="center center" ng-show="item.type == 'image'">
-                <md-button ng-click="openAssetSearch($event, { type: 'texture', item: item }, imageChosen)" aria-label="Choose texture">{{ item.key || 'choose texture'}}</md-button>
+                <md-button ng-click="openAssetSearch($event, { type: 'texture', item: item }, imageChosen)" aria-label="Choose texture">{{ Utils.getKeyName(item.asset.libPath, Utils.IMG_URLS) || 'choose texture'}}</md-button>
             </div>
             <div layout="row" ng-show="hasText(item)">
                 <md-input-container flex>
@@ -84,17 +104,17 @@
                     <input ng-model="item.font" ng-change="refresh()">
                 </md-input-container>
                 <md-input-container layout="row" flex>
-                    <md-button flex ng-click="deleteItem(item)">delete</md-button>
+                    <md-button ng-click="deleteItem(item)">delete</md-button>
                 </md-input-container>
             </div>
         </div>
         <md-divider></md-divider>
         <md-input-container layout="row">
-            <md-button flex ng-click="addItem()">add item</md-button>
+            <md-button ng-click="addItem()">add item</md-button>
         </md-input-container>
         <md-input-container layout="row">
-            <!-- <md-button flex ng-click="saveJson()">save</md-button> -->
-            <!-- <md-button flex ng-click="saveJson()">load</md-button> -->
+            <md-button ng-click="saveJson()">save</md-button>
+            <md-button ng-click="openAssetSearch($event, { type: 'graffiti' }, graffitiLoaded)">load</md-button>
         </md-input-container>
     </md-content>
 </md-sidenav>

@@ -42,15 +42,17 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     'skySphere'
     'ambientLight'
     'light'
+    'graffiti'
     'mirror'
     'water'
     'particle'
   ]
 
   $scope.assetTypes = [
-    'sound'
-    'model'
     'texture'
+    'model'
+    'sound'
+    'graffiti'
     'terrain'
     'particle'
   ]
@@ -96,7 +98,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     ['plane', 'skySphere', 'water'].includes(type)
 
   $scope.hasCoordinates = (type) ->
-    ['cube', 'plane', 'model', 'light', 'mirror', 'water', 'terrain', 'particle'].includes(type)
+    ['cube', 'plane', 'model', 'light', 'mirror', 'water', 'terrain', 'particle', 'graffiti'].includes(type)
 
   $scope.hasRadiusAndSegments = (type) ->
     ['skySphere'].includes(type)
@@ -144,6 +146,10 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
   $scope.particleFilter = (item) ->
     return false unless item.destPath
     item.type == 'particle'
+
+  $scope.graffitiFilter = (item) ->
+    return false unless item.destPath
+    item.type == 'graffiti'
 
   $scope.itemWithIdFilter = (item) ->
     item.id?

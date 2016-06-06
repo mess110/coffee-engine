@@ -34,7 +34,6 @@ class BezierScene extends BaseScene
   updateCurve: (json) ->
     @art.fromJson(items: [json])
     material = Helper.materialFromCanvas(@art.canvas)
-    material.map.minFilter = THREE.LinearFilter
     @plane.mesh.material = material
 
   tick: (tpf) ->

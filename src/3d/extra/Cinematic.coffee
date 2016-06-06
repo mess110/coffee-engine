@@ -17,6 +17,27 @@ class Cinematic
     @items = []
     @json = json
 
+    @_loadMaterials()
+    @_loadCameras()
+    @_loadItems()
+    @_loadSceneProperties()
+
+    @loaded = true
+
+  _loadMaterials: ->
+    for item in @json.assets
+      if item.type == 'graffiti'
+        # TODO: find out where to move this
+        key = Utils.getKeyName(item.destPath, Utils.SAVE_URLS)
+        so = SaveObjectManager.get().items[key]
+
+        art = new ArtGenerator(width: so.width, height: so.height)
+        art.fromJson(so)
+
+        material = Helper.materialFromCanvas(art.canvas)
+        MaterialManager.get().load(key, material)
+
+  _loadCameras: ->
     for item in @json.cameras
       camera = Helper.camera(item)
       @setId(camera, item)
@@ -27,6 +48,7 @@ class Cinematic
         camera.lookAt(vector)
       @cameras.push camera
 
+  _loadItems: ->
     for item in @json.items
       switch item.type
         when 'water'
@@ -45,7 +67,7 @@ class Cinematic
           baseModel = Helper[item.type](item)
           obj = baseModel.mesh
           @cinemize(item, baseModel, obj)
-        when 'cube', 'plane', 'model', 'ambientLight', 'light', 'skySphere'
+        when 'cube', 'plane', 'model', 'ambientLight', 'light', 'skySphere', 'graffiti'
           obj = Helper[item.type](item)
           baseModel = new BaseModel()
           baseModel.mesh = obj
@@ -53,10 +75,9 @@ class Cinematic
         else
           console.log "unknown item type #{item.type}"
 
+  _loadSceneProperties: ->
     if @json.engine.camera?
       engine.setCamera(@cameras[@json.engine.camera])
-
-    @loaded = true
 
   # set properties generated with the UI
   cinemize: (item, baseModel, obj) ->

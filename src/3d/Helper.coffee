@@ -128,6 +128,23 @@ class Helper
   @water: (engine, scene, options = {}) ->
     new Water(engine, scene, options)
 
+  @graffiti: (assetJson) ->
+    throw new Error('not a graffiti') if assetJson.type != 'graffiti'
+    throw new Error('key missing') unless assetJson.key?
+
+    json = SaveObjectManager.get().items[assetJson.key]
+
+    material = MaterialManager.get().items[assetJson.key]
+    unless material?
+      @art = new ArtGenerator(width: json.width, height: json.height)
+      @art.fromJson(json)
+
+      material = @materialFromCanvas(@art.canvas)
+
+    plane = @plane(json.plane)
+    plane.material = material
+    plane
+
   # Creates a plane
   #
   # @param [Object] options
@@ -144,16 +161,18 @@ class Helper
     options.class ?= 'PlaneBufferGeometry'
 
     if options.map?
-      options.material = new (THREE.MeshBasicMaterial)(
+      material = new (THREE.MeshBasicMaterial)(
         map: TextureManager.get().items[options.map]
         side: THREE.DoubleSide)
+    else if options.material?
+      materail = options.material
     else
-      options.material ?= new (THREE.MeshBasicMaterial)(
+      material = new (THREE.MeshBasicMaterial)(
         color: options.color
         side: THREE.DoubleSide)
 
     geometry = new (THREE[options.class])(options.width, options.height, options.wSegments, options.hSegments)
-    new (THREE.Mesh)(geometry, options.material)
+    new (THREE.Mesh)(geometry, material)
 
   # Enable shadows on the renderer
   #
@@ -258,6 +277,7 @@ class Helper
   @materialFromCanvas: (canvas) ->
     texture = new THREE.Texture(canvas)
     texture.needsUpdate = true
+    texture.minFilter = THREE.LinearFilter
     new THREE.MeshBasicMaterial(map: texture, transparent: true) # , side: THREE.DoubleSide)
 
   # An intersection plane

@@ -57,6 +57,8 @@ class ArtGenerator
   fromJson: (json) ->
     @clear()
     for item in json.items
+      if item.asset? && item.asset.key?
+        item.key = item.asset.key
       if item.type == 'image'
         @drawImage(item)
       if item.type == 'text'
