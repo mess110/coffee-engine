@@ -17,11 +17,12 @@ app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$wind
     return unless $scope.ui.newFilename?
     return if $scope.ui.newFilename == ''
 
-    newScene = fileSystem.newScene($scope.workspace, $scope.ui.newFilename)
-    $scope.editScene(newScene.path)
+    newSceneObj = fileSystem.newScene($scope.workspace, $scope.ui.newFilename)
+    scenePath = fileSystem.getScenePath($scope.workspace, newSceneObj.id)
+    $scope.editScene(scenePath)
 
-  $scope.editScene = (scene) ->
-    $scope.workspace.lastOpenedScene = scene
+  $scope.editScene = (scenePath) ->
+    $scope.workspace.lastOpenedScene = scenePath
     $scope.saveWorkspace()
     $scope.goTo('cinematic-editor')
 
