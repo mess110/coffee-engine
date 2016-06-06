@@ -23,6 +23,7 @@ app.controller 'SettingsController', ['$scope', ($scope) ->
   $scope.updateCE = ->
     $scope.ui.updating = true
     $scope.ui.updateOutput = "Update started. Please wait."
+    $scope.ui.updateError = ''
 
     puts = (error, stdout, stderr) ->
       $scope.ui.updateOutput = stdout

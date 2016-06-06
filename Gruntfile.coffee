@@ -103,7 +103,7 @@ module.exports = (grunt) ->
       "server":
         command: "./node_modules/.bin/http-server"
       "update":
-        command: "git stash && git pull && git stash pop --quiet"
+        command: "git stash && git pull && git stash pop"
       "new":
         command: ->
           output = grunt.option('output')
