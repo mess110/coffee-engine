@@ -41,6 +41,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     'terrain'
     'skySphere'
     'ambientLight'
+    'pointLight'
     'light'
     'graffiti'
     'mirror'
@@ -98,7 +99,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     ['plane', 'skySphere', 'water'].includes(type)
 
   $scope.hasCoordinates = (type) ->
-    ['cube', 'plane', 'model', 'light', 'mirror', 'water', 'terrain', 'particle', 'graffiti'].includes(type)
+    ['cube', 'plane', 'model', 'light', 'pointLight', 'mirror', 'water', 'terrain', 'particle', 'graffiti'].includes(type)
 
   $scope.hasRadiusAndSegments = (type) ->
     ['skySphere'].includes(type)
@@ -108,7 +109,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     if item.type == 'plane'
       if item.map?
         planeHasColor = false
-    ['light', 'ambientLight', 'plane', 'mirror'].includes(item.type) && planeHasColor
+    ['light', 'pointLight', 'ambientLight', 'plane', 'mirror'].includes(item.type) && planeHasColor
 
   $scope.hasWidthHeight = (item) ->
     ['mirror', 'plane', 'water'].includes(item.type)
@@ -209,6 +210,11 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     if item.type == 'skySphere'
       item.radius = Utils.SKY_SPHERE_DEFAULT_RADIUS
       item.segments = Utils.SKY_SPHERE_DEFAULT_SEGMENTS
+    if item.type == 'pointLight'
+      item.color = Utils.POINT_LIGHT_DEFAULT_COLOR
+      item.intensity = Utils.POINT_LIGHT_DEFAULT_INTENSITY
+      item.distance = Utils.POINT_LIGHT_DEFAULT_DISTANCE
+      item.decay = Utils.POINT_LIGHT_DEFAULT_DECAY
     if item.type == 'ambientLight'
       item.color = Utils.AMBIENT_LIGHT_DEFAULT_COLOR
     if item.type == 'light'

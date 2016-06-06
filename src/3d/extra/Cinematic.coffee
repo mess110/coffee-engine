@@ -67,7 +67,7 @@ class Cinematic
           baseModel = Helper[item.type](item)
           obj = baseModel.mesh
           @cinemize(item, baseModel, obj)
-        when 'cube', 'plane', 'model', 'ambientLight', 'light', 'skySphere', 'graffiti'
+        when 'cube', 'plane', 'model', 'ambientLight', 'light', 'pointLight', 'skySphere', 'graffiti'
           obj = Helper[item.type](item)
           baseModel = new BaseModel()
           baseModel.mesh = obj

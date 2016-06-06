@@ -90,6 +90,10 @@ class Helper
     light.shadowDarkness = .7
     light
 
+  # Create a directional light
+  @directionalLight: (options = {}) ->
+    @light(options)
+
   # Create ambient lights
   #
   # @param [Color] color
@@ -97,6 +101,15 @@ class Helper
     options.color ?= Utils.AMBIENT_LIGHT_DEFAULT_COLOR
 
     new (THREE.AmbientLight)(options.color)
+
+  # Create a point light similar to a lightbulb
+  @pointLight: (options = {}) ->
+    options.color ?= Utils.POINT_LIGHT_DEFAULT_COLOR
+    options.intensity ?= Utils.POINT_LIGHT_DEFAULT_INTENSITY
+    options.distance ?= Utils.POINT_LIGHT_DEFAULT_DISTANCE
+    options.decay ?= Utils.POINT_LIGHT_DEFAULT_DECAY
+
+    new (THREE.PointLight)(options.color, options.intensity, options.distance, options.decay)
 
   # Create cubes with lambert material
   #

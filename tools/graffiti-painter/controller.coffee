@@ -12,8 +12,8 @@ app.controller 'GraffitiPainterController', ($scope) ->
     width: 512
     height: 512
     plane: {
-      width: Utils.PLANE_DEFAULT_WIDTH
-      height: Utils.PLANE_DEFAULT_HEIGHT
+      width: Utils.PLANE_DEFAULT_WIDTH * 2
+      height: Utils.PLANE_DEFAULT_HEIGHT * 2
       wSegments: Utils.PLANE_DEFAULT_W_SEGMENTS
       hSegments: Utils.PLANE_DEFAULT_H_SEGMENTS
     }
