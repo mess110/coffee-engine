@@ -1,7 +1,7 @@
 class GraffitiPainterScene extends BaseScene
 
   init: (options) ->
-    engine.setWidthHeight(window.innerWidth, window.innerHeight)
+    engine.setWidthHeight(window.innerWidth - 320, window.innerHeight)
 
     @light1 = Helper.ambientLight()
     @scene.add @light1

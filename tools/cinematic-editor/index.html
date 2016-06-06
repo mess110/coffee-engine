@@ -6,19 +6,19 @@
                     <md-card>
                         <md-card-content>
                             <div layout="row">
-                                <md-input-container class="md-block" flex-gt-xs>
+                                <md-input-container class="md-block" flex>
                                     <label>id</label>
                                     <input ng-model="json.id">
                                 </md-input-container>
                             </div>
-                            <div>
-                                <md-input-container class="md-block">
+                            <div layout="row">
+                                <md-input-container class="md-block" flex>
                                     <label>Description</label>
                                     <textarea ng-model="json.description" md-maxlength="150" rows="5" md-select-on-focus></textarea>
                                 </md-input-container>
                             </div>
                             <div layout="row">
-                                <md-switch flex ng-model="ui.preset_camera" aria-label="Preset camera" ng-disabled="json.cameras.length == 0">
+                                <md-switch ng-model="ui.preset_camera" aria-label="Preset camera" ng-disabled="json.cameras.length == 0" flex>
                                     Preset camera
                                 </md-switch>
                                 <md-input-container flex>
