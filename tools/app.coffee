@@ -4,6 +4,7 @@ gui = require('nw.gui')
 path = require('path')
 fileSystem = new FileSystem()
 workspaceQuery = new WorkspaceQuery()
+exec = require('child_process').exec
 
 app = angular.module 'MyApp', [
   'ngMaterial'

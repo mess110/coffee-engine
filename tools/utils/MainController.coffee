@@ -99,5 +99,18 @@ app.controller 'MainController', ['$document', '$scope', '$location', '$window',
     simple = $mdToast.simple().textContent(message).position('bottom left').hideDelay(3000)
     $mdToast.show simple
 
+  $scope.updateCE = ->
+    $scope.ui.updating = true
+    $scope.updateOutput = "Update started. Please wait."
+
+    puts = (error, stdout, stderr) ->
+      $scope.updateOutput = stdout
+      $scope.updateError = stderr
+      $scope.ui.updating = false
+      $scope.$apply()
+      return
+
+    exec 'grunt shell:update', puts
+
   $scope.refreshProjects()
 ]

@@ -15,6 +15,17 @@
                     </md-card-content>
                 </md-card>
             </md-tab>
+            <md-tab label="update">
+                <md-card>
+                    <md-card-content layout="row">
+                        <pre>{{ updateOutput }}</pre>
+                        <pre>{{ updateError }}</pre>
+                    </md-card-content>
+                    <md-card-actions layout="row" layout-align="end center">
+                        <md-button ng-hide="ui.updating" class="md-raised md-primary" ng-click="updateCE()">NOW</md-button>
+                    </md-card-actions>
+                </md-card>
+            </md-tab>
         </md-tabs>
     </md-content>
 </div>

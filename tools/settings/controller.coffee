@@ -1,4 +1,4 @@
-app.controller 'SettingsController', ['$scope', '$mdToast', ($scope, $mdToast) ->
+app.controller 'SettingsController', ['$scope', ($scope) ->
   EngineHolder.get().engine.removeDom()
 
   $scope.ui.project.name = 'Settings'
@@ -18,8 +18,4 @@ app.controller 'SettingsController', ['$scope', '$mdToast', ($scope, $mdToast) -
     $scope.settings.workspaceDirs.push {
       key: key, method: $scope[methodName]
     }
-
-  $scope.toast = (message) ->
-    simple = $mdToast.simple().textContent(message).position('bottom left').hideDelay(3000)
-    $mdToast.show simple
 ]
