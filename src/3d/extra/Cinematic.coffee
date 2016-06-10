@@ -17,12 +17,17 @@ class Cinematic
     @items = []
     @json = json
 
+    @_loadFog()
     @_loadMaterials()
     @_loadCameras()
     @_loadItems()
     @_loadSceneProperties()
 
     @loaded = true
+
+  _loadFog: ->
+    if @json.fog? && @json.fog.enabled
+      @scene.fog = Helper.fog(@json.fog)
 
   _loadMaterials: ->
     for item in @json.assets
@@ -114,7 +119,7 @@ class Cinematic
 
     return if @json.scripts.where(processing: true).any()
     script = @json.scripts.where(processed: undefined).first()
-    return unless script?
+    return 'finished' unless script?
     script.processed = true
     script.processing = true
 

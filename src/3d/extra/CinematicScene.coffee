@@ -17,7 +17,12 @@ class CinematicScene extends BaseScene
 
   # @nodoc
   tick: (tpf) ->
-    @cinematic.tick(tpf)
+    result = @cinematic.tick(tpf)
+    if result == 'finished'
+      @afterCinematic(tpf)
+
+  # to override
+  afterCinematic: (tpf) ->
 
   # @nodoc
   doMouseEvent: (event, ray) ->
