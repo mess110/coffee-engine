@@ -430,13 +430,17 @@ Utils = function() {
     function Utils() {}
     return Utils.JSON_URLS = [ ".json" ], Utils.IMG_URLS = [ ".png", ".jpg", ".jpeg" ], 
     Utils.SAVE_URLS = [ ".save.json" ], Utils.AUDIO_URLS = [ ".mp3", ".ogg", ".wav" ], 
-    Utils.CAMERA_DEFAULT_VIEW_ANGLE = 45, Utils.CAMERA_DEFAULT_NEAR = 1, Utils.CAMERA_DEFAULT_FAR = 1e4, 
-    Utils.CAMERA_DEFAULT_TYPE = "PerspectiveCamera", Utils.SKY_SPHERE_DEFAULT_RADIUS = 45e4, 
+    Utils.CAMERA_DEFAULT_VIEW_ANGLE = 45, Utils.CAMERA_DEFAULT_NEAR = 1, Utils.CAMERA_DEFAULT_FAR = 1e5, 
+    Utils.CAMERA_DEFAULT_TYPE = "PerspectiveCamera", Utils.SKY_SPHERE_DEFAULT_RADIUS = 5e4, 
     Utils.SKY_SPHERE_DEFAULT_SEGMENTS = 64, Utils.PLANE_DEFAULT_COLOR = "#ff0000", Utils.PLANE_DEFAULT_WIDTH = 5, 
     Utils.PLANE_DEFAULT_HEIGHT = 5, Utils.PLANE_DEFAULT_W_SEGMENTS = 1, Utils.PLANE_DEFAULT_H_SEGMENTS = 1, 
     Utils.AMBIENT_LIGHT_DEFAULT_COLOR = "#404040", Utils.LIGHT_DEFAULT_COLOR = "#ffffff", 
     Utils.LIGHT_DEFAULT_POSITION_X = 0, Utils.LIGHT_DEFAULT_POSITION_Y = 100, Utils.LIGHT_DEFAULT_POSITION_Z = 60, 
-    Utils.toggleFullScreen = function() {
+    Utils.POINT_LIGHT_DEFAULT_COLOR = "#ffffff", Utils.POINT_LIGHT_DEFAULT_INTENSITY = 1, 
+    Utils.POINT_LIGHT_DEFAULT_DISTANCE = 100, Utils.POINT_LIGHT_DEFAULT_DECAY = 1, Utils.MIRROR_DEFAULT_COLOR = "#777777", 
+    Utils.MIRROR_DEFAULT_TEXTURE_WIDTH = 512, Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT = 512, 
+    Utils.MIRROR_DEFAULT_CLIP_BIAS = .003, Utils.WATER_DEFAULT_WATER_COLOR = "#001e0f", 
+    Utils.WATER_DEFAULT_ALPHA = 1, Utils.toggleFullScreen = function() {
         document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }, Utils.guid = function() {
         var s4;
@@ -540,7 +544,7 @@ Engine2D = function() {
     }, Engine2D;
 }();
 
-var isNumeric;
+var CyclicArray, isNumeric;
 
 Array.prototype.isEmpty = function() {
     return 0 === this.length;
@@ -570,6 +574,8 @@ Array.prototype.isEmpty = function() {
         break;
     }
     return eq;
+}, Array.prototype.random = function() {
+    return this.shuffle().first();
 }, Array.prototype.diff = function(a) {
     return this.filter(function(i) {
         return a.indexOf(i) < 0;
@@ -632,7 +638,20 @@ Array.prototype.isEmpty = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }, isNumeric = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
-};
+}, CyclicArray = function() {
+    function CyclicArray(items) {
+        null == items && (items = []), this.items = items, this.index = 0;
+    }
+    return CyclicArray.prototype.get = function() {
+        return this.items[this.index];
+    }, CyclicArray.prototype.next = function() {
+        return this.index += 1, this.index > this.items.size() - 1 && (this.index = 0), 
+        this.get();
+    }, CyclicArray.prototype.prev = function() {
+        return this.index -= 1, this.index < 0 && (this.index = this.items.size() - 1), 
+        this.get();
+    }, CyclicArray;
+}();
 
 var EngineHolder;
 

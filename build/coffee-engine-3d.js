@@ -12137,13 +12137,17 @@ Utils = function() {
     function Utils() {}
     return Utils.JSON_URLS = [ ".json" ], Utils.IMG_URLS = [ ".png", ".jpg", ".jpeg" ], 
     Utils.SAVE_URLS = [ ".save.json" ], Utils.AUDIO_URLS = [ ".mp3", ".ogg", ".wav" ], 
-    Utils.CAMERA_DEFAULT_VIEW_ANGLE = 45, Utils.CAMERA_DEFAULT_NEAR = 1, Utils.CAMERA_DEFAULT_FAR = 1e4, 
-    Utils.CAMERA_DEFAULT_TYPE = "PerspectiveCamera", Utils.SKY_SPHERE_DEFAULT_RADIUS = 45e4, 
+    Utils.CAMERA_DEFAULT_VIEW_ANGLE = 45, Utils.CAMERA_DEFAULT_NEAR = 1, Utils.CAMERA_DEFAULT_FAR = 1e5, 
+    Utils.CAMERA_DEFAULT_TYPE = "PerspectiveCamera", Utils.SKY_SPHERE_DEFAULT_RADIUS = 5e4, 
     Utils.SKY_SPHERE_DEFAULT_SEGMENTS = 64, Utils.PLANE_DEFAULT_COLOR = "#ff0000", Utils.PLANE_DEFAULT_WIDTH = 5, 
     Utils.PLANE_DEFAULT_HEIGHT = 5, Utils.PLANE_DEFAULT_W_SEGMENTS = 1, Utils.PLANE_DEFAULT_H_SEGMENTS = 1, 
     Utils.AMBIENT_LIGHT_DEFAULT_COLOR = "#404040", Utils.LIGHT_DEFAULT_COLOR = "#ffffff", 
     Utils.LIGHT_DEFAULT_POSITION_X = 0, Utils.LIGHT_DEFAULT_POSITION_Y = 100, Utils.LIGHT_DEFAULT_POSITION_Z = 60, 
-    Utils.toggleFullScreen = function() {
+    Utils.POINT_LIGHT_DEFAULT_COLOR = "#ffffff", Utils.POINT_LIGHT_DEFAULT_INTENSITY = 1, 
+    Utils.POINT_LIGHT_DEFAULT_DISTANCE = 100, Utils.POINT_LIGHT_DEFAULT_DECAY = 1, Utils.MIRROR_DEFAULT_COLOR = "#777777", 
+    Utils.MIRROR_DEFAULT_TEXTURE_WIDTH = 512, Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT = 512, 
+    Utils.MIRROR_DEFAULT_CLIP_BIAS = .003, Utils.WATER_DEFAULT_WATER_COLOR = "#001e0f", 
+    Utils.WATER_DEFAULT_ALPHA = 1, Utils.toggleFullScreen = function() {
         document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }, Utils.guid = function() {
         var s4;
@@ -12248,11 +12252,12 @@ TextureManager = function() {
     return instance = null, Singleton.TextureManager = function() {
         function TextureManager() {}
         return TextureManager.prototype.items = {}, TextureManager.prototype.loadCount = 0, 
-        TextureManager.prototype.load = function(key, url) {
-            var texture;
-            if (void 0 === this.items[key]) return this.items[key] = null, texture = THREE.ImageUtils.loadTexture(url, {}, function(image) {
-                return window.TextureManager.get()._load(image, key);
-            }), this;
+        TextureManager.prototype.load = function(key, url, callback) {
+            return null == callback && (callback = function() {
+                return {};
+            }), void 0 === this.items[key] ? (this.items[key] = null, THREE.ImageUtils.loadTexture(url, {}, function(image) {
+                return window.TextureManager.get()._load(image, key), callback(key);
+            }), this) : void 0;
         }, TextureManager.prototype.hasFinishedLoading = function() {
             return this.loadCount === Object.keys(this.items).size();
         }, TextureManager.prototype._load = function(image, key) {
@@ -12263,6 +12268,21 @@ TextureManager = function() {
     }, TextureManager;
 }();
 
+var MaterialManager;
+
+MaterialManager = function() {
+    function MaterialManager() {}
+    var instance;
+    return instance = null, Singleton.MaterialManager = function() {
+        function MaterialManager() {}
+        return MaterialManager.prototype.items = {}, MaterialManager.prototype.load = function(key, material) {
+            return this.items[key] = material, this;
+        }, MaterialManager;
+    }(), MaterialManager.get = function() {
+        return null != instance ? instance : instance = new Singleton.MaterialManager();
+    }, MaterialManager;
+}();
+
 var BaseScene;
 
 BaseScene = function() {
@@ -12271,7 +12291,7 @@ BaseScene = function() {
     BaseScene.prototype.lastMousePosition = void 0, BaseScene.prototype.keyboard = new THREEx.KeyboardState(), 
     BaseScene.prototype.loaded = !1, BaseScene.prototype.uptime = 0, BaseScene.prototype.fullTick = function(tpf) {
         return this.uptime += tpf, this.tick(tpf);
-    }, BaseScene.prototype.init = function() {
+    }, BaseScene.prototype.init = function(options) {
         throw "scene.init not implemented";
     }, BaseScene.prototype.uninit = function() {
         return this.clear();
@@ -12316,6 +12336,18 @@ BaseModel = function() {
         return this.mesh.traverse(function(object) {
             return object.visible = value;
         }), this.visible = value;
+    }, BaseModel.prototype.attachToBone = function(boneName, mesh) {
+        return this.mesh instanceof THREE.SkinnedMesh ? this.mesh.traverse(function(object) {
+            return object instanceof THREE.Bone && object.name === boneName ? object.add(mesh) : void 0;
+        }) : void 0;
+    }, BaseModel.prototype.detachFromBone = function(boneName, mesh) {
+        return this.mesh instanceof THREE.SkinnedMesh ? this.mesh.traverse(function(object) {
+            return object instanceof THREE.Bone && object.name === boneName ? object.remove(mesh) : void 0;
+        }) : void 0;
+    }, BaseModel.prototype.setSkin = function(key) {
+        var tex;
+        if (tex = TextureManager.get().items[key], null == tex) throw new Error("texture not loaded");
+        return this.mesh.material.materials[0].map = tex;
     }, BaseModel.prototype.toggleWireframe = function() {
         var j, k, len, len1, material, mesh, ref, ref1, results;
         if (null != this.mesh) {
@@ -12373,14 +12405,15 @@ var BaseParticle, extend = function(child, parent) {
 
 BaseParticle = function(superClass) {
     function BaseParticle(texturePath) {
-        var i, json, key, len, ref;
+        var base, i, json, key, len, ref;
         if (json = {}, "string" == typeof texturePath) json = {
             group: {
                 texture: THREE.ImageUtils.loadTexture(texturePath)
             }
         }; else {
-            if (json = texturePath, null == json.group && (json.group = {}), null == json.group.textureUrl) throw new Error("json.group.textureUrl is required");
-            key = Utils.getKeyName(json.group.textureUrl, Utils.IMG_URLS), json.group.texture = TextureManager.get().items[key];
+            if (json = texturePath, null == json.group && (json.group = {}), null == (base = json.group).asset && (base.asset = {}), 
+            null == json.group.asset.libPath) throw new Error("json.group.asset.libPath is required");
+            key = Utils.getKeyName(json.group.asset.libPath, Utils.IMG_URLS), json.group.texture = TextureManager.get().items[key];
         }
         json = this.formatDefaults(json), this.particleGroup = new SPE.Group(json.group);
         for (key in json.emitter) if ("object" == typeof json.emitter[key]) {
@@ -12433,8 +12466,11 @@ BaseParticle = function(superClass) {
         json;
     }, BaseParticle.prototype.tick = function(tpf) {
         return this.particleGroup.tick(tpf);
-    }, BaseParticle.fromJson = function(json) {
-        return new BaseParticle(json);
+    }, BaseParticle.fromJson = function(assetJson) {
+        var json;
+        if ("particle" !== assetJson.type) throw new Error("not a particle");
+        if (null == assetJson.key) throw new Error("key missing");
+        return json = SaveObjectManager.get().items[assetJson.key], new BaseParticle(json);
     }, BaseParticle;
 }(BaseModel);
 
@@ -12502,9 +12538,16 @@ Helper = function() {
         light.shadowCameraRight = 60, light.shadowCameraBottom = 60, light.shadowCameraNear = 1, 
         light.shadowCameraFar = 1e3, light.shadowBias = -1e-4, light.shadowMapWidth = light.shadowMapHeight = 1024, 
         light.shadowDarkness = .7, light;
+    }, Helper.directionalLight = function(options) {
+        return null == options && (options = {}), this.light(options);
     }, Helper.ambientLight = function(options) {
         return null == options && (options = {}), null == options.color && (options.color = Utils.AMBIENT_LIGHT_DEFAULT_COLOR), 
         new THREE.AmbientLight(options.color);
+    }, Helper.pointLight = function(options) {
+        return null == options && (options = {}), null == options.color && (options.color = Utils.POINT_LIGHT_DEFAULT_COLOR), 
+        null == options.intensity && (options.intensity = Utils.POINT_LIGHT_DEFAULT_INTENSITY), 
+        null == options.distance && (options.distance = Utils.POINT_LIGHT_DEFAULT_DISTANCE), 
+        null == options.decay && (options.decay = Utils.POINT_LIGHT_DEFAULT_DECAY), new THREE.PointLight(options.color, options.intensity, options.distance, options.decay);
     }, Helper.cube = function(options) {
         var box, mat;
         return null == options && (options = {}), null == options.size && (options.size = 1), 
@@ -12515,21 +12558,39 @@ Helper = function() {
     }, Helper.model = function(options) {
         if (null == options && (options = {}), null == options.key) throw new Error("key missing for: " + JSON.stringify(options));
         return JsonModelManager.get().clone(options.key);
+    }, Helper.terrain = function(options) {
+        return null == options && (options = {}), Terrain.fromJson(options);
+    }, Helper.particle = function(options) {
+        return null == options && (options = {}), BaseParticle.fromJson(options);
+    }, Helper.mirror = function(engine, options) {
+        return null == options && (options = {}), new Mirror(engine, options);
+    }, Helper.water = function(engine, scene, options) {
+        return null == options && (options = {}), new Water(engine, scene, options);
+    }, Helper.graffiti = function(assetJson) {
+        var json, material, plane;
+        if ("graffiti" !== assetJson.type) throw new Error("not a graffiti");
+        if (null == assetJson.key) throw new Error("key missing");
+        return json = SaveObjectManager.get().items[assetJson.key], material = MaterialManager.get().items[assetJson.key], 
+        null == material && (this.art = new ArtGenerator({
+            width: json.width,
+            height: json.height
+        }), this.art.fromJson(json), material = this.materialFromCanvas(this.art.canvas)), 
+        plane = this.plane(json.plane), plane.material = material, plane;
     }, Helper.plane = function(options) {
-        var geometry;
+        var geometry, materail, material;
         return null == options && (options = {}), null != options.size ? (options.width = options.size, 
         options.height = options.size) : (null == options.width && (options.width = Utils.PLANE_DEFAULT_WIDTH), 
         null == options.height && (options.height = Utils.PLANE_DEFAULT_HEIGHT)), null == options.wSegments && (options.wSegments = Utils.PLANE_DEFAULT_W_SEGMENTS), 
         null == options.hSegments && (options.hSegments = Utils.PLANE_DEFAULT_H_SEGMENTS), 
         null == options.color && (options.color = Utils.PLANE_DEFAULT_COLOR), null == options["class"] && (options["class"] = "PlaneBufferGeometry"), 
-        null != options.map ? options.material = new THREE.MeshBasicMaterial({
+        null != options.map ? material = new THREE.MeshBasicMaterial({
             map: TextureManager.get().items[options.map],
             side: THREE.DoubleSide
-        }) : null == options.material && (options.material = new THREE.MeshBasicMaterial({
+        }) : null != options.material ? materail = options.material : material = new THREE.MeshBasicMaterial({
             color: options.color,
             side: THREE.DoubleSide
-        })), geometry = new THREE[options["class"]](options.width, options.height, options.wSegments, options.hSegments), 
-        new THREE.Mesh(geometry, options.material);
+        }), geometry = new THREE[options["class"]](options.width, options.height, options.wSegments, options.hSegments), 
+        new THREE.Mesh(geometry, material);
     }, Helper.fancyShadows = function(renderer) {
         return renderer.shadowMapEnabled = !0, renderer.shadowMapSoft = !0, renderer.shadowMapType = THREE.PCFShadowMap, 
         renderer.shadowMapAutoUpdate = !0;
@@ -12569,7 +12630,8 @@ Helper = function() {
         grid.setColors(options.colorCenterLine, options.color), grid;
     }, Helper.materialFromCanvas = function(canvas) {
         var texture;
-        return texture = new THREE.Texture(canvas), texture.needsUpdate = !0, new THREE.MeshBasicMaterial({
+        return texture = new THREE.Texture(canvas), texture.needsUpdate = !0, texture.minFilter = THREE.LinearFilter, 
+        new THREE.MeshBasicMaterial({
             map: texture,
             transparent: !0
         });
@@ -12610,16 +12672,18 @@ var Water, extend = function(child, parent) {
 Water = function(superClass) {
     function Water(engine, scene, options) {
         var base, base1, base2, base3, base4, base5, base6, waterNormals;
-        null == options && (options = {}), null == options.textureUrl && (options.textureUrl = "/bower_components/ocean/assets/img/waternormals.jpg"), 
-        null == options.width && (options.width = 2e3), null == options.height && (options.height = 2e3), 
-        null == options.wSegments && (options.wSegments = 10), null == options.hSegments && (options.hSegments = 10), 
-        null == options.water && (options.water = {}), null == (base = options.water).textureWidth && (base.textureWidth = 256), 
-        null == (base1 = options.water).textureHeight && (base1.textureHeight = 256), null == (base2 = options.water).alpha && (base2.alpha = 1), 
-        null == (base3 = options.water).sunColor && (base3.sunColor = 16777215), null == (base4 = options.water).waterColor && (base4.waterColor = 7695), 
+        if (null == options && (options = {}), null == options.map) throw new Error("map missing. needs to be a TextureManager key");
+        null == options.width && (options.width = Utils.PLANE_DEFAULT_WIDTH), null == options.height && (options.height = Utils.PLANE_DEFAULT_HEIGHT), 
+        null == options.wSegments && (options.wSegments = Utils.PLANE_DEFAULT_W_SEGMENTS), 
+        null == options.hSegments && (options.hSegments = Utils.PLANE_DEFAULT_H_SEGMENTS), 
+        null == options.water && (options.water = {}), null == (base = options.water).textureWidth && (base.textureWidth = Utils.MIRROR_DEFAULT_TEXTURE_WIDTH / 2), 
+        null == (base1 = options.water).textureHeight && (base1.textureHeight = Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT / 2), 
+        null == (base2 = options.water).alpha && (base2.alpha = Utils.WATER_DEFAULT_ALPHA), 
+        null == (base3 = options.water).sunColor && (base3.sunColor = Utils.LIGHT_DEFAULT_COLOR), 
+        null == (base4 = options.water).waterColor && (base4.waterColor = Utils.WATER_DEFAULT_WATER_COLOR), 
         null == (base5 = options.water).betaVersion && (base5.betaVersion = 0), null == (base6 = options.water).side && (base6.side = THREE.DoubleSide), 
-        waterNormals = TextureManager.get().items[Utils.getKeyName(options.textureUrl, Utils.IMG_URLS)], 
-        waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping, options.water.waterNormals = waterNormals, 
-        this.water = new THREE.Water(engine.renderer, engine.camera, scene, options.water), 
+        waterNormals = TextureManager.get().items[options.map], waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping, 
+        options.water.waterNormals = waterNormals, this.water = new THREE.Water(engine.renderer, engine.camera, scene, options.water), 
         this.mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(options.width, options.height, options.wSegments, options.hSegments), this.water.material), 
         this.mesh.add(this.water), this.mesh.rotation.x = .5 * -Math.PI, this.speed = 1;
     }
@@ -12639,9 +12703,10 @@ var Terrain, extend = function(child, parent) {
 
 Terrain = function(superClass) {
     function Terrain(textureUrl, width, height, wSegments, hSegments) {
-        var geom, json, mat;
-        1 === arguments.length ? (json = textureUrl, mat = new THREE.MeshLambertMaterial({
-            map: TextureManager.get().items[Utils.getKeyName(json.textureUrl, Utils.IMG_URLS)]
+        var geom, json, key, mat;
+        1 === arguments.length ? (json = textureUrl, key = Utils.getKeyName(json.texture.destPath, Utils.IMG_URLS), 
+        mat = new THREE.MeshLambertMaterial({
+            map: TextureManager.get().items[key]
         }), geom = new THREE.PlaneGeometry(json.width, json.height, json.wSegments, json.hSegments)) : (mat = new THREE.MeshLambertMaterial({
             map: THREE.ImageUtils.loadTexture(textureUrl)
         }), geom = new THREE.PlaneGeometry(width, height, wSegments, hSegments)), this.mesh = new THREE.Mesh(geom, mat), 
@@ -12660,17 +12725,12 @@ Terrain = function(superClass) {
         return null == scale && (scale = 1), THREE.ImageUtils.loadTexture(heightmapUrl, THREE.UVMapping, function(_this) {
             return function(hm) {
                 var terrain;
-                return hm.heightData = Terrain.getHeightData(hm.image, scale), terrain = new Terrain(textureUrl, width, height, wSegments, hSegments), 
+                return hm.heightData = Terrain.getHeightData(hm.image, scale), null == wSegments && (wSegments = hm.image.width - 1), 
+                null == hSegments && (hSegments = hm.image.height - 1), terrain = new Terrain(textureUrl, width, height, wSegments, hSegments), 
                 terrain.applyHeightmap(hm.heightData), null == scene && (scene = SceneManager.get().currentScene()), 
                 scene.terrain = terrain, scene.scene.add(terrain.mesh);
             };
         }(this));
-    }, Terrain.heightmap_blocking = function(options) {
-        var hm, scene, terrain;
-        return hm = THREE.ImageUtils.loadTexture(options.heightmapUrl, THREE.UVMapping), 
-        hm.heightData = Terrain.getHeightData(hm.image, options.scale), terrain = new Terrain(options.textureUrl, options.width, options.height, options.wSegments, options.hSegments), 
-        terrain.applyHeightmap(hm.heightData), "undefined" != typeof scene && null !== scene || (scene = SceneManager.get().currentScene()), 
-        scene.terrain = terrain, scene.scene.add(terrain.mesh);
     }, Terrain.getHeightData = function(img, scale) {
         var all, canvas, context, data, i, imgd, j, pix, size;
         for (null == scale && (scale = 1), canvas = document.createElement("canvas"), canvas.width = img.width, 
@@ -12681,10 +12741,17 @@ Terrain = function(superClass) {
         j = 0, i = 0; i < pix.length; ) all = pix[i] + pix[i + 1] + pix[i + 2], data[j++] = all / (12 * scale), 
         i += 4;
         return data;
-    }, Terrain.fromJson = function(json) {
-        var hm, terrain;
-        return hm = TextureManager.get().items[Utils.getKeyName(json.heightmapUrl, Utils.IMG_URLS)], 
-        hm.heightData = Terrain.getHeightData(hm.image, json.scale), terrain = new Terrain(json), 
+    }, Terrain.fromJson = function(assetJson) {
+        var hm, json, k, key, l, len, len1, ref, ref1, terrain;
+        if ("terrain" !== assetJson.type) throw new Error("not a terrain");
+        if (null == assetJson.key) throw new Error("key missing");
+        for (json = SaveObjectManager.get().items[assetJson.key], ref = [ "width", "height", "scale", "texture", "heightmap" ], 
+        k = 0, len = ref.length; len > k; k++) if (key = ref[k], null == json[key]) throw new Error(key + " missing for terrain");
+        for (ref1 = [ "texture", "heightmap" ], l = 0, len1 = ref1.length; len1 > l; l++) if (key = ref1[l], 
+        null == json[key].destPath) throw new Error(key + ".destPath missing for terrain");
+        return key = Utils.getKeyName(json.heightmap.destPath, Utils.IMG_URLS), hm = TextureManager.get().items[key], 
+        hm.heightData = Terrain.getHeightData(hm.image, json.scale), null == json.wSegments && (json.wSegments = hm.image.width - 1), 
+        null == json.hSegments && (json.hSegments = hm.image.height - 1), terrain = new Terrain(json), 
         terrain.applyHeightmap(hm.heightData), terrain;
     }, Terrain;
 }(BaseModel);
@@ -12736,10 +12803,12 @@ var Mirror, extend = function(child, parent) {
 Mirror = function(superClass) {
     function Mirror(engine, options) {
         var base, base1, base2, base3, planeGeo;
-        null == options && (options = {}), null == options.width && (options.width = 10), 
-        null == options.height && (options.height = 10), null == options.mirror && (options.mirror = {}), 
-        null == (base = options.mirror).clipBias && (base.clipBias = .003), null == (base1 = options.mirror).textureHeight && (base1.textureHeight = 512), 
-        null == (base2 = options.mirror).textureHeight && (base2.textureHeight = 512), null == (base3 = options.mirror).color && (base3.color = 7829367), 
+        null == options && (options = {}), null == options.width && (options.width = Utils.PLANE_DEFAULT_WIDTH), 
+        null == options.height && (options.height = Utils.PLANE_DEFAULT_HEIGHT), null == options.mirror && (options.mirror = {}), 
+        null == (base = options.mirror).clipBias && (base.clipBias = Utils.MIRROR_DEFAULT_CLIP_BIAS), 
+        null == (base1 = options.mirror).textureWidth && (base1.textureWidth = Utils.MIRROR_DEFAULT_TEXTURE_WIDTH), 
+        null == (base2 = options.mirror).textureHeight && (base2.textureHeight = Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT), 
+        null == (base3 = options.mirror).color && (base3.color = Utils.MIRROR_DEFAULT_COLOR), 
         planeGeo = new THREE.PlaneBufferGeometry(options.width, options.height), this.mirror = new THREE.Mirror(engine.renderer, engine.camera, options.mirror), 
         this.mesh = new THREE.Mesh(planeGeo, this.mirror.material), this.mesh.add(this.mirror), 
         this.mesh.rotateX(-Math.PI / 2);
@@ -12807,48 +12876,90 @@ var Cinematic;
 
 Cinematic = function() {
     function Cinematic(json, scene) {
-        var baseModel, camera, i, item, j, len, len1, obj, ref, ref1, vector;
-        for (this.loaded = !1, null != scene && (this.scene = scene), this.cameras = [], 
-        this.items = [], this.json = json, ref = this.json.cameras, i = 0, len = ref.length; len > i; i++) item = ref[i], 
+        this.loaded = !1, null != scene && (this.scene = scene), this.cameras = [], this.items = [], 
+        this.json = json, this._loadFog(), this._loadMaterials(), this._loadCameras(), this._loadItems(), 
+        this._loadSceneProperties(), this.loaded = !0;
+    }
+    return Cinematic.prototype._loadFog = function() {
+        return null != this.json.fog && this.json.fog.enabled ? this.scene.fog = Helper.fog(this.json.fog) : void 0;
+    }, Cinematic.prototype._loadMaterials = function() {
+        var art, i, item, key, len, material, ref, results, so;
+        for (ref = this.json.assets, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
+        "graffiti" === item.type ? (key = Utils.getKeyName(item.destPath, Utils.SAVE_URLS), 
+        so = SaveObjectManager.get().items[key], art = new ArtGenerator({
+            width: so.width,
+            height: so.height
+        }), art.fromJson(so), material = Helper.materialFromCanvas(art.canvas), results.push(MaterialManager.get().load(key, material))) : results.push(void 0);
+        return results;
+    }, Cinematic.prototype._loadCameras = function() {
+        var camera, i, item, len, ref, results, vector;
+        for (ref = this.json.cameras, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
         camera = Helper.camera(item), this.setId(camera, item), this.setXYZProp("position", camera, item), 
         this.setXYZProp("rotation", camera, item), null != item.lookAt && (vector = this.getLookAtVector(item.lookAt), 
-        camera.lookAt(vector)), this.cameras.push(camera);
-        for (ref1 = this.json.items, j = 0, len1 = ref1.length; len1 > j; j++) switch (item = ref1[j], 
+        camera.lookAt(vector)), results.push(this.cameras.push(camera));
+        return results;
+    }, Cinematic.prototype._loadItems = function() {
+        var baseModel, i, item, len, obj, ref, results;
+        for (ref = this.json.items, results = [], i = 0, len = ref.length; len > i; i++) switch (item = ref[i], 
         item.type) {
+          case "water":
+            item[item.type] = item, baseModel = Helper[item.type](engine, this.scene, item), 
+            obj = baseModel.mesh, results.push(this.cinemize(item, baseModel, obj));
+            break;
+
+          case "mirror":
+            item[item.type] = item, baseModel = Helper[item.type](engine, item), obj = baseModel.mesh, 
+            results.push(this.cinemize(item, baseModel, obj));
+            break;
+
+          case "terrain":
+          case "particle":
+            baseModel = Helper[item.type](item), obj = baseModel.mesh, results.push(this.cinemize(item, baseModel, obj));
+            break;
+
           case "cube":
           case "plane":
           case "model":
           case "ambientLight":
           case "light":
+          case "pointLight":
           case "skySphere":
+          case "graffiti":
             obj = Helper[item.type](item), baseModel = new BaseModel(), baseModel.mesh = obj, 
-            this.setId(baseModel, item), this.setId(obj, item), this.setXYZProp("position", obj, item), 
-            this.setXYZProp("rotation", obj, item), this.setXYZProp("scale", obj, item, 1), 
-            null != item.lookAt && camera.lookAt(this.toVector3(item.lookAt)), this.items.push(baseModel), 
-            this.scene && this.scene.add(baseModel.mesh);
+            results.push(this.cinemize(item, baseModel, obj));
             break;
 
           default:
-            console.log("unknown item type " + item.type);
+            results.push(console.log("unknown item type " + item.type));
         }
-        null != this.json.engine.camera && engine.setCamera(this.cameras[this.json.engine.camera]), 
-        this.loaded = !0;
-    }
-    return Cinematic.prototype.addAll = function(scene) {
+        return results;
+    }, Cinematic.prototype._loadSceneProperties = function() {
+        return null != this.json.engine.camera ? engine.setCamera(this.cameras[this.json.engine.camera]) : void 0;
+    }, Cinematic.prototype.cinemize = function(item, baseModel, obj) {
+        return this.setId(baseModel, item), this.setId(obj, item), this.setXYZProp("position", obj, item), 
+        this.setXYZProp("rotation", obj, item), this.setXYZProp("scale", obj, item, 1), 
+        null != item.lookAt && camera.lookAt(this.toVector3(item.lookAt)), this.items.push(baseModel), 
+        this.scene ? this.scene.add(baseModel.mesh) : void 0;
+    }, Cinematic.prototype.addAll = function(scene) {
         var i, item, len, ref, results;
         for (ref = this.items, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
         results.push(scene.add(item.mesh));
         return results;
     }, Cinematic.prototype.tick = function(tpf) {
-        var action, i, len, ref, script;
-        if (this.loaded === !0 && !this.json.scripts.where({
-            processing: !0
-        }).any() && (script = this.json.scripts.where({
-            processed: void 0
-        }).first(), null != script)) {
-            for (script.processed = !0, script.processing = !0, ref = script.actions, i = 0, 
-            len = ref.length; len > i; i++) action = ref[i], this.processAction(action);
-            return this.setNotProcessing(script);
+        var action, i, item, j, len, len1, ref, ref1, script;
+        if (this.loaded === !0) {
+            for (ref = this.items, i = 0, len = ref.length; len > i; i++) item = ref[i], item instanceof BaseParticle && item.tick(tpf), 
+            item instanceof Mirror && item.tick(tpf), item instanceof Water && item.tick(tpf);
+            if (!this.json.scripts.where({
+                processing: !0
+            }).any()) {
+                if (script = this.json.scripts.where({
+                    processed: void 0
+                }).first(), null == script) return "finished";
+                for (script.processed = !0, script.processing = !0, ref1 = script.actions, j = 0, 
+                len1 = ref1.length; len1 > j; j++) action = ref1[j], this.processAction(action);
+                return this.setNotProcessing(script);
+            }
         }
     }, Cinematic.prototype.processAction = function(action) {
         var isCamera, target;
@@ -12873,7 +12984,7 @@ Cinematic = function() {
         }
     }, Cinematic.prototype.setNotProcessing = function(script) {
         var duration;
-        return duration = this.getScriptDuration(script), console.log(duration), setTimeout(function(_this) {
+        return duration = this.getScriptDuration(script), setTimeout(function(_this) {
             return function() {
                 return script.processing = !1;
             };
@@ -12925,8 +13036,10 @@ CinematicScene = function(superClass) {
         var json;
         return json = SaveObjectManager.get().items[key], this.fromJson(json);
     }, CinematicScene.prototype.tick = function(tpf) {
-        return this.cinematic.tick(tpf);
-    }, CinematicScene.prototype.doMouseEvent = function(event, ray) {}, CinematicScene.getAssets = function(key) {
+        var result;
+        return result = this.cinematic.tick(tpf), "finished" === result ? this.afterCinematic(tpf) : void 0;
+    }, CinematicScene.prototype.afterCinematic = function(tpf) {}, CinematicScene.prototype.doMouseEvent = function(event, ray) {}, 
+    CinematicScene.getAssets = function(key) {
         return SaveObjectManager.get().items[key].assets;
     }, CinematicScene;
 }(BaseScene);
@@ -12941,8 +13054,8 @@ ArtGenerator = function() {
     return ArtGenerator.prototype.tm = TextureManager.get(), ArtGenerator.prototype.fromJson = function(json) {
         var i, item, len, ref, results;
         for (this.clear(), ref = json.items, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
-        "image" === item.type && this.drawImage(item), "text" === item.type && this.drawText(item), 
-        "bezier" === item.type ? results.push(this.drawBezier(item)) : results.push(void 0);
+        null != item.asset && null != item.asset.key && (item.key = item.asset.key), "image" === item.type && this.drawImage(item), 
+        "text" === item.type && this.drawText(item), "bezier" === item.type ? results.push(this.drawBezier(item)) : results.push(void 0);
         return results;
     }, ArtGenerator.prototype.drawBezier = function(options) {
         return StackOverflow.drawBezier(options, this.ctx);
@@ -13047,13 +13160,13 @@ Engine3D = function() {
         this.appendDom(), this.renderer.domElement.setAttribute("id", "coffee-engine-dom"), 
         camera = Helper.camera({
             aspect: this.width / this.height,
-            near: .5,
-            far: 1e6
+            near: Utils.CAMERA_DEFAULT_NEAR,
+            far: Utils.CAMERA_DEFAULT_FAR
         }), this.setCamera(camera), this.camera.position.z = 10, this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), 
         this.anaglyphEffect.setSize(this.width, this.height), this.sceneManager = SceneManager.get(), 
         this.renderer.domElement.addEventListener("mouseup", this.mouseHandler, !1), this.renderer.domElement.addEventListener("mousedown", this.mouseHandler, !1), 
-        this.renderer.domElement.addEventListener("mousemove", this.mouseHandler, !1), this.renderer.domElement.addEventListener("keydown", this.keyboardHandler, !1), 
-        this.renderer.domElement.addEventListener("keyup", this.keyboardHandler, !1), this.renderer.domElement.addEventListener("touchstart", this.touchHandler, !1), 
+        this.renderer.domElement.addEventListener("mousemove", this.mouseHandler, !1), document.addEventListener("keydown", this.keyboardHandler, !1), 
+        document.addEventListener("keyup", this.keyboardHandler, !1), this.renderer.domElement.addEventListener("touchstart", this.touchHandler, !1), 
         this.renderer.domElement.addEventListener("touchmove", this.touchHandler, !1), this.renderer.domElement.addEventListener("touchend", this.touchHandler, !1), 
         this.renderer.domElement.addEventListener("touchcancel", this.touchHandler, !1), 
         this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
@@ -13096,10 +13209,10 @@ Engine3D = function() {
         return this.renderer.setClearColor(color, alpha);
     }, Engine3D.prototype.addScene = function(scene) {
         return this.sceneManager.addScene(scene), null == this.sceneManager.currentSceneIndex ? this.sceneManager.setScene(scene) : void 0;
-    }, Engine3D.prototype.initScene = function(scene) {
+    }, Engine3D.prototype.initScene = function(scene, options) {
         var currentScene;
-        return currentScene = this.sceneManager.currentScene(), null != currentScene && currentScene.uninit(), 
-        scene.init(), this.sceneManager.setScene(scene);
+        return null == options && (options = {}), currentScene = this.sceneManager.currentScene(), 
+        null != currentScene && currentScene.uninit(), scene.init(options), this.sceneManager.setScene(scene);
     }, Engine3D.prototype.removeScene = function(scene) {
         return this.sceneManager.removeScene(scene);
     }, Engine3D.prototype.render = function() {
@@ -13129,10 +13242,22 @@ Engine3D = function() {
         return this.config.preventDefaultMouseEvents && event.preventDefault(), event.target === this.renderer.domElement ? (mouseX = event.layerX / this.width * 2 - 1, 
         mouseY = 2 * -(event.layerY / this.height) + 1, vector = new THREE.Vector3(mouseX, mouseY, .5), 
         vector.unproject(this.camera), new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize())) : void 0;
+    }, Engine3D.scenify = function(callback) {
+        var loadingScene;
+        return null == callback && (callback = function() {
+            return {};
+        }), loadingScene = new LoadingScene([ "assets/scenes/start.save.json" ], function() {
+            var assets;
+            return loadingScene.hasFinishedLoading = function() {
+                var scene;
+                return scene = CinematicScene.fromSaveObjectKey("start"), engine.addScene(scene), 
+                engine.sceneManager.setScene(scene), callback();
+            }, assets = CinematicScene.getAssets("start"), loadingScene.loadAssets(assets);
+        }), engine.addScene(loadingScene), loadingScene;
     }, Engine3D;
 }();
 
-var isNumeric;
+var CyclicArray, isNumeric;
 
 Array.prototype.isEmpty = function() {
     return 0 === this.length;
@@ -13162,6 +13287,8 @@ Array.prototype.isEmpty = function() {
         break;
     }
     return eq;
+}, Array.prototype.random = function() {
+    return this.shuffle().first();
 }, Array.prototype.diff = function(a) {
     return this.filter(function(i) {
         return a.indexOf(i) < 0;
@@ -13224,7 +13351,20 @@ Array.prototype.isEmpty = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }, isNumeric = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
-};
+}, CyclicArray = function() {
+    function CyclicArray(items) {
+        null == items && (items = []), this.items = items, this.index = 0;
+    }
+    return CyclicArray.prototype.get = function() {
+        return this.items[this.index];
+    }, CyclicArray.prototype.next = function() {
+        return this.index += 1, this.index > this.items.size() - 1 && (this.index = 0), 
+        this.get();
+    }, CyclicArray.prototype.prev = function() {
+        return this.index -= 1, this.index < 0 && (this.index = this.items.size() - 1), 
+        this.get();
+    }, CyclicArray;
+}();
 
 var EngineHolder;
 
