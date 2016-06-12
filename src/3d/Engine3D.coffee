@@ -33,8 +33,8 @@ class Engine3D
     @renderer.domElement.addEventListener "mousedown", @mouseHandler, false
     @renderer.domElement.addEventListener "mousemove", @mouseHandler, false
 
-    @renderer.domElement.addEventListener "keydown", @keyboardHandler, false
-    @renderer.domElement.addEventListener "keyup", @keyboardHandler, false
+    document.addEventListener "keydown", @keyboardHandler, false
+    document.addEventListener "keyup", @keyboardHandler, false
 
     @renderer.domElement.addEventListener "touchstart", @touchHandler, false
     @renderer.domElement.addEventListener "touchmove", @touchHandler, false
