@@ -101,4 +101,8 @@ class Utils
     blob = new Blob([json], type: "#{format};charset=utf-8")
     saveAs blob, fileName
 
+  # Basic way to find out if we are on a mobile device
+  @isMobile = ->
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+
 exports.Utils = Utils
