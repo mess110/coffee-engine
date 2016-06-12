@@ -101,6 +101,41 @@ class Utils
     blob = new Blob([json], type: "#{format};charset=utf-8")
     saveAs blob, fileName
 
+  # Add a custom button at a given position.
+  #
+  # By default, it adds the fullscreen button. Valid types are:
+  #
+  # * fullscreen - toggles fullscreen
+  # * reinit - reinits the current scene
+  #
+  # @param [Hash] options
+  #
+  # @example
+  #   Util.addCEButton(size: '32px', padding: '32px', position: 'bottom-right')
+  @addCEButton: (options = {})->
+    options.size ?= '32px'
+    options.padding ?= '32px'
+    options.position ?= 'bottom-right'
+    options.type ?= 'fullscreen'
+
+    throw new Error("invalid type #{options.type}") unless ['fullscreen', 'reinit'].includes(options.type)
+
+    throw new Error("invalid position #{options.position}") unless ['top-right', 'bottom-right', 'top-left', 'bottom-left'].includes(options.position)
+    posArray = options.position.split('-')
+
+    img = document.createElement('img')
+    img.style = "position: absolute; width: #{options.size}; height: #{options.size};" + "#{posArray[0]}: #{options.padding}; #{posArray[1]}: #{options.padding}"
+    if options.type == 'fullscreen'
+      img.setAttribute 'onclick', 'Utils.toggleFullScreen()'
+      img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AYMDR07WbntUQAAAMZJREFUWMPtl7ENgzAQRR+IkhFYIdUVUTKP9wjswSCZIBHFVVmBEVKbNBTIMsFBcpLiXnlC9ke+7/suRGQinU5V23cfiEgLXFIXLPkxJqCK1J7AY0XcmLDmCAyRugcOQL0sFpEmvKvqOcffisgNOG0dQfnNI7cmNAEV0O2w2l564IphGEYwjsOMN6pqn2kcO6AJb8IwQA7zjZUDBxxtGJmALQE+434+ZsPpg1jeb1l0tppLjeWxd0EdRucFKWGiCa1mTfjXAl7JzisvsBIkfgAAAABJRU5ErkJggg=='
+    else if options.type == 'reinit'
+      img.setAttribute 'onclick', 'engine.initScene(SceneManager.get().currentScene())'
+      img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfgBgwNMCmKKsb2AAACbklEQVRIx5XVz2tcVRQH8M971dZ01GppNWbhSHFjdJXTookiCOpGChKKVv8E68Yfiy6sol0J1l3ddCmIOxfBleBCyISqZ1BoxIUUuxCNJdVYiaEQdDF3zEzn1XG+m8u795zvvfec+77fSkHI3njEvCMeczQvGEI/YhiVnbR5C+7tL2Q1GhxP5WfX09wU73peeyT2e034MLY858tBktrbWv4eCV1pJLim7Xy8l2KAYFPb+ghFZ66JoAavxec7FHWyqe3X60/QbSJ4v4xPxHKfol/EM14djGwqIcQhF0yBM/l6IQjC18MlzAduQMBt1grFI86nmmSprP9UatFcQiRXzZaPjxN1iGfdA067v5SzuYSFIn90EtwXx0JFfOUwtnIq2OuSAx7KVf+J+FMLK7lQR8th8BalI5vj0nEazMettWfK1Llyx83tO43HuTI+WXsYXM7f+nf85tr4/Lzid/B4Xf6Db02KXuNnanfAyEscj3VwoC5vsZqYYBvsql0FBycmuAts1H4AcxMT9DIu1kUb9kd7kuxo299rR+3TMvfCRPv3o5cqIs3hr9w7wQk2TaGbsSvYcAw3z2z//MX/TH/D0+CVmdUK4hd3gwd9l+OSmdX7V9Zymppgsax2tWJcektf7RajJ5MpO86C3db/lYtmzFq3G3yQnezrbMiXLaOyx2qcuuH+p6zao0InTwyLqhTLFkrklnd8lJeG+v6iN93SF/18tG8u1aDzxVkvDWx4RddlHDRXno1y+BM73lQNm2fM+6R0pBlrFrMzbG2DistKTjuu0VV0Hc9pHUP22uTBUtzuqHDIPmy4KC3lH00G/w/Uq7TDOW+poQAAAABJRU5ErkJggg=='
+    if options.src?
+      img.src = options.src
+
+    document.body.appendChild img
+
   # Basic way to find out if we are on a mobile device
   @isMobile = ->
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)

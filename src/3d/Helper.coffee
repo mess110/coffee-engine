@@ -19,6 +19,7 @@ class Helper
   @down: new THREE.Vector3(0, -1, 0)
 
   @toggleFullScreen = Utils.toggleFullScreen
+  @addCEButton = Utils.addCEButton
   @guid: Utils.guid
   @setCursor: Utils.setCursor
   @rgbToHex: Utils.rgbToHex
