@@ -103,6 +103,10 @@ class Cinematic
     for item in @items
       scene.add item.mesh
 
+  # Find an item or a camera by id
+  find: (id) ->
+    @items.where(ceId: id).first() || @cameras.where(ceId: id).first()
+
   # tick event
   tick: (tpf) ->
     return if @loaded != true

@@ -25,8 +25,7 @@ class GameScene extends BaseScene
 
 Engine3D.scenify(->
   gameScene = new GameScene()
-  engine.addScene(gameScene)
-  # gameScene.init()
+  engine.initScene(gameScene)
 )
 
 engine.render()

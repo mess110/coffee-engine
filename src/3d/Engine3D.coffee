@@ -125,6 +125,9 @@ class Engine3D
     currentScene = @sceneManager.currentScene()
     if currentScene?
       currentScene.uninit()
+    unless @sceneManager.hasScene(scene)
+      @sceneManager.addScene(scene)
+
     scene.init(options)
     @sceneManager.setScene(scene)
 

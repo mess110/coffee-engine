@@ -55,6 +55,9 @@ class SceneManager
     isValidIndex: (i) ->
       0 <= i and i < @scenes.length
 
+    hasScene: (scene) ->
+      @scenes.includes(scene)
+
     # ticks the scene
     tick: (tpf) ->
       @currentScene().fullTick(tpf)
