@@ -60,6 +60,9 @@ Array::equalsArray = (a) ->
       break
   eq
 
+Array::random = ->
+  @.shuffle().first()
+
 # Difference between arrays
 Array::diff = (a) ->
   @filter (i) ->
@@ -165,3 +168,23 @@ String::capitalizeFirstLetter = ->
 # Check if value is a number
 isNumeric = (n) ->
   !isNaN(parseFloat(n)) and isFinite(n)
+
+# Used for next() and prev()
+class CyclicArray
+  constructor: (items = []) ->
+    @items = items
+    @index = 0
+
+  get: ->
+    @items[@index]
+
+  next: () ->
+    @index += 1
+    @index = 0 if @index > @items.size() - 1
+    @get()
+
+  prev: ->
+    @index -= 1
+    @index = @items.size() - 1 if @index < 0
+    @get()
+
