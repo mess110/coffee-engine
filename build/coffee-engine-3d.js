@@ -12967,7 +12967,7 @@ Cinematic = function() {
     return Cinematic.prototype._initUI = function() {
         var ceButtonType, i, len, ref;
         for (ref = Utils.CE_BUTTON_TYPES, i = 0, len = ref.length; len > i; i++) ceButtonType = ref[i], 
-        null != this.json.ui[ceButtonType + "Button"] && this.json.ui[ceButtonType + "Button"].enabled && (this.json.ui[ceButtonType + "Button"].type = ceButtonType, 
+        null != this.json.ui && null != this.json.ui[ceButtonType + "Button"] && this.json.ui[ceButtonType + "Button"].enabled && (this.json.ui[ceButtonType + "Button"].type = ceButtonType, 
         Helper.addCEButton(this.json.ui[ceButtonType + "Button"]));
         return null != this.json.engine.orientation ? Helper.orientation(this.json.engine.orientation) : void 0;
     }, Cinematic.prototype._loadFog = function() {

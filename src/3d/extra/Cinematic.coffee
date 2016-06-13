@@ -28,7 +28,7 @@ class Cinematic
 
   _initUI: ->
     for ceButtonType in Utils.CE_BUTTON_TYPES
-      if @json.ui["#{ceButtonType}Button"]? and @json.ui["#{ceButtonType}Button"].enabled
+      if @json.ui? and @json.ui["#{ceButtonType}Button"]? and @json.ui["#{ceButtonType}Button"].enabled
         @json.ui["#{ceButtonType}Button"].type = ceButtonType
         Helper.addCEButton(@json.ui["#{ceButtonType}Button"])
     if @json.engine.orientation?
