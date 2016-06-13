@@ -63,6 +63,10 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     'OrthographicCamera'
   ]
 
+  $scope.ceButtonPositions = Utils.CE_BUTTON_POSITIONS
+  $scope.ceButtonTypes = Utils.CE_BUTTON_TYPES
+  $scope.orientations = Utils.ORIENTATIONS
+
   onLoad = (data) ->
     $scope.json = JSON.parse(data)
     if $scope.json.engine.camera?
@@ -255,6 +259,9 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
 
   $scope.removeScript = (script) ->
     $scope.json.scripts.remove(script)
+
+  $scope.removeScriptAction = (script, action) ->
+    script.actions.remove(action)
 
   $scope.onAssetSelect = (asset, result) ->
     asset.libPath = result.libPath

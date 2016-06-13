@@ -39,6 +39,11 @@ class Utils
   @WATER_DEFAULT_WATER_COLOR = '#001e0f'
   @WATER_DEFAULT_ALPHA = 1.0
 
+  @CE_BUTTON_POSITIONS = ['top-right', 'bottom-right', 'top-left', 'bottom-left']
+  @CE_BUTTON_TYPES = ['fullscreen', 'reinit']
+
+  @ORIENTATIONS = ['all', 'landscape', 'portrait']
+
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.
   #
@@ -118,9 +123,12 @@ class Utils
     options.position ?= 'bottom-right'
     options.type ?= 'fullscreen'
 
-    throw new Error("invalid type #{options.type}") unless ['fullscreen', 'reinit'].includes(options.type)
+    options.size = "#{options.size}px" unless options.size.endsWith('px')
+    options.padding = "#{options.padding}px" unless options.padding.endsWith('px')
 
-    throw new Error("invalid position #{options.position}") unless ['top-right', 'bottom-right', 'top-left', 'bottom-left'].includes(options.position)
+    throw new Error("invalid type #{options.type}") unless Utils.CE_BUTTON_TYPES.includes(options.type)
+
+    throw new Error("invalid position #{options.position}") unless Utils.CE_BUTTON_POSITIONS.includes(options.position)
     posArray = options.position.split('-')
 
     img = document.createElement('img')
@@ -157,7 +165,7 @@ class Utils
     document.head.removeChild(existingStyle) if existingStyle?
     return if orientation == 'all'
 
-    throw new Error("invalid orientation type '#{orientation}'") unless ['all', 'landscape', 'portrait'].includes(orientation)
+    throw new Error("invalid orientation type '#{orientation}'") unless Utils.ORIENTATIONS.includes(orientation)
 
     div = document.createElement('div')
     div.setAttribute 'class', 'ce-turn-screen'

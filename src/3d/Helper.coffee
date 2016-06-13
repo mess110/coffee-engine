@@ -20,6 +20,7 @@ class Helper
 
   @toggleFullScreen = Utils.toggleFullScreen
   @addCEButton = Utils.addCEButton
+  @orientation = Utils.orientation
   @guid: Utils.guid
   @setCursor: Utils.setCursor
   @rgbToHex: Utils.rgbToHex

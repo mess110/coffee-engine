@@ -17,6 +17,7 @@ class Cinematic
     @items = []
     @json = json
 
+    @_initUI()
     @_loadFog()
     @_loadMaterials()
     @_loadCameras()
@@ -24,6 +25,14 @@ class Cinematic
     @_loadSceneProperties()
 
     @loaded = true
+
+  _initUI: ->
+    for ceButtonType in Utils.CE_BUTTON_TYPES
+      if @json.ui["#{ceButtonType}Button"]? and @json.ui["#{ceButtonType}Button"].enabled
+        @json.ui["#{ceButtonType}Button"].type = ceButtonType
+        Helper.addCEButton(@json.ui["#{ceButtonType}Button"])
+    if @json.engine.orientation?
+      Helper.orientation(@json.engine.orientation)
 
   _loadFog: ->
     if @json.fog? && @json.fog.enabled

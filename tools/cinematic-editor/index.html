@@ -17,7 +17,50 @@
                                     <textarea ng-model="json.description" md-maxlength="150" rows="5" md-select-on-focus></textarea>
                                 </md-input-container>
                             </div>
+                            <div layout="row" ng-repeat="uiElement in ceButtonTypes">
+                                <md-switch ng-model="json.ui[uiElement + 'Button'].enabled" aria-label="Reinit Button" ng-disabled="false" flex>
+                                    {{ uiElement }} button
+                                </md-switch>
+                                <md-input-container flex>
+                                    <label>Position</label>
+                                    <md-select ng-model="json.ui[uiElement + 'Button'].position" ng-disabled="!json.ui[uiElement + 'Button'].enabled">
+                                        <md-option ng-repeat="position in ceButtonPositions">
+                                            {{ position }}
+                                        </md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <md-input-container class="no-bottom" flex>
+                                    <label>Size</label>
+                                    <input type="number" ng-model="json.ui[uiElement + 'Button'].size" ng-disabled="!json.ui[uiElement + 'Button'].enabled">
+                                </md-input-container>
+                                <md-input-container class="no-bottom" flex>
+                                    <label>Padding</label>
+                                    <input type="number" ng-model="json.ui[uiElement + 'Button'].padding" ng-disabled="!json.ui[uiElement + 'Button'].enabled">
+                                </md-input-container>
+                            </div>
                             <div layout="row">
+                                <md-switch ng-model="json.fog.enabled" aria-label="Fog" ng-disabled="false" flex>
+                                    Fog
+                                </md-switch>
+                                <div md-color-picker ng-model="json.fog.color" ng-show="true" flex></div>
+                                <md-input-container class="no-bottom" flex>
+                                    <label>Near</label>
+                                    <input type="number" ng-model="json.fog.near" ng-disabled="!json.fog.enabled">
+                                </md-input-container>
+                                <md-input-container class="no-bottom" flex>
+                                    <label>Far</label>
+                                    <input type="number" ng-model="json.fog.far" ng-disabled="!json.fog.enabled">
+                                </md-input-container>
+                            </div>
+                            <div layout="row">
+                                <md-input-container flex>
+                                    <label>Orientation</label>
+                                    <md-select ng-model="json.engine.orientation" ng-disabled="false">
+                                        <md-option ng-repeat="orientation in orientations">
+                                            {{ orientation }}
+                                        </md-option>
+                                    </md-select>
+                                </md-input-container>
                                 <md-switch ng-model="ui.preset_camera" aria-label="Preset camera" ng-disabled="json.cameras.length == 0" flex>
                                     Preset camera
                                 </md-switch>
@@ -28,20 +71,6 @@
                                             {{ camera.id || $index }}
                                         </md-option>
                                     </md-select>
-                                </md-input-container>
-                            </div>
-                            <div layout="row">
-                                <md-switch ng-model="json.fog.enabled" aria-label="Fog" ng-disabled="false" flex>
-                                    Fog
-                                </md-switch>
-                                <div md-color-picker ng-model="json.fog.color" ng-show="json.fog.enabled" flex></div>
-                                <md-input-container class="no-bottom" flex>
-                                    <label>Near</label>
-                                    <input type="number" ng-model="json.fog.near" ng-disabled="!json.fog.enabled">
-                                </md-input-container>
-                                <md-input-container class="no-bottom" flex>
-                                    <label>Far</label>
-                                    <input type="number" ng-model="json.fog.far" ng-disabled="!json.fog.enabled">
                                 </md-input-container>
                             </div>
                         </md-card-content>
@@ -309,8 +338,8 @@
                     <md-card ng-repeat="script in json.scripts">
                         <md-card-content ng-repeat="action in script.actions" layout="column">
                             <md-toolbar class="md-theme-light">
-                                <h2 class="md-toolbar-tools">
-                                    <span>Action</span>
+                                <h2 class="md-toolbar-tools" layout-align="end center">
+                                    <md-button ng-click="removeScriptAction(script, action)">delete action</md-button>
                                 </h2>
                             </md-toolbar>
                             <div layout="row">
@@ -470,7 +499,7 @@
                         </md-card-content>
                         <md-card-actions layout="row" layout-align="end center">
                             <md-button ng-click="addScriptAction(script)">add action</md-button>
-                            <md-button ng-click="removeScript(script)">delete</md-button>
+                            <md-button ng-click="removeScript(script)">delete script</md-button>
                         </md-card-actions>
                     </md-card>
                 </md-content>

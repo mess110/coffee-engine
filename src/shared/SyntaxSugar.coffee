@@ -169,6 +169,9 @@ String::capitalizeFirstLetter = ->
 isNumeric = (n) ->
   !isNaN(parseFloat(n)) and isFinite(n)
 
+Number::endsWith = (s) ->
+  @.toString().endsWith(s)
+
 # Used for next() and prev()
 class CyclicArray
   constructor: (items = []) ->
