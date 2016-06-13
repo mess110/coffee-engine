@@ -18,7 +18,7 @@ class Helper
   @up: new THREE.Vector3(0, 1, 0)
   @down: new THREE.Vector3(0, -1, 0)
 
-  @toggleFullScreen = Utils.toggleFullScreen
+  @toggleFullscreen = Utils.toggleFullscreen
   @addCEButton = Utils.addCEButton
   @orientation = Utils.orientation
   @guid: Utils.guid

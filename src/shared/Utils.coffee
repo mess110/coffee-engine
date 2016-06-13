@@ -48,7 +48,7 @@ class Utils
   # document ready or something similar.
   #
   # https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode
-  @toggleFullScreen: ->
+  @toggleFullscreen: ->
     if not document.fullscreenElement and not document.mozFullScreenElement and not document.webkitFullscreenElement and not document.msFullscreenElement # current working methods
       if document.documentElement.requestFullscreen
         document.documentElement.requestFullscreen()
@@ -127,14 +127,16 @@ class Utils
     options.padding = "#{options.padding}px" unless options.padding.endsWith('px')
 
     throw new Error("invalid type #{options.type}") unless Utils.CE_BUTTON_TYPES.includes(options.type)
+    return if document.querySelector(".ce-button-#{options.type}")
 
     throw new Error("invalid position #{options.position}") unless Utils.CE_BUTTON_POSITIONS.includes(options.position)
     posArray = options.position.split('-')
 
     img = document.createElement('img')
     img.style = "position: absolute; width: #{options.size}; height: #{options.size};" + "#{posArray[0]}: #{options.padding}; #{posArray[1]}: #{options.padding}"
+    img.setAttribute 'class', "ce-button-#{options.type}"
     if options.type == 'fullscreen'
-      img.setAttribute 'onclick', 'Utils.toggleFullScreen()'
+      img.setAttribute 'onclick', 'Utils.toggleFullscreen()'
       img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AYMDR07WbntUQAAAMZJREFUWMPtl7ENgzAQRR+IkhFYIdUVUTKP9wjswSCZIBHFVVmBEVKbNBTIMsFBcpLiXnlC9ke+7/suRGQinU5V23cfiEgLXFIXLPkxJqCK1J7AY0XcmLDmCAyRugcOQL0sFpEmvKvqOcffisgNOG0dQfnNI7cmNAEV0O2w2l564IphGEYwjsOMN6pqn2kcO6AJb8IwQA7zjZUDBxxtGJmALQE+434+ZsPpg1jeb1l0tppLjeWxd0EdRucFKWGiCa1mTfjXAl7JzisvsBIkfgAAAABJRU5ErkJggg=='
     else if options.type == 'reinit'
       img.setAttribute 'onclick', 'engine.initScene(SceneManager.get().currentScene())'
