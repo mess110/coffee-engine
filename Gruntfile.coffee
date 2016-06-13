@@ -40,6 +40,7 @@ module.exports = (grunt) ->
     "src/3d/MaterialManager.js"
     "src/3d/BaseScene.js"
     "src/3d/BaseModel.js"
+    "src/3d/BaseControls.js"
     "src/3d/BaseParticle.js"
     "src/3d/Config.js"
     "src/3d/Helper.js"
