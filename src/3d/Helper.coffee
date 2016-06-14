@@ -35,9 +35,15 @@ class Helper
   @shallowClone: (json) ->
     JSON.parse(JSON.stringify(json))
 
-  # Get a random number smaller than n
-  @random: (n) ->
-    Math.floor(Math.random() * n)
+  # Get a random number smaller than n or between min and max
+  @random: (min, max, mult) ->
+    unless max?
+      max = min
+      min = 0
+    if mult?
+      min *= mult
+      max *= mult
+    Math.floor(Math.random() * (max - min + 1)) + min
 
   # Calculate the distance between 2 vectors
   @distanceTo: (v1, v2) ->
@@ -384,3 +390,92 @@ class Helper
       .onUpdate(options.onUpdate)
       .onComplete(options.onComplete)
     tween
+
+  # generate a forest of JsonModelManager
+  #
+  # @example
+  #   node = Helper.forest(
+  #     items: [
+  #       {
+  #         type: 'pinetree', count: 20
+  #         scaleMin:
+  #           x: 0.5
+  #           y: 0.5
+  #           z: 0.5
+  #         scaleMax:
+  #           x: 1.2
+  #           y: 1.2
+  #           z: 1.2
+  #       }
+  #     ]
+  #     positionMin:
+  #       x: 0,
+  #       y: 0,
+  #       z: 0
+  #     positionMax:
+  #       x: 2
+  #       y: 0
+  #       z: 2
+  #   )
+  #   scene.scene.add node
+  @forest: (options = {}) ->
+    options.items ?= []
+
+    options.positionMin ?= {}
+    options.positionMin.x ?= 0
+    options.positionMin.y ?= 0
+    options.positionMin.z ?= 0
+
+    options.positionMax ?= {}
+    options.positionMax.x ?= 10
+    options.positionMax.y ?= 0
+    options.positionMax.z ?= 10
+
+    options.rotationMin ?= {}
+    options.rotationMin.x ?= 0
+    options.rotationMin.y ?= 0
+    options.rotationMin.z ?= 0
+
+    options.rotationMax ?= {}
+    options.rotationMax.x ?= 0
+    options.rotationMax.y ?= Math.PI
+    options.rotationMax.z ?= 0
+
+    options.scaleMin ?= {}
+    options.scaleMin.x ?= 0.5
+    options.scaleMin.y ?= 0.5
+    options.scaleMin.z ?= 0.5
+
+    options.scaleMax ?= {}
+    options.scaleMax.x ?= 1.5
+    options.scaleMax.y ?= 1.5
+    options.scaleMax.z ?= 1.5
+
+    node = new THREE.Object3D()
+
+    coords = (item, options, attr, coord, which) ->
+      s = "#{attr}#{which}"
+      if item[s]? and item[s][coord]?
+        item[s][coord]
+      else
+        options[s][coord]
+
+    singleGeometry = new THREE.Geometry()
+    for item in options.items
+      item.count ?= 1
+      for i in [0...item.count]
+        model = JsonModelManager.get().clone(item.type)
+
+        for attr in ['scale', 'position', 'rotation']
+          attrHash =
+            x: Helper.random(coords(item, options, attr, 'x', 'Min'), coords(item, options, attr, 'x', 'Max'), 1000) / 1000
+            y: Helper.random(coords(item, options, attr, 'y', 'Min'), coords(item, options, attr, 'y', 'Max'), 1000) / 1000
+            z: Helper.random(coords(item, options, attr, 'z', 'Min'), coords(item, options, attr, 'z', 'Max'), 1000) / 1000
+          model[attr].set attrHash.x, attrHash.y, attrHash.z
+
+        node.add model
+        # model.updateMatrix()
+        # singleGeometry.merge(model.geometry, model.matrix)
+
+    # new THREE.Mesh(singleGeometry, mat)
+    node

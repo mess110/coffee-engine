@@ -14,10 +14,11 @@ class SoundManager
     load: (key, url) ->
       return if @sounds[key] != undefined
       @sounds[key] = null
+      url = [url] unless url instanceof Array
 
       howl = new Howl(
         autoplay: false
-        urls: [url]
+        urls: url
         onload: ->
           window.SoundManager.get().sounds[key] = howl
           window.SoundManager.get().loadCount += 1

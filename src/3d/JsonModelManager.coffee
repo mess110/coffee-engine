@@ -53,6 +53,7 @@ class JsonModelManager
 
     # Clone an item with animations
     clone: (key) ->
+      throw new Error("key '#{key}' not found for JsonModelManager") unless @items[key]?
       mesh = @_hack(@items[key].clone())
       @initAnimations(mesh)
 
