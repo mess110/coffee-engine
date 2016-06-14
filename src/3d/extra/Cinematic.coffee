@@ -33,6 +33,7 @@ class Cinematic
         Helper.addCEButton(@json.ui["#{ceButtonType}Button"])
     if @json.engine.orientation?
       Helper.orientation(@json.engine.orientation)
+    Helper.fade(type: 'out')
 
   _loadFog: ->
     if @json.fog? && @json.fog.enabled

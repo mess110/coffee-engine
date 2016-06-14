@@ -21,6 +21,7 @@ class Helper
   @toggleFullscreen = Utils.toggleFullscreen
   @addCEButton = Utils.addCEButton
   @orientation = Utils.orientation
+  @fade = Utils.fade
   @guid: Utils.guid
   @setCursor: Utils.setCursor
   @rgbToHex: Utils.rgbToHex
@@ -345,4 +346,41 @@ class Helper
         options.mesh.position.set(@x, @y, @z)
         options.mesh.rotation.set(@rX, @rY, @rZ)
       )
+    tween
+
+  # create a tween with a custom onUpdate and optional onComplete
+  #
+  # @param [Hash] options
+  #
+  # @see @tween
+  #
+  # @example
+  #   tween = Helper.tweenCustom(
+  #     src: {scale: 0.01 }, dest: { scale: 1}
+  #     onUpdate: ->
+  #       chicken.mesh.scale.set @scale, @scale, @scale
+  #   )
+  #
+  # @example
+  #   tween = Helper.tweenCustom(
+  #     src: {scale: 0.01 }, dest: { scale: 1}, kind: 'Elastic', direction: 'Out', duration: 1000
+  #     onUpdate: ->
+  #       chicken.mesh.scale.set @scale, @scale, @scale
+  #     onComplete: ->
+  #       console.log 'done'
+  #   )
+  @tweenCustom: (options = {}) ->
+    throw new Error('options.src missing') unless options.src?
+    throw new Error('options.dest missing') unless options.dest?
+    throw new Error('options.onUpdate missing') unless options.onUpdate?
+
+    options.duration ?= Helper.defaultTweenDuration
+    options.kind ?= 'Linear'
+    options.direction ?= 'None'
+    options.onComplete ?= -> {}
+
+    tween = new TWEEN.Tween(options.src).to(options.dest, options.duration)
+      .easing(TWEEN.Easing[options.kind][options.direction])
+      .onUpdate(options.onUpdate)
+      .onComplete(options.onComplete)
     tween

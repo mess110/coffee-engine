@@ -12079,6 +12079,46 @@ SaveObjectManager = function() {
     }, SaveObjectManager;
 }();
 
+var HighScoreManager;
+
+HighScoreManager = function() {
+    function HighScoreManager() {}
+    var instance;
+    return instance = null, Singleton.HighScoreManager = function() {
+        function HighScoreManager() {}
+        return HighScoreManager.prototype.apiKey = "guest", HighScoreManager.prototype.secret = "guest", 
+        HighScoreManager.prototype.addScore = function(name, score) {
+            var json;
+            if (null == name) throw new Error("name required");
+            if (!isNumeric(score)) throw new Error("score needs to be a number");
+            return json = {
+                api_key: this.apiKey,
+                secret: this.secret,
+                type: "highscore",
+                name: name,
+                score: score
+            }, jNorthPole.createStorage(json, this.responseHandler, this.errorHandler);
+        }, HighScoreManager.prototype.getScores = function(limit, order) {
+            var json;
+            return null == limit && (limit = 10), null == order && (order = "desc"), json = {
+                api_key: this.apiKey,
+                secret: this.secret,
+                type: "highscore",
+                __limit: limit,
+                __sort: {
+                    score: order
+                }
+            }, jNorthPole.getStorage(json, this.responseHandler, this.errorHandler);
+        }, HighScoreManager.prototype.responseHandler = function(data) {
+            return console.log(data);
+        }, HighScoreManager.prototype.errorHandler = function(data, status) {
+            return console.log(data);
+        }, HighScoreManager;
+    }(), HighScoreManager.get = function() {
+        return null != instance ? instance : instance = new Singleton.HighScoreManager();
+    }, HighScoreManager;
+}();
+
 var Persist;
 
 Persist = function() {
@@ -12150,8 +12190,8 @@ Utils = function() {
     Utils.MIRROR_DEFAULT_TEXTURE_WIDTH = 512, Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT = 512, 
     Utils.MIRROR_DEFAULT_CLIP_BIAS = .003, Utils.WATER_DEFAULT_WATER_COLOR = "#001e0f", 
     Utils.WATER_DEFAULT_ALPHA = 1, Utils.CE_BUTTON_POSITIONS = [ "top-right", "bottom-right", "top-left", "bottom-left" ], 
-    Utils.CE_BUTTON_TYPES = [ "fullscreen", "reinit" ], Utils.ORIENTATIONS = [ "all", "landscape", "portrait" ], 
-    Utils.toggleFullScreen = function() {
+    Utils.CE_BUTTON_TYPES = [ "fullscreen", "reinit" ], Utils.CE_UI_Z_INDEX = 1e3, Utils.ORIENTATIONS = [ "all", "landscape", "portrait" ], 
+    Utils.FADE_DEFAULT_DURATION = 1e3, Utils.toggleFullscreen = function() {
         document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }, Utils.guid = function() {
         var s4;
@@ -12165,6 +12205,11 @@ Utils = function() {
         return (r << 16 | g << 8 | b).toString(16);
     }, Utils.getKeyName = function(url, array) {
         return url.replaceAny(array, "").split("/").last();
+    }, Utils.encrypt = function(json) {
+        var s;
+        return s = JSON.stringify(json), window.btoa(s);
+    }, Utils.decrypt = function(s) {
+        return JSON.parse(window.atob(s));
     }, Utils.saveFile = function(content, fileName, format) {
         var blob, e, error, isFileSaverSupported, json;
         null == format && (format = "application/json");
@@ -12182,13 +12227,15 @@ Utils = function() {
         null == options.padding && (options.padding = "32px"), null == options.position && (options.position = "bottom-right"), 
         null == options.type && (options.type = "fullscreen"), options.size.endsWith("px") || (options.size = options.size + "px"), 
         options.padding.endsWith("px") || (options.padding = options.padding + "px"), !Utils.CE_BUTTON_TYPES.includes(options.type)) throw new Error("invalid type " + options.type);
-        if (!Utils.CE_BUTTON_POSITIONS.includes(options.position)) throw new Error("invalid position " + options.position);
-        return posArray = options.position.split("-"), img = document.createElement("img"), 
-        img.style = "position: absolute; width: " + options.size + "; height: " + options.size + ";" + (posArray[0] + ": " + options.padding + "; " + posArray[1] + ": " + options.padding), 
-        "fullscreen" === options.type ? (img.setAttribute("onclick", "Utils.toggleFullScreen()"), 
-        img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AYMDR07WbntUQAAAMZJREFUWMPtl7ENgzAQRR+IkhFYIdUVUTKP9wjswSCZIBHFVVmBEVKbNBTIMsFBcpLiXnlC9ke+7/suRGQinU5V23cfiEgLXFIXLPkxJqCK1J7AY0XcmLDmCAyRugcOQL0sFpEmvKvqOcffisgNOG0dQfnNI7cmNAEV0O2w2l564IphGEYwjsOMN6pqn2kcO6AJb8IwQA7zjZUDBxxtGJmALQE+434+ZsPpg1jeb1l0tppLjeWxd0EdRucFKWGiCa1mTfjXAl7JzisvsBIkfgAAAABJRU5ErkJggg==") : "reinit" === options.type && (img.setAttribute("onclick", "engine.initScene(SceneManager.get().currentScene())"), 
-        img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfgBgwNMCmKKsb2AAACbklEQVRIx5XVz2tcVRQH8M971dZ01GppNWbhSHFjdJXTookiCOpGChKKVv8E68Yfiy6sol0J1l3ddCmIOxfBleBCyISqZ1BoxIUUuxCNJdVYiaEQdDF3zEzn1XG+m8u795zvvfec+77fSkHI3njEvCMeczQvGEI/YhiVnbR5C+7tL2Q1GhxP5WfX09wU73peeyT2e034MLY858tBktrbWv4eCV1pJLim7Xy8l2KAYFPb+ghFZ66JoAavxec7FHWyqe3X60/QbSJ4v4xPxHKfol/EM14djGwqIcQhF0yBM/l6IQjC18MlzAduQMBt1grFI86nmmSprP9UatFcQiRXzZaPjxN1iGfdA067v5SzuYSFIn90EtwXx0JFfOUwtnIq2OuSAx7KVf+J+FMLK7lQR8th8BalI5vj0nEazMettWfK1Llyx83tO43HuTI+WXsYXM7f+nf85tr4/Lzid/B4Xf6Db02KXuNnanfAyEscj3VwoC5vsZqYYBvsql0FBycmuAts1H4AcxMT9DIu1kUb9kd7kuxo299rR+3TMvfCRPv3o5cqIs3hr9w7wQk2TaGbsSvYcAw3z2z//MX/TH/D0+CVmdUK4hd3gwd9l+OSmdX7V9Zymppgsax2tWJcektf7RajJ5MpO86C3db/lYtmzFq3G3yQnezrbMiXLaOyx2qcuuH+p6zao0InTwyLqhTLFkrklnd8lJeG+v6iN93SF/18tG8u1aDzxVkvDWx4RddlHDRXno1y+BM73lQNm2fM+6R0pBlrFrMzbG2DistKTjuu0VV0Hc9pHUP22uTBUtzuqHDIPmy4KC3lH00G/w/Uq7TDOW+poQAAAABJRU5ErkJggg=="), 
-        null != options.src && (img.src = options.src), document.body.appendChild(img);
+        if (!document.querySelector(".ce-button-" + options.type)) {
+            if (!Utils.CE_BUTTON_POSITIONS.includes(options.position)) throw new Error("invalid position " + options.position);
+            return posArray = options.position.split("-"), img = document.createElement("img"), 
+            img.style = "position: absolute; width: " + options.size + "; height: " + options.size + ";" + (posArray[0] + ": " + options.padding + "; " + posArray[1] + ": " + options.padding), 
+            img.setAttribute("class", "ce-button-" + options.type), "fullscreen" === options.type ? (img.setAttribute("onclick", "Utils.toggleFullscreen()"), 
+            img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AYMDR07WbntUQAAAMZJREFUWMPtl7ENgzAQRR+IkhFYIdUVUTKP9wjswSCZIBHFVVmBEVKbNBTIMsFBcpLiXnlC9ke+7/suRGQinU5V23cfiEgLXFIXLPkxJqCK1J7AY0XcmLDmCAyRugcOQL0sFpEmvKvqOcffisgNOG0dQfnNI7cmNAEV0O2w2l564IphGEYwjsOMN6pqn2kcO6AJb8IwQA7zjZUDBxxtGJmALQE+434+ZsPpg1jeb1l0tppLjeWxd0EdRucFKWGiCa1mTfjXAl7JzisvsBIkfgAAAABJRU5ErkJggg==") : "reinit" === options.type && (img.setAttribute("onclick", "engine.initScene(SceneManager.get().currentScene())"), 
+            img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfgBgwNMCmKKsb2AAACbklEQVRIx5XVz2tcVRQH8M971dZ01GppNWbhSHFjdJXTookiCOpGChKKVv8E68Yfiy6sol0J1l3ddCmIOxfBleBCyISqZ1BoxIUUuxCNJdVYiaEQdDF3zEzn1XG+m8u795zvvfec+77fSkHI3njEvCMeczQvGEI/YhiVnbR5C+7tL2Q1GhxP5WfX09wU73peeyT2e034MLY858tBktrbWv4eCV1pJLim7Xy8l2KAYFPb+ghFZ66JoAavxec7FHWyqe3X60/QbSJ4v4xPxHKfol/EM14djGwqIcQhF0yBM/l6IQjC18MlzAduQMBt1grFI86nmmSprP9UatFcQiRXzZaPjxN1iGfdA067v5SzuYSFIn90EtwXx0JFfOUwtnIq2OuSAx7KVf+J+FMLK7lQR8th8BalI5vj0nEazMettWfK1Llyx83tO43HuTI+WXsYXM7f+nf85tr4/Lzid/B4Xf6Db02KXuNnanfAyEscj3VwoC5vsZqYYBvsql0FBycmuAts1H4AcxMT9DIu1kUb9kd7kuxo299rR+3TMvfCRPv3o5cqIs3hr9w7wQk2TaGbsSvYcAw3z2z//MX/TH/D0+CVmdUK4hd3gwd9l+OSmdX7V9Zymppgsax2tWJcektf7RajJ5MpO86C3db/lYtmzFq3G3yQnezrbMiXLaOyx2qcuuH+p6zao0InTwyLqhTLFkrklnd8lJeG+v6iN93SF/18tG8u1aDzxVkvDWx4RddlHDRXno1y+BM73lQNm2fM+6R0pBlrFrMzbG2DistKTjuu0VV0Hc9pHUP22uTBUtzuqHDIPmy4KC3lH00G/w/Uq7TDOW+poQAAAABJRU5ErkJggg=="), 
+            null != options.src && (img.src = options.src), document.body.appendChild(img);
+        }
     }, Utils.isMobile = function() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }, Utils.orientation = function(orientation) {
@@ -12198,7 +12245,7 @@ Utils = function() {
         null != existingStyle && document.head.removeChild(existingStyle), "all" !== orientation) {
             if (!Utils.ORIENTATIONS.includes(orientation)) throw new Error("invalid orientation type '" + orientation + "'");
             return div = document.createElement("div"), div.setAttribute("class", "ce-turn-screen"), 
-            div.style = "position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: #f0f0f0;", 
+            div.style = "position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: #f0f0f0; z-index: " + Utils.CE_UI_Z_INDEX + ";", 
             img = document.createElement("img"), img.src = "data:image/png;base64,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", 
             baseStyle = "position: absolute; margin: auto; top: 0; left: 0; right: 0; bottom: 0;", 
             "landscape" === orientation ? (img.style = baseStyle + "transform: rotate(90deg);", 
@@ -12208,6 +12255,20 @@ Utils = function() {
             style.setAttribute("media", "all"), style.innerHTML = "@media all and (orientation:portrait) { " + a1 + " { display: none; } } @media all and (orientation:landscape) { " + a2 + " { display: none; } }", 
             document.head.appendChild(style), div.appendChild(img), document.body.appendChild(div);
         }
+    }, Utils.fade = function(options) {
+        var animationEvent, div, existingElement, existingStyle, style;
+        return null == options && (options = {}), null == options.duration && (options.duration = Utils.FADE_DEFAULT_DURATION), 
+        options.duration = options.duration / 1e3, null == options.type && (options.type = "in"), 
+        "in" === options.type ? (options.opacityFrom = 0, options.opacityTo = 1) : (options.opacityFrom = 1, 
+        options.opacityTo = 0), existingElement = document.querySelector(".ce-fader"), null != existingElement && (document.body.removeChild(existingElement), 
+        existingStyle = document.head.querySelector(".ce-fader-style"), null != existingStyle && document.head.removeChild(existingStyle)), 
+        div = document.createElement("div"), div.setAttribute("class", "ce-fader"), style = document.createElement("style"), 
+        style.setAttribute("class", "ce-fader-style"), style.setAttribute("type", "text/css"), 
+        style.setAttribute("media", "all"), style.innerHTML = ".ce-fader { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: black; z-index: " + (Utils.CE_UI_Z_INDEX - 1) + "; -webkit-animation: fade-animation " + options.duration + "s; /* Safari, Chrome and Opera > 12.1 */ -moz-animation: fade-animation " + options.duration + "s; /* Firefox < 16 */ -ms-animation: fade-animation " + options.duration + "s; /* Internet Explorer */ -o-animation: fade-animation " + options.duration + "s; /* Opera < 12.1 */ animation: fade-animation " + options.duration + "s; } @keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Firefox < 16 */ @-moz-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Safari, Chrome and Opera > 12.1 */ @-webkit-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Internet Explorer */ @-ms-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Opera < 12.1 */ @-o-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } }", 
+        document.head.appendChild(style), document.body.appendChild(div), 0 === options.opacityTo && (animationEvent = whichAnimationEvent(), 
+        animationEvent && div.addEventListener(animationEvent, function() {
+            document.body.removeChild(div), document.head.removeChild(style);
+        })), !0;
     }, Utils;
 }(), exports.Utils = Utils;
 
@@ -12579,8 +12640,8 @@ Config = function() {
             return this.soundEnabled = !this.soundEnabled;
         }, Config.prototype.toggleDebug = function() {
             return this.debug = !this.debug;
-        }, Config.prototype.toggleFullScreen = function() {
-            return Utils.toggleFullScreen();
+        }, Config.prototype.toggleFullscreen = function() {
+            return Utils.toggleFullscreen();
         }, Config;
     }(), Config.get = function() {
         return null != instance ? instance : instance = new Singleton.Config();
@@ -12593,9 +12654,10 @@ Helper = function() {
     function Helper() {}
     return Helper.zero = new THREE.Vector3(0, 0, 0), Helper.one = new THREE.Vector3(1, 1, 1), 
     Helper.up = new THREE.Vector3(0, 1, 0), Helper.down = new THREE.Vector3(0, -1, 0), 
-    Helper.toggleFullScreen = Utils.toggleFullScreen, Helper.addCEButton = Utils.addCEButton, 
-    Helper.orientation = Utils.orientation, Helper.guid = Utils.guid, Helper.setCursor = Utils.setCursor, 
-    Helper.rgbToHex = Utils.rgbToHex, Helper.defaultTweenDuration = 1e3, Helper.toVector3 = function(json) {
+    Helper.toggleFullscreen = Utils.toggleFullscreen, Helper.addCEButton = Utils.addCEButton, 
+    Helper.orientation = Utils.orientation, Helper.fade = Utils.fade, Helper.guid = Utils.guid, 
+    Helper.setCursor = Utils.setCursor, Helper.rgbToHex = Utils.rgbToHex, Helper.defaultTweenDuration = 1e3, 
+    Helper.toVector3 = function(json) {
         return new THREE.Vector3(json.x, json.y, json.z);
     }, Helper.shallowClone = function(json) {
         return JSON.parse(JSON.stringify(json));
@@ -12741,6 +12803,16 @@ Helper = function() {
         return tween = new TWEEN.Tween(options.position).to(options.target, options.duration).easing(TWEEN.Easing[options.kind][options.direction]).onUpdate(function() {
             return options.mesh.position.set(this.x, this.y, this.z), options.mesh.rotation.set(this.rX, this.rY, this.rZ);
         });
+    }, Helper.tweenCustom = function(options) {
+        var tween;
+        if (null == options && (options = {}), null == options.src) throw new Error("options.src missing");
+        if (null == options.dest) throw new Error("options.dest missing");
+        if (null == options.onUpdate) throw new Error("options.onUpdate missing");
+        return null == options.duration && (options.duration = Helper.defaultTweenDuration), 
+        null == options.kind && (options.kind = "Linear"), null == options.direction && (options.direction = "None"), 
+        null == options.onComplete && (options.onComplete = function() {
+            return {};
+        }), tween = new TWEEN.Tween(options.src).to(options.dest, options.duration).easing(TWEEN.Easing[options.kind][options.direction]).onUpdate(options.onUpdate).onComplete(options.onComplete);
     }, Helper;
 }();
 
@@ -12969,7 +13041,10 @@ Cinematic = function() {
         for (ref = Utils.CE_BUTTON_TYPES, i = 0, len = ref.length; len > i; i++) ceButtonType = ref[i], 
         null != this.json.ui && null != this.json.ui[ceButtonType + "Button"] && this.json.ui[ceButtonType + "Button"].enabled && (this.json.ui[ceButtonType + "Button"].type = ceButtonType, 
         Helper.addCEButton(this.json.ui[ceButtonType + "Button"]));
-        return null != this.json.engine.orientation ? Helper.orientation(this.json.engine.orientation) : void 0;
+        return null != this.json.engine.orientation && Helper.orientation(this.json.engine.orientation), 
+        Helper.fade({
+            type: "out"
+        });
     }, Cinematic.prototype._loadFog = function() {
         return null != this.json.fog && this.json.fog.enabled ? this.scene.fog = Helper.fog(this.json.fog) : void 0;
     }, Cinematic.prototype._loadMaterials = function() {
@@ -13306,10 +13381,18 @@ Engine3D = function() {
     }, Engine3D.prototype.addScene = function(scene) {
         return this.sceneManager.addScene(scene), null == this.sceneManager.currentSceneIndex ? this.sceneManager.setScene(scene) : void 0;
     }, Engine3D.prototype.initScene = function(scene, options) {
-        var currentScene;
-        return null == options && (options = {}), currentScene = this.sceneManager.currentScene(), 
-        null != currentScene && currentScene.uninit(), this.sceneManager.hasScene(scene) || this.sceneManager.addScene(scene), 
-        scene.init(options), this.sceneManager.setScene(scene);
+        return null == options && (options = {}), Helper.fade({
+            type: "in"
+        }), setTimeout(function(_this) {
+            return function() {
+                var currentScene;
+                return currentScene = _this.sceneManager.currentScene(), null != currentScene && currentScene.uninit(), 
+                _this.sceneManager.hasScene(scene) || _this.sceneManager.addScene(scene), scene.init(options), 
+                _this.sceneManager.setScene(scene), Helper.fade({
+                    type: "out"
+                });
+            };
+        }(this), Utils.FADE_DEFAULT_DURATION);
     }, Engine3D.prototype.removeScene = function(scene) {
         return this.sceneManager.removeScene(scene);
     }, Engine3D.prototype.render = function() {
@@ -13354,7 +13437,7 @@ Engine3D = function() {
     }, Engine3D;
 }();
 
-var CyclicArray, isNumeric;
+var CyclicArray, isNumeric, whichAnimationEvent;
 
 Array.prototype.isEmpty = function() {
     return 0 === this.length;
@@ -13463,7 +13546,16 @@ Array.prototype.isEmpty = function() {
         return this.index -= 1, this.index < 0 && (this.index = this.items.size() - 1), 
         this.get();
     }, CyclicArray;
-}();
+}(), whichAnimationEvent = function() {
+    var animations, el, t;
+    el = document.createElement("fakeelement"), animations = {
+        animation: "animationend",
+        OAnimation: "oAnimationEnd",
+        MozAnimation: "animationend",
+        WebkitAnimation: "webkitAnimationEnd"
+    };
+    for (t in animations) if (void 0 !== el.style[t]) return animations[t];
+};
 
 var EngineHolder;
 
@@ -15260,4 +15352,62 @@ StackOverflow = StackOverflow || {}, StackOverflow.drawBezier = function(options
 }, bezier1 = function(t, startX, startY, control1X, control1Y, control2X, control2Y) {
     this.x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * control1X + t * t * control2X, 
     this.y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * control1Y + t * t * control2Y;
+}, window.jNorthPole = {
+    BASE_URL: "https://json.northpole.ro/",
+    help: "NorthPole JS wrapper example usage:\n\nresponseHandler = function (data) {\n  console.log(data);\n};\n\njNorthPole.getStorage(json, responseHandler);\n\nsocket = jNorthPole.getNewRealtimeSocket(responseHandler)\njNorthPole.subscribe(socket, 'foo')\njNorthPole.publish(socket, 'foo', { message: 'hello' })",
+    genericRequest: function(jsonObj, method, endPoint, responseHandler, errorHandler) {
+        var r;
+        if (null == errorHandler && (errorHandler = responseHandler), null == responseHandler) throw "responseHandler function missing";
+        r = new XMLHttpRequest(), r.open(method, "" + this.BASE_URL + endPoint + ".json", !0), 
+        r.onreadystatechange = function() {
+            4 === r.readyState && (200 === r.status ? responseHandler(JSON.parse(r.responseText), r.status) : errorHandler(JSON.parse(r.responseText), r.status));
+        }, r.send(JSON.stringify(jsonObj));
+    },
+    createUser: function(api_key, secret, success, failure) {
+        var jsonObj;
+        jsonObj = {
+            api_key: api_key,
+            secret: secret
+        }, this.genericRequest(jsonObj, "POST", "user", success, failure);
+    },
+    getUser: function(jsonObj, responseHandler, errorHandler) {
+        this.genericRequest(jsonObj, "SEARCH", "user", responseHandler, errorHandler);
+    },
+    createStorage: function(jsonObj, responseHandler, errorHandler) {
+        this.genericRequest(jsonObj, "POST", "storage", responseHandler, errorHandler);
+    },
+    getStorage: function(jsonObj, responseHandler, errorHandler) {
+        this.genericRequest(jsonObj, "SEARCH", "storage", responseHandler, errorHandler);
+    },
+    putStorage: function(jsonObj, responseHandler, errorHandler) {
+        this.genericRequest(jsonObj, "PUT", "storage", responseHandler, errorHandler);
+    },
+    deleteStorage: function(jsonObj, responseHandler, errorHandler) {
+        this.genericRequest(jsonObj, "DELETE", "storage", responseHandler, errorHandler);
+    },
+    getNewRealtimeSocket: function(responseHandler, errorHandler) {
+        var socket, socketUrl;
+        return null == errorHandler && (errorHandler = responseHandler), socketUrl = this.BASE_URL.replace("http", "ws"), 
+        socket = new WebSocket(socketUrl + "realtime"), socket.onmessage = responseHandler, 
+        socket.onclose = errorHandler, socket;
+    },
+    subscribe: function(socket, channel_name) {
+        return socket.send(JSON.stringify({
+            type: "subscribe",
+            channel_name: channel_name
+        }));
+    },
+    unsubscribe: function(socket, channel_name) {
+        return socket.send(JSON.stringify({
+            type: "unsubscribe",
+            channel_name: channel_name
+        }));
+    },
+    publish: function(socket, channel_name, json) {
+        return socket.send(JSON.stringify({
+            type: "publish",
+            channel_name: channel_name,
+            content: json
+        }));
+    }
 };

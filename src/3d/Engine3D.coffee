@@ -122,14 +122,18 @@ class Engine3D
 
   # Used to switch betweens scenes with init and uninit
   initScene: (scene, options = {}) ->
-    currentScene = @sceneManager.currentScene()
-    if currentScene?
-      currentScene.uninit()
-    unless @sceneManager.hasScene(scene)
-      @sceneManager.addScene(scene)
+    Helper.fade(type: 'in')
+    setTimeout =>
+      currentScene = @sceneManager.currentScene()
+      if currentScene?
+        currentScene.uninit()
+      unless @sceneManager.hasScene(scene)
+        @sceneManager.addScene(scene)
 
-    scene.init(options)
-    @sceneManager.setScene(scene)
+      scene.init(options)
+      @sceneManager.setScene(scene)
+      Helper.fade(type: 'out')
+    , Utils.FADE_DEFAULT_DURATION
 
   # Remove a scene
   #

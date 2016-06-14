@@ -191,3 +191,14 @@ class CyclicArray
     @index = @items.size() - 1 if @index < 0
     @get()
 
+whichAnimationEvent = ->
+  el = document.createElement('fakeelement')
+  animations =
+    'animation': 'animationend'
+    'OAnimation': 'oAnimationEnd'
+    'MozAnimation': 'animationend'
+    'WebkitAnimation': 'webkitAnimationEnd'
+  for t of animations
+    if el.style[t] != undefined
+      return animations[t]
+  return

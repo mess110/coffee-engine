@@ -31,6 +31,7 @@ module.exports = (grunt) ->
     "src/shared/StatsManager.js"
     "src/shared/SoundManager.js"
     "src/shared/SaveObjectManager.js"
+    "src/shared/HighScoreManager.js"
     "src/shared/Persist.js"
     "src/shared/Utils.js"
     "src/shared/VirtualController.js"
@@ -77,6 +78,7 @@ module.exports = (grunt) ->
     "bower_components/howler.js/howler.js"
     "bower_components/socket.io-client/dist/socket.io.js"
     "src/vendor/drawBezier.js"
+    "src/vendor/jnorthpole.js"
   ]
 
   all_2d_files = files_2d.concat(extras)

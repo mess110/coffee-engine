@@ -42,7 +42,11 @@ class Utils
   @CE_BUTTON_POSITIONS = ['top-right', 'bottom-right', 'top-left', 'bottom-left']
   @CE_BUTTON_TYPES = ['fullscreen', 'reinit']
 
+  @CE_UI_Z_INDEX = 1000
+
   @ORIENTATIONS = ['all', 'landscape', 'portrait']
+
+  @FADE_DEFAULT_DURATION = 1000
 
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.
@@ -92,6 +96,19 @@ class Utils
   #   LoadingScene.getKeyName('/demo/foo.json', Utils.JSON_URLS) # returns 'foo'
   @getKeyName = (url, array) ->
     url.replaceAny(array, '').split('/').last()
+
+  # Encrypt object
+  #
+  # @param [Object] json
+  @encrypt: (json) ->
+    s = JSON.stringify(json)
+    window.btoa(s)
+
+  # Decrypt string into object
+  #
+  # @param [String] s
+  @decrypt: (s) ->
+    JSON.parse(window.atob(s))
 
   # Save a file
   #
@@ -160,7 +177,7 @@ class Utils
   #
   # @example Utils.orientation('landscape')
   #
-  @orientation = (orientation = 'all')->
+  @orientation = (orientation = 'all') ->
     existingElement = document.querySelector('.ce-turn-screen')
     document.body.removeChild(existingElement) if existingElement?
     existingStyle = document.querySelector('.ce-turn-screen-style')
@@ -171,7 +188,7 @@ class Utils
 
     div = document.createElement('div')
     div.setAttribute 'class', 'ce-turn-screen'
-    div.style = 'position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: #f0f0f0;'
+    div.style = "position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: #f0f0f0; z-index: #{Utils.CE_UI_Z_INDEX};"
 
     img = document.createElement('img')
     img.src = 'data:image/png;base64,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'
@@ -203,5 +220,88 @@ class Utils
     document.head.appendChild style
     div.appendChild img
     document.body.appendChild div
+
+  # Fade a scene with a div above it
+  @fade = (options = {}) ->
+    options.duration ?= Utils.FADE_DEFAULT_DURATION
+    options.duration = options.duration / 1000
+    options.type ?= 'in'
+    if options.type == 'in'
+      options.opacityFrom = 0
+      options.opacityTo = 1
+    else # out
+      options.opacityFrom = 1
+      options.opacityTo = 0
+
+    existingElement = document.querySelector('.ce-fader')
+    if existingElement?
+      document.body.removeChild(existingElement)
+      existingStyle = document.head.querySelector('.ce-fader-style')
+      if existingStyle?
+        document.head.removeChild(existingStyle)
+
+    div = document.createElement('div')
+    div.setAttribute 'class', 'ce-fader'
+
+    style = document.createElement('style')
+    style.setAttribute 'class', 'ce-fader-style'
+    style.setAttribute 'type', 'text/css'
+    style.setAttribute 'media', 'all'
+    style.innerHTML = "
+.ce-fader {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: #{Utils.CE_UI_Z_INDEX - 1};
+
+  -webkit-animation: fade-animation #{options.duration}s; /* Safari, Chrome and Opera > 12.1 */
+     -moz-animation: fade-animation #{options.duration}s; /* Firefox < 16 */
+     -ms-animation: fade-animation #{options.duration}s; /* Internet Explorer */
+      -o-animation: fade-animation #{options.duration}s; /* Opera < 12.1 */
+          animation: fade-animation #{options.duration}s;
+}
+
+@keyframes fade-animation {
+    from { opacity: #{options.opacityFrom}; }
+    to   { opacity: #{options.opacityTo}; }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fade-animation {
+    from { opacity: #{options.opacityFrom}; }
+    to   { opacity: #{options.opacityTo}; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fade-animation {
+    from { opacity: #{options.opacityFrom}; }
+    to   { opacity: #{options.opacityTo}; }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fade-animation {
+    from { opacity: #{options.opacityFrom}; }
+    to   { opacity: #{options.opacityTo}; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fade-animation {
+    from { opacity: #{options.opacityFrom}; }
+    to   { opacity: #{options.opacityTo}; }
+}"
+    document.head.appendChild style
+    document.body.appendChild div
+
+    if options.opacityTo == 0
+      animationEvent = whichAnimationEvent()
+      animationEvent and div.addEventListener(animationEvent, ->
+        document.body.removeChild(div)
+        document.head.removeChild(style)
+        return
+      )
+    true
 
 exports.Utils = Utils
