@@ -12,105 +12,106 @@
         <link rel="stylesheet" href="style.css" />
     </head>
     <body ng-cloak="" ng-controller="MainController">
-
-        <md-toolbar class="md-menu-toolbar">
-            <div layout="row">
-                <md-toolbar-filler layout="row" layout-align="center center">
-                    CE
-                </md-toolbar-filler>
-                <div>
-                    <h2 class="md-toolbar-tools">{{ ui.project.name }}</h2>
-                    <md-menu-bar>
-                        <md-menu>
-                            <button ng-click="$mdOpenMenu()">
-                                File
-                            </button>
-                            <md-menu-content>
-                                <md-menu-item>
-                                    <md-button ng-click="goTo('game-maker/new')">
-                                        New
-                                        <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
-                                    </md-button>
-                                </md-menu-item>
-                                <md-menu-item>
-                                    <md-menu>
-                                        <md-button ng-click="$mdOpenMenu()">Open</md-button>
-                                        <md-menu-content>
-                                            <md-menu-item ng-repeat="project in projects"><md-button ng-click="loadProject(project)">{{ project }}</md-button></md-menu-item>
-                                        </md-menu-content>
-                                    </md-menu>
-                                </md-menu-item>
-                                <md-menu-item ng-show="workspace.lastOpenedProject">
-                                    <md-button ng-click="run()">
-                                        Run
-                                        <span class="md-alt-text">Ctrl+R</span>
-                                    </md-button>
-                                </md-menu-item>
-                                <md-menu-divider></md-menu-divider>
-                                <md-menu-item>
-                                    <md-button ng-click="goTo('settings')">
-                                        Settings
-                                        <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
-                                    </md-button>
-                                </md-menu-item>
-                                <md-menu-divider></md-menu-divider>
-                                <md-menu-item>
-                                    <md-button ng-click="exit()">
-                                        Exit
-                                        <span class="md-alt-text">Alt+F4</span>
-                                    </md-button>
-                                </md-menu-item>
-                            </md-menu-content>
-                        </md-menu>
-                        <md-menu>
-                            <button ng-click="$mdOpenMenu()">
-                                Tools
-                            </button>
-                            <md-menu-content>
-                                <md-menu-item ng-repeat="tool in tools">
-                                    <md-button ng-click="goToMenuItem(tool)">
-                                        {{ tool.name }}
-                                    </md-button>
-                                </md-menu-item>
-                                <md-menu-divider></md-menu-divider>
-                                <md-menu-item>
-                                    <md-button ng-click="reload()">
-                                        Reload
-                                        <span class="md-alt-text">F5</span>
-                                    </md-button>
-                                </md-menu-item>
-                                <md-menu-item>
-                                    <md-button ng-click="showDevTools()">
-                                        Dev Tools
-                                        <span class="md-alt-text">F12</span>
-                                    </md-button>
-                                </md-menu-item>
-                            </md-menu-content>
-                        </md-menu>
-                        <md-menu>
-                            <button ng-click="$mdOpenMenu()">
-                                Help
-                            </button>
-                            <md-menu-content>
-                                <md-menu-item>
-                                    <md-button ng-click="goTo('../doc/3d/index.html', true)">
-                                        Documentation
-                                        <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
-                                    </md-button>
-                                </md-menu-item>
-                                <md-menu-item>
-                                    <md-button ng-click="goTo('https://github.com/mess110/coffee-engine', true)">
-                                        Github
-                                        <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
-                                    </md-button>
-                                </md-menu-item>
-                            </md-menu-content>
-                        </md-menu>
-                    </md-menu-bar>
+        <md-content>
+            <md-toolbar class="md-menu-toolbar">
+                <div layout="row">
+                    <md-toolbar-filler layout="row" layout-align="center center">
+                        CE
+                    </md-toolbar-filler>
+                    <div>
+                        <h2 class="md-toolbar-tools">{{ ui.project.name }}</h2>
+                        <md-menu-bar>
+                            <md-menu>
+                                <button ng-click="$mdOpenMenu()">
+                                    File
+                                </button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-button ng-click="goTo('game-maker/new')">
+                                            New
+                                            <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-menu>
+                                            <md-button ng-click="$mdOpenMenu()">Open</md-button>
+                                            <md-menu-content>
+                                                <md-menu-item ng-repeat="project in projects"><md-button ng-click="loadProject(project)">{{ project }}</md-button></md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-menu-item>
+                                    <md-menu-item ng-show="workspace.lastOpenedProject">
+                                        <md-button ng-click="run()">
+                                            Run
+                                            <span class="md-alt-text">Ctrl+R</span>
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-divider></md-menu-divider>
+                                    <md-menu-item>
+                                        <md-button ng-click="goTo('settings')">
+                                            Settings
+                                            <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-divider></md-menu-divider>
+                                    <md-menu-item>
+                                        <md-button ng-click="exit()">
+                                            Exit
+                                            <span class="md-alt-text">Alt+F4</span>
+                                        </md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                            <md-menu>
+                                <button ng-click="$mdOpenMenu()">
+                                    Tools
+                                </button>
+                                <md-menu-content>
+                                    <md-menu-item ng-repeat="tool in tools">
+                                        <md-button ng-click="goToMenuItem(tool)">
+                                            {{ tool.name }}
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-divider></md-menu-divider>
+                                    <md-menu-item>
+                                        <md-button ng-click="reload()">
+                                            Reload
+                                            <span class="md-alt-text">F5</span>
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="showDevTools()">
+                                            Dev Tools
+                                            <span class="md-alt-text">F12</span>
+                                        </md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                            <md-menu>
+                                <button ng-click="$mdOpenMenu()">
+                                    Help
+                                </button>
+                                <md-menu-content>
+                                    <md-menu-item>
+                                        <md-button ng-click="goTo('../doc/3d/index.html', true)">
+                                            Documentation
+                                            <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="goTo('https://github.com/mess110/coffee-engine', true)">
+                                            Github
+                                            <!-- <span class="md-alt-text"> {{ 'M-N' | keyboardShortcut }}</span> -->
+                                        </md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                        </md-menu-bar>
+                    </div>
                 </div>
-            </div>
-        </md-toolbar>
-        <div id="my-view" ng-view></div>
+            </md-toolbar>
+            <div id="my-view" ng-view></div>
+        </md-content>
 
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js" type="text/javascript" charset="utf-8"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js" type="text/javascript" charset="utf-8"></script>
