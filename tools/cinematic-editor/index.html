@@ -248,9 +248,9 @@
                                     <div class="md-list-item-text" flex>
                                         <span>{{ playlistItem }}</span>
                                     </div>
-                                    <md-button ng-click="playlistItemMoveUp()">move up</md-button>
-                                    <md-button ng-click="playlistItemMoveDown()">move down</md-button>
-                                    <md-button ng-click="playlistItemDelete()">delete</md-button>
+                                    <md-button ng-click="playlistItemMoveUp($index, item)" ng-disabled="$first">move up</md-button>
+                                    <md-button ng-click="playlistItemMoveDown($index, item)" ng-disabled="$last">move down</md-button>
+                                    <md-button ng-click="removePlayerListItem(item, playlistItem)">delete</md-button>
                                     <md-divider ng-if="!$last"></md-divider>
                                 </md-list-item>
                             </md-list>
@@ -398,7 +398,7 @@
                                     <input type="number" ng-model="action.animate.waitScript">
                                 </md-input-container>
                             </div>
-                            <div layout="row" ng-show="action.target">
+                            <div layout="row" ng-show="action.target && !targetIsAudio(action.target)">
                                 <span flex layout="row" layout-align="center center">Tween</span>
                                 <md-input-container flex>
                                     <md-switch flex ng-model="action.tween.relative" aria-label="Relative">
@@ -426,7 +426,7 @@
                                     </md-select>
                                 </md-input-container>
                             </div>
-                            <div layout="row" ng-show="action.target">
+                            <div layout="row" ng-show="action.target && !targetIsAudio(action.target)">
                                 <span flex layout="row" layout-align="center center">Position</span>
                                 <md-input-container flex class="md-block no-bottom" flex-gt-xs>
                                     <label>x</label>
@@ -441,7 +441,7 @@
                                     <input type="number" ng-model="action.tween.target.z">
                                 </md-input-container>
                             </div>
-                            <div layout="row" ng-show="action.target">
+                            <div layout="row" ng-show="action.target && !targetIsAudio(action.target)">
                                 <span flex layout="row" layout-align="center center">Rotation</span>
                                 <md-input-container flex class="md-block no-bottom" flex-gt-xs>
                                     <label>rX</label>
@@ -456,7 +456,7 @@
                                     <input type="number" ng-model="action.tween.target.rZ">
                                 </md-input-container>
                             </div>
-                            <div layout="row" ng-show="action.target">
+                            <div layout="row" ng-show="action.target && !targetIsAudio(action.target)">
                                 <span flex layout="row" layout-align="center center">Look At</span>
                                 <md-input-container flex class="md-block no-bottom" flex-gt-xs>
                                     <label>x</label>
@@ -471,7 +471,7 @@
                                     <input type="number" ng-model="action.lookAt.z">
                                 </md-input-container>
                             </div>
-                            <div layout="row">
+                            <div layout="row" ng-show="targetIsAudio(action.target)">
                                 <md-input-container flex>
                                     <label>Type</label>
                                     <md-select ng-model="action.sound.type">

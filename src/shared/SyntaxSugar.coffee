@@ -220,12 +220,25 @@ class Playlist
   #   playlist.play()
   #
   # @see getPlayingKey
-  play: ->
-    audio = SoundManager.get().play(@items.get())
-    audio._onend = []
-    audio.on 'end', (data) =>
-      @items.next()
-      @play()
+  cmd: (options)->
+    options.key = @items.get()
+    if options.type == 'volumeAll'
+      options.type = 'volume'
+      for item in @items.items
+        options.key = item
+        SoundManager.get().cmd(options)
+    else
+      audio = SoundManager.get().cmd(options)
+    if ['play', 'fadeIn'].includes(options.type)
+      audio._onend = []
+      audio.on 'end', (data) =>
+        console.log 'end'
+        @items.next()
+        @cmd(options)
+    else if ['volume', 'volumeAll'].includes(options.type)
+      # do nothing
+    else
+      audio._onend = []
 
   # Get the key of the sound currently playing
   #

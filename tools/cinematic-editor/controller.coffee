@@ -126,6 +126,15 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
   $scope.hasWidthHeightSegments = (item) ->
     ['plane', 'water'].includes(item.type)
 
+  $scope.targetIsAudio = (key) ->
+    for asset in $scope.json.assets
+      if $scope.getKeyName(asset.destPath) == key and asset.type == 'sound'
+        return true
+    for item in $scope.json.items
+      if item.id == key and item.type == 'playlist'
+        return true
+    false
+
   $scope.getKeyName = (asset) ->
     if asset.endsWithAny(Utils.SAVE_URLS)
       Utils.getKeyName(asset, Utils.SAVE_URLS)
@@ -190,6 +199,23 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
 
   $scope.removeAsset = (asset) ->
     $scope.json.assets.remove(asset)
+
+  $scope.removePlayerListItem = (item, playlistItem) ->
+    item.items.remove(playlistItem)
+
+  $scope.playlistItemMoveUp = (i, item) ->
+    return unless item.items[i-1]?
+    aux = item.items[i]
+    item.items[i] = item.items[i-1]
+    item.items[i-1] = aux
+    return
+
+  $scope.playlistItemMoveDown = (i, item) ->
+    return unless item.items[i+1]?
+    aux = item.items[i]
+    item.items[i] = item.items[i+1]
+    item.items[i+1] = aux
+    return
 
   $scope.defaultCamera = (camera) ->
     camera.type = Utils.CAMERA_DEFAULT_TYPE

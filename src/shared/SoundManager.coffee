@@ -45,7 +45,7 @@ class SoundManager
           if options.type == 'volume'
             @sounds[options.key][options.type](options.volume)
           else
-            @volumeAll(options.key, options.volume)
+            @volumeAll(options.volume)
         when 'loop'
           options.loop ?= false
           @sounds[options.key][options.type](options.loop)

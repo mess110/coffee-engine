@@ -157,26 +157,36 @@ class Cinematic
   processAction: (action) ->
     action.delay ?= 0
 
-    if action.sound?
-      SoundManager.get().cmd(action.sound)
-
     return unless action.target?
     target = @items.where(ceId: action.target).first()
     unless target?
       target = { mesh: @cameras.where(ceId: action.target).first() }
-      isCamera = true
-      throw new Error("action.target #{action.target} not found") unless target.mesh?
+      isCamera = true if target.mesh?
+      unless target.mesh?
+        for asset in @json.assets
+          if asset.type == 'sound' && Utils.getKeyName(asset.destPath, Utils.AUDIO_URLS) == action.target
+            target = { mesh: asset }
+            isSound = true
+        throw new Error("action.target #{action.target} not found") if !target.mesh? && !isCamera && !isSound
+
     setTimeout =>
-      if action.lookAt?
-        vector = @getLookAtVector(action.lookAt)
-        target.mesh.lookAt(vector)
-      if action.animate? and isCamera != true
-        if action.animate.stopOtherAnimations?
-          target.stopAnimations()
-        target.animate(null, action.animate)
-      if action.tween?
-        action.tween.mesh = target.mesh
-        Helper.tween(action.tween).start()
+      if isSound
+        action.sound.key = action.target
+        SoundManager.get().cmd(action.sound)
+      else if target.json? && target.json.type == 'playlist'
+        # target is a Playlist
+        target.cmd(action.sound)
+      else
+        if action.lookAt?
+          vector = @getLookAtVector(action.lookAt)
+          target.mesh.lookAt(vector)
+        if action.animate? and isCamera != true
+          if action.animate.stopOtherAnimations?
+            target.stopAnimations()
+          target.animate(null, action.animate)
+        if action.tween?
+          action.tween.mesh = target.mesh
+          Helper.tween(action.tween).start()
     , action.delay
 
   # @nodoc
