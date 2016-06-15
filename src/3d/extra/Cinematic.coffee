@@ -66,6 +66,12 @@ class Cinematic
   _loadItems: ->
     for item in @json.items
       switch item.type
+        when 'playlist'
+          playlist = new Playlist(item.items)
+          @setId(item, item)
+          @setId(playlist, item)
+          playlist.json = item
+          @items.push playlist
         when 'water'
           # recursive hell
           item[item.type] = item
@@ -111,6 +117,11 @@ class Cinematic
   # Add all items to a scene
   addAll: (scene) ->
     for item in @items
+      # TODO: might want more information why the item is not
+      # added. Currently, we only add the item if it has a mesh
+      # because there are items which do not have a model. Example:
+      # playlist
+      continue unless item.mesh
       scene.add item.mesh
 
   # Find an item or a camera by id

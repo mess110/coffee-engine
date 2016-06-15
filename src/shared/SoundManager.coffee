@@ -52,6 +52,8 @@ class SoundManager
         else
           throw new Error("unknown options.type #{options.type}")
 
+      @sounds[options.key]
+
     # Play a sound by key
     play: (key) ->
       @cmd(type: 'play', key: key)

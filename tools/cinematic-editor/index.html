@@ -242,6 +242,19 @@
                                 </md-select>
                             </md-input-container>
                         </md-card-content>
+                        <md-card-content ng-show="item.type == 'playlist'">
+                            <md-list>
+                                <md-list-item class="md-1-line" ng-repeat="playlistItem in item.items">
+                                    <div class="md-list-item-text" flex>
+                                        <span>{{ playlistItem }}</span>
+                                    </div>
+                                    <md-button ng-click="playlistItemMoveUp()">move up</md-button>
+                                    <md-button ng-click="playlistItemMoveDown()">move down</md-button>
+                                    <md-button ng-click="playlistItemDelete()">delete</md-button>
+                                    <md-divider ng-if="!$last"></md-divider>
+                                </md-list-item>
+                            </md-list>
+                        </md-card-content>
                         <md-card-content layout="row" ng-repeat="prop in ['position', 'rotation', 'scale', 'lookAt']" ng-show="hasCoordinates(item.type)">
                             <span flex layout="row" layout-align="center center">{{ prop }}</span>
                             <md-input-container flex class="md-block no-bottom">
@@ -350,13 +363,13 @@
                                 <md-input-container flex>
                                     <label>Target</label>
                                     <md-select ng-model="action.target">
-                                        <md-option ng-repeat="obj in targetableObjects() | filter: itemWithIdFilter" value="{{ obj.id }}">
-                                            {{ obj.id }}
+                                        <md-option ng-repeat="obj in targetableObjects() | filter: itemWithIdOrSoundFilter" value="{{ obj.id || getKeyName(obj.destPath, Utils.IMG_URLS)}}">
+                                            {{ obj.id || getKeyName(obj.destPath, Utils.IMG_URLS) }}
                                         </md-option>
                                     </md-select>
                                 </md-input-container>
                             </div>
-                            <div layout="row" ng-show="action.target && hasAnimate(action.target)">
+                            <div layout="row" ng-show="hasAnimate(action.target)">
                                 <md-input-container flex>
                                     <label>Animate</label>
                                     <input type="number" ng-model="action.animate.name">
@@ -459,14 +472,6 @@
                                 </md-input-container>
                             </div>
                             <div layout="row">
-                                <md-input-container flex>
-                                    <label>Sound</label>
-                                    <md-select ng-model="action.sound.key">
-                                        <md-option ng-repeat="asset in json.assets | filter: soundsFilter" value="{{ getKeyName(asset.destPath) }}">
-                                            {{ getKeyName(asset.destPath) }}
-                                        </md-option>
-                                    </md-select>
-                                </md-input-container>
                                 <md-input-container flex>
                                     <label>Type</label>
                                     <md-select ng-model="action.sound.type">

@@ -47,6 +47,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     'mirror'
     'water'
     'particle'
+    'playlist'
   ]
 
   $scope.assetTypes = [
@@ -94,10 +95,11 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
       delete $scope.json.engine.camera
 
   $scope.targetableObjects = ->
-    $scope.json.items.concat($scope.json.cameras)
+    $scope.json.items.concat($scope.json.cameras).concat($scope.json.assets.where(type: 'sound'))
 
   $scope.hasAnimate = (id) ->
-    $scope.json.items.where(id: id).any()
+    return false unless id?
+    $scope.json.items.where(id: id, type: 'model').any()
 
   $scope.hasMapAttr = (type) ->
     ['plane', 'skySphere', 'water'].includes(type)
@@ -156,8 +158,8 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     return false unless item.destPath
     item.type == 'graffiti'
 
-  $scope.itemWithIdFilter = (item) ->
-    item.id?
+  $scope.itemWithIdOrSoundFilter = (item) ->
+    item.id? || item.type == 'sound'
 
   $scope.soundsFilter = (item) ->
     return false unless item.destPath
@@ -244,6 +246,8 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
       item.sunColor = Utils.LIGHT_DEFAULT_COLOR
       item.waterColor = Utils.WATER_DEFAULT_WATER_COLOR
       item.alpha = Utils.WATER_DEFAULT_ALPHA
+    if item.type == 'playlist'
+      item.items = ($scope.getKeyName(playlistItem.destPath) for playlistItem in $scope.json.assets.where(type: 'sound'))
 
   $scope.addItem = ->
     $scope.json.items.push {}

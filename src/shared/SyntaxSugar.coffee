@@ -202,3 +202,40 @@ whichAnimationEvent = ->
     if el.style[t] != undefined
       return animations[t]
   return
+
+# Used for continously looping sounds from the SoundManager
+class Playlist
+  # @param [Array] keys
+  constructor: (keys) ->
+    throw new Error('keys needs to be an array') unless keys instanceof Array
+    for key in keys
+      unless SoundManager.get().sounds[key]?
+        throw new Error("key '#{key}' not loaded in SoundManager")
+    @items = new CyclicArray(keys)
+
+  # start playing the playlist
+  #
+  # @example
+  #   playlist = new Playlist(['shotgun', 'hit'])
+  #   playlist.play()
+  #
+  # @see getPlayingKey
+  play: ->
+    audio = SoundManager.get().play(@items.get())
+    audio._onend = []
+    audio.on 'end', (data) =>
+      @items.next()
+      @play()
+
+  # Get the key of the sound currently playing
+  #
+  # @example
+  #   playlist = new Playlist(['shotgun', 'hit'])
+  #   playlist.play()
+  #   SoundManager.get().pause(playlist.getPlayingKey())
+  getPlayingKey: ->
+    @items.get()
+
+  # Get the audio object which is currently playing
+  getPlayingAudio: ->
+    SoundManager.get().sounds[@getPlayingKey()]
