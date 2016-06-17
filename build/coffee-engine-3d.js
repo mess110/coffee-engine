@@ -11959,9 +11959,10 @@ SoundManager = function() {
         return SoundManager.prototype.sounds = {}, SoundManager.prototype.loadCount = 0, 
         SoundManager.prototype.load = function(key, url) {
             var howl;
-            if (void 0 === this.sounds[key]) return this.sounds[key] = null, howl = new Howl({
+            if (void 0 === this.sounds[key]) return this.sounds[key] = null, url instanceof Array || (url = [ url ]), 
+            howl = new Howl({
                 autoplay: !1,
-                urls: [ url ],
+                urls: url,
                 onload: function() {
                     return window.SoundManager.get().sounds[key] = howl, window.SoundManager.get().loadCount += 1;
                 }
@@ -11974,23 +11975,28 @@ SoundManager = function() {
               case "play":
               case "pause":
               case "stop":
-                return this.sounds[options.key][options.type]();
+                this.sounds[options.key][options.type]();
+                break;
 
               case "fadeIn":
               case "fadeOut":
-                return null == options.to && (options.to = 1), null == options.duration && (options.duration = 1e3), 
+                null == options.to && (options.to = 1), null == options.duration && (options.duration = 1e3), 
                 this.sounds[options.key][options.type](options.to, options.duration);
+                break;
 
               case "volume":
               case "volumeAll":
-                return null == options.volume && (options.volume = 1), "volume" === options.type ? this.sounds[options.key][options.type](options.volume) : this.volumeAll(options.key, options.volume);
+                null == options.volume && (options.volume = 1), "volume" === options.type ? this.sounds[options.key][options.type](options.volume) : this.volumeAll(options.volume);
+                break;
 
               case "loop":
-                return null == options.loop && (options.loop = !1), this.sounds[options.key][options.type](options.loop);
+                null == options.loop && (options.loop = !1), this.sounds[options.key][options.type](options.loop);
+                break;
 
               default:
                 throw new Error("unknown options.type " + options.type);
             }
+            return this.sounds[options.key];
         }, SoundManager.prototype.play = function(key) {
             return this.cmd({
                 type: "play",
@@ -12329,6 +12335,7 @@ JsonModelManager = function() {
             return mesh;
         }, JsonModelManager.prototype.clone = function(key) {
             var mesh;
+            if (null == this.items[key]) throw new Error("key '" + key + "' not found for JsonModelManager");
             return mesh = this._hack(this.items[key].clone()), this.initAnimations(mesh);
         }, JsonModelManager.prototype._hack = function(mesh) {
             return mesh.material = mesh.material.clone(), mesh.material.materials[0].map = mesh.material.materials[0].map.clone(), 
@@ -12661,8 +12668,9 @@ Helper = function() {
         return new THREE.Vector3(json.x, json.y, json.z);
     }, Helper.shallowClone = function(json) {
         return JSON.parse(JSON.stringify(json));
-    }, Helper.random = function(n) {
-        return Math.floor(Math.random() * n);
+    }, Helper.random = function(min, max, mult) {
+        return null == max && (max = min, min = 0), null != mult && (min *= mult, max *= mult), 
+        Math.floor(Math.random() * (max - min + 1)) + min;
     }, Helper.distanceTo = function(v1, v2) {
         var dx, dy, dz;
         return dx = v1.x - v2.x, dy = v1.y - v2.y, dz = v1.z - v2.z, Math.sqrt(dx * dx + dy * dy + dz * dz);
@@ -12784,7 +12792,7 @@ Helper = function() {
     }, Helper.intersectPlane = function() {
         return new THREE.Plane(new THREE.Vector3(0, 0, 1), -1);
     }, Helper.tween = function(options) {
-        var base, base1, base2, base3, base4, base5, e, i, j, len, len1, ref, ref1, tween;
+        var base, base1, base2, base3, base4, base5, e, j, k, len, len1, ref, ref1, tween;
         if (null == options && (options = {}), null == options.target) throw new Error("options.target missing");
         if (null == options.mesh) throw new Error("options.mesh missing");
         if (null == options.relative && (options.relative = !1), null == options.duration && (options.duration = Helper.defaultTweenDuration), 
@@ -12792,9 +12800,9 @@ Helper = function() {
         null == options.position && (options.position = options.mesh.position.clone()), 
         options.position.rX = options.mesh.rotation.x, options.position.rY = options.mesh.rotation.y, 
         options.position.rZ = options.mesh.rotation.z, options.relative) {
-            for (ref = [ "x", "y", "z" ], i = 0, len = ref.length; len > i; i++) e = ref[i], 
+            for (ref = [ "x", "y", "z" ], j = 0, len = ref.length; len > j; j++) e = ref[j], 
             null != options.target[e] ? options.target[e] += options.mesh.position[e] : options.target[e] = options.mesh.position[e];
-            for (ref1 = [ "rX", "rY", "rZ" ], j = 0, len1 = ref1.length; len1 > j; j++) e = ref1[j], 
+            for (ref1 = [ "rX", "rY", "rZ" ], k = 0, len1 = ref1.length; len1 > k; k++) e = ref1[k], 
             null != options.target[e] ? options.target[e] += options.mesh.rotation[e.toLowerCase()[1]] : options.target[e] = options.mesh.rotation[e.toLowerCase()[1]];
         } else null == (base = options.target).x && (base.x = options.position.x), null == (base1 = options.target).y && (base1.y = options.position.y), 
         null == (base2 = options.target).z && (base2.z = options.position.z), null == (base3 = options.target).rX && (base3.rX = options.position.rX), 
@@ -12813,6 +12821,35 @@ Helper = function() {
         null == options.onComplete && (options.onComplete = function() {
             return {};
         }), tween = new TWEEN.Tween(options.src).to(options.dest, options.duration).easing(TWEEN.Easing[options.kind][options.direction]).onUpdate(options.onUpdate).onComplete(options.onComplete);
+    }, Helper.forest = function(options) {
+        var attr, attrHash, base, base1, base10, base11, base12, base13, base14, base15, base16, base17, base2, base3, base4, base5, base6, base7, base8, base9, coords, i, item, j, k, l, len, len1, model, node, ref, ref1, ref2, singleGeometry;
+        for (null == options && (options = {}), null == options.items && (options.items = []), 
+        null == options.positionMin && (options.positionMin = {}), null == (base = options.positionMin).x && (base.x = 0), 
+        null == (base1 = options.positionMin).y && (base1.y = 0), null == (base2 = options.positionMin).z && (base2.z = 0), 
+        null == options.positionMax && (options.positionMax = {}), null == (base3 = options.positionMax).x && (base3.x = 10), 
+        null == (base4 = options.positionMax).y && (base4.y = 0), null == (base5 = options.positionMax).z && (base5.z = 10), 
+        null == options.rotationMin && (options.rotationMin = {}), null == (base6 = options.rotationMin).x && (base6.x = 0), 
+        null == (base7 = options.rotationMin).y && (base7.y = 0), null == (base8 = options.rotationMin).z && (base8.z = 0), 
+        null == options.rotationMax && (options.rotationMax = {}), null == (base9 = options.rotationMax).x && (base9.x = 0), 
+        null == (base10 = options.rotationMax).y && (base10.y = Math.PI), null == (base11 = options.rotationMax).z && (base11.z = 0), 
+        null == options.scaleMin && (options.scaleMin = {}), null == (base12 = options.scaleMin).x && (base12.x = .5), 
+        null == (base13 = options.scaleMin).y && (base13.y = .5), null == (base14 = options.scaleMin).z && (base14.z = .5), 
+        null == options.scaleMax && (options.scaleMax = {}), null == (base15 = options.scaleMax).x && (base15.x = 1.5), 
+        null == (base16 = options.scaleMax).y && (base16.y = 1.5), null == (base17 = options.scaleMax).z && (base17.z = 1.5), 
+        node = new THREE.Object3D(), coords = function(item, options, attr, coord, which) {
+            var s;
+            return s = "" + attr + which, null != item[s] && null != item[s][coord] ? item[s][coord] : options[s][coord];
+        }, singleGeometry = new THREE.Geometry(), ref = options.items, j = 0, len = ref.length; len > j; j++) for (item = ref[j], 
+        null == item.count && (item.count = 1), i = k = 0, ref1 = item.count; ref1 >= 0 ? ref1 > k : k > ref1; i = ref1 >= 0 ? ++k : --k) {
+            for (model = JsonModelManager.get().clone(item.type), ref2 = [ "scale", "position", "rotation" ], 
+            l = 0, len1 = ref2.length; len1 > l; l++) attr = ref2[l], attrHash = {
+                x: Helper.random(coords(item, options, attr, "x", "Min"), coords(item, options, attr, "x", "Max"), 1e3) / 1e3,
+                y: Helper.random(coords(item, options, attr, "y", "Min"), coords(item, options, attr, "y", "Max"), 1e3) / 1e3,
+                z: Helper.random(coords(item, options, attr, "z", "Min"), coords(item, options, attr, "z", "Max"), 1e3) / 1e3
+            }, model[attr].set(attrHash.x, attrHash.y, attrHash.z);
+            node.add(model);
+        }
+        return node;
     }, Helper;
 }();
 
@@ -13064,9 +13101,14 @@ Cinematic = function() {
         camera.lookAt(vector)), results.push(this.cameras.push(camera));
         return results;
     }, Cinematic.prototype._loadItems = function() {
-        var baseModel, i, item, len, obj, ref, results;
+        var baseModel, i, item, len, obj, playlist, ref, results;
         for (ref = this.json.items, results = [], i = 0, len = ref.length; len > i; i++) switch (item = ref[i], 
         item.type) {
+          case "playlist":
+            playlist = new Playlist(item.items), this.setId(item, item), this.setId(playlist, item), 
+            playlist.json = item, results.push(this.items.push(playlist));
+            break;
+
           case "water":
             item[item.type] = item, baseModel = Helper[item.type](engine, this.scene, item), 
             obj = baseModel.mesh, results.push(this.cinemize(item, baseModel, obj));
@@ -13090,6 +13132,7 @@ Cinematic = function() {
           case "pointLight":
           case "skySphere":
           case "graffiti":
+          case "forest":
             obj = Helper[item.type](item), baseModel = new BaseModel(), baseModel.mesh = obj, 
             results.push(this.cinemize(item, baseModel, obj));
             break;
@@ -13108,7 +13151,7 @@ Cinematic = function() {
     }, Cinematic.prototype.addAll = function(scene) {
         var i, item, len, ref, results;
         for (ref = this.items, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
-        results.push(scene.add(item.mesh));
+        item.mesh && results.push(scene.add(item.mesh));
         return results;
     }, Cinematic.prototype.find = function(id) {
         return this.items.where({
@@ -13133,23 +13176,28 @@ Cinematic = function() {
             }
         }
     }, Cinematic.prototype.processAction = function(action) {
-        var isCamera, target;
-        if (null == action.delay && (action.delay = 0), null != action.sound && SoundManager.get().cmd(action.sound), 
-        null != action.target) {
+        var asset, i, isCamera, isSound, len, ref, target;
+        if (null == action.delay && (action.delay = 0), null != action.target) {
             if (target = this.items.where({
                 ceId: action.target
             }).first(), null == target && (target = {
                 mesh: this.cameras.where({
                     ceId: action.target
                 }).first()
-            }, isCamera = !0, null == target.mesh)) throw new Error("action.target " + action.target + " not found");
+            }, null != target.mesh && (isCamera = !0), null == target.mesh)) {
+                for (ref = this.json.assets, i = 0, len = ref.length; len > i; i++) asset = ref[i], 
+                "sound" === asset.type && Utils.getKeyName(asset.destPath, Utils.AUDIO_URLS) === action.target && (target = {
+                    mesh: asset
+                }, isSound = !0);
+                if (null == target.mesh && !isCamera && !isSound) throw new Error("action.target " + action.target + " not found");
+            }
             return setTimeout(function(_this) {
                 return function() {
                     var vector;
-                    return null != action.lookAt && (vector = _this.getLookAtVector(action.lookAt), 
+                    return isSound ? (action.sound.key = action.target, SoundManager.get().cmd(action.sound)) : null != target.json && "playlist" === target.json.type ? target.cmd(action.sound) : (null != action.lookAt && (vector = _this.getLookAtVector(action.lookAt), 
                     target.mesh.lookAt(vector)), null != action.animate && isCamera !== !0 && (null != action.animate.stopOtherAnimations && target.stopAnimations(), 
                     target.animate(null, action.animate)), null != action.tween ? (action.tween.mesh = target.mesh, 
-                    Helper.tween(action.tween).start()) : void 0;
+                    Helper.tween(action.tween).start()) : void 0);
                 };
             }(this), action.delay);
         }
@@ -13380,19 +13428,21 @@ Engine3D = function() {
         return this.renderer.setClearColor(color, alpha);
     }, Engine3D.prototype.addScene = function(scene) {
         return this.sceneManager.addScene(scene), null == this.sceneManager.currentSceneIndex ? this.sceneManager.setScene(scene) : void 0;
-    }, Engine3D.prototype.initScene = function(scene, options) {
-        return null == options && (options = {}), Helper.fade({
+    }, Engine3D.prototype.initScene = function(scene, options, fade) {
+        return null == options && (options = {}), null == fade && (fade = !0), fade ? (Helper.fade({
             type: "in"
         }), setTimeout(function(_this) {
             return function() {
-                var currentScene;
-                return currentScene = _this.sceneManager.currentScene(), null != currentScene && currentScene.uninit(), 
-                _this.sceneManager.hasScene(scene) || _this.sceneManager.addScene(scene), scene.init(options), 
-                _this.sceneManager.setScene(scene), Helper.fade({
+                return _this._doInitScene(scene, options), Helper.fade({
                     type: "out"
                 });
             };
-        }(this), Utils.FADE_DEFAULT_DURATION);
+        }(this), Utils.FADE_DEFAULT_DURATION)) : this._doInitScene(scene, options);
+    }, Engine3D.prototype._doInitScene = function(scene, options) {
+        var currentScene;
+        return currentScene = this.sceneManager.currentScene(), null != currentScene && currentScene.uninit(), 
+        this.sceneManager.hasScene(scene) || this.sceneManager.addScene(scene), scene.init(options), 
+        this.sceneManager.setScene(scene);
     }, Engine3D.prototype.removeScene = function(scene) {
         return this.sceneManager.removeScene(scene);
     }, Engine3D.prototype.render = function() {
@@ -13437,7 +13487,7 @@ Engine3D = function() {
     }, Engine3D;
 }();
 
-var CyclicArray, isNumeric, whichAnimationEvent;
+var CyclicArray, Playlist, isNumeric, whichAnimationEvent;
 
 Array.prototype.isEmpty = function() {
     return 0 === this.length;
@@ -13555,7 +13605,29 @@ Array.prototype.isEmpty = function() {
         WebkitAnimation: "webkitAnimationEnd"
     };
     for (t in animations) if (void 0 !== el.style[t]) return animations[t];
-};
+}, Playlist = function() {
+    function Playlist(keys) {
+        var j, key, len;
+        if (!(keys instanceof Array)) throw new Error("keys needs to be an array");
+        for (j = 0, len = keys.length; len > j; j++) if (key = keys[j], null == SoundManager.get().sounds[key]) throw new Error("key '" + key + "' not loaded in SoundManager");
+        this.items = new CyclicArray(keys);
+    }
+    return Playlist.prototype.cmd = function(options) {
+        var audio, item, j, len, ref;
+        if (options.key = this.items.get(), "volumeAll" === options.type) for (options.type = "volume", 
+        ref = this.items.items, j = 0, len = ref.length; len > j; j++) item = ref[j], options.key = item, 
+        SoundManager.get().cmd(options); else audio = SoundManager.get().cmd(options);
+        return [ "play", "fadeIn" ].includes(options.type) ? (audio._onend = [], audio.on("end", function(_this) {
+            return function(data) {
+                return _this.items.next(), _this.cmd(options);
+            };
+        }(this))) : [ "volume", "volumeAll" ].includes(options.type) ? void 0 : audio._onend = [];
+    }, Playlist.prototype.getPlayingKey = function() {
+        return this.items.get();
+    }, Playlist.prototype.getPlayingAudio = function() {
+        return SoundManager.get().sounds[this.getPlayingKey()];
+    }, Playlist;
+}();
 
 var EngineHolder;
 

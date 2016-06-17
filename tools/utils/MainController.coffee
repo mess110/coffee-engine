@@ -24,7 +24,7 @@ app.controller 'MainController', ['$document', '$scope', '$location', '$window',
     eng = EngineHolder.get().engine
     if eng?
       eng.appendDom()
-      eng.initScene(scene, options)
+      eng.initScene(scene, options, false)
 
   $scope.goTo = (path, newWindow = false) ->
     if newWindow

@@ -48,6 +48,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     'water'
     'particle'
     'playlist'
+    'forest'
   ]
 
   $scope.assetTypes = [
@@ -105,7 +106,7 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     ['plane', 'skySphere', 'water'].includes(type)
 
   $scope.hasCoordinates = (type) ->
-    ['cube', 'plane', 'model', 'light', 'pointLight', 'mirror', 'water', 'terrain', 'particle', 'graffiti'].includes(type)
+    ['cube', 'plane', 'model', 'light', 'pointLight', 'mirror', 'water', 'terrain', 'particle', 'graffiti', 'forest'].includes(type)
 
   $scope.hasRadiusAndSegments = (type) ->
     ['skySphere'].includes(type)
@@ -169,6 +170,9 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
 
   $scope.itemWithIdOrSoundFilter = (item) ->
     item.id? || item.type == 'sound'
+
+  $scope.modelWithId = (item) ->
+    item.id? && item.type == 'model'
 
   $scope.soundsFilter = (item) ->
     return false unless item.destPath
@@ -280,6 +284,11 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
 
   $scope.removeItem = (item) ->
     $scope.json.items.remove(item)
+
+  $scope.addForestItem = (item) ->
+    item.items ?= []
+    item.items.push
+      count: 10
 
   $scope.addScript = ->
     $scope.json.scripts.push { actions: [] }

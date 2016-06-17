@@ -601,7 +601,7 @@ Engine2D = function() {
     }, Engine2D;
 }();
 
-var CyclicArray, isNumeric, whichAnimationEvent;
+var CyclicArray, Playlist, isNumeric, whichAnimationEvent;
 
 Array.prototype.isEmpty = function() {
     return 0 === this.length;
@@ -719,7 +719,29 @@ Array.prototype.isEmpty = function() {
         WebkitAnimation: "webkitAnimationEnd"
     };
     for (t in animations) if (void 0 !== el.style[t]) return animations[t];
-};
+}, Playlist = function() {
+    function Playlist(keys) {
+        var j, key, len;
+        if (!(keys instanceof Array)) throw new Error("keys needs to be an array");
+        for (j = 0, len = keys.length; len > j; j++) if (key = keys[j], null == SoundManager.get().sounds[key]) throw new Error("key '" + key + "' not loaded in SoundManager");
+        this.items = new CyclicArray(keys);
+    }
+    return Playlist.prototype.cmd = function(options) {
+        var audio, item, j, len, ref;
+        if (options.key = this.items.get(), "volumeAll" === options.type) for (options.type = "volume", 
+        ref = this.items.items, j = 0, len = ref.length; len > j; j++) item = ref[j], options.key = item, 
+        SoundManager.get().cmd(options); else audio = SoundManager.get().cmd(options);
+        return [ "play", "fadeIn" ].includes(options.type) ? (audio._onend = [], audio.on("end", function(_this) {
+            return function(data) {
+                return _this.items.next(), _this.cmd(options);
+            };
+        }(this))) : [ "volume", "volumeAll" ].includes(options.type) ? void 0 : audio._onend = [];
+    }, Playlist.prototype.getPlayingKey = function() {
+        return this.items.get();
+    }, Playlist.prototype.getPlayingAudio = function() {
+        return SoundManager.get().sounds[this.getPlayingKey()];
+    }, Playlist;
+}();
 
 var EngineHolder;
 

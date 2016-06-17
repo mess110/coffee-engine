@@ -232,7 +232,6 @@ class Playlist
     if ['play', 'fadeIn'].includes(options.type)
       audio._onend = []
       audio.on 'end', (data) =>
-        console.log 'end'
         @items.next()
         @cmd(options)
     else if ['volume', 'volumeAll'].includes(options.type)

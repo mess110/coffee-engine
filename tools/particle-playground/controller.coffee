@@ -22,7 +22,7 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
     eng.appendDom()
     options =
       url: "../#{$scope.options.textureFile.libPath}"
-    eng.initScene(particlePlaygroundScene, options)
+    eng.initScene(particlePlaygroundScene, options, false)
     $scope.particle = particlePlaygroundScene.particle
 
   $scope.updateColor = (specialColor) ->
