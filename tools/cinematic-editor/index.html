@@ -333,8 +333,8 @@
                                 <md-input-container flex>
                                     <label>Type</label>
                                     <md-select ng-model="forestItem.type">
-                                        <md-option ng-repeat="obj in json.items | filter: modelWithId" value="{{ obj.id }}">
-                                            {{ obj.id }}
+                                        <md-option ng-repeat="asset in json.assets" value="{{ getKeyName(asset.destPath) }}">
+                                            {{ getKeyName(asset.destPath) }}
                                         </md-option>
                                     </md-select>
                                 </md-input-container>

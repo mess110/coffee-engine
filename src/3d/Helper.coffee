@@ -310,6 +310,61 @@ class Helper
   @intersectPlane: ->
     new THREE.Plane(new THREE.Vector3(0, 0, 1), -1)
 
+  # TODO: improve this, currently it always resets to the original position
+  #
+  # @example
+  #   Helper.shake(engine.camera)
+  @shake: (target, options = {}) ->
+    options.kind ?= 'Cubic'
+    options.direction ?= 'In'
+    options.stepDuration ?= 150
+
+    originalPos =
+      x: target.position.x
+      y: target.position.y
+      z: target.position.z
+
+    rand = Helper.random(100) / 100
+    tweenArray = []
+    for i in [0...20]
+      randX = Helper.random(100) / 100
+      randY = Helper.random(100) / 100
+      randZ = Helper.random(100) / 100
+      if Helper.random(100) < 50
+        randX *= -1
+      if Helper.random(100) < 50
+        randY *= -1
+      if Helper.random(100) < 50
+        randZ *= -1
+
+      tween = @tween(
+        target: { x: randX, y: randY, z: randZ }
+        mesh: target
+        relative: true
+        duration: options.stepDuration
+        kind: options.kind
+        direction: options.direction
+      )
+      tweenArray.push tween
+
+    for i in [0...tweenArray.size()]
+      continue unless tweenArray[i+1]?
+      tweenArray[i].chain(tweenArray[i+1])
+
+    tweenArray.last().onComplete (=>
+      @tween(
+        target: { x: originalPos.x, y: originalPos.y, z: originalPos.z }
+        mesh: target
+        relative: false
+        duration: options.stepDuration
+        kind: options.kind
+        direction: options.direction
+      ).start()
+    )
+
+    tweenArray[0].start()
+    tweenArray
+
   # http://sole.github.io/tween.js/examples/03_graphs.html
   @tween: (options = {}) ->
     throw new Error('options.target missing') unless options.target?

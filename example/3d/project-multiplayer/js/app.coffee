@@ -32,7 +32,3 @@ Engine3D.scenify(->
 )
 
 engine.render()
-
-app = angular.module('app', [])
-
-app.controller 'MainController', ($scope) ->
