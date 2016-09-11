@@ -16,6 +16,7 @@ class Config
     contextMenuDisabled: true
     antialias: true
     anaglyph: false
+    stereoVR: false
     resize: false
     width: 1280
     height: 1024

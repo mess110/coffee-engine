@@ -10155,6 +10155,45 @@ THREE.MorphBlendMesh.prototype.createAnimation = function(name, start, end, fps)
             this.morphTargetInfluences[animation.lastFrame] = (1 - mix) * weight;
         }
     }
+}, THREE.StereoEffect = function(renderer) {
+    var scope = this;
+    this.eyeSeparation = 3, this.focalLength = 15, Object.defineProperties(this, {
+        separation: {
+            get: function() {
+                return scope.eyeSeparation;
+            },
+            set: function(value) {
+                console.warn("THREE.StereoEffect: .separation is now .eyeSeparation."), scope.eyeSeparation = value;
+            }
+        },
+        targetDistance: {
+            get: function() {
+                return scope.focalLength;
+            },
+            set: function(value) {
+                console.warn("THREE.StereoEffect: .targetDistance is now .focalLength."), scope.focalLength = value;
+            }
+        }
+    });
+    var _width, _height, _fov, _outer, _inner, _top, _bottom, _ndfl, _halfFocalWidth, _halfFocalHeight, _innerFactor, _outerFactor, _position = new THREE.Vector3(), _quaternion = new THREE.Quaternion(), _scale = new THREE.Vector3(), _cameraL = new THREE.PerspectiveCamera(), _cameraR = new THREE.PerspectiveCamera();
+    renderer.autoClear = !1, this.setSize = function(width, height) {
+        _width = width / 2, _height = height, renderer.setSize(width, height);
+    }, this.render = function(scene, camera) {
+        scene.updateMatrixWorld(), void 0 === camera.parent && camera.updateMatrixWorld(), 
+        camera.matrixWorld.decompose(_position, _quaternion, _scale), _fov = THREE.Math.radToDeg(2 * Math.atan(Math.tan(.5 * THREE.Math.degToRad(camera.fov)) / camera.zoom)), 
+        _ndfl = camera.near / this.focalLength, _halfFocalHeight = Math.tan(.5 * THREE.Math.degToRad(_fov)) * this.focalLength, 
+        _halfFocalWidth = .5 * _halfFocalHeight * camera.aspect, _top = _halfFocalHeight * _ndfl, 
+        _bottom = -_top, _innerFactor = (_halfFocalWidth + this.eyeSeparation / 2) / (2 * _halfFocalWidth), 
+        _outerFactor = 1 - _innerFactor, _outer = 2 * _halfFocalWidth * _ndfl * _outerFactor, 
+        _inner = 2 * _halfFocalWidth * _ndfl * _innerFactor, _cameraL.projectionMatrix.makeFrustum(-_outer, _inner, _bottom, _top, camera.near, camera.far), 
+        _cameraL.position.copy(_position), _cameraL.quaternion.copy(_quaternion), _cameraL.translateX(-this.eyeSeparation / 2), 
+        _cameraR.projectionMatrix.makeFrustum(-_inner, _outer, _bottom, _top, camera.near, camera.far), 
+        _cameraR.position.copy(_position), _cameraR.quaternion.copy(_quaternion), _cameraR.translateX(this.eyeSeparation / 2), 
+        renderer.clear(), renderer.enableScissorTest(!0), renderer.setScissor(0, 0, _width, _height), 
+        renderer.setViewport(0, 0, _width, _height), renderer.render(scene, _cameraL), renderer.setScissor(_width, 0, _width, _height), 
+        renderer.setViewport(_width, 0, _width, _height), renderer.render(scene, _cameraR), 
+        renderer.enableScissorTest(!1);
+    };
 }, THREE.AnaglyphEffect = function(renderer, width, height) {
     var _aspect, _near, _far, _fov, eyeRight = new THREE.Matrix4(), eyeLeft = new THREE.Matrix4(), focalLength = 125, _cameraL = new THREE.PerspectiveCamera();
     _cameraL.matrixAutoUpdate = !1;
@@ -10433,7 +10472,158 @@ THREE.MorphBlendMesh.prototype.createAnimation = function(name, start, end, fps)
     this.domElement.addEventListener("touchend", touchend, !1), this.domElement.addEventListener("touchmove", touchmove, !1), 
     window.addEventListener("keydown", onKeyDown, !1), this.update();
 }, THREE.OrbitControls.prototype = Object.create(THREE.EventDispatcher.prototype), 
-THREE.OrbitControls.prototype.constructor = THREE.OrbitControls, THREE.ShaderLib.mirror = {
+THREE.OrbitControls.prototype.constructor = THREE.OrbitControls, THREE.FirstPersonControls = function(object, domElement) {
+    function bind(scope, fn) {
+        return function() {
+            fn.apply(scope, arguments);
+        };
+    }
+    this.object = object, this.target = new THREE.Vector3(0, 0, 0), this.domElement = void 0 !== domElement ? domElement : document, 
+    this.enabled = !0, this.movementSpeed = 1, this.lookSpeed = .005, this.lookVertical = !0, 
+    this.autoForward = !1, this.activeLook = !0, this.heightSpeed = !1, this.heightCoef = 1, 
+    this.heightMin = 0, this.heightMax = 1, this.constrainVertical = !1, this.verticalMin = 0, 
+    this.verticalMax = Math.PI, this.autoSpeedFactor = 0, this.mouseX = 0, this.mouseY = 0, 
+    this.lat = 0, this.lon = 0, this.phi = 0, this.theta = 0, this.moveForward = !1, 
+    this.moveBackward = !1, this.moveLeft = !1, this.moveRight = !1, this.mouseDragOn = !1, 
+    this.viewHalfX = 0, this.viewHalfY = 0, this.domElement !== document && this.domElement.setAttribute("tabindex", -1), 
+    this.handleResize = function() {
+        this.domElement === document ? (this.viewHalfX = window.innerWidth / 2, this.viewHalfY = window.innerHeight / 2) : (this.viewHalfX = this.domElement.offsetWidth / 2, 
+        this.viewHalfY = this.domElement.offsetHeight / 2);
+    }, this.onMouseDown = function(event) {
+        if (this.domElement !== document && this.domElement.focus(), event.preventDefault(), 
+        event.stopPropagation(), this.activeLook) switch (event.button) {
+          case 0:
+            this.moveForward = !0;
+            break;
+
+          case 2:
+            this.moveBackward = !0;
+        }
+        this.mouseDragOn = !0;
+    }, this.onMouseUp = function(event) {
+        if (event.preventDefault(), event.stopPropagation(), this.activeLook) switch (event.button) {
+          case 0:
+            this.moveForward = !1;
+            break;
+
+          case 2:
+            this.moveBackward = !1;
+        }
+        this.mouseDragOn = !1;
+    }, this.onMouseMove = function(event) {
+        this.domElement === document ? (this.mouseX = event.pageX - this.viewHalfX, this.mouseY = event.pageY - this.viewHalfY) : (this.mouseX = event.pageX - this.domElement.offsetLeft - this.viewHalfX, 
+        this.mouseY = event.pageY - this.domElement.offsetTop - this.viewHalfY);
+    }, this.onKeyDown = function(event) {
+        switch (event.keyCode) {
+          case 38:
+          case 87:
+            this.moveForward = !0;
+            break;
+
+          case 37:
+          case 65:
+            this.moveLeft = !0;
+            break;
+
+          case 40:
+          case 83:
+            this.moveBackward = !0;
+            break;
+
+          case 39:
+          case 68:
+            this.moveRight = !0;
+            break;
+
+          case 82:
+            this.moveUp = !0;
+            break;
+
+          case 70:
+            this.moveDown = !0;
+        }
+    }, this.onKeyUp = function(event) {
+        switch (event.keyCode) {
+          case 38:
+          case 87:
+            this.moveForward = !1;
+            break;
+
+          case 37:
+          case 65:
+            this.moveLeft = !1;
+            break;
+
+          case 40:
+          case 83:
+            this.moveBackward = !1;
+            break;
+
+          case 39:
+          case 68:
+            this.moveRight = !1;
+            break;
+
+          case 82:
+            this.moveUp = !1;
+            break;
+
+          case 70:
+            this.moveDown = !1;
+        }
+    }, this.update = function(delta) {
+        if (this.enabled !== !1) {
+            if (this.heightSpeed) {
+                var y = THREE.Math.clamp(this.object.position.y, this.heightMin, this.heightMax), heightDelta = y - this.heightMin;
+                this.autoSpeedFactor = delta * (heightDelta * this.heightCoef);
+            } else this.autoSpeedFactor = 0;
+            var actualMoveSpeed = delta * this.movementSpeed;
+            (this.moveForward || this.autoForward && !this.moveBackward) && this.object.translateZ(-(actualMoveSpeed + this.autoSpeedFactor)), 
+            this.moveBackward && this.object.translateZ(actualMoveSpeed), this.moveLeft && this.object.translateX(-actualMoveSpeed), 
+            this.moveRight && this.object.translateX(actualMoveSpeed), this.moveUp && this.object.translateY(actualMoveSpeed), 
+            this.moveDown && this.object.translateY(-actualMoveSpeed);
+            var actualLookSpeed = delta * this.lookSpeed;
+            this.activeLook || (actualLookSpeed = 0);
+            var verticalLookRatio = 1;
+            this.constrainVertical && (verticalLookRatio = Math.PI / (this.verticalMax - this.verticalMin)), 
+            this.lon += this.mouseX * actualLookSpeed, this.lookVertical && (this.lat -= this.mouseY * actualLookSpeed * verticalLookRatio), 
+            this.lat = Math.max(-85, Math.min(85, this.lat)), this.phi = THREE.Math.degToRad(90 - this.lat), 
+            this.theta = THREE.Math.degToRad(this.lon), this.constrainVertical && (this.phi = THREE.Math.mapLinear(this.phi, 0, Math.PI, this.verticalMin, this.verticalMax));
+            var targetPosition = this.target, position = this.object.position;
+            targetPosition.x = position.x + 100 * Math.sin(this.phi) * Math.cos(this.theta), 
+            targetPosition.y = position.y + 100 * Math.cos(this.phi), targetPosition.z = position.z + 100 * Math.sin(this.phi) * Math.sin(this.theta), 
+            this.object.lookAt(targetPosition);
+        }
+    }, this.domElement.addEventListener("contextmenu", function(event) {
+        event.preventDefault();
+    }, !1), this.domElement.addEventListener("mousemove", bind(this, this.onMouseMove), !1), 
+    this.domElement.addEventListener("mousedown", bind(this, this.onMouseDown), !1), 
+    this.domElement.addEventListener("mouseup", bind(this, this.onMouseUp), !1), window.addEventListener("keydown", bind(this, this.onKeyDown), !1), 
+    window.addEventListener("keyup", bind(this, this.onKeyUp), !1), this.handleResize();
+}, THREE.PointerLockControls = function(camera) {
+    var scope = this;
+    camera.rotation.set(0, 0, 0);
+    var pitchObject = new THREE.Object3D();
+    pitchObject.add(camera);
+    var yawObject = new THREE.Object3D();
+    yawObject.position.y = 10, yawObject.add(pitchObject);
+    var PI_2 = Math.PI / 2, onMouseMove = function(event) {
+        if (scope.enabled !== !1) {
+            var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0, movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+            yawObject.rotation.y -= .002 * movementX, pitchObject.rotation.x -= .002 * movementY, 
+            pitchObject.rotation.x = Math.max(-PI_2, Math.min(PI_2, pitchObject.rotation.x));
+        }
+    };
+    document.addEventListener("mousemove", onMouseMove, !1), this.enabled = !1, this.getObject = function() {
+        return yawObject;
+    }, this.getDirection = function() {
+        var direction = new THREE.Vector3(0, 0, -1), rotation = new THREE.Euler(0, 0, 0, "YXZ");
+        return function(v) {
+            return rotation.set(pitchObject.rotation.x, yawObject.rotation.y, 0), v.copy(direction).applyEuler(rotation), 
+            v;
+        };
+    }();
+}, THREE.ShaderLib.mirror = {
     uniforms: {
         mirrorColor: {
             type: "c",
@@ -11560,6 +11750,41 @@ THREEx = THREEx || {}, THREEx.DynamicTexture = function(width, height) {
 }, THREEx.DynamicTexture.prototype.drawImage = function() {
     return this.context.drawImage.apply(this.context, arguments), this.texture.needsUpdate = !0, 
     this;
+}, THREE.DeviceOrientationControls = function(object) {
+    var onDeviceOrientationChangeEvent, onScreenOrientationChangeEvent, scope, setObjectQuaternion;
+    scope = this, this.object = object, this.object.rotation.reorder("YXZ"), this.enabled = !0, 
+    this.deviceOrientation = {}, this.screenOrientation = 0, this.alpha = 0, this.alphaOffsetAngle = 0, 
+    onDeviceOrientationChangeEvent = function(event) {
+        scope.deviceOrientation = event;
+    }, onScreenOrientationChangeEvent = function() {
+        scope.screenOrientation = window.orientation || 0;
+    }, setObjectQuaternion = function() {
+        var euler, q0, q1, zee;
+        return zee = new THREE.Vector3(0, 0, 1), euler = new THREE.Euler(), q0 = new THREE.Quaternion(), 
+        q1 = new THREE.Quaternion(-Math.sqrt(.5), 0, 0, Math.sqrt(.5)), function(quaternion, alpha, beta, gamma, orient) {
+            euler.set(beta, alpha, -gamma, "YXZ"), quaternion.setFromEuler(euler), quaternion.multiply(q1), 
+            quaternion.multiply(q0.setFromAxisAngle(zee, -orient));
+        };
+    }(), this.connect = function() {
+        onScreenOrientationChangeEvent(), window.addEventListener("orientationchange", onScreenOrientationChangeEvent, !1), 
+        window.addEventListener("deviceorientation", onDeviceOrientationChangeEvent, !1), 
+        scope.enabled = !0;
+    }, this.disconnect = function() {
+        window.removeEventListener("orientationchange", onScreenOrientationChangeEvent, !1), 
+        window.removeEventListener("deviceorientation", onDeviceOrientationChangeEvent, !1), 
+        scope.enabled = !1;
+    }, this.update = function() {
+        var alpha, beta, gamma, orient;
+        scope.enabled !== !1 && (alpha = scope.deviceOrientation.alpha ? THREE.Math.degToRad(scope.deviceOrientation.alpha) + this.alphaOffsetAngle : 0, 
+        beta = scope.deviceOrientation.beta ? THREE.Math.degToRad(scope.deviceOrientation.beta) : 0, 
+        gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad(scope.deviceOrientation.gamma) : 0, 
+        orient = scope.screenOrientation ? THREE.Math.degToRad(scope.screenOrientation) : 0, 
+        setObjectQuaternion(scope.object.quaternion, alpha, beta, gamma, orient), this.alpha = alpha);
+    }, this.updateAlphaOffsetAngle = function(angle) {
+        this.alphaOffsetAngle = angle, this.update();
+    }, this.dispose = function() {
+        this.disconnect();
+    }, this.connect();
 };
 
 var saveAs = saveAs || function(view) {
@@ -12633,10 +12858,10 @@ Config = function() {
     return instance = null, Singleton.Config = function() {
         function Config() {}
         return Config.prototype.showStatsOnLoad = !1, Config.prototype.contextMenuDisabled = !0, 
-        Config.prototype.antialias = !0, Config.prototype.anaglyph = !1, Config.prototype.resize = !1, 
-        Config.prototype.width = 1280, Config.prototype.height = 1024, Config.prototype.soundEnabled = !1, 
-        Config.prototype.debug = !1, Config.prototype.preventDefaultMouseEvents = !0, Config.prototype.animate = !0, 
-        Config.prototype.transparentBackground = !1, Config.prototype.sortObjects = !0, 
+        Config.prototype.antialias = !0, Config.prototype.anaglyph = !1, Config.prototype.stereoVR = !1, 
+        Config.prototype.resize = !1, Config.prototype.width = 1280, Config.prototype.height = 1024, 
+        Config.prototype.soundEnabled = !1, Config.prototype.debug = !1, Config.prototype.preventDefaultMouseEvents = !0, 
+        Config.prototype.animate = !0, Config.prototype.transparentBackground = !1, Config.prototype.sortObjects = !0, 
         Config.prototype.fillWindow = function() {
             return this.resize = !0, this.width = window.innerWidth, this.height = window.innerHeight;
         }, Config.prototype.toggleAnaglyph = function() {
@@ -12791,6 +13016,46 @@ Helper = function() {
         });
     }, Helper.intersectPlane = function() {
         return new THREE.Plane(new THREE.Vector3(0, 0, 1), -1);
+    }, Helper.shake = function(target, options) {
+        var i, j, k, originalPos, rand, randX, randY, randZ, ref, tween, tweenArray;
+        for (null == options && (options = {}), null == options.kind && (options.kind = "Cubic"), 
+        null == options.direction && (options.direction = "In"), null == options.stepDuration && (options.stepDuration = 150), 
+        originalPos = {
+            x: target.position.x,
+            y: target.position.y,
+            z: target.position.z
+        }, rand = Helper.random(100) / 100, tweenArray = [], i = j = 0; 20 > j; i = ++j) randX = Helper.random(100) / 100, 
+        randY = Helper.random(100) / 100, randZ = Helper.random(100) / 100, Helper.random(100) < 50 && (randX *= -1), 
+        Helper.random(100) < 50 && (randY *= -1), Helper.random(100) < 50 && (randZ *= -1), 
+        tween = this.tween({
+            target: {
+                x: randX,
+                y: randY,
+                z: randZ
+            },
+            mesh: target,
+            relative: !0,
+            duration: options.stepDuration,
+            kind: options.kind,
+            direction: options.direction
+        }), tweenArray.push(tween);
+        for (i = k = 0, ref = tweenArray.size(); ref >= 0 ? ref > k : k > ref; i = ref >= 0 ? ++k : --k) null != tweenArray[i + 1] && tweenArray[i].chain(tweenArray[i + 1]);
+        return tweenArray.last().onComplete(function(_this) {
+            return function() {
+                return _this.tween({
+                    target: {
+                        x: originalPos.x,
+                        y: originalPos.y,
+                        z: originalPos.z
+                    },
+                    mesh: target,
+                    relative: !1,
+                    duration: options.stepDuration,
+                    kind: options.kind,
+                    direction: options.direction
+                }).start();
+            };
+        }(this)), tweenArray[0].start(), tweenArray;
     }, Helper.tween = function(options) {
         var base, base1, base2, base3, base4, base5, e, j, k, len, len1, ref, ref1, tween;
         if (null == options && (options = {}), null == options.target) throw new Error("options.target missing");
@@ -12852,38 +13117,6 @@ Helper = function() {
         return node;
     }, Helper;
 }();
-
-var Water, extend = function(child, parent) {
-    function ctor() {
-        this.constructor = child;
-    }
-    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
-    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
-    child;
-}, hasProp = {}.hasOwnProperty;
-
-Water = function(superClass) {
-    function Water(engine, scene, options) {
-        var base, base1, base2, base3, base4, base5, base6, waterNormals;
-        if (null == options && (options = {}), null == options.map) throw new Error("map missing. needs to be a TextureManager key");
-        null == options.width && (options.width = Utils.PLANE_DEFAULT_WIDTH), null == options.height && (options.height = Utils.PLANE_DEFAULT_HEIGHT), 
-        null == options.wSegments && (options.wSegments = Utils.PLANE_DEFAULT_W_SEGMENTS), 
-        null == options.hSegments && (options.hSegments = Utils.PLANE_DEFAULT_H_SEGMENTS), 
-        null == options.water && (options.water = {}), null == (base = options.water).textureWidth && (base.textureWidth = Utils.MIRROR_DEFAULT_TEXTURE_WIDTH / 2), 
-        null == (base1 = options.water).textureHeight && (base1.textureHeight = Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT / 2), 
-        null == (base2 = options.water).alpha && (base2.alpha = Utils.WATER_DEFAULT_ALPHA), 
-        null == (base3 = options.water).sunColor && (base3.sunColor = Utils.LIGHT_DEFAULT_COLOR), 
-        null == (base4 = options.water).waterColor && (base4.waterColor = Utils.WATER_DEFAULT_WATER_COLOR), 
-        null == (base5 = options.water).betaVersion && (base5.betaVersion = 0), null == (base6 = options.water).side && (base6.side = THREE.DoubleSide), 
-        waterNormals = TextureManager.get().items[options.map], waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping, 
-        options.water.waterNormals = waterNormals, this.water = new THREE.Water(engine.renderer, engine.camera, scene, options.water), 
-        this.mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(options.width, options.height, options.wSegments, options.hSegments), this.water.material), 
-        this.mesh.add(this.water), this.mesh.rotation.x = .5 * -Math.PI, this.speed = 1;
-    }
-    return extend(Water, superClass), Water.prototype.tick = function(tpf) {
-        return this.water.material.uniforms.time.value += tpf * this.speed, this.water.render();
-    }, Water;
-}(BaseModel);
 
 var Terrain, extend = function(child, parent) {
     function ctor() {
@@ -13146,7 +13379,7 @@ Cinematic = function() {
     }, Cinematic.prototype.cinemize = function(item, baseModel, obj) {
         return this.setId(baseModel, item), this.setId(obj, item), this.setXYZProp("position", obj, item), 
         this.setXYZProp("rotation", obj, item), this.setXYZProp("scale", obj, item, 1), 
-        null != item.lookAt && camera.lookAt(this.toVector3(item.lookAt)), this.items.push(baseModel), 
+        null != item.lookAt && engine.camera.lookAt(this.toVector3(item.lookAt)), this.items.push(baseModel), 
         this.scene ? this.scene.add(baseModel.mesh) : void 0;
     }, Cinematic.prototype.addAll = function(scene) {
         var i, item, len, ref, results;
@@ -13360,6 +13593,82 @@ FadeInModifier = function() {
     return NoticeMeModifier;
 }();
 
+var VRControls, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+VRControls = function(superClass) {
+    function VRControls(target) {
+        var setOrientationControls;
+        this.enabled = !0, this.controls = new THREE.DeviceOrientationControls(target, !0), 
+        setOrientationControls = function(_this) {
+            return function(e) {
+                e.alpha && (_this.controls.connect(), _this.controls.update(), window.removeEventListener("deviceorientation", setOrientationControls, !0));
+            };
+        }(this), window.addEventListener("deviceorientation", setOrientationControls, !0);
+    }
+    return extend(VRControls, superClass), VRControls.prototype.tick = function(tpf) {
+        return this.enabled ? this.controls.update(tpf) : void 0;
+    }, VRControls.prototype.update = function(tpf) {
+        return this.tick(tpf);
+    }, VRControls.prototype.updateAlphaOffsetAngle = function(angle) {
+        return this.controls.updateAlphaOffsetAngle(angle);
+    }, VRControls.prototype.turn = function(angle) {
+        return null == angle && (angle = 45), this.updateAlphaOffsetAngle(this.controls.alphaOffsetAngle + angle);
+    }, VRControls;
+}(BaseControls);
+
+var Walker;
+
+Walker = function() {
+    function Walker(mesh) {
+        this.mesh = mesh, this.raycaster = new THREE.Raycaster(), this.direction = new THREE.Vector3(0, -2, 0);
+    }
+    return Walker.prototype.getContact = function(mesh) {
+        var fromPosition, intersects;
+        return null == mesh ? void console.log("walker.getContact needs a mesh") : (fromPosition = this.mesh.position.clone(), 
+        this.raycaster.set(fromPosition, this.direction), intersects = this.raycaster.intersectObject(mesh), 
+        intersects.size() > 0 ? intersects.first().point : null);
+    }, Walker;
+}();
+
+var Water, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+Water = function(superClass) {
+    function Water(engine, scene, options) {
+        var base, base1, base2, base3, base4, base5, base6, waterNormals;
+        if (null == options && (options = {}), null == options.map) throw new Error("map missing. needs to be a TextureManager key");
+        null == options.width && (options.width = Utils.PLANE_DEFAULT_WIDTH), null == options.height && (options.height = Utils.PLANE_DEFAULT_HEIGHT), 
+        null == options.wSegments && (options.wSegments = Utils.PLANE_DEFAULT_W_SEGMENTS), 
+        null == options.hSegments && (options.hSegments = Utils.PLANE_DEFAULT_H_SEGMENTS), 
+        null == options.water && (options.water = {}), null == (base = options.water).textureWidth && (base.textureWidth = Utils.MIRROR_DEFAULT_TEXTURE_WIDTH / 2), 
+        null == (base1 = options.water).textureHeight && (base1.textureHeight = Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT / 2), 
+        null == (base2 = options.water).alpha && (base2.alpha = Utils.WATER_DEFAULT_ALPHA), 
+        null == (base3 = options.water).sunColor && (base3.sunColor = Utils.LIGHT_DEFAULT_COLOR), 
+        null == (base4 = options.water).waterColor && (base4.waterColor = Utils.WATER_DEFAULT_WATER_COLOR), 
+        null == (base5 = options.water).betaVersion && (base5.betaVersion = 0), null == (base6 = options.water).side && (base6.side = THREE.DoubleSide), 
+        waterNormals = TextureManager.get().items[options.map], waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping, 
+        options.water.waterNormals = waterNormals, this.water = new THREE.Water(engine.renderer, engine.camera, scene, options.water), 
+        this.mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(options.width, options.height, options.wSegments, options.hSegments), this.water.material), 
+        this.mesh.add(this.water), this.mesh.rotation.x = .5 * -Math.PI, this.speed = 1;
+    }
+    return extend(Water, superClass), Water.prototype.tick = function(tpf) {
+        return this.water.material.uniforms.time.value += tpf * this.speed, this.water.render();
+    }, Water;
+}(BaseModel);
+
 var Engine3D, bind = function(fn, me) {
     return function() {
         return fn.apply(me, arguments);
@@ -13382,7 +13691,8 @@ Engine3D = function() {
             near: Utils.CAMERA_DEFAULT_NEAR,
             far: Utils.CAMERA_DEFAULT_FAR
         }), this.setCamera(camera), this.camera.position.z = 10, this.anaglyphEffect = new THREE.AnaglyphEffect(this.renderer), 
-        this.anaglyphEffect.setSize(this.width, this.height), this.sceneManager = SceneManager.get(), 
+        this.anaglyphEffect.setSize(this.width, this.height), this.stereoEffect = new THREE.StereoEffect(this.renderer), 
+        this.stereoEffect.setSize(this.width, this.height), this.sceneManager = SceneManager.get(), 
         this.renderer.domElement.addEventListener("mouseup", this.mouseHandler, !1), this.renderer.domElement.addEventListener("mousedown", this.mouseHandler, !1), 
         this.renderer.domElement.addEventListener("mousemove", this.mouseHandler, !1), document.addEventListener("keydown", this.keyboardHandler, !1), 
         document.addEventListener("keyup", this.keyboardHandler, !1), this.renderer.domElement.addEventListener("touchstart", this.touchHandler, !1), 
@@ -13450,8 +13760,7 @@ Engine3D = function() {
         if (!this.stop) return requestAnimationFrame(this.render), this.width = window.innerWidth, 
         this.height = window.innerHeight, now = new Date().getTime(), tpf = (now - (this.time || now)) / 1e3, 
         this.time = now, this.uptime += tpf, this.sceneManager.tick(tpf), this.config.animate && THREE.AnimationHandler.update(tpf), 
-        this.statsManager.update(this.renderer), TWEEN.update(), this.renderer.render(this.sceneManager.currentScene().scene, this.camera), 
-        this.config.anaglyph ? this.anaglyphEffect.render(this.sceneManager.currentScene().scene, this.camera) : void 0;
+        this.statsManager.update(this.renderer), TWEEN.update(), this.config.anaglyph ? this.anaglyphEffect.render(this.sceneManager.currentScene().scene, this.camera) : this.config.stereoVR ? this.stereoEffect.render(this.sceneManager.currentScene().scene, this.camera) : this.renderer.render(this.sceneManager.currentScene().scene, this.camera);
     }, Engine3D.prototype.implode = function() {
         return this.stop = !0, this.removeDom();
     }, Engine3D.prototype.unproject = function(x, y) {

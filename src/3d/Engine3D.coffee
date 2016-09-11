@@ -27,6 +27,9 @@ class Engine3D
     @anaglyphEffect = new THREE.AnaglyphEffect(@renderer)
     @anaglyphEffect.setSize(@width, @height)
 
+    @stereoEffect = new THREE.StereoEffect(@renderer)
+    @stereoEffect.setSize(@width, @height)
+
     @sceneManager = SceneManager.get()
 
     @renderer.domElement.addEventListener "mouseup", @mouseHandler, false
@@ -177,10 +180,13 @@ class Engine3D
     THREE.AnimationHandler.update(tpf) if @config.animate
     @statsManager.update(@renderer)
     TWEEN.update()
-    @renderer.render @sceneManager.currentScene().scene, @camera
 
     if @config.anaglyph
       @anaglyphEffect.render @sceneManager.currentScene().scene, @camera
+    else if @config.stereoVR
+      @stereoEffect.render @sceneManager.currentScene().scene, @camera
+    else
+      @renderer.render @sceneManager.currentScene().scene, @camera
 
   implode: =>
     @stop = true

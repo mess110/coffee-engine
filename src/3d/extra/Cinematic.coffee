@@ -110,7 +110,7 @@ class Cinematic
     if item.lookAt?
       # TODO: find out if this is a bug. should the camera be lookin
       # or the model?
-      camera.lookAt(@toVector3(item.lookAt))
+      engine.camera.lookAt(@toVector3(item.lookAt))
     @items.push baseModel
     @scene.add baseModel.mesh if @scene
 

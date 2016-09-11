@@ -7,8 +7,12 @@ module.exports = (grunt) ->
 
     "bower_components/threejs/build/three.js"
 
+    "bower_components/threejs/examples/js/effects/StereoEffect.js"
     "bower_components/threejs/examples/js/effects/AnaglyphEffect.js"
     "bower_components/threejs/examples/js/controls/OrbitControls.js"
+    # "bower_components/threejs/examples/js/controls/DeviceOrientationControls.js"
+    "bower_components/threejs/examples/js/controls/FirstPersonControls.js"
+    "bower_components/threejs/examples/js/controls/PointerLockControls.js"
     "bower_components/threejs/examples/js/Mirror.js"
 
     "bower_components/threex.windowresize/threex.windowresize.js"
@@ -19,6 +23,7 @@ module.exports = (grunt) ->
     "bower_components/ocean/water-material.js"
     "bower_components/ShaderParticleEngine/build/ShaderParticles.js"
     "src/vendor/threex.dynamictexture.js"
+    "src/vendor/DeviceOrientationControls.js"
 
     "bower_components/file-saver/FileSaver.js"
     "bower_components/virtualjoystick.js/virtualjoystick.js"
@@ -46,7 +51,6 @@ module.exports = (grunt) ->
     "src/3d/Config.js"
     "src/3d/Helper.js"
 
-    "src/3d/extra/Water.js"
     "src/3d/extra/Terrain.js"
     "src/3d/extra/SpotLight.js"
     "src/3d/extra/Mirror.js"
@@ -55,6 +59,9 @@ module.exports = (grunt) ->
     "src/3d/extra/CinematicScene.js"
     "src/3d/extra/ArtGenerator.js"
     "src/3d/extra/Modifiers.js"
+    "src/3d/extra/VRControls.js"
+    "src/3d/extra/Walker.js"
+    "src/3d/extra/Water.js"
 
     "src/3d/Engine3D.js"
   ]
