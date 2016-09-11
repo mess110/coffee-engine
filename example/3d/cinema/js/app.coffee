@@ -4,7 +4,7 @@ config.fillWindow()
 
 engine = new Engine3D()
 
-Engine3D.scenify(->
+Engine3D.scenify(engine, ->
   console.log 'cinematic started'
 )
 

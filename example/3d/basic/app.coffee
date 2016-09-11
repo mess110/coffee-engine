@@ -23,7 +23,7 @@ class GameScene extends BaseScene
 
   doKeyboardEvent: (event) ->
 
-Engine3D.scenify(->
+Engine3D.scenify(engine, ->
   gameScene = new GameScene()
   engine.initScene(gameScene)
 )

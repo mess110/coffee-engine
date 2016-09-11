@@ -223,17 +223,17 @@ class Engine3D
     return new THREE.Raycaster(@camera.position, vector.sub(@camera.position).normalize())
 
   # @nodoc
-  @scenify: (callback = -> {})->
+  @scenify: (zeEngine, callback = -> {}) ->
     loadingScene = new LoadingScene([
       "assets/scenes/start.save.json"
     ], ->
       loadingScene.hasFinishedLoading = ->
         scene = CinematicScene.fromSaveObjectKey('start')
-        engine.addScene(scene)
-        engine.sceneManager.setScene(scene)
+        zeEngine.addScene(scene)
+        zeEngine.sceneManager.setScene(scene)
         callback()
       assets = CinematicScene.getAssets('start')
       loadingScene.loadAssets(assets)
     )
-    engine.addScene(loadingScene)
+    zeEngine.addScene(loadingScene)
     loadingScene
