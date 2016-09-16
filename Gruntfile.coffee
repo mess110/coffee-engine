@@ -54,6 +54,7 @@ module.exports = (grunt) ->
     "src/3d/extra/Terrain.js"
     "src/3d/extra/SpotLight.js"
     "src/3d/extra/Mirror.js"
+    "src/3d/extra/LookAtTimer.js"
     "src/3d/extra/LoadingScene.js"
     "src/3d/extra/Cinematic.js"
     "src/3d/extra/CinematicScene.js"

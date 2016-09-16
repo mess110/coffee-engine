@@ -169,6 +169,7 @@ String::capitalizeFirstLetter = ->
 isNumeric = (n) ->
   !isNaN(parseFloat(n)) and isFinite(n)
 
+# Checks if a number ends with a char sequence
 Number::endsWith = (s) ->
   @.toString().endsWith(s)
 

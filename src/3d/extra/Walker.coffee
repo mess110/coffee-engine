@@ -1,9 +1,10 @@
 # Class used for walking a mesh over another mesh
 class Walker
-  constructor: (mesh) ->
+  # By default it checks beneath
+  constructor: (mesh, x = 0, y = -1, z = 0) ->
     @mesh = mesh
     @raycaster = new THREE.Raycaster()
-    @direction = new THREE.Vector3(0, -2, 0)
+    @direction = new THREE.Vector3(x, y, z)
 
   getContact: (mesh) ->
     unless mesh?
@@ -17,3 +18,20 @@ class Walker
       intersects.first().point
     else
       null
+
+  intersects: (meshes) ->
+    unless meshes?
+      console.log 'walker.intersects needs a mesh'
+      return
+    meshes = [].concat(meshes)
+
+    fromPosition = @mesh.position.clone()
+    @raycaster.set(fromPosition, @direction)
+    @raycaster.intersectObjects(meshes)
+
+  first: (meshes) ->
+    @intersects(meshes).first()
+
+  fromWorldDirection: ->
+    @mesh.getWorldDirection(@direction)
+    @

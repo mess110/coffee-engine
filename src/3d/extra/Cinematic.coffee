@@ -104,6 +104,7 @@ class Cinematic
   cinemize: (item, baseModel, obj) ->
     @setId(baseModel, item)
     @setId(obj, item)
+    @setName(obj, item)
     @setXYZProp('position', obj, item)
     @setXYZProp('rotation', obj, item)
     @setXYZProp('scale', obj, item, 1)
@@ -127,6 +128,13 @@ class Cinematic
   # Find an item or a camera by id
   find: (id) ->
     @items.where(ceId: id).first() || @cameras.where(ceId: id).first()
+
+  allMeshes: ->
+    meshes = []
+    for item in @items
+      if item.mesh?
+        meshes.push item.mesh
+    meshes
 
   # tick event
   tick: (tpf) ->
@@ -232,6 +240,9 @@ class Cinematic
   # @nodoc
   setId: (object, json) ->
     object.ceId = json.id
+
+  setName: (object, json) ->
+    object.name = json.id
 
   # @nodoc
   setXYZProp: (prop, object, json, def = 0) ->

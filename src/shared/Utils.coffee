@@ -232,6 +232,7 @@ class Utils
     else # out
       options.opacityFrom = 1
       options.opacityTo = 0
+    options.clickThrough ?= true
 
     existingElement = document.querySelector('.ce-fader')
     if existingElement?
@@ -242,6 +243,9 @@ class Utils
 
     div = document.createElement('div')
     div.setAttribute 'class', 'ce-fader'
+
+    if options.clickThrough
+      pointerEvents = '  pointer-events: none;'
 
     style = document.createElement('style')
     style.setAttribute 'class', 'ce-fader-style'
@@ -256,6 +260,7 @@ class Utils
   height: 100%;
   background-color: black;
   z-index: #{Utils.CE_UI_Z_INDEX - 1};
+  #{pointerEvents}
 
   -webkit-animation: fade-animation #{options.duration}s; /* Safari, Chrome and Opera > 12.1 */
      -moz-animation: fade-animation #{options.duration}s; /* Firefox < 16 */

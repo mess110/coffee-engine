@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0">
+
+        <title>vr-project</title>
+
+        <link rel="stylesheet" href="css/app.css" />
+    </head>
+    <body ng-controller="MainController">
+        <div class="container" ng-show="page.menu.visible">
+            <div class="row text-center">
+                <br />
+                <br />
+                <a class="btn btn-default" ng-click="start()">start</a>
+                <br />
+                <br />
+            </div>
+        </div>
+
+        <script src="../../../build/coffee-engine-3d.js"></script>
+        <!-- <script src="bower_components/coffee-engine/build/coffee-engine-3d.js"></script> -->
+        <script src="bower_components/angular/angular.js"></script>
+
+        <script src="js/app.js"></script>
+    </body>
+</html>

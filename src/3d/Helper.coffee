@@ -446,6 +446,20 @@ class Helper
       .onComplete(options.onComplete)
     tween
 
+  # WIP
+  @vrPointer: (camera, options = {}) ->
+    cube = @cube(size: 0.5)
+
+    scene = SceneManager.get().currentScene()
+    scene.vrPointer = cube
+
+    vector = new THREE.Vector3()
+    camera.getWorldDirection(vector)
+
+    cube.translateZ(-1)
+    scene.scene.add cube
+
+
   # generate a forest of JsonModelManager
   #
   # @example

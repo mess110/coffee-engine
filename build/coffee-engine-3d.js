@@ -12487,15 +12487,16 @@ Utils = function() {
             document.head.appendChild(style), div.appendChild(img), document.body.appendChild(div);
         }
     }, Utils.fade = function(options) {
-        var animationEvent, div, existingElement, existingStyle, style;
+        var animationEvent, div, existingElement, existingStyle, pointerEvents, style;
         return null == options && (options = {}), null == options.duration && (options.duration = Utils.FADE_DEFAULT_DURATION), 
         options.duration = options.duration / 1e3, null == options.type && (options.type = "in"), 
         "in" === options.type ? (options.opacityFrom = 0, options.opacityTo = 1) : (options.opacityFrom = 1, 
-        options.opacityTo = 0), existingElement = document.querySelector(".ce-fader"), null != existingElement && (document.body.removeChild(existingElement), 
+        options.opacityTo = 0), null == options.clickThrough && (options.clickThrough = !0), 
+        existingElement = document.querySelector(".ce-fader"), null != existingElement && (document.body.removeChild(existingElement), 
         existingStyle = document.head.querySelector(".ce-fader-style"), null != existingStyle && document.head.removeChild(existingStyle)), 
-        div = document.createElement("div"), div.setAttribute("class", "ce-fader"), style = document.createElement("style"), 
-        style.setAttribute("class", "ce-fader-style"), style.setAttribute("type", "text/css"), 
-        style.setAttribute("media", "all"), style.innerHTML = ".ce-fader { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: black; z-index: " + (Utils.CE_UI_Z_INDEX - 1) + "; -webkit-animation: fade-animation " + options.duration + "s; /* Safari, Chrome and Opera > 12.1 */ -moz-animation: fade-animation " + options.duration + "s; /* Firefox < 16 */ -ms-animation: fade-animation " + options.duration + "s; /* Internet Explorer */ -o-animation: fade-animation " + options.duration + "s; /* Opera < 12.1 */ animation: fade-animation " + options.duration + "s; } @keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Firefox < 16 */ @-moz-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Safari, Chrome and Opera > 12.1 */ @-webkit-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Internet Explorer */ @-ms-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Opera < 12.1 */ @-o-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } }", 
+        div = document.createElement("div"), div.setAttribute("class", "ce-fader"), options.clickThrough && (pointerEvents = "  pointer-events: none;"), 
+        style = document.createElement("style"), style.setAttribute("class", "ce-fader-style"), 
+        style.setAttribute("type", "text/css"), style.setAttribute("media", "all"), style.innerHTML = ".ce-fader { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: black; z-index: " + (Utils.CE_UI_Z_INDEX - 1) + "; " + pointerEvents + " -webkit-animation: fade-animation " + options.duration + "s; /* Safari, Chrome and Opera > 12.1 */ -moz-animation: fade-animation " + options.duration + "s; /* Firefox < 16 */ -ms-animation: fade-animation " + options.duration + "s; /* Internet Explorer */ -o-animation: fade-animation " + options.duration + "s; /* Opera < 12.1 */ animation: fade-animation " + options.duration + "s; } @keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Firefox < 16 */ @-moz-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Safari, Chrome and Opera > 12.1 */ @-webkit-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Internet Explorer */ @-ms-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Opera < 12.1 */ @-o-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } }", 
         document.head.appendChild(style), document.body.appendChild(div), 0 === options.opacityTo && (animationEvent = whichAnimationEvent(), 
         animationEvent && div.addEventListener(animationEvent, function() {
             document.body.removeChild(div), document.head.removeChild(style);
@@ -13086,6 +13087,12 @@ Helper = function() {
         null == options.onComplete && (options.onComplete = function() {
             return {};
         }), tween = new TWEEN.Tween(options.src).to(options.dest, options.duration).easing(TWEEN.Easing[options.kind][options.direction]).onUpdate(options.onUpdate).onComplete(options.onComplete);
+    }, Helper.vrPointer = function(camera, options) {
+        var cube, scene, vector;
+        return null == options && (options = {}), cube = this.cube({
+            size: .5
+        }), scene = SceneManager.get().currentScene(), scene.vrPointer = cube, vector = new THREE.Vector3(), 
+        camera.getWorldDirection(vector), cube.translateZ(-1), scene.scene.add(cube);
     }, Helper.forest = function(options) {
         var attr, attrHash, base, base1, base10, base11, base12, base13, base14, base15, base16, base17, base2, base3, base4, base5, base6, base7, base8, base9, coords, i, item, j, k, l, len, len1, model, node, ref, ref1, ref2, singleGeometry;
         for (null == options && (options = {}), null == options.items && (options.items = []), 
@@ -13244,6 +13251,24 @@ Mirror = function(superClass) {
     }, Mirror;
 }(BaseModel);
 
+var LookAtTimer;
+
+LookAtTimer = function() {
+    function LookAtTimer(from, mesh) {
+        this.mesh = mesh, this.walker = new Walker(from), this.amount = 0, this.enabled = !0;
+    }
+    return LookAtTimer.prototype.tick = function(tpf) {
+        var intersection;
+        if (this.enabled) return intersection = this.walker.fromWorldDirection().intersects(this.mesh).first(), 
+        null != intersection ? (this.amount += tpf, this.amount > 1 && (this.amount = 1)) : (this.amount -= tpf, 
+        this.amount < 0 && (this.amount = 0)), this._transform(tpf);
+    }, LookAtTimer.prototype.isSelected = function() {
+        return 1 === this.amount;
+    }, LookAtTimer.prototype._transform = function(tpf) {
+        return this.mesh.scale.set(1 + this.amount, 1 + this.amount, 1 + this.amount);
+    }, LookAtTimer;
+}();
+
 var LoadingScene, extend = function(child, parent) {
     function ctor() {
         this.constructor = child;
@@ -13377,10 +13402,10 @@ Cinematic = function() {
     }, Cinematic.prototype._loadSceneProperties = function() {
         return null != this.json.engine.camera ? engine.setCamera(this.cameras[this.json.engine.camera]) : void 0;
     }, Cinematic.prototype.cinemize = function(item, baseModel, obj) {
-        return this.setId(baseModel, item), this.setId(obj, item), this.setXYZProp("position", obj, item), 
-        this.setXYZProp("rotation", obj, item), this.setXYZProp("scale", obj, item, 1), 
-        null != item.lookAt && engine.camera.lookAt(this.toVector3(item.lookAt)), this.items.push(baseModel), 
-        this.scene ? this.scene.add(baseModel.mesh) : void 0;
+        return this.setId(baseModel, item), this.setId(obj, item), this.setName(obj, item), 
+        this.setXYZProp("position", obj, item), this.setXYZProp("rotation", obj, item), 
+        this.setXYZProp("scale", obj, item, 1), null != item.lookAt && engine.camera.lookAt(this.toVector3(item.lookAt)), 
+        this.items.push(baseModel), this.scene ? this.scene.add(baseModel.mesh) : void 0;
     }, Cinematic.prototype.addAll = function(scene) {
         var i, item, len, ref, results;
         for (ref = this.items, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
@@ -13392,6 +13417,11 @@ Cinematic = function() {
         }).first() || this.cameras.where({
             ceId: id
         }).first();
+    }, Cinematic.prototype.allMeshes = function() {
+        var i, item, len, meshes, ref;
+        for (meshes = [], ref = this.items, i = 0, len = ref.length; len > i; i++) item = ref[i], 
+        null != item.mesh && meshes.push(item.mesh);
+        return meshes;
     }, Cinematic.prototype.tick = function(tpf) {
         var action, i, item, j, len, len1, ref, ref1, script;
         if (this.loaded === !0) {
@@ -13459,6 +13489,8 @@ Cinematic = function() {
         new THREE.Vector3(hash.x, hash.y, hash.z);
     }, Cinematic.prototype.setId = function(object, json) {
         return object.ceId = json.id;
+    }, Cinematic.prototype.setName = function(object, json) {
+        return object.name = json.id;
     }, Cinematic.prototype.setXYZProp = function(prop, object, json, def) {
         var base, coordinate, i, len, newJs, ref;
         for (null == def && (def = 0), null == json[prop] && (json[prop] = {}), ref = [ "x", "y", "z" ], 
@@ -13626,14 +13658,24 @@ VRControls = function(superClass) {
 var Walker;
 
 Walker = function() {
-    function Walker(mesh) {
-        this.mesh = mesh, this.raycaster = new THREE.Raycaster(), this.direction = new THREE.Vector3(0, -2, 0);
+    function Walker(mesh, x, y, z) {
+        null == x && (x = 0), null == y && (y = -1), null == z && (z = 0), this.mesh = mesh, 
+        this.raycaster = new THREE.Raycaster(), this.direction = new THREE.Vector3(x, y, z);
     }
     return Walker.prototype.getContact = function(mesh) {
         var fromPosition, intersects;
         return null == mesh ? void console.log("walker.getContact needs a mesh") : (fromPosition = this.mesh.position.clone(), 
         this.raycaster.set(fromPosition, this.direction), intersects = this.raycaster.intersectObject(mesh), 
         intersects.size() > 0 ? intersects.first().point : null);
+    }, Walker.prototype.intersects = function(meshes) {
+        var fromPosition;
+        return null == meshes ? void console.log("walker.intersects needs a mesh") : (meshes = [].concat(meshes), 
+        fromPosition = this.mesh.position.clone(), this.raycaster.set(fromPosition, this.direction), 
+        this.raycaster.intersectObjects(meshes));
+    }, Walker.prototype.first = function(meshes) {
+        return this.intersects(meshes).first();
+    }, Walker.prototype.fromWorldDirection = function() {
+        return this.mesh.getWorldDirection(this.direction), this;
     }, Walker;
 }();
 
@@ -13781,7 +13823,7 @@ Engine3D = function() {
         return this.config.preventDefaultMouseEvents && event.preventDefault(), event.target === this.renderer.domElement ? (mouseX = event.layerX / this.width * 2 - 1, 
         mouseY = 2 * -(event.layerY / this.height) + 1, vector = new THREE.Vector3(mouseX, mouseY, .5), 
         vector.unproject(this.camera), new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize())) : void 0;
-    }, Engine3D.scenify = function(callback) {
+    }, Engine3D.scenify = function(zeEngine, callback) {
         var loadingScene;
         return null == callback && (callback = function() {
             return {};
@@ -13789,10 +13831,10 @@ Engine3D = function() {
             var assets;
             return loadingScene.hasFinishedLoading = function() {
                 var scene;
-                return scene = CinematicScene.fromSaveObjectKey("start"), engine.addScene(scene), 
-                engine.sceneManager.setScene(scene), callback();
+                return scene = CinematicScene.fromSaveObjectKey("start"), zeEngine.addScene(scene), 
+                zeEngine.sceneManager.setScene(scene), callback();
             }, assets = CinematicScene.getAssets("start"), loadingScene.loadAssets(assets);
-        }), engine.addScene(loadingScene), loadingScene;
+        }), zeEngine.addScene(loadingScene), loadingScene;
     }, Engine3D;
 }();
 
