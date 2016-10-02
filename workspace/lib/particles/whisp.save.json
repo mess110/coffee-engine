@@ -1,0 +1,98 @@
+{
+  "group": {
+    "asset": {
+      "libPath": "workspace/lib/textures/spark.png",
+      "destPath": "assets/spark.png",
+      "type": "texture"
+    },
+    "maxAge": 3,
+    "colorize": true,
+    "hasPerspective": true,
+    "blending": 2,
+    "transparent": true,
+    "alphaTest": 1,
+    "fixedTimeStep": 0.016,
+    "fog": true
+  },
+  "emitter": {
+    "type": "sphere",
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "positionSpread": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "acceleration": {
+      "x": 0,
+      "y": 0.15,
+      "z": 0
+    },
+    "accelerationSpread": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "velocity": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "velocitySpread": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "radius": 0.5,
+    "radiusScale": {
+      "x": 0.5,
+      "y": 0.5,
+      "z": 0.5
+    },
+    "speed": 1,
+    "speedSpread": 0,
+    "sizeStart": 8,
+    "sizeStartSpread": 0,
+    "sizeMiddle": 4,
+    "sizeMiddleSpread": 0,
+    "sizeEnd": 1,
+    "sizeEndSpread": 0,
+    "angleStart": 20,
+    "angleStartSpread": 20,
+    "angleMiddle": 0,
+    "angleMiddleSpread": 0,
+    "angleEnd": 0,
+    "angleEndSpread": 0,
+    "angleAlignVelocity": false,
+    "colorStart": "#ffffff",
+    "colorStartSpread": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "colorMiddle": "#0011ff",
+    "colorMiddleSpread": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "colorEnd": "#bb00ff",
+    "colorEndSpread": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "opacityStart": 0.75,
+    "opacityStartSpread": 0,
+    "opacityMiddle": 0.5,
+    "opacityMiddleSpread": 0,
+    "opacityEnd": 0.25,
+    "opacityEndSpread": 0,
+    "particlesPerSecond": 33,
+    "alive": 1,
+    "isStatic": false
+  }
+}

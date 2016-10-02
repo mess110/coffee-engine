@@ -128,7 +128,13 @@ class Helper
     options.material = 'MeshNormalMaterial' unless options.material?
     options.color = 0xff0000 unless options.color?
     box = new (THREE.BoxGeometry)(options.size, options.size, options.size)
-    mat = new (THREE[options.material])(color: options.color)
+    if options.map?
+      mat = new (THREE.MeshBasicMaterial)(
+        map: TextureManager.get().items[options.map]
+        transparent: true
+        side: THREE.DoubleSide)
+    else
+      mat = new (THREE[options.material])(color: options.color)
     new (THREE.Mesh)(box, mat)
 
   # Clones a JsonModel from the JsonModelManager
@@ -548,3 +554,14 @@ class Helper
 
     # new THREE.Mesh(singleGeometry, mat)
     node
+
+  # sends the server a reload package and sets up a reload listener
+  # if the listener receives reload, it reloads the page
+  @networkReload: ->
+    nm = NetworkManager.get()
+
+    unless nm._hasListener('reload')
+      nm.on 'reload', (data) ->
+        location.reload()
+
+    nm.emit(type: 'reload')

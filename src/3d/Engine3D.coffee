@@ -237,3 +237,6 @@ class Engine3D
     )
     zeEngine.addScene(loadingScene)
     loadingScene
+
+  currentScene: ->
+    @sceneManager.currentScene()

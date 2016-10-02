@@ -7,12 +7,16 @@
 class VRControls extends BaseControls
   constructor: (target) ->
     @enabled = true
+    @supported = false
 
     @controls = new (THREE.DeviceOrientationControls)(target, true)
 
     setOrientationControls = (e) =>
       if !e.alpha
+        @enabled = false
         return
+
+      @supported = true
       @controls.connect()
       @controls.update()
       window.removeEventListener 'deviceorientation', setOrientationControls, true
@@ -33,3 +37,9 @@ class VRControls extends BaseControls
 
   turn: (angle = 45) ->
     @updateAlphaOffsetAngle(@controls.alphaOffsetAngle + angle)
+
+  isSupported: ->
+    @areSupported()
+
+  areSupported: ->
+    @supported

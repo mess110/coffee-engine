@@ -69,5 +69,9 @@ class NetworkManager
       throw 'data.type missing' unless data? or data.type?
       @fakeEmit('data', data)
 
+    # checks if the socket already has a listener registered
+    _hasListener: (name) ->
+      @socket.listeners(name).any()
+
   @get: () ->
     instance ?= new Singleton.NetworkManager()
