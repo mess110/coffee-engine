@@ -221,6 +221,51 @@ class Utils
     div.appendChild img
     document.body.appendChild div
 
+  # Toggles the console
+  @console = () ->
+    existingElement = document.querySelector('.ce-console')
+    if existingElement?
+      document.body.removeChild(existingElement)
+      existingStyle = document.head.querySelector('.ce-console-style')
+      if existingStyle?
+        document.head.removeChild(existingStyle)
+      false
+    else
+      div = document.createElement('div')
+      div.setAttribute 'class', 'ce-console'
+
+      divText = document.createElement('div')
+      divText.setAttribute 'class', 'ce-console-text'
+      divText.innerHTML = _ceOutput if _ceOutput?
+
+      style = document.createElement('style')
+      style.setAttribute 'class', 'ce-console-style'
+      style.setAttribute 'type', 'text/css'
+      style.setAttribute 'media', 'all'
+      style.innerHTML = "
+.ce-console {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  z-index: 3;
+  background-color: gray;
+}
+
+.ce-console-text {
+  height: 120px;
+  padding: 5px;
+  overflow-y: scroll;
+  white-space: pre;
+  color: black;
+}
+"
+      document.head.appendChild style
+      div.appendChild divText
+      document.body.appendChild div
+
+      true
+
   # Fade a scene with a div above it
   @fade = (options = {}) ->
     options.duration ?= Utils.FADE_DEFAULT_DURATION

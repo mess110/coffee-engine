@@ -2,6 +2,7 @@ fs = require('fs')
 
 module.exports = (grunt) ->
   files_3d = [
+    "src/vendor/ConsoleOverride.js"
     "bower_components/stats.js/src/Stats.js"
     "bower_components/tweenjs/src/Tween.js"
 
