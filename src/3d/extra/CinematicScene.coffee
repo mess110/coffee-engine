@@ -30,5 +30,9 @@ class CinematicScene extends BaseScene
   # @nodoc
   doKeyboardEvent: (event) ->
 
+  # @nodoc
+  # TODO we should reinit this variable
+  init: (options) ->
+
   @getAssets: (key) ->
     SaveObjectManager.get().items[key].assets

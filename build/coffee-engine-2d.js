@@ -508,6 +508,17 @@ Utils = function() {
             style.setAttribute("media", "all"), style.innerHTML = "@media all and (orientation:portrait) { " + a1 + " { display: none; } } @media all and (orientation:landscape) { " + a2 + " { display: none; } }", 
             document.head.appendChild(style), div.appendChild(img), document.body.appendChild(div);
         }
+    }, Utils.console = function() {
+        var div, divText, existingElement, existingStyle, style;
+        return existingElement = document.querySelector(".ce-console"), null != existingElement ? (document.body.removeChild(existingElement), 
+        existingStyle = document.head.querySelector(".ce-console-style"), null != existingStyle && document.head.removeChild(existingStyle), 
+        !1) : (div = document.createElement("div"), div.setAttribute("class", "ce-console"), 
+        divText = document.createElement("div"), divText.setAttribute("class", "ce-console-text"), 
+        "undefined" != typeof _ceOutput && null !== _ceOutput && (divText.innerHTML = _ceOutput), 
+        style = document.createElement("style"), style.setAttribute("class", "ce-console-style"), 
+        style.setAttribute("type", "text/css"), style.setAttribute("media", "all"), style.innerHTML = ".ce-console { position: absolute; top: 0px; left: 0px; width: 100%; z-index: 3; background-color: gray; } .ce-console-text { height: 120px; padding: 5px; overflow-y: scroll; white-space: pre; color: black; }", 
+        document.head.appendChild(style), div.appendChild(divText), document.body.appendChild(div), 
+        !0);
     }, Utils.fade = function(options) {
         var animationEvent, div, existingElement, existingStyle, pointerEvents, style;
         return null == options && (options = {}), null == options.duration && (options.duration = Utils.FADE_DEFAULT_DURATION), 

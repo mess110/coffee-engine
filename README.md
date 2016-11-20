@@ -46,9 +46,13 @@ npm start
 ```
 A nw.js desktop app which allows you to:
 
+* create games
 * view models and animations from json models exported for three.js
 * play with particles
 * visualize heightmap terrains
+* use a shader editor
+* overlay assets
+* draw curved lines
 
 The models I am using are created in blender and exported with the official
 three.js blender plugin.

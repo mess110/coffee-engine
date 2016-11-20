@@ -1,3 +1,28 @@
+var _ceOutput, _error, _info, _log, _warn;
+
+_log = console.log, _warn = console.warn, _info = console.info, _error = console.error, 
+_ceOutput = "coffee-engine console >", console.log = function(message) {
+    var html;
+    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
+    _log.apply(console, arguments);
+}, console.info = function(message) {
+    var html;
+    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
+    _info.apply(console, arguments);
+}, console.warn = function(message) {
+    var html;
+    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
+    _warn.apply(console, arguments);
+}, console.error = function(message) {
+    var html;
+    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
+    _error.apply(console, arguments);
+};
+
 var Stats = function() {
     var startTime = Date.now(), prevTime = startTime, ms = 0, msMin = 1 / 0, msMax = 0, fps = 0, fpsMin = 1 / 0, fpsMax = 0, frames = 0, mode = 0, container = document.createElement("div");
     container.id = "stats", container.addEventListener("mousedown", function(event) {
@@ -12145,6 +12170,8 @@ NetworkManager = function() {
         }, NetworkManager.prototype.fake = function(data) {
             if (null == data && null == data.type) throw "data.type missing";
             return this.fakeEmit("data", data);
+        }, NetworkManager.prototype._hasListener = function(name) {
+            return this.socket.listeners(name).any();
         }, NetworkManager;
     }(), NetworkManager.get = function() {
         return null != instance ? instance : instance = new Singleton.NetworkManager();
@@ -12486,6 +12513,17 @@ Utils = function() {
             style.setAttribute("media", "all"), style.innerHTML = "@media all and (orientation:portrait) { " + a1 + " { display: none; } } @media all and (orientation:landscape) { " + a2 + " { display: none; } }", 
             document.head.appendChild(style), div.appendChild(img), document.body.appendChild(div);
         }
+    }, Utils.console = function() {
+        var div, divText, existingElement, existingStyle, style;
+        return existingElement = document.querySelector(".ce-console"), null != existingElement ? (document.body.removeChild(existingElement), 
+        existingStyle = document.head.querySelector(".ce-console-style"), null != existingStyle && document.head.removeChild(existingStyle), 
+        !1) : (div = document.createElement("div"), div.setAttribute("class", "ce-console"), 
+        divText = document.createElement("div"), divText.setAttribute("class", "ce-console-text"), 
+        "undefined" != typeof _ceOutput && null !== _ceOutput && (divText.innerHTML = _ceOutput), 
+        style = document.createElement("style"), style.setAttribute("class", "ce-console-style"), 
+        style.setAttribute("type", "text/css"), style.setAttribute("media", "all"), style.innerHTML = ".ce-console { position: absolute; top: 0px; left: 0px; width: 100%; z-index: 3; background-color: gray; } .ce-console-text { height: 120px; padding: 5px; overflow-y: scroll; white-space: pre; color: black; }", 
+        document.head.appendChild(style), div.appendChild(divText), document.body.appendChild(div), 
+        !0);
     }, Utils.fade = function(options) {
         var animationEvent, div, existingElement, existingStyle, pointerEvents, style;
         return null == options && (options = {}), null == options.duration && (options.duration = Utils.FADE_DEFAULT_DURATION), 
@@ -12932,7 +12970,11 @@ Helper = function() {
         var box, mat;
         return null == options && (options = {}), null == options.size && (options.size = 1), 
         null == options.material && (options.material = "MeshNormalMaterial"), null == options.color && (options.color = 16711680), 
-        box = new THREE.BoxGeometry(options.size, options.size, options.size), mat = new THREE[options.material]({
+        box = new THREE.BoxGeometry(options.size, options.size, options.size), mat = null != options.map ? new THREE.MeshBasicMaterial({
+            map: TextureManager.get().items[options.map],
+            transparent: !0,
+            side: THREE.DoubleSide
+        }) : new THREE[options.material]({
             color: options.color
         }), new THREE.Mesh(box, mat);
     }, Helper.model = function(options) {
@@ -13122,6 +13164,13 @@ Helper = function() {
             node.add(model);
         }
         return node;
+    }, Helper.networkReload = function() {
+        var nm;
+        return nm = NetworkManager.get(), nm._hasListener("reload") || nm.on("reload", function(data) {
+            return location.reload();
+        }), nm.emit({
+            type: "reload"
+        });
     }, Helper;
 }();
 
@@ -13523,7 +13572,8 @@ CinematicScene = function(superClass) {
         var result;
         return result = this.cinematic.tick(tpf), "finished" === result ? this.afterCinematic(tpf) : void 0;
     }, CinematicScene.prototype.afterCinematic = function(tpf) {}, CinematicScene.prototype.doMouseEvent = function(event, ray) {}, 
-    CinematicScene.prototype.doKeyboardEvent = function(event) {}, CinematicScene.getAssets = function(key) {
+    CinematicScene.prototype.doKeyboardEvent = function(event) {}, CinematicScene.prototype.init = function(options) {}, 
+    CinematicScene.getAssets = function(key) {
         return SaveObjectManager.get().items[key].assets;
     }, CinematicScene;
 }(BaseScene);
@@ -13637,10 +13687,11 @@ var VRControls, extend = function(child, parent) {
 VRControls = function(superClass) {
     function VRControls(target) {
         var setOrientationControls;
-        this.enabled = !0, this.controls = new THREE.DeviceOrientationControls(target, !0), 
+        this.enabled = !0, this.supported = !1, this.controls = new THREE.DeviceOrientationControls(target, !0), 
         setOrientationControls = function(_this) {
             return function(e) {
-                e.alpha && (_this.controls.connect(), _this.controls.update(), window.removeEventListener("deviceorientation", setOrientationControls, !0));
+                return e.alpha ? (_this.supported = !0, _this.controls.connect(), _this.controls.update(), 
+                void window.removeEventListener("deviceorientation", setOrientationControls, !0)) : void (_this.enabled = !1);
             };
         }(this), window.addEventListener("deviceorientation", setOrientationControls, !0);
     }
@@ -13652,6 +13703,10 @@ VRControls = function(superClass) {
         return this.controls.updateAlphaOffsetAngle(angle);
     }, VRControls.prototype.turn = function(angle) {
         return null == angle && (angle = 45), this.updateAlphaOffsetAngle(this.controls.alphaOffsetAngle + angle);
+    }, VRControls.prototype.isSupported = function() {
+        return this.areSupported();
+    }, VRControls.prototype.areSupported = function() {
+        return this.supported;
     }, VRControls;
 }(BaseControls);
 
@@ -13835,6 +13890,8 @@ Engine3D = function() {
                 zeEngine.sceneManager.setScene(scene), callback();
             }, assets = CinematicScene.getAssets("start"), loadingScene.loadAssets(assets);
         }), zeEngine.addScene(loadingScene), loadingScene;
+    }, Engine3D.prototype.currentScene = function() {
+        return this.sceneManager.currentScene();
     }, Engine3D;
 }();
 
