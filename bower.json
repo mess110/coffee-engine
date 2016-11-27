@@ -18,7 +18,7 @@
   "devDependencies": {
     "tweenjs": "r14",
     "stats.js": "r11",
-    "threejs": "r76",
+    "threejs": "r77",
     "threex.windowresize": "*",
     "threex.rendererstats": "*",
     "threex.universalloader": "*",

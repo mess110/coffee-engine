@@ -297,9 +297,7 @@ class Helper
     options.step = 1 unless options.step?
     options.color = 0xffffff unless options.color?
     options.colorCenterLine = options.color unless options.colorCenterLine?
-    grid = new (THREE.GridHelper)(options.size, options.step)
-    grid.setColors options.colorCenterLine, options.color
-    grid
+    new (THREE.GridHelper)(options.size, options.step, options.colorCenterLine, options.color)
 
   # Creates a material from what is drawn on a canvas
   @materialFromCanvas: (canvas) ->

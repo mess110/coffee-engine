@@ -57,8 +57,6 @@ class ModelViewerScene extends BaseScene
 
   tick: (tpf) ->
     return unless @loaded
-    if @baseModel?
-      @baseModel.updateAnimations(tpf)
 
   doMouseEvent: (event, raycaster) ->
 
