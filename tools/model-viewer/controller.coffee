@@ -23,13 +23,12 @@ app.controller 'ModelViewerController', ($scope) ->
     modelViewerScene.viewModel(model)
 
   $scope.animate = (animationIndex) ->
-    for animation in modelViewerScene.mesh.animations
-      animation.stop()
-    modelViewerScene.mesh.animations[animationIndex].play()
+    modelViewerScene.baseModel.stopAnimations()
+    modelViewerScene.baseModel.animate(animationIndex)
 
   $scope.updateAnimations = (animations) ->
     $scope.animations = []
-    $scope.animations.push animation.data.name for animation in animations
+    $scope.animations.push animation.clip.name for animation in animations
     $scope.$digest()
 
   $scope.toggleStats = ->

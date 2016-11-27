@@ -18,6 +18,11 @@ class BaseScene
   # @nodoc
   fullTick: (tpf) ->
     @uptime += tpf
+
+    @scene.traverse (obj) ->
+      if obj.animationsMixer?
+        obj.animationsMixer.update(tpf)
+
     @tick(tpf)
 
   # Used to init the scene

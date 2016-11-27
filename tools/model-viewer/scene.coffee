@@ -50,13 +50,15 @@ class ModelViewerScene extends BaseScene
       @loaded = true
       angular.element(document.getElementById('my-view')).scope().updateAnimations(mesh.animations)
     )
-  
+
   toggleWireframe: ->
     return unless @baseModel?
     @baseModel.toggleWireframe()
 
   tick: (tpf) ->
     return unless @loaded
+    if @baseModel?
+      @baseModel.updateAnimations(tpf)
 
   doMouseEvent: (event, raycaster) ->
 

@@ -177,7 +177,6 @@ class Engine3D
     @time = now
     @uptime += tpf
     @sceneManager.tick(tpf)
-    THREE.AnimationHandler.update(tpf) if @config.animate
     @statsManager.update(@renderer)
     TWEEN.update()
 

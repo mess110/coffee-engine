@@ -45,10 +45,16 @@ class JsonModelManager
     # THREEJS doesn't also clone the created THREE.Animation
     initAnimations: (mesh) ->
       mesh.animations = []
+      mesh.animationsMixer = new THREE.AnimationMixer(mesh)
+
       if mesh.geometry.animations?
         for anim in mesh.geometry.animations
-          animation = new THREE.Animation(mesh, anim, THREE.AnimationHandler.CATMULLROM)
+          animation = new THREE.AnimationAction(anim)
+          animation.weight = 0
+
           mesh.animations.push animation
+          mesh.animationsMixer.addAction(animation)
+
       mesh
 
     # Clone an item with animations

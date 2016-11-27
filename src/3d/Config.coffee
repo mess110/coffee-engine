@@ -23,7 +23,6 @@ class Config
     soundEnabled: false
     debug: false
     preventDefaultMouseEvents: true
-    animate: true
     transparentBackground: false
 
     # by disabling this you are:
