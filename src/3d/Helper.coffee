@@ -207,10 +207,10 @@ class Helper
   # @param [Renderer] renderer
   #
   @fancyShadows: (renderer) ->
-    renderer.shadowMapEnabled = true
-    renderer.shadowMapSoft = true
-    renderer.shadowMapType = THREE.PCFShadowMap
-    renderer.shadowMapAutoUpdate = true
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.soft = true
+    renderer.shadowMap.type = THREE.PCFShadowMap
+    renderer.shadowMap.autoUpdate = true
 
   # Add a sky sphere from an image
   #

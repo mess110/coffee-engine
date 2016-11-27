@@ -32,10 +32,17 @@ class BaseModel
   #
   # @param [String] boneName
   # @param [Mesh] mesh
+  #
+  # between 71 and 72, for some reason there is always another bone
+  # with the same name. That is why we keep track of added,
+  # so we don't add it twice
   attachToBone: (boneName, mesh) ->
+    added = false
     if @mesh instanceof THREE.SkinnedMesh
       @mesh.traverse (object) ->
+        return if added
         if object instanceof THREE.Bone && object.name == boneName
+          added = true
           object.add mesh
 
   # detach a mesh from a bone
@@ -144,4 +151,7 @@ class BaseModel
     for animation in @mesh.animations
       if animation.data.name == animationName
         return animation
-    throw "#{animationName} not found"
+
+    allAnimations = @mesh.animations.map (a) -> a.data.name
+    throw "#{animationName} not found. Possible animations are: #{allAnimations}"
+
