@@ -16,9 +16,16 @@ class TextureManager
       return if @items[key] != undefined
       @items[key] = null
 
-      THREE.ImageUtils.loadTexture(url, {}, (image) ->
-        window.TextureManager.get()._load(image, key)
-        callback(key)
+      loader = new THREE.TextureLoader()
+      texture = loader.load(url, (image) ->
+        # By adding 100 ms delay to loading textures once loading is done
+        # we prevent an ugly bug when texture.image is not set.
+        # A propper fix is needed, not this hack
+        setTimeout ->
+          window.TextureManager.get()._load(image, key, callback)
+        , 100
+      , undefined, (err) ->
+        console.log err
       )
       @
 
@@ -27,9 +34,10 @@ class TextureManager
       @loadCount == Object.keys(@items).size()
 
     # @nodoc
-    _load: (image, key) ->
+    _load: (image, key, callback) ->
       window.TextureManager.get().items[key] = image
       window.TextureManager.get().loadCount += 1
+      callback(key)
 
   @get: () ->
     instance ?= new Singleton.TextureManager()
