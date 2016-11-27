@@ -88,15 +88,15 @@ class Helper
     light = new (THREE.DirectionalLight)(options.color)
     light.position.set options.position.x, options.position.y, options.position.z
     light.castShadow = true
-    light.shadowCameraLeft = -60
-    light.shadowCameraTop = -60
-    light.shadowCameraRight = 60
-    light.shadowCameraBottom = 60
-    light.shadowCameraNear = 1
-    light.shadowCameraFar = 1000
-    light.shadowBias = -.0001
-    light.shadowMapWidth = light.shadowMapHeight = 1024
-    light.shadowDarkness = .7
+    light.shadow.camera.left = -60
+    light.shadow.camera.top = -60
+    light.shadow.camera.right = 60
+    light.shadow.camera.bottom = 60
+    light.shadow.camera.near = 1
+    light.shadow.camera.far = 1000
+    light.shadow.bias = -.0001
+    light.shadow.mapSize.width = light.shadow.mapSize.height = 1024
+    light.shadow.darkness = .7
     light
 
   # Create a directional light

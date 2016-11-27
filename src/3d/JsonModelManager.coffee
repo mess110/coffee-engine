@@ -49,11 +49,9 @@ class JsonModelManager
 
       if mesh.geometry.animations?
         for anim in mesh.geometry.animations
-          animation = new THREE.AnimationAction(anim)
-          animation.weight = 0
-
+          animation = mesh.animationsMixer.clipAction(anim)
+          animation.setEffectiveWeight(1)
           mesh.animations.push animation
-          mesh.animationsMixer.addAction(animation)
 
       mesh
 

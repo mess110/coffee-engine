@@ -22,7 +22,7 @@ module.exports = (grunt) ->
     "bower_components/threex.keyboardstate/threex.keyboardstate.js"
     "bower_components/threex.volumetricspotlight/threex.volumetricspotlightmaterial.js"
     "bower_components/ocean/water-material.js"
-    "bower_components/ShaderParticleEngine/build/ShaderParticles.js"
+    "bower_components/ShaderParticleEngine/build/SPE.js"
     "src/vendor/threex.dynamictexture.js"
     "src/vendor/DeviceOrientationControls.js"
 

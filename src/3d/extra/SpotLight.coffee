@@ -31,18 +31,18 @@ class SpotLight extends BaseModel
     @spotLight.intensity = 3
 
     @spotLight.castShadow = true
-    @spotLight.shadowCameraNear = 0.01
-    @spotLight.shadowCameraFar = 100
-    @spotLight.shadowCameraFov = 45
-    @spotLight.shadowCameraLeft = -8
-    @spotLight.shadowCameraRight = 8
-    @spotLight.shadowCameraTop = 8
-    @spotLight.shadowCameraBottom = -8
-    # @spotLight.shadowCameraVisible = true
-    @spotLight.shadowBias = 0.0
-    @spotLight.shadowDarkness = 0.5
-    @spotLight.shadowMapWidth = 1024
-    @spotLight.shadowMapHeight = 1024
+    @spotLight.shadow.camera.near = 0.01
+    @spotLight.shadow.camera.far = 100
+    @spotLight.shadow.camera.fov = 45
+    @spotLight.shadow.camera.left = -8
+    @spotLight.shadow.camera.right = 8
+    @spotLight.shadow.camera.top = 8
+    @spotLight.shadow.camera.bottom = -8
+    # @spotLight.shadow.camera.visible = true
+    @spotLight.shadow.bias = 0.1
+    @spotLight.shadow.darkness = 0.5
+    @spotLight.shadow.mapSize.width = 1024
+    @spotLight.shadow.mapSize.height = 1024
 
     @direction = new (THREE.Vector3)(0,0,0)
     @lastDir = 0

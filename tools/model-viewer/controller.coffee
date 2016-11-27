@@ -28,7 +28,7 @@ app.controller 'ModelViewerController', ($scope) ->
 
   $scope.updateAnimations = (animations) ->
     $scope.animations = []
-    $scope.animations.push animation.clip.name for animation in animations
+    $scope.animations.push animation._clip.name for animation in animations
     $scope.$digest()
 
   $scope.toggleStats = ->

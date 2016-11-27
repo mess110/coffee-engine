@@ -102,23 +102,29 @@ class BaseModel
     options.timeScale ?= 1
     options.name ?= animationName
 
-    # ms to stop the animation before the normal end period
-    options.preStopMs ?= 50
     if options.reverse
-      unless options.loop
-        reverseLoopBug = true
-      # options.loop = false
       options.timeScale *= -1
 
     @stopAnimations()
     anim = @animation(options.name)
-    anim.weight = 1
+    anim.setEffectiveTimeScale(options.timeScale)
 
-    anim.timeScale = options.timeScale
-    unless options.loop
-      setTimeout =>
-        anim.weight = 0
-      , anim.clip.duration * 1000
+    if options.loop
+      anim.clampWhenFinished = false
+      anim.setLoop(THREE.LoopRepeat)
+    else
+      unless options.reverse
+        anim.clampWhenFinished = true
+        anim.setLoop(THREE.LoopOnce, 0)
+
+    anim.play()
+
+    if options.reverse && options.loop == false
+      setTimeout ->
+        anim.stop()
+      , anim._clip.duration * 1000
+
+    return anim
 
   updateAnimations: (tpf) ->
     if @mesh.animationsMixer?
@@ -127,7 +133,7 @@ class BaseModel
   # stops all animations
   stopAnimations: ->
     for animation in @mesh.animations
-      animation.weight = 0
+      animation.stop()
 
   # checks if an animation is playing
   #
@@ -135,7 +141,7 @@ class BaseModel
   #
   # @see @animation(animationName)
   isPlaying: (animationName) ->
-    @animation(animationName).weight == 1
+    @animation(animationName).isRunning()
 
   # Find an animation by name or index
   #
@@ -149,7 +155,7 @@ class BaseModel
         throw "Animation index #{animationIndex} out of bounds"
       return @mesh.animations[animationIndex]
     for animation in @mesh.animations
-      if animation.clip.name == animationName
+      if animation._clip.name == animationName
         return animation
 
     allAnimations = @mesh.animations.map (a) -> a.data.name

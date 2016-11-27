@@ -56,6 +56,7 @@ class BaseParticle extends BaseModel
   # @see https://github.com/squarefeet/ShaderParticleEngine/tree/Release-0.8.1
   formatDefaults: (json = {}) ->
     json.group ?= {}
+    json.group.maxParticleCount ?= 100
     json.group.maxAge ?= 3
     json.group.hasPerspective ?= true
     json.group.colorize ?= true
