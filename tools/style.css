@@ -36,9 +36,6 @@ md-sidenav {
 }
 
 .shader-editor {
-  position: absolute;
-  width: 50%;
-  right: 0px;
 }
 
 md-toolbar-filler {

@@ -5,11 +5,11 @@ class ShaderEditorScene extends BaseScene
     @scene.add @grid
     engine.setClearColor(@scene.fog.color, 1)
     engine.camera.position.set 0, 5, 10
-    engine.setWidthHeight(window.innerWidth / 2, window.innerHeight)
+    # engine.setWidthHeight(window.innerWidth / 2, window.innerHeight)
 
     @controls = Helper.orbitControls(engine)
     @controls.enabled = true
-    @controls.noPan = true
+    @controls.enablePan = false
     @controls.damping = 0.2
 
   setShader: (shader)->

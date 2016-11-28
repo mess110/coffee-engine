@@ -264,6 +264,46 @@ class Helper
       side: THREE.BackSide)
     new (THREE.Mesh)(new (THREE.BoxGeometry)(size, size, size), aSkyBoxMaterial)
 
+  @sampleShader = () ->
+    shader =
+      uniforms:
+        time:
+          type: 'f'
+          value: 0
+        resolution:
+          type: 'v2'
+          value: new (THREE.Vector2)
+      fragment: [
+        'uniform float time;'
+        'varying vec2 vUv;'
+        ''
+        'void main() {'
+        '  vec2 position = -1.0 + 2.0 * vUv;'
+        ''
+        '  float red = abs(sin(position.x * position.y + time / 5.0));'
+        '  float green = abs(sin(position.x * position.y + time / 4.0));'
+        '  float blue = abs(sin(position.x * position.y + time / 3.0 ));'
+        '  gl_FragColor = vec4(red, green, blue, 1.0);'
+        '}'
+      ].join('\n')
+      vertex: [
+        'varying vec2 vUv;'
+        ''
+        'void main() {'
+        '  vUv = uv;'
+        '  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );'
+        '}'
+      ].join('\n')
+
+    itemMaterial = new (THREE.ShaderMaterial)(
+      uniforms: shader.uniforms
+      vertexShader: shader.vertex
+      fragmentShader: shader.fragment
+    )
+    mesh = new (THREE.Mesh)(new (THREE.BoxGeometry)(1, 1, 1), itemMaterial)
+    mesh.shaderSrc = shader
+    mesh
+
   # Create orbit controls
   #
   # @param [Engine3D] engine

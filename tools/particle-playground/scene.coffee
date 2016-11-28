@@ -6,23 +6,16 @@ class ParticlePlaygroundScene extends BaseScene
     @grid = Helper.grid(size: 200, step: 10, color: 'gray')
     @scene.add @grid
     engine.setClearColor(@scene.fog.color, 1)
-    engine.camera.position.set 0, 5, 50
+    engine.camera.position.set 0, 40, 100
 
     @controls = Helper.orbitControls(engine)
 
-    url = options.url
-    TextureManager.get().load('star', url)
-
-    @particle = new BaseParticle(url)
-    @scene.add @particle.mesh
+    @particle = new BaseParticle2()
+    @particle.addToScene(@scene)
 
     @loaded = true
 
   refresh: (json) ->
-    @scene.remove(@particle.mesh)
-    part = new BaseParticle(json)
-    @scene.add part.mesh
-    @particle = part
 
   uninit: ->
     super()
@@ -32,7 +25,8 @@ class ParticlePlaygroundScene extends BaseScene
   tick: (tpf) ->
     return unless @loaded
 
-    @particle.tick(tpf) if @particle?
+    if @particle?
+      @particle.tick(tpf)
 
   doMouseEvent: (event, raycaster) ->
 

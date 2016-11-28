@@ -7,125 +7,125 @@
             <div flex md-color-picker ng-model="options.clearColor"></div>
         </div>
         <md-divider></md-divider>
-        <div layout="row">
-            <md-input-container flex>
-                <label>Texture</label>
-                <md-select flex ng-model="options.textureFile.libPath" ng-change="refreshTexture()">
-                    <md-option ng-repeat="texture in textures" ng-value="texture.libPath">{{ texture.key }}</md-option>
-                </md-select>
-            </md-input-container>
-        </div>
-        <div layout="row">
-            <md-input-container class="md-block">
-                <label>Max Age</label>
-                <input type="number" ng-model="particle.particleGroup.maxAge" ng-change="refresh()">
-            </md-input-container>
-            <md-input-container class="md-block">
-                <label>Alpha Test</label>
-                <input type="number" ng-model="particle.particleGroup.alphaTest" ng-change="refresh()">
-            </md-input-container>
-        </div>
-        <div layout="row">
-            <md-input-container flex>
-                <label>Blending</label>
-                <md-select flex ng-model="particle.particleGroup.blending" ng-change="refresh()">
-                    <md-option ng-value="0">NoBlending</md-option>
-                    <md-option ng-value="1">NormalBlending</md-option>
-                    <md-option ng-value="2">AdditiveBlending</md-option>
-                    <md-option ng-value="3">SubtractiveBlending</md-option>
-                    <md-option ng-value="4">MultiplyBlending</md-option>
-                </md-select>
-            </md-input-container>
+        <!-- <div layout="row"> -->
+            <!-- <md-input-container flex> -->
+                <!-- <label>Texture</label> -->
+                <!-- <md-select flex ng-model="options.textureFile.libPath" ng-change="refreshTexture()"> -->
+                    <!-- <md-option ng-repeat="texture in textures" ng-value="texture.libPath">{{ texture.key }}</md-option> -->
+                <!-- </md-select> -->
+            <!-- </md-input-container> -->
+        <!-- </div> -->
+        <!-- <div layout="row"> -->
+            <!-- <md-input-container class="md-block"> -->
+                <!-- <label>Max Age</label> -->
+                <!-- <input type="number" ng-model="particle.particleGroup.maxAge" ng-change="refresh()"> -->
+            <!-- </md-input-container> -->
+            <!-- <md-input-container class="md-block"> -->
+                <!-- <label>Alpha Test</label> -->
+                <!-- <input type="number" ng-model="particle.particleGroup.alphaTest" ng-change="refresh()"> -->
+            <!-- </md-input-container> -->
+        <!-- </div> -->
+        <!-- <div layout="row"> -->
+            <!-- <md-input-container flex> -->
+                <!-- <label>Blending</label> -->
+                <!-- <md-select flex ng-model="particle.particleGroup.blending" ng-change="refresh()"> -->
+                    <!-- <md-option ng-value="0">NoBlending</md-option> -->
+                    <!-- <md-option ng-value="1">NormalBlending</md-option> -->
+                    <!-- <md-option ng-value="2">AdditiveBlending</md-option> -->
+                    <!-- <md-option ng-value="3">SubtractiveBlending</md-option> -->
+                    <!-- <md-option ng-value="4">MultiplyBlending</md-option> -->
+                <!-- </md-select> -->
+            <!-- </md-input-container> -->
             <!-- TODO: fix -->
             <!-- <md-input-container flex> -->
                 <!-- <label>fixedTimeStep</label> -->
                 <!-- <input type="number" ng-model="particle.particleGroup.fixedTimeStep" ng-change="refresh()"> -->
             <!-- </md-input-container> -->
-        </div>
-        <div layout="row">
-            <md-switch flex ng-model="particle.particleGroup.transparent" aria-label="Transaprent" ng-change="refresh()">
-                Transparent
-            </md-switch>
-            <md-switch flex ng-model="particle.particleGroup.fog" aria-label="Fog" ng-change="refresh()">
-                Fog
-            </md-switch>
-        </div>
-        <div layout="row">
-            <md-switch flex ng-model="particle.particleGroup.colorize" aria-label="Colorize particle group" ng-change="refresh()">
-                Colorize
-            </md-switch>
-            <md-switch flex ng-model="particle.particleGroup.hasPerspective" aria-label="Has perspective" ng-change="refresh()">
-                Perspective
-            </md-switch>
-        </div>
+        <!-- </div> -->
+        <!-- <div layout="row"> -->
+            <!-- <md-switch flex ng-model="particle.particleGroup.transparent" aria-label="Transaprent" ng-change="refresh()"> -->
+                <!-- Transparent -->
+            <!-- </md-switch> -->
+            <!-- <md-switch flex ng-model="particle.particleGroup.fog" aria-label="Fog" ng-change="refresh()"> -->
+                <!-- Fog -->
+            <!-- </md-switch> -->
+        <!-- </div> -->
+        <!-- <div layout="row"> -->
+            <!-- <md-switch flex ng-model="particle.particleGroup.colorize" aria-label="Colorize particle group" ng-change="refresh()"> -->
+                <!-- Colorize -->
+            <!-- </md-switch> -->
+            <!-- <md-switch flex ng-model="particle.particleGroup.hasPerspective" aria-label="Has perspective" ng-change="refresh()"> -->
+                <!-- Perspective -->
+            <!-- </md-switch> -->
+        <!-- </div> -->
 
-        <md-divider></md-divider>
+        <!-- <md-divider></md-divider> -->
 
-        <div layout="row">
-            <md-input-container flex>
-                <label>Emitter Type</label>
-                <md-select ng-model="particle.emitter.type">
-                    <md-option value='cube'>cube</md-option>
-                    <md-option value='sphere'>sphere</md-option>
-                    <md-option value='disk'>disk</md-option>
-                </md-select>
-            </md-input-container>
-            <md-input-container flex>
-                <label>emitterDuration</label>
-                <input type="number" ng-model="particle.emitter.emitterDuration">
-            </md-input-container>
-        </div>
-        <div layout="row">
-            <md-input-container ng-repeat="s in ['particlesPerSecond', 'alive']">
-                <label>{{ s }}</label>
-                <input type="number" ng-model="particle.emitter[s]">
-            </md-input-container>
-        </div>
+        <!-- <div layout="row"> -->
+            <!-- <md-input-container flex> -->
+                <!-- <label>Emitter Type</label> -->
+                <!-- <md-select ng-model="particle.emitter.type"> -->
+                    <!-- <md-option value='cube'>cube</md-option> -->
+                    <!-- <md-option value='sphere'>sphere</md-option> -->
+                    <!-- <md-option value='disk'>disk</md-option> -->
+                <!-- </md-select> -->
+            <!-- </md-input-container> -->
+            <!-- <md-input-container flex> -->
+                <!-- <label>emitterDuration</label> -->
+                <!-- <input type="number" ng-model="particle.emitter.emitterDuration"> -->
+            <!-- </md-input-container> -->
+        <!-- </div> -->
+        <!-- <div layout="row"> -->
+            <!-- <md-input-container ng-repeat="s in ['particlesPerSecond', 'alive']"> -->
+                <!-- <label>{{ s }}</label> -->
+                <!-- <input type="number" ng-model="particle.emitter[s]"> -->
+            <!-- </md-input-container> -->
+        <!-- </div> -->
         <!-- <md-input-container class="md-block" ng-repeat="s in ['particlesPerSecond', 'emitterDuration', 'alive']"> -->
             <!-- <label>{{ s }}</label> -->
             <!-- <input type="number" ng-model="particle.emitter[s]"> -->
         <!-- </md-input-container> -->
-        <div layout="row" ng-repeat="attr in ['position', 'positionSpread', 'acceleration', 'accelerationSpread', 'velocity', 'velocitySpread']">
-            <md-input-container class="md-block" ng-repeat="coord in ['x', 'y', 'z']">
-                <label>{{ attr + ' - ' + coord }}</label>
-                <input type="number" ng-model="particle.emitter[attr][coord]">
-            </md-input-container>
-        </div>
-        <div layout="row" ng-show="particle.emitter.type == 'sphere'">
-            <md-input-container class="md-block" ng-repeat="item in ['speedSpread', 'speed', 'radius']">
-                <label>{{ item }}</label>
-                <input type="number" ng-model="particle.emitter[item]">
-            </md-input-container>
-        </div>
-        <div layout="row" ng-show="particle.emitter.type == 'sphere'">
-            <md-input-container class="md-block" ng-repeat="coord in ['x', 'y', 'z']">
-                <label>{{ 'Emitter Radius Scale - ' + coord }}</label>
-                <input type="number" ng-model="particle.emitter.radiusScale[coord]">
-            </md-input-container>
-        </div>
-        <div layout="row" ng-repeat="pair in [['sizeStart', 'sizeStartSpread'], ['sizeMiddle', 'sizeMiddleSpread'], ['sizeEnd', 'sizeEndSpread'], ['angleStart', 'angleStartSpread'], ['angleMiddle', 'angleMiddleSpread'], ['angleEnd', 'angleEndSpread']]">
-            <md-input-container class="md-block" ng-repeat="size in pair">
-                <label>{{ size }}</label>
-                <input type="number" ng-model="particle.emitter[size]">
-            </md-input-container>
-        </div>
-        <div layout="column" ng-repeat="specialColor in ['colorStart', 'colorMiddle', 'colorEnd']">
-            <div layout="column">
-                <div md-color-picker ng-model="options.emitter[specialColor]" ng-change="updateColor(specialColor)"></div>
-            </div>
-            <div layout="row">
-                <md-input-container class="md-block" ng-repeat="coord in ['x', 'y', 'z']">
-                    <label>{{ specialColor + ' - ' + coord }}</label>
-                    <input type="number" ng-model="particle.emitter[specialColor + 'Spread'][coord]">
-                </md-input-container>
-            </div>
-        </div>
-        <div layout="row" ng-repeat="opac in ['opacityStart', 'opacityMiddle', 'opacityEnd']">
-            <md-input-container class="md-block" ng-repeat="s in ['', 'Spread']">
-                <label>{{ opac + s }}</label>
-                <input type="number" ng-model="particle.emitter[opac + s]">
-            </md-input-container>
-        </div>
+        <!-- <div layout="row" ng-repeat="attr in ['position', 'positionSpread', 'acceleration', 'accelerationSpread', 'velocity', 'velocitySpread']"> -->
+            <!-- <md-input-container class="md-block" ng-repeat="coord in ['x', 'y', 'z']"> -->
+                <!-- <label>{{ attr + ' - ' + coord }}</label> -->
+                <!-- <input type="number" ng-model="particle.emitter[attr][coord]"> -->
+            <!-- </md-input-container> -->
+        <!-- </div> -->
+        <!-- <div layout="row" ng-show="particle.emitter.type == 'sphere'"> -->
+            <!-- <md-input-container class="md-block" ng-repeat="item in ['speedSpread', 'speed', 'radius']"> -->
+                <!-- <label>{{ item }}</label> -->
+                <!-- <input type="number" ng-model="particle.emitter[item]"> -->
+            <!-- </md-input-container> -->
+        <!-- </div> -->
+        <!-- <div layout="row" ng-show="particle.emitter.type == 'sphere'"> -->
+            <!-- <md-input-container class="md-block" ng-repeat="coord in ['x', 'y', 'z']"> -->
+                <!-- <label>{{ 'Emitter Radius Scale - ' + coord }}</label> -->
+                <!-- <input type="number" ng-model="particle.emitter.radiusScale[coord]"> -->
+            <!-- </md-input-container> -->
+        <!-- </div> -->
+        <!-- <div layout="row" ng-repeat="pair in [['sizeStart', 'sizeStartSpread'], ['sizeMiddle', 'sizeMiddleSpread'], ['sizeEnd', 'sizeEndSpread'], ['angleStart', 'angleStartSpread'], ['angleMiddle', 'angleMiddleSpread'], ['angleEnd', 'angleEndSpread']]"> -->
+            <!-- <md-input-container class="md-block" ng-repeat="size in pair"> -->
+                <!-- <label>{{ size }}</label> -->
+                <!-- <input type="number" ng-model="particle.emitter[size]"> -->
+            <!-- </md-input-container> -->
+        <!-- </div> -->
+        <!-- <div layout="column" ng-repeat="specialColor in ['colorStart', 'colorMiddle', 'colorEnd']"> -->
+            <!-- <div layout="column"> -->
+                <!-- <div md-color-picker ng-model="options.emitter[specialColor]" ng-change="updateColor(specialColor)"></div> -->
+            <!-- </div> -->
+            <!-- <div layout="row"> -->
+                <!-- <md-input-container class="md-block" ng-repeat="coord in ['x', 'y', 'z']"> -->
+                    <!-- <label>{{ specialColor + ' - ' + coord }}</label> -->
+                    <!-- <input type="number" ng-model="particle.emitter[specialColor + 'Spread'][coord]"> -->
+                <!-- </md-input-container> -->
+            <!-- </div> -->
+        <!-- </div> -->
+        <!-- <div layout="row" ng-repeat="opac in ['opacityStart', 'opacityMiddle', 'opacityEnd']"> -->
+            <!-- <md-input-container class="md-block" ng-repeat="s in ['', 'Spread']"> -->
+                <!-- <label>{{ opac + s }}</label> -->
+                <!-- <input type="number" ng-model="particle.emitter[opac + s]"> -->
+            <!-- </md-input-container> -->
+        <!-- </div> -->
         <!-- TODO this is another way to group the items -->
         <!-- <div layout="column" ng-repeat="size in ['Start', 'Middle', 'End']" style="background-color: gray"> -->
             <!-- <div layout="column"> -->
@@ -144,9 +144,9 @@
                     <!-- </md-input-container> -->
                 <!-- </div> -->
             <!-- </div> -->
-        <md-input-container layout="row">
-            <md-button flex ng-click="saveJson()">save</md-button>
-            <md-button flex ng-click="openAssetSearch($event, { type: 'particle' }, particleLoaded)">load</md-button>
-        </md-input-container>
+        <!-- <md-input-container layout="row"> -->
+            <!-- <md-button flex ng-click="saveJson()">save</md-button> -->
+            <!-- <md-button flex ng-click="openAssetSearch($event, { type: 'particle' }, particleLoaded)">load</md-button> -->
+        <!-- </md-input-container> -->
     </md-content>
 </md-sidenav>
