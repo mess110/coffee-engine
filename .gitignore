@@ -1,6 +1,7 @@
 src/**/*.js
 example/**/*.js
 tools/**/*.js
+tests/**/*.js
 
 Gruntfile.js
 

@@ -13,6 +13,7 @@ scenes = new CyclicArray([
   new BasicTest()
   new ShaderTest()
   new AnimationTest()
+  new DissolveTest()
 ])
 
 nextScene = ->

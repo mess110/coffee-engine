@@ -193,7 +193,7 @@ class Helper
         map: TextureManager.get().items[options.map]
         side: THREE.DoubleSide)
     else if options.material?
-      materail = options.material
+      material = options.material
     else
       material = new (THREE.MeshBasicMaterial)(
         color: options.color
@@ -592,6 +592,30 @@ class Helper
 
     # new THREE.Mesh(singleGeometry, mat)
     node
+
+  # @example
+  #   box = new (THREE.BoxGeometry)(1, 1, 1)
+  #   texture = TextureManager.get().items['carpati-map']
+  #   material = Helper.dissolveMaterial(texture)
+  #   mesh = new (THREE.Mesh)(box, material)
+  #
+  #   material.uniforms.dissolve.value += tpf
+  @dissolveMaterial: (texture) ->
+    new (THREE.ShaderMaterial)(
+      uniforms:
+        texture:
+          type: 't'
+          value: texture
+        noise:
+          type: 't'
+          value: texture
+        dissolve:
+          type: 'f'
+          value: 0.0
+      morphTargets: true
+      vertexShader: THREE.ShaderLib.dissolve.vertexShader
+      fragmentShader: THREE.ShaderLib.dissolve.fragmentShader
+      shading: THREE.SmoothShading)
 
   # sends the server a reload package and sets up a reload listener
   # if the listener receives reload, it reloads the page
