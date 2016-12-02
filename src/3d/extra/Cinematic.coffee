@@ -141,7 +141,7 @@ class Cinematic
     return if @loaded != true
 
     for item in @items
-      if item instanceof BaseParticle
+      if item instanceof BaseParticle2
         item.tick(tpf)
 
       if item instanceof Mirror

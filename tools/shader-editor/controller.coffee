@@ -2,11 +2,6 @@ app.controller 'ShaderEditorController', ($scope) ->
   $scope.ui.project.name = 'Shader Editor'
   $scope.setScene(shaderEditorScene)
 
-  $scope.editorOptions =
-    lineWrapping: false
-    lineNumbers: true
-    mode: 'c'
-
   $scope.shader = {}
   $scope.shader.vertex = [
     'varying vec2 vUv;'
@@ -31,13 +26,18 @@ app.controller 'ShaderEditorController', ($scope) ->
     '}'
   ].join('\n')
 
-  $scope.shader.uniforms =
-    time:
-      type: 'f'
-      value: 0
-    resolution:
-      type: 'v2'
-      value: new (THREE.Vector2)
+  $scope.shader.uniforms = [
+    '{'
+    '  time: {'
+    '    type: "f",'
+    '    value: 0'
+    '  },'
+    '  resolution: {'
+    '    type: "v2",'
+    '    value: new THREE.Vector2()'
+    '  }'
+    '}'
+  ].join('\n')
 
   $scope.update = ->
     shaderEditorScene.setShader($scope.shader)

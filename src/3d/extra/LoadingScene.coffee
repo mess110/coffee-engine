@@ -7,11 +7,6 @@
 #     engine.sceneManager.setScene(gameScene)
 #   )
 class LoadingScene extends BaseScene
-  jmm: JsonModelManager.get()
-  tm: TextureManager.get()
-  som: SaveObjectManager.get()
-  config: Config.get()
-  sm: SoundManager.get()
 
   # You can either override the method hasFinishedLoading or you can
   # pass it as a param. It will be called once JsonModelManager has

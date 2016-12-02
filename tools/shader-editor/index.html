@@ -1,15 +1,24 @@
-<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="true" style="position: fixed; z-index: 1">
+<md-sidenav class="md-whiteframe-z2 shader-editor" md-component-id="right" md-is-locked-open="true" style="position: fixed; z-index: 2; right: 0px; left: inherit">
     <md-content>
         <md-card>
             <md-card-content>
+                <p>Uniforms</p>
+                <textarea flex ng-model="shader.uniforms" ng-change="update()">
+                </textarea>
+            </md-card-content>
+        </md-card>
+        <md-card>
+            <md-card-content>
                 <p>Vertex Shader</p>
-                <ui-codemirror ng-model="shader.vertex" ui-codemirror-opts="editorOptions" ng-change="update()"></ui-codemirror>
+                <textarea flex ng-model="shader.vertex" ng-change="update()">
+                </textarea>
             </md-card-content>
         </md-card>
         <md-card>
             <md-card-content>
                 <p>Fragment Shader</p>
-                <ui-codemirror ng-model="shader.fragment" ui-codemirror-opts="editorOptions" ng-change="update()"></ui-codemirror>
+                <textarea flex ng-model="shader.fragment" ng-change="update()">
+                </textarea>
             </md-card-content>
         </md-card>
     </md-content>

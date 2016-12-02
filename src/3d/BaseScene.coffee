@@ -8,12 +8,19 @@
 #
 # The engine can switch between these scenes.
 class BaseScene
-  scene: new THREE.Scene()
-  jmm: JsonModelManager.get()
-  lastMousePosition: undefined
-  keyboard: new THREEx.KeyboardState()
-  loaded: false
-  uptime: 0
+  constructor: ->
+    @scene = new THREE.Scene()
+
+    @jmm = JsonModelManager.get()
+    @sm = SoundManager.get()
+    @config = Config.get()
+    @som = SaveObjectManager.get()
+    @tm = TextureManager.get()
+
+    @lastMousePosition = undefined
+    @keyboard = new THREEx.KeyboardState()
+    @loaded = false
+    @uptime = 0
 
   # @nodoc
   fullTick: (tpf) ->

@@ -36,6 +36,37 @@ md-sidenav {
 }
 
 .shader-editor {
+  width: 50%;
+  max-width: 50%;
+}
+
+.shader-editor md-card-content {
+  height: 40%;
+}
+
+.shader-editor textarea {
+  width: 100%;
+  height: 80%;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: scroll;
+}
+
+.particle-playground {
+  width: 50%;
+  max-width: 50%;
+}
+
+.particle-playground md-content {
+  /* overflow: hidden; */
+}
+
+.particle-playground textarea {
+  width: 100%;
+  height: 85%;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: scroll;
 }
 
 md-toolbar-filler {

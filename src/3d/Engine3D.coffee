@@ -1,11 +1,12 @@
 # The Engine - vrummm
 class Engine3D
-  time: undefined
-  uptime: 0
-  config: Config.get()
 
   # Starting point of the engine
   constructor: () ->
+    @uptime = 0
+    @time = undefined
+    @config = Config.get()
+
     @width = @config.width
     @height = @config.height
 

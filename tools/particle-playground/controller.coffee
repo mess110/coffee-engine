@@ -1,155 +1,217 @@
 app.controller 'ParticlePlaygroundController', ($scope) ->
-  defaultTexture = 'workspace/lib/textures/star.png'
+  fuglyString = [
+    "["
+    "  {"
+    "    texture: {"
+    "      value: TextureManager.get().items['sprite-explosion2'],"
+    "      libPath: '../workspace/lib/textures/sprite-explosion2.png',"
+    "      frames: new THREE.Vector2(5, 5),"
+    "      loop: 1"
+    "    },"
+    "    depthTest: true,"
+    "    depthWrite: false,"
+    "    blending: THREE.AdditiveBlending,"
+    "    scale: 600,"
+    "    emitters: ["
+    "      {"
+    "        particleCount: 20,"
+    "        type: SPE.distributions.SPHERE,"
+    "        position: {"
+    "          radius: 1"
+    "        },"
+    "        maxAge: {"
+    "          value: 2"
+    "        },"
+    "        activeMultiplier: 20,"
+    "        velocity: {"
+    "          value: new THREE.Vector3(10)"
+    "        },"
+    "        size: {"
+    "          value: [20, 100]"
+    "        },"
+    "        color: {"
+    "          value: [new THREE.Color(0.5, 0.1, 0.05), new THREE.Color(0.2, 0.2, 0.2)]"
+    "        },"
+    "        opacity: {"
+    "          value: [0.5, 0.35, 0.1, 0]"
+    "        }"
+    "      }, {"
+    "        particleCount: 50,"
+    "        position: {"
+    "          spread: new THREE.Vector3(5, 5, 5)"
+    "        },"
+    "        velocity: {"
+    "          spread: new THREE.Vector3(30),"
+    "          distribution: SPE.distributions.SPHERE"
+    "        },"
+    "        size: {"
+    "          value: [2, 20, 20, 20]"
+    "        },"
+    "        maxAge: {"
+    "          value: 2"
+    "        },"
+    "        activeMultiplier: 2000,"
+    "        opacity: {"
+    "          value: [0.5, 0.25, 0, 0]"
+    "        }"
+    "      }"
+    "    ]"
+    "  },"
+    "  {"
+    "    texture: {"
+    "      value: TextureManager.get().items['smokeparticle'],"
+    "      libPath: '../workspace/lib/textures/smokeparticle.png'"
+    "    },"
+    "    depthTest: false,"
+    "    depthWrite: true,"
+    "    blending: THREE.NormalBlending,"
+    "    emitters: ["
+    "      {"
+    "        particleCount: 100,"
+    "        type: SPE.distributions.SPHERE,"
+    "        position: {"
+    "          radius: 0.1"
+    "        },"
+    "        maxAge: {"
+    "          value: 2"
+    "        },"
+    "        activeMultiplier: 40,"
+    "        velocity: {"
+    "          value: new THREE.Vector3(100)"
+    "        },"
+    "        acceleration: {"
+    "          value: new THREE.Vector3(0, -20, 0),"
+    "          distribution: SPE.distributions.BOX"
+    "        },"
+    "        size: {"
+    "          value: 2"
+    "        },"
+    "        drag: {"
+    "          value: 1"
+    "        },"
+    "        color: {"
+    "          value: [new THREE.Color(1, 1, 1), new THREE.Color(1, 1, 0), new THREE.Color(1, 0, 0), new THREE.Color(0.4, 0.2, 0.1)]"
+    "        },"
+    "        opacity: {"
+    "          value: [0.4, 0]"
+    "        }"
+    "      }, {"
+    "        particleCount: 50,"
+    "        position: {"
+    "          spread: new THREE.Vector3(10, 10, 10),"
+    "          distribution: SPE.distributions.SPHERE"
+    "        },"
+    "        maxAge: {"
+    "          value: 2"
+    "        },"
+    "        activeMultiplier: 2000,"
+    "        velocity: {"
+    "          value: new THREE.Vector3(8, 3, 10),"
+    "          distribution: SPE.distributions.SPHERE"
+    "        },"
+    "        size: {"
+    "          value: 40"
+    "        },"
+    "        color: {"
+    "          value: new THREE.Color(0.2, 0.2, 0.2)"
+    "        },"
+    "        opacity: {"
+    "          value: [0, 0, 0.2, 0]"
+    "        }"
+    "      }, {"
+    "        particleCount: 200,"
+    "        type: SPE.distributions.DISC,"
+    "        position: {"
+    "          radius: 5,"
+    "          spread: new THREE.Vector3(5)"
+    "        },"
+    "        maxAge: {"
+    "          value: 2,"
+    "          spread: 0"
+    "        },"
+    "        activeMultiplier: 2000,"
+    "        velocity: {"
+    "          value: new THREE.Vector3(40)"
+    "        },"
+    "        rotation: {"
+    "          axis: new THREE.Vector3(1, 0, 0),"
+    "          angle: Math.PI * 0.5,"
+    "          static: true"
+    "        },"
+    "        size: {"
+    "          value: 2"
+    "        },"
+    "        color: {"
+    "          value: [new THREE.Color(0.4, 0.2, 0.1), new THREE.Color(0.2, 0.2, 0.2)]"
+    "        },"
+    "        opacity: {"
+    "          value: [0.5, 0.2, 0]"
+    "        }"
+    "      }"
+    "    ]"
+    "  }"
+    "]"
+    ].join("\n")
+  $scope.jsonInput = fuglyString
 
   $scope.ui.project.name = 'Particle Playground'
   $scope.options =
     clearColor: '#000000'
-    textureFile:
-      key: Utils.getKeyName(defaultTexture, Utils.IMG_URLS)
-      libPath: defaultTexture
-    emitter:
-      colorStart: '#ff0000'
-      colorMiddle: '#ffffff'
-      colorEnd: '#0000ff'
 
   workspaceQuery.getTextures($scope.workspace, (err, files) ->
     $scope.textures = files
     $scope.$apply()
   )
 
+  getFoo = (json) ->
+    string = angular.copy(json)
+    results = []
+    lines = string.split("\n")
+    for line in lines
+      continue if !line.contains('libPath') && !line.containsAny(Utils::IMG_URLS)
+      imgPath = line.split("'")[1]
+      results.push imgPath
+    results
+
+  $scope.refresh = (json) ->
+    json = $scope.jsonInput unless json?
+
+    for imgPath in getFoo(json)
+      key = Utils.getKeyName(imgPath, Utils.IMG_URLS)
+      TextureManager.get().load(key, imgPath, ->)
+
+    particlePlaygroundScene.refresh(json)
+    $scope.particle = particlePlaygroundScene.particle
+
+  $scope.saveJson = ->
+    string = angular.copy($scope.jsonInput)
+    hash =
+      textures: []
+      particle: string
+
+    for imgPath in getFoo(string)
+      hash.textures.push
+        libPath: imgPath.replace('../', '')
+        destPath: "assets/#{imgPath.split('/').last()}"
+        type: 'texture'
+
+    Utils.saveFile(hash, 'particle.save.json')
+
+  $scope.particleLoaded = (params, particle) ->
+    json = JSON.parse(fs.readFileSync(particle.libPath, 'utf8'))
+    $scope.refresh(json.particle)
+
   eng = EngineHolder.get().engine
   if eng?
     eng.appendDom()
-    options =
-      url: "../#{$scope.options.textureFile.libPath}"
-    eng.initScene(particlePlaygroundScene, options, false)
-    $scope.particle = particlePlaygroundScene.particle
-
-  $scope.updateColor = (specialColor) ->
-    newColor = $scope.options.emitter[specialColor]
-    $scope.particle.emitter[specialColor] = new THREE.Color(newColor)
+    eng.initScene(particlePlaygroundScene, $scope.jsonInput, false)
+    $scope.refresh()
+    setTimeout =>
+      $scope.refresh()
+    , 1000
 
   $scope.$watch 'options.clearColor', (newValue, oldValue) ->
     engine.renderer.setClearColor(newValue)
 
   $scope.toggleStats = ->
     config.toggleStats()
-
-  $scope.refresh = (json) ->
-    json = formatJson() unless json?
-    particlePlaygroundScene.refresh(json)
-    $scope.particle = particlePlaygroundScene.particle
-
-  $scope.refreshTexture = ->
-    file = "../#{$scope.options.textureFile.libPath}"
-    key = Utils.getKeyName(file, Utils.IMG_URLS)
-    json = formatJson()
-    json.group.asset.libPath = file
-
-    if TextureManager.get().items[key]?
-      $scope.refresh(json)
-    else
-      TextureManager.get().load(key, file, (key) ->
-        $scope.refresh(json)
-        $scope.$apply()
-      )
-
-  formatJson = () ->
-    zeUrl = $scope.particle.particleGroup.texture.sourceFile
-    fileName = zeUrl.split('/').last()
-    {
-      group:
-        asset:
-          libPath: zeUrl
-          destPath: "assets/#{fileName}"
-        maxAge: $scope.particle.particleGroup.maxAge
-        colorize: $scope.particle.particleGroup.colorize
-        hasPerspective: $scope.particle.particleGroup.hasPerspective
-        blending: $scope.particle.particleGroup.blending
-        transparent: $scope.particle.particleGroup.transparent
-        alphaTest: $scope.particle.particleGroup.alphaTest
-        fixedTimeStep: $scope.particle.particleGroup.fixedTimeStep
-        fog: $scope.particle.particleGroup.fog
-      emitter:
-        type: $scope.particle.emitter.type
-        position:
-          x: $scope.particle.emitter.position.x
-          y: $scope.particle.emitter.position.y
-          z: $scope.particle.emitter.position.z
-        positionSpread:
-          x: $scope.particle.emitter.positionSpread.x
-          y: $scope.particle.emitter.positionSpread.y
-          z: $scope.particle.emitter.positionSpread.z
-        acceleration:
-          x: $scope.particle.emitter.acceleration.x
-          y: $scope.particle.emitter.acceleration.y
-          z: $scope.particle.emitter.acceleration.z
-        accelerationSpread:
-          x: $scope.particle.emitter.accelerationSpread.x
-          y: $scope.particle.emitter.accelerationSpread.y
-          z: $scope.particle.emitter.accelerationSpread.z
-        velocity:
-          x: $scope.particle.emitter.velocity.x
-          y: $scope.particle.emitter.velocity.y
-          z: $scope.particle.emitter.velocity.z
-        velocitySpread:
-          x: $scope.particle.emitter.velocitySpread.x
-          y: $scope.particle.emitter.velocitySpread.y
-          z: $scope.particle.emitter.velocitySpread.z
-        radius: $scope.particle.emitter.radius
-        radiusScale:
-          x: $scope.particle.emitter.radiusScale.x
-          y: $scope.particle.emitter.radiusScale.y
-          z: $scope.particle.emitter.radiusScale.z
-        speed: $scope.particle.emitter.speed
-        speedSpread: $scope.particle.emitter.speedSpread
-        sizeStart: $scope.particle.emitter.sizeStart
-        sizeStartSpread: $scope.particle.emitter.sizeStartSpread
-        sizeMiddle: $scope.particle.emitter.sizeMiddle
-        sizeMiddleSpread: $scope.particle.emitter.sizeMiddleSpread
-        sizeEnd: $scope.particle.emitter.sizeEnd
-        sizeEndSpread: $scope.particle.emitter.sizeEndSpread
-        angleStart: $scope.particle.emitter.angleStart
-        angleStartSpread: $scope.particle.emitter.angleStartSpread
-        angleMiddle: $scope.particle.emitter.angleMiddle
-        angleMiddleSpread: $scope.particle.emitter.angleMiddleSpread
-        angleEnd: $scope.particle.emitter.angleEnd
-        angleEndSpread: $scope.particle.emitter.angleEndSpread
-        angleAlignVelocity: $scope.particle.emitter.angleAlignVelocity
-        colorStart: "##{$scope.particle.emitter.colorStart.getHexString()}"
-        colorStartSpread:
-          x: $scope.particle.emitter.colorStartSpread.x
-          y: $scope.particle.emitter.colorStartSpread.y
-          z: $scope.particle.emitter.colorStartSpread.z
-        colorMiddle: "##{$scope.particle.emitter.colorMiddle.getHexString()}"
-        colorMiddleSpread:
-          x: $scope.particle.emitter.colorMiddleSpread.x
-          y: $scope.particle.emitter.colorMiddleSpread.y
-          z: $scope.particle.emitter.colorMiddleSpread.z
-        colorEnd: "##{$scope.particle.emitter.colorEnd.getHexString()}"
-        colorEndSpread:
-          x: $scope.particle.emitter.colorEndSpread.x
-          y: $scope.particle.emitter.colorEndSpread.y
-          z: $scope.particle.emitter.colorEndSpread.z
-        opacityStart: $scope.particle.emitter.opacityStart
-        opacityStartSpread: $scope.particle.emitter.opacityStartSpread
-        opacityMiddle: $scope.particle.emitter.opacityMiddle
-        opacityMiddleSpread: $scope.particle.emitter.opacityMiddleSpread
-        opacityEnd: $scope.particle.emitter.opacityEnd
-        opacityEndSpread: $scope.particle.emitter.opacityEndSpread
-        particlesPerSecond: $scope.particle.emitter.particlesPerSecond
-        emitterDuration: $scope.particle.emitter.emitterDuration
-        alive: $scope.particle.emitter.alive
-        isStatic: $scope.particle.emitter.isStatic
-    }
-
-  $scope.saveJson = ->
-    hash = formatJson()
-    if hash.group.asset.libPath.startsWith('../')
-      hash.group.asset.libPath = hash.group.asset.libPath.substring(3)
-      hash.group.asset.type = 'texture'
-    Utils.saveFile(hash, 'particle.save.json')
-
-  $scope.particleLoaded = (params, particle) ->
-    json = JSON.parse(fs.readFileSync(particle.libPath, 'utf8'))
-    $scope.refresh(json)

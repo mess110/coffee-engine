@@ -10,7 +10,6 @@ app = angular.module 'MyApp', [
   'ngMaterial'
   'ngRoute'
   'mdColorPicker'
-  'ui.codemirror'
 ]
 
 app.config ['$routeProvider', ($routeProvider) ->

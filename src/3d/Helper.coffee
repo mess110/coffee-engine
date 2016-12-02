@@ -148,7 +148,7 @@ class Helper
 
   # Creates a particle group and mesh
   @particle: (options = {}) ->
-    BaseParticle.fromJson(options)
+    BaseParticle2.fromJson(options)
 
   @mirror: (engine, options = {}) ->
     new Mirror(engine, options)

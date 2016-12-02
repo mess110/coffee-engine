@@ -59,14 +59,14 @@ class FileSystem
           toReturn.push item.asset
 
     # particle
-    if json.group?
-      if json.group.asset?
-        if json.group.asset.libPath?
-          from = json.group.asset.libPath
-          to = "#{destDir}#{json.group.asset.destPath}"
+    if json.particle?
+      if json.textures?
+        for texture in json.textures
+          from = texture.libPath
+          to = "#{destDir}#{texture.destPath}"
 
           @copyFileSync(from, to)
-          toReturn.push json.group.asset
+          toReturn.push texture
 
     # terrain
     if json.heightmap?

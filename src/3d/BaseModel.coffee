@@ -1,8 +1,9 @@
 # A base class for holding meshes.
 class BaseModel
 
-  visible: true
-  mesh: undefined
+  constructor: () ->
+    @visible = false
+    @mesh = undefined
 
   # @param [Number] i the new scale
   setScale: (i) ->

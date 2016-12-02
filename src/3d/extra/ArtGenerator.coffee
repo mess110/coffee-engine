@@ -15,11 +15,11 @@
 #     letterPadding: 4
 #   )
 class ArtGenerator
-  tm: TextureManager.get()
-
   # @nodoc
   constructor: (options) ->
     @options = options
+
+    @tm = TextureManager.get()
 
     @canvas = document.createElement( 'canvas' )
     @canvas.width = options.width

@@ -157,6 +157,13 @@ String::isEmpty = ->
 String::contains = (s) ->
   @.indexOf(s) != -1
 
+String::containsAny = (strings) ->
+  containsAny = false
+  return false unless strings?
+  for s in strings
+    containsAny = true if @.contains(s)
+  containsAny
+
 # Checks if a string is not empty
 String::isPresent = ->
   @? and !@.isEmpty()

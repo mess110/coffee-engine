@@ -12,7 +12,7 @@ class SaveObjectManager
   #
   # @example
   #   json = SaveObjectManager.get().items['particle']
-  #   @particle = BaseParticle.fromJson(json)
+  #   @particle = BaseParticle2.fromJson(json.particle)
   #   @scene.add @particle.mesh
   #
   #   @particle.tick(tpf)

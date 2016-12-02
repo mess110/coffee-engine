@@ -10,12 +10,13 @@ PodKeyManager = require('../server/PodKeyManager.coffee').PodKeyManager
 # Each one has its own tick interval and is independent
 # from other games
 class Game
-  players: {}
-  sockets: {}
-  inputs: []
 
   # Creates a new game and start ticking
   constructor: (config) ->
+    @players = {}
+    @sockets = {}
+    @inputs = []
+
     @id = Utils.guid()
     @config = config
     @setTickInterval(@config.ticksPerSecond)
