@@ -309,6 +309,10 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     dependencies = fileSystem.copyAssetSync($scope.workspace, asset)
 
     for dependency in dependencies
+      alreadyLoaded = false
+      for tmpAsset in $scope.json.assets
+        alreadyLoaded = true if dependency.libPath == tmpAsset.libPath
+      continue if alreadyLoaded
       $scope.json.assets.push dependency
 
   cinematicShortcuts = (event) ->

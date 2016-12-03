@@ -199,6 +199,7 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
 
   $scope.particleLoaded = (params, particle) ->
     json = JSON.parse(fs.readFileSync(particle.libPath, 'utf8'))
+    $scope.jsonInput = angular.copy(json).particle
     $scope.refresh(json.particle)
 
   eng = EngineHolder.get().engine
