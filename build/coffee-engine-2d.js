@@ -701,6 +701,11 @@ Array.prototype.isEmpty = function() {
     return 0 === this.size();
 }, String.prototype.contains = function(s) {
     return -1 !== this.indexOf(s);
+}, String.prototype.containsAny = function(strings) {
+    var containsAny, j, len, s;
+    if (containsAny = !1, null == strings) return !1;
+    for (j = 0, len = strings.length; len > j; j++) s = strings[j], this.contains(s) && (containsAny = !0);
+    return containsAny;
 }, String.prototype.isPresent = function() {
     return "undefined" != typeof this && null !== this && !this.isEmpty();
 }, String.prototype.capitalizeFirstLetter = function() {

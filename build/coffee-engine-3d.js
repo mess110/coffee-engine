@@ -1,3 +1,28 @@
+var _ceOutput, _error, _info, _log, _warn;
+
+_log = console.log, _warn = console.warn, _info = console.info, _error = console.error, 
+_ceOutput = "coffee-engine console >", console.log = function(message) {
+    var html;
+    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
+    _log.apply(console, arguments);
+}, console.info = function(message) {
+    var html;
+    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
+    _info.apply(console, arguments);
+}, console.warn = function(message) {
+    var html;
+    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
+    _warn.apply(console, arguments);
+}, console.error = function(message) {
+    var html;
+    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
+    _error.apply(console, arguments);
+};
+
 var Stats = function() {
     var startTime = Date.now(), prevTime = startTime, ms = 0, msMin = 1 / 0, msMax = 0, fps = 0, fpsMin = 1 / 0, fpsMax = 0, frames = 0, mode = 0, container = document.createElement("div");
     container.id = "stats", container.addEventListener("mousedown", function(event) {
@@ -16522,15 +16547,22 @@ TextureManager = function() {
         function TextureManager() {}
         return TextureManager.prototype.items = {}, TextureManager.prototype.loadCount = 0, 
         TextureManager.prototype.load = function(key, url, callback) {
+            var loader, texture;
             return null == callback && (callback = function() {
                 return {};
-            }), void 0 === this.items[key] ? (this.items[key] = null, THREE.ImageUtils.loadTexture(url, {}, function(image) {
-                return window.TextureManager.get()._load(image, key), callback(key);
+            }), void 0 === this.items[key] ? (this.items[key] = null, loader = new THREE.TextureLoader(), 
+            texture = loader.load(url, function(image) {
+                return setTimeout(function() {
+                    return window.TextureManager.get()._load(image, key, callback);
+                }, 100);
+            }, void 0, function(err) {
+                return console.log(err);
             }), this) : void 0;
         }, TextureManager.prototype.hasFinishedLoading = function() {
             return this.loadCount === Object.keys(this.items).size();
-        }, TextureManager.prototype._load = function(image, key) {
-            return window.TextureManager.get().items[key] = image, window.TextureManager.get().loadCount += 1;
+        }, TextureManager.prototype._load = function(image, key, callback) {
+            return window.TextureManager.get().items[key] = image, window.TextureManager.get().loadCount += 1, 
+            callback(key);
         }, TextureManager;
     }(), TextureManager.get = function() {
         return null != instance ? instance : instance = new Singleton.TextureManager();
@@ -16555,10 +16587,13 @@ MaterialManager = function() {
 var BaseScene;
 
 BaseScene = function() {
-    function BaseScene() {}
-    return BaseScene.prototype.scene = new THREE.Scene(), BaseScene.prototype.jmm = JsonModelManager.get(), 
-    BaseScene.prototype.lastMousePosition = void 0, BaseScene.prototype.keyboard = new THREEx.KeyboardState(), 
-    BaseScene.prototype.loaded = !1, BaseScene.prototype.uptime = 0, BaseScene.prototype.fullTick = function(tpf) {
+    function BaseScene() {
+        this.scene = new THREE.Scene(), this.jmm = JsonModelManager.get(), this.sm = SoundManager.get(), 
+        this.config = Config.get(), this.som = SaveObjectManager.get(), this.tm = TextureManager.get(), 
+        this.lastMousePosition = void 0, this.keyboard = new THREEx.KeyboardState(), this.loaded = !1, 
+        this.uptime = 0;
+    }
+    return BaseScene.prototype.fullTick = function(tpf) {
         return this.uptime += tpf, this.scene.traverse(function(obj) {
             return null != obj.animationsMixer ? obj.animationsMixer.update(tpf) : void 0;
         }), this.tick(tpf);
@@ -16596,8 +16631,10 @@ BaseScene = function() {
 var BaseModel;
 
 BaseModel = function() {
-    function BaseModel() {}
-    return BaseModel.prototype.visible = !0, BaseModel.prototype.mesh = void 0, BaseModel.prototype.setScale = function(i) {
+    function BaseModel() {
+        this.visible = !1, this.mesh = void 0;
+    }
+    return BaseModel.prototype.setScale = function(i) {
         return this.mesh.scale.set(i, i, i);
     }, BaseModel.prototype.setOpacity = function(opacity) {
         return this.mesh.material.opacity = opacity;
@@ -16718,7 +16755,7 @@ BaseControls = function() {
     BaseControls;
 }();
 
-var BaseParticle, extend = function(child, parent) {
+var BaseParticle, BaseParticle2, extend = function(child, parent) {
     function ctor() {
         this.constructor = child;
     }
@@ -16797,6 +16834,29 @@ BaseParticle = function(superClass) {
         if (null == assetJson.key) throw new Error("key missing");
         return json = SaveObjectManager.get().items[assetJson.key], new BaseParticle(json);
     }, BaseParticle;
+}(BaseModel), BaseParticle2 = function(superClass) {
+    function BaseParticle2(input) {
+        var emitJson, emitter, group, i, j, json, jsonInput, len, len1, ref;
+        for (this.groups = [], this.mesh = new THREE.Object3D(), eval("var jsonInput = " + input), 
+        "undefined" != typeof jsonInput && null !== jsonInput || (jsonInput = []), i = 0, 
+        len = jsonInput.length; len > i; i++) {
+            for (json = jsonInput[i], group = new SPE.Group(json), ref = json.emitters, j = 0, 
+            len1 = ref.length; len1 > j; j++) emitJson = ref[j], emitter = new SPE.Emitter(emitJson), 
+            group.addEmitter(emitter);
+            this.groups.push(group), this.mesh.add(group.mesh);
+        }
+    }
+    return extend(BaseParticle2, superClass), BaseParticle2.prototype.tick = function(tpf) {
+        var group, i, len, ref, results;
+        for (ref = this.groups, results = [], i = 0, len = ref.length; len > i; i++) group = ref[i], 
+        results.push(group.tick(tpf));
+        return results;
+    }, BaseParticle2.fromJson = function(assetJson) {
+        var json;
+        if ("particle" !== assetJson.type) throw new Error("not a particle");
+        if (null == assetJson.key) throw new Error("key missing");
+        return json = SaveObjectManager.get().items[assetJson.key], new BaseParticle2(json.particle);
+    }, BaseParticle2;
 }(BaseModel);
 
 var Config;
@@ -16893,7 +16953,7 @@ Helper = function() {
     }, Helper.terrain = function(options) {
         return null == options && (options = {}), Terrain.fromJson(options);
     }, Helper.particle = function(options) {
-        return null == options && (options = {}), BaseParticle.fromJson(options);
+        return null == options && (options = {}), BaseParticle2.fromJson(options);
     }, Helper.mirror = function(engine, options) {
         return null == options && (options = {}), new Mirror(engine, options);
     }, Helper.water = function(engine, scene, options) {
@@ -16909,16 +16969,16 @@ Helper = function() {
         }), this.art.fromJson(json), material = this.materialFromCanvas(this.art.canvas)), 
         plane = this.plane(json.plane), plane.material = material, plane;
     }, Helper.plane = function(options) {
-        var geometry, materail, material;
+        var geometry, material;
         return null == options && (options = {}), null != options.size ? (options.width = options.size, 
         options.height = options.size) : (null == options.width && (options.width = Utils.PLANE_DEFAULT_WIDTH), 
         null == options.height && (options.height = Utils.PLANE_DEFAULT_HEIGHT)), null == options.wSegments && (options.wSegments = Utils.PLANE_DEFAULT_W_SEGMENTS), 
         null == options.hSegments && (options.hSegments = Utils.PLANE_DEFAULT_H_SEGMENTS), 
         null == options.color && (options.color = Utils.PLANE_DEFAULT_COLOR), null == options["class"] && (options["class"] = "PlaneBufferGeometry"), 
-        null != options.map ? material = new THREE.MeshBasicMaterial({
+        material = null != options.map ? new THREE.MeshBasicMaterial({
             map: TextureManager.get().items[options.map],
             side: THREE.DoubleSide
-        }) : null != options.material ? materail = options.material : material = new THREE.MeshBasicMaterial({
+        }) : null != options.material ? options.material : new THREE.MeshBasicMaterial({
             color: options.color,
             side: THREE.DoubleSide
         }), geometry = new THREE[options["class"]](options.width, options.height, options.wSegments, options.hSegments), 
@@ -16948,6 +17008,27 @@ Helper = function() {
             depthWrite: !1,
             side: THREE.BackSide
         }), new THREE.Mesh(new THREE.BoxGeometry(size, size, size), aSkyBoxMaterial);
+    }, Helper.sampleShader = function() {
+        var itemMaterial, mesh, shader;
+        return shader = {
+            uniforms: {
+                time: {
+                    type: "f",
+                    value: 0
+                },
+                resolution: {
+                    type: "v2",
+                    value: new THREE.Vector2()
+                }
+            },
+            fragment: [ "uniform float time;", "varying vec2 vUv;", "", "void main() {", "  vec2 position = -1.0 + 2.0 * vUv;", "", "  float red = abs(sin(position.x * position.y + time / 5.0));", "  float green = abs(sin(position.x * position.y + time / 4.0));", "  float blue = abs(sin(position.x * position.y + time / 3.0 ));", "  gl_FragColor = vec4(red, green, blue, 1.0);", "}" ].join("\n"),
+            vertex: [ "varying vec2 vUv;", "", "void main() {", "  vUv = uv;", "  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n")
+        }, itemMaterial = new THREE.ShaderMaterial({
+            uniforms: shader.uniforms,
+            vertexShader: shader.vertex,
+            fragmentShader: shader.fragment
+        }), mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), itemMaterial), mesh.shaderSrc = shader, 
+        mesh;
     }, Helper.orbitControls = function(engine) {
         return new THREE.OrbitControls(engine.camera, engine.renderer.domElement);
     }, Helper.fog = function(options) {
@@ -17072,6 +17153,27 @@ Helper = function() {
             node.add(model);
         }
         return node;
+    }, Helper.dissolveMaterial = function(texture) {
+        return new THREE.ShaderMaterial({
+            uniforms: {
+                texture: {
+                    type: "t",
+                    value: texture
+                },
+                noise: {
+                    type: "t",
+                    value: texture
+                },
+                dissolve: {
+                    type: "f",
+                    value: 0
+                }
+            },
+            morphTargets: !0,
+            vertexShader: THREE.ShaderLib.dissolve.vertexShader,
+            fragmentShader: THREE.ShaderLib.dissolve.fragmentShader,
+            shading: THREE.SmoothShading
+        });
     }, Helper.networkReload = function() {
         var nm;
         return nm = NetworkManager.get(), nm._hasListener("reload") || nm.on("reload", function(data) {
@@ -17242,10 +17344,7 @@ LoadingScene = function(superClass) {
         !(urls instanceof Array)) throw "urls needs to be an array";
         this.hasFinishedLoading = hasFinishedLoading, this.preStart(), this.loadAssets(urls);
     }
-    return extend(LoadingScene, superClass), LoadingScene.prototype.jmm = JsonModelManager.get(), 
-    LoadingScene.prototype.tm = TextureManager.get(), LoadingScene.prototype.som = SaveObjectManager.get(), 
-    LoadingScene.prototype.config = Config.get(), LoadingScene.prototype.sm = SoundManager.get(), 
-    LoadingScene.prototype.loadAssets = function(assets) {
+    return extend(LoadingScene, superClass), LoadingScene.prototype.loadAssets = function(assets) {
         var asset, i, interval, len, url;
         for (i = 0, len = assets.length; len > i; i++) asset = assets[i], url = "string" == typeof asset ? asset : asset.destPath, 
         url.endsWithAny(Utils.SAVE_URLS) ? this._loadSaveObject(url) : url.endsWithAny(Utils.JSON_URLS) ? this._loadJsonModel(url) : url.endsWithAny(Utils.IMG_URLS) ? this._loadTexture(url) : url.endsWithAny(Utils.AUDIO_URLS) ? this._loadAudio(url) : console.log("WARNING: " + url + " is not a valid format");
@@ -17383,7 +17482,7 @@ Cinematic = function() {
     }, Cinematic.prototype.tick = function(tpf) {
         var action, i, item, j, len, len1, ref, ref1, script;
         if (this.loaded === !0) {
-            for (ref = this.items, i = 0, len = ref.length; len > i; i++) item = ref[i], item instanceof BaseParticle && item.tick(tpf), 
+            for (ref = this.items, i = 0, len = ref.length; len > i; i++) item = ref[i], item instanceof BaseParticle2 && item.tick(tpf), 
             item instanceof Mirror && item.tick(tpf), item instanceof Water && item.tick(tpf);
             if (!this.json.scripts.where({
                 processing: !0
@@ -17491,10 +17590,10 @@ var ArtGenerator;
 
 ArtGenerator = function() {
     function ArtGenerator(options) {
-        this.options = options, this.canvas = document.createElement("canvas"), this.canvas.width = options.width, 
-        this.canvas.height = options.height, this.ctx = this.canvas.getContext("2d");
+        this.options = options, this.tm = TextureManager.get(), this.canvas = document.createElement("canvas"), 
+        this.canvas.width = options.width, this.canvas.height = options.height, this.ctx = this.canvas.getContext("2d");
     }
-    return ArtGenerator.prototype.tm = TextureManager.get(), ArtGenerator.prototype.fromJson = function(json) {
+    return ArtGenerator.prototype.fromJson = function(json) {
         var i, item, len, ref, results;
         for (this.clear(), ref = json.items, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
         null != item.asset && null != item.asset.key && (item.key = item.asset.key), "image" === item.type && this.drawImage(item), 
@@ -17686,7 +17785,8 @@ Engine3D = function() {
         this.implode = bind(this.implode, this), this.render = bind(this.render, this), 
         this.keyboardHandler = bind(this.keyboardHandler, this), this.mouseHandler = bind(this.mouseHandler, this);
         var camera;
-        this.width = this.config.width, this.height = this.config.height, this.renderer = new THREE.WebGLRenderer({
+        this.uptime = 0, this.time = void 0, this.config = Config.get(), this.width = this.config.width, 
+        this.height = this.config.height, this.renderer = new THREE.WebGLRenderer({
             antialias: this.config.antialias,
             alpha: this.config.transparentBackground,
             logarithmicDepthBuffer: !1
@@ -17708,8 +17808,7 @@ Engine3D = function() {
             return e.preventDefault();
         }, !1), this.statsManager = StatsManager.get(), this.config.showStatsOnLoad && this.statsManager.toggle();
     }
-    return Engine3D.prototype.time = void 0, Engine3D.prototype.uptime = 0, Engine3D.prototype.config = Config.get(), 
-    Engine3D.prototype.setWidthHeight = function(width, height) {
+    return Engine3D.prototype.setWidthHeight = function(width, height) {
         return this.width = width, this.height = height, this.config.width = width, this.config.height = height, 
         this.camera.aspect = this.width / this.height, this.camera.updateProjectionMatrix(), 
         this.renderer.setSize(this.width, this.height);
@@ -17892,6 +17991,11 @@ Array.prototype.isEmpty = function() {
     return 0 === this.size();
 }, String.prototype.contains = function(s) {
     return -1 !== this.indexOf(s);
+}, String.prototype.containsAny = function(strings) {
+    var containsAny, j, len, s;
+    if (containsAny = !1, null == strings) return !1;
+    for (j = 0, len = strings.length; len > j; j++) s = strings[j], this.contains(s) && (containsAny = !0);
+    return containsAny;
 }, String.prototype.isPresent = function() {
     return "undefined" != typeof this && null !== this && !this.isEmpty();
 }, String.prototype.capitalizeFirstLetter = function() {

@@ -5,11 +5,9 @@ work on game maker
 separate sound from action
 fix bug when loading sound
 
-save particle directly in lib
 add item dynamic texture
 save bezier text
 open bezier text in editor
-fade between scenes
 load scene script
 add controls
 bunny follow heightmap
