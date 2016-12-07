@@ -43,6 +43,7 @@ app.controller 'NewGameController', ['$scope', '$mdToast', '$location', ($scope,
     { name: 'cinema', hint: 'Cinematic template for storytelling.' }
     { name: 'project', hint: 'Project template with build tools.' }
     { name: 'project-multiplayer', hint: 'Project template with networking and build tools.' }
+    { name: 'project-multiplayer-menu', hint: 'More complete project template' }
     { name: 'vr-project', hint: 'VR project with multiplayer and build tools.' }
   ]
 

@@ -1,0 +1,10 @@
+{
+  "textures": [
+    {
+      "libPath": "workspace/lib/textures/star.png",
+      "destPath": "assets/star.png",
+      "type": "texture"
+    }
+  ],
+  "particle": "[\n  {\n    texture: {\n      value: TextureManager.get().items['star'],\n      libPath: '../workspace/lib/textures/star.png'\n    },\n    depthTest: true,\n    depthWrite: false,\n    blending: THREE.AdditiveBlending,\n    emitters: [\n      {\n        type: SPE.distributions.SPHERE,\n        particleCount: 200,\n        maxAge: {\n          value: 2,\n          spread: 1\n        },\n        acceleration: {\n          spread: new THREE.Vector3(1, 1, 1)\n        },\n        velocity: {\n          spread: new THREE.Vector3(3, 3, 3)\n        },\n        position: {\n          radius: 10,\n          radiusScale: new THREE.Vector3(1, 1, 1),\n          randomise: true\n        },\n        size: {\n          value: [0.5, 2, 0.5],\n          spread: [1, 1, 1]\n        },\n        color: {\n          value: [new THREE.Color('#DAA520'), new THREE.Color('#FFD700'), new THREE.Color('#DAA520')]\n        },\n        opacity: {\n          value: [0, 0.5, 0]\n        }\n      }\n    ]\n  }\n]"
+}

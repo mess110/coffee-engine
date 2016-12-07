@@ -147,6 +147,12 @@ class Helper
     Terrain.fromJson(options)
 
   # Creates a particle group and mesh
+  # @example - assuming fireflies-1 is an asset
+  #
+  #   @fireflies = Helper.particle(key: 'fireflies-1', type: 'particle')
+  #   @scene.add @fireflies.mesh
+  #
+  #   @fireflies.tick(tpf)
   @particle: (options = {}) ->
     BaseParticle2.fromJson(options)
 

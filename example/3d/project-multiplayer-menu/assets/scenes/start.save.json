@@ -1,0 +1,65 @@
+{
+  "id": "start",
+  "engine": {
+    "camera": 0,
+    "orientation": "landscape"
+  },
+  "assets": [
+    {
+      "type": "particle",
+      "libPath": "workspace/lib/particles/fireflies-1.save.json",
+      "destPath": "assets/fireflies-1.save.json"
+    },
+    {
+      "libPath": "workspace/lib/textures/star.png",
+      "destPath": "assets/star.png",
+      "type": "texture"
+    },
+    {
+      "type": "model",
+      "libPath": "/home/kiki/Sync/blender/models/bear/bear_all.json",
+      "destPath": "assets/bear_all.json"
+    },
+    {
+      "type": "model",
+      "libPath": "/home/kiki/Sync/blender/models/coloana-infinitului/coloana-infinitului.json",
+      "destPath": "assets/coloana-infinitului.json"
+    },
+    {
+      "type": "model",
+      "libPath": "/home/kiki/Sync/blender/models/putinei/putinei.json",
+      "destPath": "assets/putinei.json"
+    },
+    {
+      "type": "model",
+      "libPath": "/home/kiki/Sync/blender/models/lost-blender-file/chest.json",
+      "destPath": "assets/chest.json"
+    }
+  ],
+  "cameras": [
+    {
+      "type": "PerspectiveCamera",
+      "view_angle": 45,
+      "near": 1,
+      "far": 100000,
+      "id": "camera",
+      "position": {
+        "z": 10,
+        "y": 0
+      },
+      "lookAt": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    }
+  ],
+  "items": [
+    {
+      "type": "particle",
+      "id": "menu-fireflies",
+      "key": "fireflies-1"
+    }
+  ],
+  "scripts": []
+}

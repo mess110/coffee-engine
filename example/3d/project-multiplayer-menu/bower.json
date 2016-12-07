@@ -1,0 +1,25 @@
+{
+  "name": "project",
+  "version": "0.0.0",
+  "authors": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {},
+  "dependencies": {
+    "coffee-engine": "~2.2.0",
+    "angular": "~1.4.8",
+    "angular-route": "~1.4.8",
+    "bootstrap-sass": "~3.3.6",
+    "angular-toastr": "^2.1.1"
+  },
+  "resolutions": {
+    "angular": "~1.4.8"
+  }
+}
