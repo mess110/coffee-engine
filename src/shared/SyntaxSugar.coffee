@@ -217,7 +217,7 @@ class Playlist
   constructor: (keys) ->
     throw new Error('keys needs to be an array') unless keys instanceof Array
     for key in keys
-      unless SoundManager.get().sounds[key]?
+      unless SoundManager.has(key)
         throw new Error("key '#{key}' not loaded in SoundManager")
     @items = new CyclicArray(keys)
 
@@ -234,9 +234,9 @@ class Playlist
       options.type = 'volume'
       for item in @items.items
         options.key = item
-        SoundManager.get().cmd(options)
+        SoundManager.cmd(options)
     else
-      audio = SoundManager.get().cmd(options)
+      audio = SoundManager.cmd(options)
     if ['play', 'fadeIn'].includes(options.type)
       audio._onend = []
       audio.on 'end', (data) =>
@@ -252,10 +252,10 @@ class Playlist
   # @example
   #   playlist = new Playlist(['shotgun', 'hit'])
   #   playlist.play()
-  #   SoundManager.get().pause(playlist.getPlayingKey())
+  #   SoundManager.pause(playlist.getPlayingKey())
   getPlayingKey: ->
     @items.get()
 
   # Get the audio object which is currently playing
   getPlayingAudio: ->
-    SoundManager.get().sounds[@getPlayingKey()]
+    SoundManager.get().items[@getPlayingKey()]

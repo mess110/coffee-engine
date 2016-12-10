@@ -78,7 +78,7 @@ class Terrain extends BaseModel
       terrain = new Terrain(textureUrl, width, height, wSegments, hSegments)
       terrain.applyHeightmap(hm.heightData)
 
-      scene = SceneManager.get().currentScene() unless scene?
+      scene = SceneManager.currentScene() unless scene?
 
       scene.terrain = terrain
       scene.scene.add terrain.mesh

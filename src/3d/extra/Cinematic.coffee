@@ -50,7 +50,7 @@ class Cinematic
         art.fromJson(so)
 
         material = Helper.materialFromCanvas(art.canvas)
-        MaterialManager.get().load(key, material)
+        MaterialManager.load(key, material)
 
   _loadCameras: ->
     for item in @json.cameras

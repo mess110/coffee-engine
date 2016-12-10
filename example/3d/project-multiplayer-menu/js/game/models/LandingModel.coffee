@@ -31,7 +31,7 @@ class LandingModel extends BaseModel
     # TODO: find out why rotation.copy doesn't work
     @model.rotation.set selected.rotation.x, selected.rotation.y, selected.rotation.z
     @model.scale.copy selected.scale if selected.scale?
-    @mesh = JsonModelManager.get().clone(selected.key)
+    @mesh = JsonModelManager.clone(selected.key)
     @model.add @mesh
     if selected.animate?
       @animate(selected.animate)

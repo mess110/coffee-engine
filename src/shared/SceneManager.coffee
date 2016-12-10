@@ -12,17 +12,19 @@ class SceneManager
 
     # Returns the current scene
     currentScene: ->
-      throw 'SceneManager.setScene not called' unless @currentSceneIndex?
-      throw 'Requires at least one scene' if @isEmpty()
+      throw new Error('SceneManager.setScene not called') unless @currentSceneIndex?
+      throw new Error('Requires at least one scene') if @isEmpty()
       @scenes[@currentSceneIndex]
 
     # Adds a scene if it is not found in @scenes
     addScene: (scene) ->
+      throw new Error('missing scene param') unless scene?
       i = @scenes.indexOf(scene)
       @scenes.push scene if i == -1
 
     # removes a scene
     removeScene: (scene) ->
+      throw new Error('missing scene param') unless scene?
       i = @scenes.indexOf(scene)
       @removeSceneByIndex(i)
 
@@ -35,14 +37,15 @@ class SceneManager
 
     # sets the scene
     setScene: (scene) ->
+      throw new Error('missing scene param') unless scene?
       i = @scenes.indexOf(scene)
-      throw 'scene not added to SceneManager' if i == -1
+      throw new Error('scene not added to SceneManager') if i == -1
       @setSceneByIndex(i)
       @currentScene()
 
     # sets the scene by index
     setSceneByIndex: (i) ->
-      throw 'invalid scene index' if @isEmpty() or !@isValidIndex(i)
+      throw new Error('invalid scene index') if @isEmpty() or !@isValidIndex(i)
       @currentSceneIndex = i
       console.log "Changing to scene #{i}" if Config.get().debug
       @currentScene()
@@ -64,3 +67,9 @@ class SceneManager
 
   @get: () ->
     instance ?= new Singleton.SceneManager()
+
+  @currentScene: ->
+    @get().currentScene()
+
+  @addScene: (scene) ->
+    @get().addScene(scene)

@@ -12,7 +12,7 @@ class AnimationTest extends TestScene
       @model.mesh.animations[0].play()
     else
       @jmm.load 'chicken', 'assets/chicken.json', (mesh) ->
-        scene = SceneManager.get().currentScene()
+        scene = SceneManager.currentScene()
         model = new BaseModel()
         model.mesh = mesh
         scene.model = model
@@ -22,7 +22,7 @@ class AnimationTest extends TestScene
   tick: (tpf) ->
 
   testInfo: ->
-    console.log 'SceneManager.get().currentScene().model.animate(1)'
+    console.log 'SceneManager.currentScene().model.animate(1)'
 
   doMouseEvent: (event, raycaster) ->
 

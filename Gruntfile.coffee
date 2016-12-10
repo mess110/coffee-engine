@@ -2,7 +2,6 @@ fs = require('fs')
 
 module.exports = (grunt) ->
   files_3d = [
-    "src/vendor/ConsoleOverride.js"
     "bower_components/stats.js/src/Stats.js"
     "bower_components/tweenjs/src/Tween.js"
 
@@ -11,7 +10,6 @@ module.exports = (grunt) ->
     "bower_components/threejs/examples/js/effects/StereoEffect.js"
     "bower_components/threejs/examples/js/effects/AnaglyphEffect.js"
     "bower_components/threejs/examples/js/controls/OrbitControls.js"
-    # "bower_components/threejs/examples/js/controls/DeviceOrientationControls.js"
     "bower_components/threejs/examples/js/controls/FirstPersonControls.js"
     "bower_components/threejs/examples/js/controls/PointerLockControls.js"
     "bower_components/threejs/examples/js/Mirror.js"
@@ -51,6 +49,7 @@ module.exports = (grunt) ->
     "src/3d/BaseParticle.js"
     "src/3d/Config.js"
     "src/3d/Helper.js"
+    "src/3d/ShaderLib.js"
 
     "src/3d/extra/Terrain.js"
     "src/3d/extra/SpotLight.js"

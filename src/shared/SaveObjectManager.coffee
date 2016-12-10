@@ -67,3 +67,9 @@ class SaveObjectManager
 
   @get: () ->
     instance ?= new Singleton.SaveObjectManager()
+
+  @hasFinishedLoading: ->
+    @get().hasFinishedLoading()
+
+  @load: ->
+    @get().load(key, url)

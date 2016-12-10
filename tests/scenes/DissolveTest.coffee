@@ -4,7 +4,7 @@ class DissolveTest extends TestScene
     box = new (THREE.BoxGeometry)(1, 1, 1)
 
     @tm.load 'heightmap-lake-taupo', 'assets/heightmap-lake-taupo.png', (texture) ->
-      scene = SceneManager.get().currentScene()
+      scene = SceneManager.currentScene()
       texture = TextureManager.get().items[texture]
 
       scene.material = Helper.dissolveMaterial(texture)

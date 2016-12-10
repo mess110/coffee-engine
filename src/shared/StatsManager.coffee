@@ -31,8 +31,15 @@ class StatsManager
 
     # @nodoc
     update: (renderer) ->
+      return unless @statsVisible
       @stats.update()
       @rendererStats.update(renderer)
 
   @get: () ->
     instance ?= new Singleton.StatsManager()
+
+  @toggle: ->
+    @get().toggle()
+
+  @update: (renderer) ->
+    @get().update(renderer)

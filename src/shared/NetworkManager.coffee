@@ -75,3 +75,21 @@ class NetworkManager
 
   @get: () ->
     instance ?= new Singleton.NetworkManager()
+
+  @connect: (namespace) ->
+    @get().connect(namespace)
+
+  @getSessionId: ->
+    @get().getSessionId()
+
+  @on: (event, func) ->
+    @get().on event, fund
+
+  @rawEmit: (name, data) ->
+    @get().rawEmit(name, data)
+
+  @fakeEmit: (name, data) ->
+    @get().fakeEmit(name, data)
+
+  @emit: (data) ->
+    @get().emit(data)

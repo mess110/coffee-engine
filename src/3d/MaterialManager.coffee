@@ -15,5 +15,15 @@ class MaterialManager
       @items[key] = material
       @
 
+    item: (key) ->
+      throw new Error("#{key} not found in MaterialManager")
+      @items[key]
+
   @get: () ->
     instance ?= new Singleton.MaterialManager()
+
+  @load: (key, material) ->
+    @get().load(key, material)
+
+  @item: (key) ->
+    @get().item(key)

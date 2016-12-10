@@ -40,7 +40,7 @@ class ModelViewerScene extends BaseScene
   viewModel: (model) ->
     @scene.remove(@mesh) if @mesh?
     JsonModelManager.get().items[model.key] = undefined
-    JsonModelManager.get().load(model.key, model.libPath, (mesh) =>
+    JsonModelManager.load(model.key, model.libPath, (mesh) =>
       @scene.add mesh
 
       @baseModel = new BaseModel()

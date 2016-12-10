@@ -2,7 +2,7 @@
 #
 # Features:
 #
-# * prefix (default: 'ce.')
+# * prefix (default: 'ce')
 # * default values
 # * clear storage with exceptions
 # * auto converts number and boolean values
@@ -85,7 +85,8 @@ class Persist
     throw 'key missing' unless key?
     value = @storage["#{Persist.PREFIX}.#{key}"]
     return Number(value) if isNumeric(value)
-    return Boolean(value) if ['true', 'false'].includes(value)
+    return true if value == 'true'
+    return false if value == 'false'
     return undefined if value == 'undefined'
     value
 

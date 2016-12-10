@@ -140,7 +140,7 @@ class Helper
   # Clones a JsonModel from the JsonModelManager
   @model: (options = {}) ->
     throw new Error("key missing for: #{JSON.stringify(options)}") unless options.key?
-    JsonModelManager.get().clone(options.key)
+    JsonModelManager.clone(options.key)
 
   # Creates a terrain
   @terrain: (options = {}) ->
@@ -500,7 +500,7 @@ class Helper
   @vrPointer: (camera, options = {}) ->
     cube = @cube(size: 0.5)
 
-    scene = SceneManager.get().currentScene()
+    scene = SceneManager.currentScene()
     scene.vrPointer = cube
 
     vector = new THREE.Vector3()
@@ -583,7 +583,7 @@ class Helper
     for item in options.items
       item.count ?= 1
       for i in [0...item.count]
-        model = JsonModelManager.get().clone(item.type)
+        model = JsonModelManager.clone(item.type)
 
         for attr in ['scale', 'position', 'rotation']
           attrHash =

@@ -7,52 +7,54 @@ class SoundManager
   #
   # Can be accessed through the singleton class SoundManager
   class Singleton.SoundManager
-    sounds: {}
+    items: {}
     loadCount: 0
 
-    # Alias for add
     load: (key, url) ->
-      return if @sounds[key] != undefined
-      @sounds[key] = null
+      return if @items[key] != undefined
+      @items[key] = null
       url = [url] unless url instanceof Array
 
       howl = new Howl(
         autoplay: false
         urls: url
         onload: ->
-          window.SoundManager.get().sounds[key] = howl
-          window.SoundManager.get().loadCount += 1
+          window.SoundManager.get()._loaded(key, howl)
       )
+
+    _loaded: (key, howl) ->
+      @items[key] = howl
+      @loadCount += 1
 
     # generic cmd for Howler
     cmd: (options = {}) ->
       throw new Error('options.type missing') unless options.type?
       throw new Error('options.key missing') unless options.key?
 
-      unless options.key of @sounds
+      unless options.key of @items
         throw new Error("Sound with key: #{options.key} not found!")
         return
 
       switch options.type
         when 'play', 'pause', 'stop'
-          @sounds[options.key][options.type]()
+          @items[options.key][options.type]()
         when 'fadeIn', 'fadeOut'
           options.to ?= 1
           options.duration ?= 1000
-          @sounds[options.key][options.type](options.to, options.duration)
+          @items[options.key][options.type](options.to, options.duration)
         when 'volume', 'volumeAll'
           options.volume ?= 1
           if options.type == 'volume'
-            @sounds[options.key][options.type](options.volume)
+            @items[options.key][options.type](options.volume)
           else
             @volumeAll(options.volume)
         when 'loop'
           options.loop ?= false
-          @sounds[options.key][options.type](options.loop)
+          @items[options.key][options.type](options.loop)
         else
           throw new Error("unknown options.type #{options.type}")
 
-      @sounds[options.key]
+      @items[options.key]
 
     # Play a sound by key
     play: (key) ->
@@ -83,17 +85,56 @@ class SoundManager
 
     # Checks if all the textures have finished loading
     hasFinishedLoading: ->
-      @loadCount == Object.keys(@sounds).size()
+      @loadCount == Object.keys(@items).size()
 
     # Update the volume of all the loaded sounds
     volumeAll: (i) ->
       i = 0 if i < 0
       i = 1 if i > 1
 
-      for key of @sounds
+      for key of @items
         @volume(key, i)
 
       i
 
+    has: (key) ->
+      @items[key]?
+
   @get: () ->
     instance ?= new Singleton.SoundManager()
+
+  @has: (key) ->
+    @get().has(key)
+
+  @play: (key) ->
+    @get().play(key)
+
+  @pause: (key) ->
+    @get().pause(key)
+
+  @stop: (key) ->
+    @get().stop(key)
+
+  @fadeIn: (key, to) ->
+    @get().fadeIn(key, to)
+
+  @fadeOut: (key, to) ->
+    @get().fadeOut(key, to)
+
+  @volume: (key, volume) ->
+    @get().volume(key, volume)
+
+  @looping: (key, looping) ->
+    @get().looping(key, looping)
+
+  @volumeAll: (i) ->
+    @get().volumeAll(i)
+
+  @load: (key, url) ->
+    @get().load(key, url)
+
+  @cmd: (options) ->
+    @get().cmd(options)
+
+  @hasFinishedLoading: ->
+    @get().hasFinishedLoading()

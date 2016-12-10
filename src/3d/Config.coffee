@@ -62,7 +62,7 @@ class Config
     #
     # @see StatsManager
     toggleStats: () ->
-      StatsManager.get().toggle()
+      StatsManager.toggle()
 
     # Toggle sound flag
     toggleSound: () ->

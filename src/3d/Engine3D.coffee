@@ -50,8 +50,7 @@ class Engine3D
         e.preventDefault()
       , false
 
-    @statsManager = StatsManager.get()
-    @statsManager.toggle() if @config.showStatsOnLoad
+    StatsManager.toggle() if @config.showStatsOnLoad
 
   setWidthHeight: (width, height) ->
     @width = width
@@ -178,7 +177,7 @@ class Engine3D
     @time = now
     @uptime += tpf
     @sceneManager.tick(tpf)
-    @statsManager.update(@renderer)
+    StatsManager.update(@renderer)
     TWEEN.update()
 
     if @config.anaglyph

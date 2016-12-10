@@ -41,3 +41,9 @@ class TextureManager
 
   @get: () ->
     instance ?= new Singleton.TextureManager()
+
+  @load: (key, url, callback) ->
+    @get().load(key, url, callback)
+
+  @hasFinishedLoading: ->
+    @get().hasFinishedLoading()

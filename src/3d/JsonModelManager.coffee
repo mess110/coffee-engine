@@ -44,6 +44,8 @@ class JsonModelManager
     # Can also be useful when trying to clone animated objects as clone() from
     # THREEJS doesn't also clone the created THREE.Animation
     initAnimations: (mesh) ->
+      throw new Error('missing param mesh') unless mesh?
+
       mesh.animations = []
       mesh.animationsMixer = new THREE.AnimationMixer(mesh)
 
@@ -79,5 +81,14 @@ class JsonModelManager
 
   @get: () ->
     instance ?= new Singleton.JsonModelManager()
+
+  @clone: (key) ->
+    @get().clone(key)
+
+  @load: (key, url, callback) ->
+    @get().load(key, url, callback)
+
+  @initAnimations: (mesh) ->
+    @get().initAnimations(mesh)
 
 exports.JsonModelManager = JsonModelManager
