@@ -180,6 +180,10 @@ isNumeric = (n) ->
 Number::endsWith = (s) ->
   @.toString().endsWith(s)
 
+console.ce = (message) ->
+  return unless Config.get().debug
+  console.log(message)
+
 # Used for next() and prev()
 class CyclicArray
   constructor: (items = []) ->

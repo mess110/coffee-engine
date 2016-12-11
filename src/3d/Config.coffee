@@ -79,4 +79,22 @@ class Config
   @get: () ->
     instance ?= new Singleton.Config()
 
+  @fillWindow: ->
+    @get().fillWindow()
+
+  @toggleAnaglyph: ->
+    @get().toggleAnaglyph()
+
+  @toggleStats: ->
+    @get().toggleStats()
+
+  @toggleSound: ->
+    @get().toggleSound()
+
+  @toggleDebug: ->
+    @get().toggleDebug()
+
+  @toggleFullscreen: ->
+    @get().toggleFullscreen()
+
 exports.Config = Config

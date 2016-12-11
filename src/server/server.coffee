@@ -51,9 +51,7 @@ class GameServer
   #
   # @param [String] id
   getGame: (id) ->
-    for game in @games
-      if game.id == id
-        return game
+    @games.where(id: id).first()
 
 # It should represent a virtual/physical machine.
 # It has only one GameServer instance.
