@@ -183,6 +183,7 @@ Number::endsWith = (s) ->
 console.ce = (message) ->
   return unless Config.get().debug
   console.log(message)
+  return
 
 # Used for next() and prev()
 class CyclicArray

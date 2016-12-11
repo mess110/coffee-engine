@@ -47,8 +47,15 @@ class SceneManager
     setSceneByIndex: (i) ->
       throw new Error('invalid scene index') if @isEmpty() or !@isValidIndex(i)
       @currentSceneIndex = i
-      console.log "Changing to scene #{i}" if Config.get().debug
-      @currentScene()
+      scene = @currentScene()
+
+      debugMsg = "Changing to scene #{i}"
+      try
+        debugMsg += ": #{scene.constructor.name}"
+      catch e
+      console.ce debugMsg
+
+      scene
 
     # checks if there are scenes added to the SceneManager
     isEmpty: ->

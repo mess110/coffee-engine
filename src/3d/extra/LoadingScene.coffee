@@ -53,7 +53,7 @@ class LoadingScene extends BaseScene
     interval = setInterval =>
       if @isLoadingDone()
         clearInterval(interval)
-        console.log 'Finished loading' if @config.debug
+        console.ce 'Finished loading'
         @hasFinishedLoading()
     , 100
 
@@ -67,25 +67,25 @@ class LoadingScene extends BaseScene
   # assumes the url has been validated as a json model
   _loadJsonModel: (url) ->
     name = Utils.getKeyName(url, Utils.JSON_URLS)
-    console.log "Loading model '#{name}' from '#{url}'" if @config.debug
+    console.ce "Loading model '#{name}' from '#{url}'"
     @jmm.load(name, url)
 
   # assumes the url has been validated as a texture
   _loadTexture: (url) ->
     name = Utils.getKeyName(url, Utils.IMG_URLS)
-    console.log "Loading texture '#{name}' from '#{url}'" if @config.debug
+    console.ce "Loading texture '#{name}' from '#{url}'"
     @tm.load(name, url)
 
   # assumes the url has been validated as a jave object
   _loadSaveObject: (url) ->
     name = Utils.getKeyName(url, Utils.SAVE_URLS)
-    console.log "Loading save object '#{name}' from '#{url}'" if @config.debug
+    console.ce "Loading save object '#{name}' from '#{url}'"
     @som.load(name, url)
 
   # assumes the url has been validated as a sound
   _loadAudio: (url) ->
     name = Utils.getKeyName(url, Utils.AUDIO_URLS)
-    console.log "Loading audio '#{name}' from '#{url}'" if @config.debug
+    console.ce  "Loading audio '#{name}' from '#{url}'"
     @sm.load(name, url)
 
   # @nodoc

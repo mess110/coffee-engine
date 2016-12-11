@@ -95,9 +95,9 @@ THREEx.DynamicTexture::drawTextCooked = (options) ->
     align: if options.align != undefined then options.align else 'left'
     fillStyle: if options.fillStyle != undefined then options.fillStyle else 'black'
     fillLineWidth: if options.fillLineWidth? then options.fillLineWidth else 1
+    strokeStyle: undefined
     strokeLineWidth: if options.strokeLineWidth? then options.strokeLineWidth else 20
     font: if options.font != undefined then options.font else 'bold ' + 0.2 * 512 + 'px Arial'
-    strokeStyle: undefined
   # sanity check
   console.assert typeof text == 'string'
   context.save()
