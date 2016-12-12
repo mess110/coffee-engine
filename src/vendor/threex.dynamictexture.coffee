@@ -98,6 +98,8 @@ THREEx.DynamicTexture::drawTextCooked = (options) ->
     strokeStyle: undefined
     strokeLineWidth: if options.strokeLineWidth? then options.strokeLineWidth else 20
     font: if options.font != undefined then options.font else 'bold ' + 0.2 * 512 + 'px Arial'
+    x: if options.x? then options.x else 0
+    y: if options.y? then options.y else 0
   # sanity check
   console.assert typeof text == 'string'
   context.save()
@@ -126,9 +128,9 @@ THREEx.DynamicTexture::drawTextCooked = (options) ->
     # actually draw the text at the proper position
     if options.strokeStyle?
       @context.lineWidth = params.strokeLineWidth
-      @context.strokeText maxText, x, y
+      @context.strokeText maxText, x + params.x, y + params.y
     @context.lineWidth = params.fillLineWidth
-    @context.fillText maxText, x, y
+    @context.fillText maxText, x + params.x, y + params.y
     # goto the next line
     y += params.lineHeight * canvas.height
   context.restore()

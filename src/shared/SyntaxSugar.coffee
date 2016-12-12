@@ -107,6 +107,9 @@ Array::insert = (index, item) ->
   @splice index, 0, item
   return
 
+Array::toCyclicArray = ->
+  new CyclicArray(@)
+
 # Returns the length of a string
 String::size = (s) ->
   @.length

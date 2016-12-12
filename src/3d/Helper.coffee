@@ -632,6 +632,18 @@ class Helper
       fragmentShader: THREE.ShaderLib.dissolve.fragmentShader
       shading: THREE.SmoothShading)
 
+  # @see @dissolveMaterial
+  #
+  # @example
+  #   material = Helper.setDissolveMaterialColor(material, 0, 0, 1)
+  @setDissolveMaterialColor: (dm, r, g, b) ->
+    new Error('missing dm param') unless dm?
+    r = parseFloat(r).toFixed(1)
+    g = parseFloat(g).toFixed(1)
+    b = parseFloat(b).toFixed(1)
+    dm.fragmentShader = dm.fragmentShader.replace('    color.r = 1.0; color.g = 0.5; color.b = 0.0;', "    color.r = #{r}; color.g = #{g}; color.b = #{b};")
+    dm
+
   # sends the server a reload package and sets up a reload listener
   # if the listener receives reload, it reloads the page
   @networkReload: ->

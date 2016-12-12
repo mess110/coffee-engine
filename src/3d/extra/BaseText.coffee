@@ -18,6 +18,8 @@ class BaseText extends BaseModel
     @strokeStyle = options.strokeStyle
     @strokeLineWidth = options.strokeLineWidth
     @text = options.text
+    @x = options.x
+    @y = options.y
 
     @dynamicTexture  = new THREEx.DynamicTexture(@canvasW, @canvasH)
     @setText(@text)
@@ -44,6 +46,8 @@ class BaseText extends BaseModel
       fillLineWidth: @fillLineWidth
       strokeStyle: @strokeStyle
       strokeLineWidth: @strokeLineWidth
+      x: @x
+      y: @y
       font: @font
     )
 

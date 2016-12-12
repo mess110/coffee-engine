@@ -83,8 +83,9 @@ class BaseModel
   #
   # @param [Raycaster] raycaster
   isHovered: (raycaster) ->
-    raycaster.intersectObject(@mesh).length > 0 ||
-    raycaster.intersectObjects(@mesh.children).length > 0
+    # raycaster.intersectObject(@mesh).length > 0 ||
+    # raycaster.intersectObjects(@mesh.children).length > 0
+    raycaster.intersectObject(@mesh, true).length > 0
 
   # Play an animation
   #

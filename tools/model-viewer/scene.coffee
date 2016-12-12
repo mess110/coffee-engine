@@ -16,11 +16,17 @@ class ModelViewerScene extends BaseScene
     @engine = EngineHolder.get().engine
 
     engine.camera.position.set 0, 5, 25
-    @engine.setClearColor(@scene.fog.color, 1)
+    @engine.setClearColor(@scene.fog.color.clone(), 1)
 
     @controls = Helper.orbitControls(@engine)
     @controls.enabled = true
     @controls.damping = 0.2
+
+  toggleFog: ->
+    if @scene.fog?
+      @scene.fog = undefined
+    else
+      @scene.fog = Helper.fog(far: 90, color: 'white')
 
   setLight: (value = true) ->
     if value

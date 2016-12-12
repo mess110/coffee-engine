@@ -38,6 +38,9 @@
                 <md-switch ng-model="wireframe" aria-label="wireframe" ng-click="toggleWireframe()">
                     Wireframe
                 </md-switch>
+                <md-switch ng-model="fog" aria-label="fog" ng-click="toggleFog()">
+                    Fog
+                </md-switch>
             </md-input-container>
             <md-input-container layout="row">
                 <md-button ng-click="openAssetSearch($event, { type: 'texture' }, skinChosen)">change skin</md-button>

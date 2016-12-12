@@ -12,6 +12,7 @@ app.controller 'ModelViewerController', ($scope) ->
   $scope.ui.project.name = 'Model Viewer'
   $scope.light = true
   $scope.lightDefault = true
+  $scope.fog = true
   $scope.search = ''
   $scope.searchFilter = (item) ->
     item.key.contains($scope.search)
@@ -96,3 +97,6 @@ app.controller 'ModelViewerController', ($scope) ->
   $scope.toggleLight = ->
     $scope.light = !$scope.light
     modelViewerScene.setLight($scope.light)
+
+  $scope.toggleFog = ->
+    modelViewerScene.toggleFog()
