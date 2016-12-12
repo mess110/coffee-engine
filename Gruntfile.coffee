@@ -53,6 +53,7 @@ module.exports = (grunt) ->
 
     "src/3d/extra/BaseText.js"
     "src/3d/extra/Terrain.js"
+    "src/3d/extra/Tree.js"
     "src/3d/extra/SpotLight.js"
     "src/3d/extra/Mirror.js"
     "src/3d/extra/LookAtTimer.js"

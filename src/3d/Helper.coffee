@@ -270,7 +270,7 @@ class Helper
       side: THREE.BackSide)
     new (THREE.Mesh)(new (THREE.BoxGeometry)(size, size, size), aSkyBoxMaterial)
 
-  @sampleShader = () ->
+  @sampleShaderMaterial = ->
     shader =
       uniforms:
         time:
@@ -301,11 +301,14 @@ class Helper
         '}'
       ].join('\n')
 
-    itemMaterial = new (THREE.ShaderMaterial)(
+    new (THREE.ShaderMaterial)(
       uniforms: shader.uniforms
       vertexShader: shader.vertex
       fragmentShader: shader.fragment
     )
+
+  @sampleShader = () ->
+    itemMaterial = @sampleShaderMaterial()
     mesh = new (THREE.Mesh)(new (THREE.BoxGeometry)(1, 1, 1), itemMaterial)
     mesh.shaderSrc = shader
     mesh
@@ -598,6 +601,12 @@ class Helper
 
     # new THREE.Mesh(singleGeometry, mat)
     node
+
+  @basicMaterial: (key) ->
+    new THREE.MeshBasicMaterial(
+      map: TextureManager.get().items[key]
+      transparent: true
+    )
 
   # @example
   #   box = new (THREE.BoxGeometry)(1, 1, 1)
