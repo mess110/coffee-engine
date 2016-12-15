@@ -29,6 +29,11 @@ class StatsManager
         document.body.removeChild( @rendererStats.domElement )
       @statsVisible
 
+    # Set stat visibility
+    setVisible: (value) ->
+      if value != @statsVisible
+        @toggle()
+
     # @nodoc
     update: (renderer) ->
       return unless @statsVisible
@@ -40,6 +45,9 @@ class StatsManager
 
   @toggle: ->
     @get().toggle()
+
+  @setVisible: ->
+    @get().setVisible()
 
   @update: (renderer) ->
     @get().update(renderer)

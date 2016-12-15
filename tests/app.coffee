@@ -14,14 +14,17 @@ scenes = new CyclicArray([
   new ShaderTest()
   new AnimationTest()
   new DissolveTest()
+  new PoolTest()
 ])
 
 nextScene = ->
   engine.initScene(scenes.next())
+  console.log scenes.get().constructor.name
   Persist.set('lastTest', scenes.index)
 
 Engine3D.scenify(engine, ->
   scenes.index = Persist.get('lastTest')
+  console.log scenes.get().constructor.name
   engine.initScene(scenes.get())
 )
 

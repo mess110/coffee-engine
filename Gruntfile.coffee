@@ -50,6 +50,7 @@ module.exports = (grunt) ->
     "src/3d/Config.js"
     "src/3d/Helper.js"
     "src/3d/ShaderLib.js"
+    "src/3d/PoolManager.js"
 
     "src/3d/extra/BaseText.js"
     "src/3d/extra/Terrain.js"

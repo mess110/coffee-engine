@@ -1,10 +1,15 @@
 <md-content>
     <md-card layout="column">
         <md-card-content layout="row">
-            <md-input-container flex>
-                <label>Curve</label>
-                <input ng-model="json.curve">
-            </md-input-container>
+            <div flex layout="row">
+                <md-input-container flex>
+                    <label>Curve</label>
+                    <input ng-model="json.curve">
+                </md-input-container>
+            </div>
+            <div flex layout="columns">
+                <input style="width: 5px; height: 120px; -webkit-appearance: slider-vertical; padding: 0px 20px" type="range" min="-500" max="500" ng-model="entries[$index]" ng-repeat="item in entries" ng-change="updateEntries()" ng-model-options="{ debounce: 100 }"/>
+            </div>
         </md-card-content>
         <md-card-content layout="row">
             <md-input-container flex>

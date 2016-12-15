@@ -3,6 +3,9 @@ app.controller 'BezierController', ($scope) ->
   $scope.ui.project.name = 'Bezier Helper'
   $scope.setScene(bezierScene)
 
+  updateEntries = ->
+    $scope.entries = $scope.json.curve.split(',')
+
   $scope.wireframe = false
   $scope.json =
     type: 'bezier'
@@ -12,10 +15,15 @@ app.controller 'BezierController', ($scope) ->
     letterPadding: 7
     drawCurve: true
     x: 0, y: 0
+  updateEntries()
 
   $scope.$watch 'wireframe', (newValue, oldValue) ->
     bezierScene.toggleWireframe()
 
   for w in ['curve', 'text', 'letterPadding', 'drawCurve']
     $scope.$watch "json.#{w}", (newValue, oldValue) ->
+      updateEntries()
       bezierScene.updateCurve($scope.json)
+
+  $scope.updateEntries = ->
+    $scope.json.curve = $scope.entries.join(',')

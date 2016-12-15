@@ -310,7 +310,7 @@ class Helper
   @sampleShader = () ->
     itemMaterial = @sampleShaderMaterial()
     mesh = new (THREE.Mesh)(new (THREE.BoxGeometry)(1, 1, 1), itemMaterial)
-    mesh.shaderSrc = shader
+    mesh.shaderSrc = itemMaterial
     mesh
 
   # Create orbit controls
@@ -654,3 +654,19 @@ class Helper
         location.reload()
 
     nm.emit(type: 'reload')
+
+  @tendToZero: (n, amount)->
+    return n if n == 0
+    if n > 0
+      n -= amount
+      n = 0 if n < 0
+    else
+      n += amount
+      n = 0 if n > 0
+    n
+
+  @addWithMinMax: (n, amount, min, max) ->
+    n += amount
+    n = max if n > max
+    n = min if n < min
+    n
