@@ -90,6 +90,8 @@ module.exports = (grunt) ->
     "bower_components/socket.io-client/dist/socket.io.js"
     "src/vendor/drawBezier.js"
     "src/vendor/jnorthpole.js"
+
+    "src/server/GameInstance.js"
   ]
 
   all_2d_files = files_2d.concat(extras)

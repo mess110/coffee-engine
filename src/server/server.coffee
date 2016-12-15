@@ -4,35 +4,7 @@ express = require('express.io')
 require('../shared/SyntaxSugar.coffee')
 Utils = require('../shared/Utils.coffee').Utils
 PodKeyManager = require('../server/PodKeyManager.coffee').PodKeyManager
-
-# There can be many games running on a GameServer
-#
-# Each one has its own tick interval and is independent
-# from other games
-class Game
-
-  # Creates a new game and start ticking
-  constructor: (config) ->
-    @players = {}
-    @sockets = {}
-    @inputs = []
-
-    @id = Utils.guid()
-    @config = config
-    @setTickInterval(@config.ticksPerSecond)
-
-  # This methods needs to be implemented by a class which extends the Game
-  # It says what happens in a game tick.
-  tick: =>
-    throw 'tick needs to be implemented'
-
-  # Change tick interval of the Game
-  #
-  # @param [Number] tps
-  setTickInterval: (tps) ->
-    @config.ticksPerSecond = tps
-    clearInterval(@tickInterval) if @tickInterval?
-    @tickInterval = setInterval @tick, 1000 / @config.ticksPerSecond
+GameInstance = require('../server/GameInstance.coffee').GameInstance
 
 # Holds all the games and decides when to create new games.
 #
@@ -124,5 +96,5 @@ class Pod
 exports.Pod = Pod
 exports.PodKeyManager = PodKeyManager
 exports.GameServer = GameServer
-exports.Game = Game
+exports.GameInstance = GameInstance
 exports.Utils = Utils

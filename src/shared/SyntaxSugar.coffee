@@ -184,7 +184,8 @@ Number::endsWith = (s) ->
   @.toString().endsWith(s)
 
 console.ce = (message) ->
-  return unless Config.get().debug
+  if Config? && !Config.get().debug
+    return
   console.log(message)
   return
 
