@@ -32,4 +32,7 @@ class GameInstance
     clearInterval(@tickInterval) if @tickInterval?
     @tickInterval = setInterval @tick, 1000 / @config.ticksPerSecond
 
+  stopTicking: ->
+    clearInterval(@tickInterval) if @tickInterval?
+
 exports.GameInstance = GameInstance
