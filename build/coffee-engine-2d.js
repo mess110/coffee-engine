@@ -338,26 +338,35 @@ SceneManager = function() {
         function SceneManager() {}
         return SceneManager.prototype.scenes = [], SceneManager.prototype.currentSceneIndex = void 0, 
         SceneManager.prototype.currentScene = function() {
-            if (null == this.currentSceneIndex) throw "SceneManager.setScene not called";
-            if (this.isEmpty()) throw "Requires at least one scene";
+            if (null == this.currentSceneIndex) throw new Error("SceneManager.setScene not called");
+            if (this.isEmpty()) throw new Error("Requires at least one scene");
             return this.scenes[this.currentSceneIndex];
         }, SceneManager.prototype.addScene = function(scene) {
             var i;
+            if (null == scene) throw new Error("missing scene param");
             return i = this.scenes.indexOf(scene), -1 === i ? this.scenes.push(scene) : void 0;
         }, SceneManager.prototype.removeScene = function(scene) {
             var i;
+            if (null == scene) throw new Error("missing scene param");
             return i = this.scenes.indexOf(scene), this.removeSceneByIndex(i);
         }, SceneManager.prototype.removeSceneByIndex = function(i) {
             return i >= 0 ? (i === this.currentSceneIndex && (this.currentSceneIndex = void 0), 
             array.splice(i, 1)) : void 0;
         }, SceneManager.prototype.setScene = function(scene) {
             var i;
-            if (i = this.scenes.indexOf(scene), -1 === i) throw "scene not added to SceneManager";
+            if (null == scene) throw new Error("missing scene param");
+            if (i = this.scenes.indexOf(scene), -1 === i) throw new Error("scene not added to SceneManager");
             return this.setSceneByIndex(i), this.currentScene();
         }, SceneManager.prototype.setSceneByIndex = function(i) {
-            if (this.isEmpty() || !this.isValidIndex(i)) throw "invalid scene index";
-            return this.currentSceneIndex = i, Config.get().debug && console.log("Changing to scene " + i), 
-            this.currentScene();
+            var debugMsg, e, scene;
+            if (this.isEmpty() || !this.isValidIndex(i)) throw new Error("invalid scene index");
+            this.currentSceneIndex = i, scene = this.currentScene(), debugMsg = "Changing to scene " + i;
+            try {
+                debugMsg += ": " + scene.constructor.name;
+            } catch (error) {
+                e = error;
+            }
+            return console.ce(debugMsg), scene;
         }, SceneManager.prototype.isEmpty = function() {
             return 0 === this.scenes.length;
         }, SceneManager.prototype.isValidIndex = function(i) {
@@ -369,6 +378,10 @@ SceneManager = function() {
         }, SceneManager;
     }(), SceneManager.get = function() {
         return null != instance ? instance : instance = new Singleton.SceneManager();
+    }, SceneManager.currentScene = function() {
+        return this.get().currentScene();
+    }, SceneManager.addScene = function(scene) {
+        return this.get().addScene(scene);
     }, SceneManager;
 }();
 
@@ -397,7 +410,7 @@ Persist = function() {
     }, Persist.prototype._get = function(key) {
         var value;
         if (null == key) throw "key missing";
-        return value = this.storage[Persist.PREFIX + "." + key], isNumeric(value) ? Number(value) : [ "true", "false" ].includes(value) ? Boolean(value) : "undefined" !== value ? value : void 0;
+        return value = this.storage[Persist.PREFIX + "." + key], isNumeric(value) ? Number(value) : "true" === value ? !0 : "false" === value ? !1 : "undefined" !== value ? value : void 0;
     }, Persist.prototype.rm = function(key) {
         if (null == key) throw "key missing";
         return this.storage.removeItem(Persist.PREFIX + "." + key);
@@ -464,7 +477,7 @@ Utils = function() {
     }, Utils.decrypt = function(s) {
         return JSON.parse(window.atob(s));
     }, Utils.saveFile = function(content, fileName, format) {
-        var blob, e, error, isFileSaverSupported, json;
+        var blob, e, isFileSaverSupported, json;
         null == format && (format = "application/json");
         try {
             isFileSaverSupported = !!new Blob();
@@ -485,7 +498,7 @@ Utils = function() {
             return posArray = options.position.split("-"), img = document.createElement("img"), 
             img.style = "position: absolute; width: " + options.size + "; height: " + options.size + ";" + (posArray[0] + ": " + options.padding + "; " + posArray[1] + ": " + options.padding), 
             img.setAttribute("class", "ce-button-" + options.type), "fullscreen" === options.type ? (img.setAttribute("onclick", "Utils.toggleFullscreen()"), 
-            img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AYMDR07WbntUQAAAMZJREFUWMPtl7ENgzAQRR+IkhFYIdUVUTKP9wjswSCZIBHFVVmBEVKbNBTIMsFBcpLiXnlC9ke+7/suRGQinU5V23cfiEgLXFIXLPkxJqCK1J7AY0XcmLDmCAyRugcOQL0sFpEmvKvqOcffisgNOG0dQfnNI7cmNAEV0O2w2l564IphGEYwjsOMN6pqn2kcO6AJb8IwQA7zjZUDBxxtGJmALQE+434+ZsPpg1jeb1l0tppLjeWxd0EdRucFKWGiCa1mTfjXAl7JzisvsBIkfgAAAABJRU5ErkJggg==") : "reinit" === options.type && (img.setAttribute("onclick", "engine.initScene(SceneManager.get().currentScene())"), 
+            img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AYMDR07WbntUQAAAMZJREFUWMPtl7ENgzAQRR+IkhFYIdUVUTKP9wjswSCZIBHFVVmBEVKbNBTIMsFBcpLiXnlC9ke+7/suRGQinU5V23cfiEgLXFIXLPkxJqCK1J7AY0XcmLDmCAyRugcOQL0sFpEmvKvqOcffisgNOG0dQfnNI7cmNAEV0O2w2l564IphGEYwjsOMN6pqn2kcO6AJb8IwQA7zjZUDBxxtGJmALQE+434+ZsPpg1jeb1l0tppLjeWxd0EdRucFKWGiCa1mTfjXAl7JzisvsBIkfgAAAABJRU5ErkJggg==") : "reinit" === options.type && (img.setAttribute("onclick", "engine.initScene(SceneManager.currentScene())"), 
             img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfgBgwNMCmKKsb2AAACbklEQVRIx5XVz2tcVRQH8M971dZ01GppNWbhSHFjdJXTookiCOpGChKKVv8E68Yfiy6sol0J1l3ddCmIOxfBleBCyISqZ1BoxIUUuxCNJdVYiaEQdDF3zEzn1XG+m8u795zvvfec+77fSkHI3njEvCMeczQvGEI/YhiVnbR5C+7tL2Q1GhxP5WfX09wU73peeyT2e034MLY858tBktrbWv4eCV1pJLim7Xy8l2KAYFPb+ghFZ66JoAavxec7FHWyqe3X60/QbSJ4v4xPxHKfol/EM14djGwqIcQhF0yBM/l6IQjC18MlzAduQMBt1grFI86nmmSprP9UatFcQiRXzZaPjxN1iGfdA067v5SzuYSFIn90EtwXx0JFfOUwtnIq2OuSAx7KVf+J+FMLK7lQR8th8BalI5vj0nEazMettWfK1Llyx83tO43HuTI+WXsYXM7f+nf85tr4/Lzid/B4Xf6Db02KXuNnanfAyEscj3VwoC5vsZqYYBvsql0FBycmuAts1H4AcxMT9DIu1kUb9kd7kuxo299rR+3TMvfCRPv3o5cqIs3hr9w7wQk2TaGbsSvYcAw3z2z//MX/TH/D0+CVmdUK4hd3gwd9l+OSmdX7V9Zymppgsax2tWJcektf7RajJ5MpO86C3db/lYtmzFq3G3yQnezrbMiXLaOyx2qcuuH+p6zao0InTwyLqhTLFkrklnd8lJeG+v6iN93SF/18tG8u1aDzxVkvDWx4RddlHDRXno1y+BM73lQNm2fM+6R0pBlrFrMzbG2DistKTjuu0VV0Hc9pHUP22uTBUtzuqHDIPmy4KC3lH00G/w/Uq7TDOW+poQAAAABJRU5ErkJggg=="), 
             null != options.src && (img.src = options.src), document.body.appendChild(img);
         }
@@ -508,13 +521,36 @@ Utils = function() {
             style.setAttribute("media", "all"), style.innerHTML = "@media all and (orientation:portrait) { " + a1 + " { display: none; } } @media all and (orientation:landscape) { " + a2 + " { display: none; } }", 
             document.head.appendChild(style), div.appendChild(img), document.body.appendChild(div);
         }
+    }, Utils.overrideConsole = function() {
+        return window._log = console.log, window._warn = console.warn, window._info = console.info, 
+        window._error = console.error, window._ceOutput = "coffee-engine console >", console.log = function(message) {
+            var html;
+            window._ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+            null != html && (html.innerHTML = window._ceOutput, html.scrollTop = html.scrollHeight), 
+            window._log.apply(console, arguments);
+        }, console.info = function(message) {
+            var html;
+            window._ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+            null != html && (html.innerHTML = window._ceOutput, html.scrollTop = html.scrollHeight), 
+            window._info.apply(console, arguments);
+        }, console.warn = function(message) {
+            var html;
+            window._ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+            null != html && (html.innerHTML = window._ceOutput, html.scrollTop = html.scrollHeight), 
+            window._warn.apply(console, arguments);
+        }, console.error = function(message) {
+            var html;
+            window._ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+            null != html && (html.innerHTML = window._ceOutput, html.scrollTop = html.scrollHeight), 
+            window._error.apply(console, arguments);
+        };
     }, Utils.console = function() {
         var div, divText, existingElement, existingStyle, style;
-        return existingElement = document.querySelector(".ce-console"), null != existingElement ? (document.body.removeChild(existingElement), 
-        existingStyle = document.head.querySelector(".ce-console-style"), null != existingStyle && document.head.removeChild(existingStyle), 
-        !1) : (div = document.createElement("div"), div.setAttribute("class", "ce-console"), 
-        divText = document.createElement("div"), divText.setAttribute("class", "ce-console-text"), 
-        "undefined" != typeof _ceOutput && null !== _ceOutput && (divText.innerHTML = _ceOutput), 
+        return null == window._ceOutput && this.overrideConsole(), existingElement = document.querySelector(".ce-console"), 
+        null != existingElement ? (document.body.removeChild(existingElement), existingStyle = document.head.querySelector(".ce-console-style"), 
+        null != existingStyle && document.head.removeChild(existingStyle), !1) : (div = document.createElement("div"), 
+        div.setAttribute("class", "ce-console"), divText = document.createElement("div"), 
+        divText.setAttribute("class", "ce-console-text"), "undefined" != typeof _ceOutput && null !== _ceOutput && (divText.innerHTML = _ceOutput), 
         style = document.createElement("style"), style.setAttribute("class", "ce-console-style"), 
         style.setAttribute("type", "text/css"), style.setAttribute("media", "all"), style.innerHTML = ".ce-console { position: absolute; top: 0px; left: 0px; width: 100%; z-index: 3; background-color: gray; } .ce-console-text { height: 120px; padding: 5px; overflow-y: scroll; white-space: pre; color: black; }", 
         document.head.appendChild(style), div.appendChild(divText), document.body.appendChild(div), 
@@ -657,8 +693,8 @@ Array.prototype.isEmpty = function() {
         return i.id === id;
     });
 }, Array.prototype.sum = function() {
-    var e, j, len, sum;
-    for (sum = 0, j = 0, len = this.length; len > j; j++) e = this[j], sum += e;
+    var e, j, len, ref, sum;
+    for (sum = 0, ref = this, j = 0, len = ref.length; len > j; j++) e = ref[j], sum += e;
     return sum;
 }, Array.prototype.where = function(hash) {
     return this.filter(function(d) {
@@ -676,6 +712,8 @@ Array.prototype.isEmpty = function() {
     });
 }, Array.prototype.insert = function(index, item) {
     this.splice(index, 0, item);
+}, Array.prototype.toCyclicArray = function() {
+    return new CyclicArray(this);
 }, String.prototype.size = function(s) {
     return this.length;
 }, String.prototype.startsWith = function(s) {
@@ -707,13 +745,15 @@ Array.prototype.isEmpty = function() {
     for (j = 0, len = strings.length; len > j; j++) s = strings[j], this.contains(s) && (containsAny = !0);
     return containsAny;
 }, String.prototype.isPresent = function() {
-    return "undefined" != typeof this && null !== this && !this.isEmpty();
+    return null != this && !this.isEmpty();
 }, String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }, isNumeric = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }, Number.prototype.endsWith = function(s) {
     return this.toString().endsWith(s);
+}, console.ce = function(message) {
+    ("undefined" == typeof Config || null === Config || Config.get().debug) && console.log(message);
 }, CyclicArray = function() {
     function CyclicArray(items) {
         null == items && (items = []), this.items = items, this.index = 0;
@@ -740,14 +780,14 @@ Array.prototype.isEmpty = function() {
     function Playlist(keys) {
         var j, key, len;
         if (!(keys instanceof Array)) throw new Error("keys needs to be an array");
-        for (j = 0, len = keys.length; len > j; j++) if (key = keys[j], null == SoundManager.get().sounds[key]) throw new Error("key '" + key + "' not loaded in SoundManager");
+        for (j = 0, len = keys.length; len > j; j++) if (key = keys[j], !SoundManager.has(key)) throw new Error("key '" + key + "' not loaded in SoundManager");
         this.items = new CyclicArray(keys);
     }
     return Playlist.prototype.cmd = function(options) {
         var audio, item, j, len, ref;
         if (options.key = this.items.get(), "volumeAll" === options.type) for (options.type = "volume", 
         ref = this.items.items, j = 0, len = ref.length; len > j; j++) item = ref[j], options.key = item, 
-        SoundManager.get().cmd(options); else audio = SoundManager.get().cmd(options);
+        SoundManager.cmd(options); else audio = SoundManager.cmd(options);
         return [ "play", "fadeIn" ].includes(options.type) ? (audio._onend = [], audio.on("end", function(_this) {
             return function(data) {
                 return _this.items.next(), _this.cmd(options);
@@ -756,7 +796,7 @@ Array.prototype.isEmpty = function() {
     }, Playlist.prototype.getPlayingKey = function() {
         return this.items.get();
     }, Playlist.prototype.getPlayingAudio = function() {
-        return SoundManager.get().sounds[this.getPlayingKey()];
+        return SoundManager.get().items[this.getPlayingKey()];
     }, Playlist;
 }();
 
@@ -2614,3 +2654,33 @@ StackOverflow = StackOverflow || {}, StackOverflow.drawBezier = function(options
         }));
     }
 };
+
+var GameInstance, Utils, e, bind = function(fn, me) {
+    return function() {
+        return fn.apply(me, arguments);
+    };
+};
+
+try {
+    Utils = require("../shared/Utils.coffee").Utils;
+} catch (error) {
+    e = error, console.ce(e);
+}
+
+GameInstance = function() {
+    function GameInstance(config) {
+        null == config && (config = {}), this.tick = bind(this.tick, this), null == config.ticksPerSecond && (config.ticksPerSecond = 10), 
+        null == config.autoStart && (config.autoStart = !0), this.players = {}, this.sockets = {}, 
+        this.inputs = [], this.id = Utils.guid(), this.config = config, this.config.autoStart && this.setTickInterval(this.config.ticksPerSecond);
+    }
+    return GameInstance.prototype.tick = function() {
+        throw "tick needs to be implemented";
+    }, GameInstance.prototype.setTickInterval = function(tps) {
+        return null == tps && (tps = 10), this.config.ticksPerSecond = tps, null != this.tickInterval && clearInterval(this.tickInterval), 
+        this.tickInterval = setInterval(this.tick, 1e3 / this.config.ticksPerSecond);
+    }, GameInstance.prototype.startTicking = function() {
+        return this.setTickInterval(this.config.ticksPerSecond);
+    }, GameInstance.prototype.stopTicking = function() {
+        return null != this.tickInterval ? clearInterval(this.tickInterval) : void 0;
+    }, GameInstance;
+}(), exports.GameInstance = GameInstance;

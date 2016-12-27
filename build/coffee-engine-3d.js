@@ -1,28 +1,3 @@
-var _ceOutput, _error, _info, _log, _warn;
-
-_log = console.log, _warn = console.warn, _info = console.info, _error = console.error, 
-_ceOutput = "coffee-engine console >", console.log = function(message) {
-    var html;
-    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
-    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
-    _log.apply(console, arguments);
-}, console.info = function(message) {
-    var html;
-    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
-    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
-    _info.apply(console, arguments);
-}, console.warn = function(message) {
-    var html;
-    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
-    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
-    _warn.apply(console, arguments);
-}, console.error = function(message) {
-    var html;
-    _ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
-    null != html && (html.innerHTML = _ceOutput, html.scrollTop = html.scrollHeight), 
-    _error.apply(console, arguments);
-};
-
 var Stats = function() {
     var startTime = Date.now(), prevTime = startTime, ms = 0, msMin = 1 / 0, msMax = 0, fps = 0, fpsMin = 1 / 0, fpsMax = 0, frames = 0, mode = 0, container = document.createElement("div");
     container.id = "stats", container.addEventListener("mousedown", function(event) {
@@ -15686,16 +15661,18 @@ THREEx = THREEx || {}, THREEx.DynamicTexture = function(width, height) {
         align: void 0 !== options.align ? options.align : "left",
         fillStyle: void 0 !== options.fillStyle ? options.fillStyle : "black",
         fillLineWidth: null != options.fillLineWidth ? options.fillLineWidth : 1,
+        strokeStyle: void 0,
         strokeLineWidth: null != options.strokeLineWidth ? options.strokeLineWidth : 20,
         font: void 0 !== options.font ? options.font : "bold 102.4px Arial",
-        strokeStyle: void 0
+        x: null != options.x ? options.x : 0,
+        y: null != options.y ? options.y : 0
     }, console.assert("string" == typeof text), context.save(), context.fillStyle = params.fillStyle, 
     null != options.strokeStyle && (context.miterLimit = 2, context.lineJoin = "circle", 
     context.strokeStyle = options.strokeStyle), context.font = params.font, y = (params.lineHeight + params.margin) * canvas.height; text.length > 0; ) maxText = computeMaxTextLength(text), 
     text = text.substr(maxText.length), textSize = context.measureText(maxText), "left" === params.align ? x = params.margin * canvas.width : "right" === params.align ? x = (1 - params.margin) * canvas.width - textSize.width : "center" === params.align ? x = (canvas.width - textSize.width) / 2 : console.assert(!1), 
     null != options.strokeStyle && (this.context.lineWidth = params.strokeLineWidth, 
-    this.context.strokeText(maxText, x, y)), this.context.lineWidth = params.fillLineWidth, 
-    this.context.fillText(maxText, x, y), y += params.lineHeight * canvas.height;
+    this.context.strokeText(maxText, x + params.x, y + params.y)), this.context.lineWidth = params.fillLineWidth, 
+    this.context.fillText(maxText, x + params.x, y + params.y), y += params.lineHeight * canvas.height;
     return context.restore(), this.texture.needsUpdate = !0, this;
 }, THREEx.DynamicTexture.prototype.drawImage = function() {
     return this.context.drawImage.apply(this.context, arguments), this.texture.needsUpdate = !0, 
@@ -16034,26 +16011,35 @@ SceneManager = function() {
         function SceneManager() {}
         return SceneManager.prototype.scenes = [], SceneManager.prototype.currentSceneIndex = void 0, 
         SceneManager.prototype.currentScene = function() {
-            if (null == this.currentSceneIndex) throw "SceneManager.setScene not called";
-            if (this.isEmpty()) throw "Requires at least one scene";
+            if (null == this.currentSceneIndex) throw new Error("SceneManager.setScene not called");
+            if (this.isEmpty()) throw new Error("Requires at least one scene");
             return this.scenes[this.currentSceneIndex];
         }, SceneManager.prototype.addScene = function(scene) {
             var i;
+            if (null == scene) throw new Error("missing scene param");
             return i = this.scenes.indexOf(scene), -1 === i ? this.scenes.push(scene) : void 0;
         }, SceneManager.prototype.removeScene = function(scene) {
             var i;
+            if (null == scene) throw new Error("missing scene param");
             return i = this.scenes.indexOf(scene), this.removeSceneByIndex(i);
         }, SceneManager.prototype.removeSceneByIndex = function(i) {
             return i >= 0 ? (i === this.currentSceneIndex && (this.currentSceneIndex = void 0), 
             array.splice(i, 1)) : void 0;
         }, SceneManager.prototype.setScene = function(scene) {
             var i;
-            if (i = this.scenes.indexOf(scene), -1 === i) throw "scene not added to SceneManager";
+            if (null == scene) throw new Error("missing scene param");
+            if (i = this.scenes.indexOf(scene), -1 === i) throw new Error("scene not added to SceneManager");
             return this.setSceneByIndex(i), this.currentScene();
         }, SceneManager.prototype.setSceneByIndex = function(i) {
-            if (this.isEmpty() || !this.isValidIndex(i)) throw "invalid scene index";
-            return this.currentSceneIndex = i, Config.get().debug && console.log("Changing to scene " + i), 
-            this.currentScene();
+            var debugMsg, e, scene;
+            if (this.isEmpty() || !this.isValidIndex(i)) throw new Error("invalid scene index");
+            this.currentSceneIndex = i, scene = this.currentScene(), debugMsg = "Changing to scene " + i;
+            try {
+                debugMsg += ": " + scene.constructor.name;
+            } catch (error) {
+                e = error;
+            }
+            return console.ce(debugMsg), scene;
         }, SceneManager.prototype.isEmpty = function() {
             return 0 === this.scenes.length;
         }, SceneManager.prototype.isValidIndex = function(i) {
@@ -16065,6 +16051,10 @@ SceneManager = function() {
         }, SceneManager;
     }(), SceneManager.get = function() {
         return null != instance ? instance : instance = new Singleton.SceneManager();
+    }, SceneManager.currentScene = function() {
+        return this.get().currentScene();
+    }, SceneManager.addScene = function(scene) {
+        return this.get().addScene(scene);
     }, SceneManager;
 }();
 
@@ -16100,6 +16090,18 @@ NetworkManager = function() {
         }, NetworkManager;
     }(), NetworkManager.get = function() {
         return null != instance ? instance : instance = new Singleton.NetworkManager();
+    }, NetworkManager.connect = function(namespace) {
+        return this.get().connect(namespace);
+    }, NetworkManager.getSessionId = function() {
+        return this.get().getSessionId();
+    }, NetworkManager.on = function(event, func) {
+        return this.get().on(event, fund);
+    }, NetworkManager.rawEmit = function(name, data) {
+        return this.get().rawEmit(name, data);
+    }, NetworkManager.fakeEmit = function(name, data) {
+        return this.get().fakeEmit(name, data);
+    }, NetworkManager.emit = function(data) {
+        return this.get().emit(data);
     }, NetworkManager;
 }();
 
@@ -16118,11 +16120,19 @@ StatsManager = function() {
             return this.statsVisible = !this.statsVisible, this.statsVisible ? (document.body.appendChild(this.stats.domElement), 
             document.body.appendChild(this.rendererStats.domElement)) : (document.body.removeChild(this.stats.domElement), 
             document.body.removeChild(this.rendererStats.domElement)), this.statsVisible;
+        }, StatsManager.prototype.setVisible = function(value) {
+            return value !== this.statsVisible ? this.toggle() : void 0;
         }, StatsManager.prototype.update = function(renderer) {
-            return this.stats.update(), this.rendererStats.update(renderer);
+            return this.statsVisible ? (this.stats.update(), this.rendererStats.update(renderer)) : void 0;
         }, StatsManager;
     }(), StatsManager.get = function() {
         return null != instance ? instance : instance = new Singleton.StatsManager();
+    }, StatsManager.toggle = function() {
+        return this.get().toggle();
+    }, StatsManager.setVisible = function() {
+        return this.get().setVisible();
+    }, StatsManager.update = function(renderer) {
+        return this.get().update(renderer);
     }, StatsManager;
 }();
 
@@ -16133,47 +16143,49 @@ SoundManager = function() {
     var instance;
     return instance = null, Singleton.SoundManager = function() {
         function SoundManager() {}
-        return SoundManager.prototype.sounds = {}, SoundManager.prototype.loadCount = 0, 
+        return SoundManager.prototype.items = {}, SoundManager.prototype.loadCount = 0, 
         SoundManager.prototype.load = function(key, url) {
             var howl;
-            if (void 0 === this.sounds[key]) return this.sounds[key] = null, url instanceof Array || (url = [ url ]), 
+            if (void 0 === this.items[key]) return this.items[key] = null, url instanceof Array || (url = [ url ]), 
             howl = new Howl({
                 autoplay: !1,
                 urls: url,
                 onload: function() {
-                    return window.SoundManager.get().sounds[key] = howl, window.SoundManager.get().loadCount += 1;
+                    return window.SoundManager.get()._loaded(key, howl);
                 }
             });
+        }, SoundManager.prototype._loaded = function(key, howl) {
+            return this.items[key] = howl, this.loadCount += 1;
         }, SoundManager.prototype.cmd = function(options) {
             if (null == options && (options = {}), null == options.type) throw new Error("options.type missing");
             if (null == options.key) throw new Error("options.key missing");
-            if (!(options.key in this.sounds)) throw new Error("Sound with key: " + options.key + " not found!");
+            if (!(options.key in this.items)) throw new Error("Sound with key: " + options.key + " not found!");
             switch (options.type) {
               case "play":
               case "pause":
               case "stop":
-                this.sounds[options.key][options.type]();
+                this.items[options.key][options.type]();
                 break;
 
               case "fadeIn":
               case "fadeOut":
                 null == options.to && (options.to = 1), null == options.duration && (options.duration = 1e3), 
-                this.sounds[options.key][options.type](options.to, options.duration);
+                this.items[options.key][options.type](options.to, options.duration);
                 break;
 
               case "volume":
               case "volumeAll":
-                null == options.volume && (options.volume = 1), "volume" === options.type ? this.sounds[options.key][options.type](options.volume) : this.volumeAll(options.volume);
+                null == options.volume && (options.volume = 1), "volume" === options.type ? this.items[options.key][options.type](options.volume) : this.volumeAll(options.volume);
                 break;
 
               case "loop":
-                null == options.loop && (options.loop = !1), this.sounds[options.key][options.type](options.loop);
+                null == options.loop && (options.loop = !1), this.items[options.key][options.type](options.loop);
                 break;
 
               default:
                 throw new Error("unknown options.type " + options.type);
             }
-            return this.sounds[options.key];
+            return this.items[options.key];
         }, SoundManager.prototype.play = function(key) {
             return this.cmd({
                 type: "play",
@@ -16216,15 +16228,41 @@ SoundManager = function() {
                 loop: looping
             });
         }, SoundManager.prototype.hasFinishedLoading = function() {
-            return this.loadCount === Object.keys(this.sounds).size();
+            return this.loadCount === Object.keys(this.items).size();
         }, SoundManager.prototype.volumeAll = function(i) {
             var key;
             0 > i && (i = 0), i > 1 && (i = 1);
-            for (key in this.sounds) this.volume(key, i);
+            for (key in this.items) this.volume(key, i);
             return i;
+        }, SoundManager.prototype.has = function(key) {
+            return null != this.items[key];
         }, SoundManager;
     }(), SoundManager.get = function() {
         return null != instance ? instance : instance = new Singleton.SoundManager();
+    }, SoundManager.has = function(key) {
+        return this.get().has(key);
+    }, SoundManager.play = function(key) {
+        return this.get().play(key);
+    }, SoundManager.pause = function(key) {
+        return this.get().pause(key);
+    }, SoundManager.stop = function(key) {
+        return this.get().stop(key);
+    }, SoundManager.fadeIn = function(key, to) {
+        return this.get().fadeIn(key, to);
+    }, SoundManager.fadeOut = function(key, to) {
+        return this.get().fadeOut(key, to);
+    }, SoundManager.volume = function(key, volume) {
+        return this.get().volume(key, volume);
+    }, SoundManager.looping = function(key, looping) {
+        return this.get().looping(key, looping);
+    }, SoundManager.volumeAll = function(i) {
+        return this.get().volumeAll(i);
+    }, SoundManager.load = function(key, url) {
+        return this.get().load(key, url);
+    }, SoundManager.cmd = function(options) {
+        return this.get().cmd(options);
+    }, SoundManager.hasFinishedLoading = function() {
+        return this.get().hasFinishedLoading();
     }, SoundManager;
 }();
 
@@ -16259,6 +16297,10 @@ SaveObjectManager = function() {
         }, SaveObjectManager;
     }(), SaveObjectManager.get = function() {
         return null != instance ? instance : instance = new Singleton.SaveObjectManager();
+    }, SaveObjectManager.hasFinishedLoading = function() {
+        return this.get().hasFinishedLoading();
+    }, SaveObjectManager.load = function() {
+        return this.get().load(key, url);
     }, SaveObjectManager;
 }();
 
@@ -16270,9 +16312,15 @@ HighScoreManager = function() {
     return instance = null, Singleton.HighScoreManager = function() {
         function HighScoreManager() {}
         return HighScoreManager.prototype.apiKey = "guest", HighScoreManager.prototype.secret = "guest", 
-        HighScoreManager.prototype.addScore = function(name, score) {
+        HighScoreManager.prototype.auth = function(apiKey, secret, tryRegister) {
+            return null == tryRegister && (tryRegister = !1), tryRegister && jNorthPole.createUser(apiKey, secret, function(data) {
+                return console.log("api key registered: " + apiKey);
+            }), this._setTokens(apiKey, secret), this._ensureTokenPresence(), this;
+        }, HighScoreManager.prototype._setTokens = function(apiKey, secret) {
+            return this.apiKey = apiKey, this.secret = secret;
+        }, HighScoreManager.prototype.addScore = function(name, score) {
             var json;
-            if (null == name) throw new Error("name required");
+            if (this._ensureTokenPresence(), null == name) throw new Error("name required");
             if (!isNumeric(score)) throw new Error("score needs to be a number");
             return json = {
                 api_key: this.apiKey,
@@ -16283,7 +16331,8 @@ HighScoreManager = function() {
             }, jNorthPole.createStorage(json, this.responseHandler, this.errorHandler);
         }, HighScoreManager.prototype.getScores = function(limit, order) {
             var json;
-            return null == limit && (limit = 10), null == order && (order = "desc"), json = {
+            return null == limit && (limit = 10), null == order && (order = "desc"), this._ensureTokenPresence(), 
+            json = {
                 api_key: this.apiKey,
                 secret: this.secret,
                 type: "highscore",
@@ -16296,9 +16345,18 @@ HighScoreManager = function() {
             return console.log(data);
         }, HighScoreManager.prototype.errorHandler = function(data, status) {
             return console.log(data);
+        }, HighScoreManager.prototype._ensureTokenPresence = function() {
+            if (null == this.apiKey) throw new Error("apiKey missing");
+            if (null == this.secret) throw new Error("secret missing");
         }, HighScoreManager;
     }(), HighScoreManager.get = function() {
         return null != instance ? instance : instance = new Singleton.HighScoreManager();
+    }, HighScoreManager.auth = function(apiKey, secret, tryRegister) {
+        return this.get().auth(apiKey, secret, tryRegister);
+    }, HighScoreManager.addScore = function(name, score) {
+        return this.get().addScore(name, score);
+    }, HighScoreManager.getScores = function(limit, order) {
+        return this.get().getScores(limit, order);
     }, HighScoreManager;
 }();
 
@@ -16327,7 +16385,7 @@ Persist = function() {
     }, Persist.prototype._get = function(key) {
         var value;
         if (null == key) throw "key missing";
-        return value = this.storage[Persist.PREFIX + "." + key], isNumeric(value) ? Number(value) : [ "true", "false" ].includes(value) ? Boolean(value) : "undefined" !== value ? value : void 0;
+        return value = this.storage[Persist.PREFIX + "." + key], isNumeric(value) ? Number(value) : "true" === value ? !0 : "false" === value ? !1 : "undefined" !== value ? value : void 0;
     }, Persist.prototype.rm = function(key) {
         if (null == key) throw "key missing";
         return this.storage.removeItem(Persist.PREFIX + "." + key);
@@ -16394,7 +16452,7 @@ Utils = function() {
     }, Utils.decrypt = function(s) {
         return JSON.parse(window.atob(s));
     }, Utils.saveFile = function(content, fileName, format) {
-        var blob, e, error, isFileSaverSupported, json;
+        var blob, e, isFileSaverSupported, json;
         null == format && (format = "application/json");
         try {
             isFileSaverSupported = !!new Blob();
@@ -16415,7 +16473,7 @@ Utils = function() {
             return posArray = options.position.split("-"), img = document.createElement("img"), 
             img.style = "position: absolute; width: " + options.size + "; height: " + options.size + ";" + (posArray[0] + ": " + options.padding + "; " + posArray[1] + ": " + options.padding), 
             img.setAttribute("class", "ce-button-" + options.type), "fullscreen" === options.type ? (img.setAttribute("onclick", "Utils.toggleFullscreen()"), 
-            img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AYMDR07WbntUQAAAMZJREFUWMPtl7ENgzAQRR+IkhFYIdUVUTKP9wjswSCZIBHFVVmBEVKbNBTIMsFBcpLiXnlC9ke+7/suRGQinU5V23cfiEgLXFIXLPkxJqCK1J7AY0XcmLDmCAyRugcOQL0sFpEmvKvqOcffisgNOG0dQfnNI7cmNAEV0O2w2l564IphGEYwjsOMN6pqn2kcO6AJb8IwQA7zjZUDBxxtGJmALQE+434+ZsPpg1jeb1l0tppLjeWxd0EdRucFKWGiCa1mTfjXAl7JzisvsBIkfgAAAABJRU5ErkJggg==") : "reinit" === options.type && (img.setAttribute("onclick", "engine.initScene(SceneManager.get().currentScene())"), 
+            img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AYMDR07WbntUQAAAMZJREFUWMPtl7ENgzAQRR+IkhFYIdUVUTKP9wjswSCZIBHFVVmBEVKbNBTIMsFBcpLiXnlC9ke+7/suRGQinU5V23cfiEgLXFIXLPkxJqCK1J7AY0XcmLDmCAyRugcOQL0sFpEmvKvqOcffisgNOG0dQfnNI7cmNAEV0O2w2l564IphGEYwjsOMN6pqn2kcO6AJb8IwQA7zjZUDBxxtGJmALQE+434+ZsPpg1jeb1l0tppLjeWxd0EdRucFKWGiCa1mTfjXAl7JzisvsBIkfgAAAABJRU5ErkJggg==") : "reinit" === options.type && (img.setAttribute("onclick", "engine.initScene(SceneManager.currentScene())"), 
             img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfgBgwNMCmKKsb2AAACbklEQVRIx5XVz2tcVRQH8M971dZ01GppNWbhSHFjdJXTookiCOpGChKKVv8E68Yfiy6sol0J1l3ddCmIOxfBleBCyISqZ1BoxIUUuxCNJdVYiaEQdDF3zEzn1XG+m8u795zvvfec+77fSkHI3njEvCMeczQvGEI/YhiVnbR5C+7tL2Q1GhxP5WfX09wU73peeyT2e034MLY858tBktrbWv4eCV1pJLim7Xy8l2KAYFPb+ghFZ66JoAavxec7FHWyqe3X60/QbSJ4v4xPxHKfol/EM14djGwqIcQhF0yBM/l6IQjC18MlzAduQMBt1grFI86nmmSprP9UatFcQiRXzZaPjxN1iGfdA067v5SzuYSFIn90EtwXx0JFfOUwtnIq2OuSAx7KVf+J+FMLK7lQR8th8BalI5vj0nEazMettWfK1Llyx83tO43HuTI+WXsYXM7f+nf85tr4/Lzid/B4Xf6Db02KXuNnanfAyEscj3VwoC5vsZqYYBvsql0FBycmuAts1H4AcxMT9DIu1kUb9kd7kuxo299rR+3TMvfCRPv3o5cqIs3hr9w7wQk2TaGbsSvYcAw3z2z//MX/TH/D0+CVmdUK4hd3gwd9l+OSmdX7V9Zymppgsax2tWJcektf7RajJ5MpO86C3db/lYtmzFq3G3yQnezrbMiXLaOyx2qcuuH+p6zao0InTwyLqhTLFkrklnd8lJeG+v6iN93SF/18tG8u1aDzxVkvDWx4RddlHDRXno1y+BM73lQNm2fM+6R0pBlrFrMzbG2DistKTjuu0VV0Hc9pHUP22uTBUtzuqHDIPmy4KC3lH00G/w/Uq7TDOW+poQAAAABJRU5ErkJggg=="), 
             null != options.src && (img.src = options.src), document.body.appendChild(img);
         }
@@ -16438,13 +16496,36 @@ Utils = function() {
             style.setAttribute("media", "all"), style.innerHTML = "@media all and (orientation:portrait) { " + a1 + " { display: none; } } @media all and (orientation:landscape) { " + a2 + " { display: none; } }", 
             document.head.appendChild(style), div.appendChild(img), document.body.appendChild(div);
         }
+    }, Utils.overrideConsole = function() {
+        return window._log = console.log, window._warn = console.warn, window._info = console.info, 
+        window._error = console.error, window._ceOutput = "coffee-engine console >", console.log = function(message) {
+            var html;
+            window._ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+            null != html && (html.innerHTML = window._ceOutput, html.scrollTop = html.scrollHeight), 
+            window._log.apply(console, arguments);
+        }, console.info = function(message) {
+            var html;
+            window._ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+            null != html && (html.innerHTML = window._ceOutput, html.scrollTop = html.scrollHeight), 
+            window._info.apply(console, arguments);
+        }, console.warn = function(message) {
+            var html;
+            window._ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+            null != html && (html.innerHTML = window._ceOutput, html.scrollTop = html.scrollHeight), 
+            window._warn.apply(console, arguments);
+        }, console.error = function(message) {
+            var html;
+            window._ceOutput += "\n" + message, html = document.querySelector(".ce-console-text"), 
+            null != html && (html.innerHTML = window._ceOutput, html.scrollTop = html.scrollHeight), 
+            window._error.apply(console, arguments);
+        };
     }, Utils.console = function() {
         var div, divText, existingElement, existingStyle, style;
-        return existingElement = document.querySelector(".ce-console"), null != existingElement ? (document.body.removeChild(existingElement), 
-        existingStyle = document.head.querySelector(".ce-console-style"), null != existingStyle && document.head.removeChild(existingStyle), 
-        !1) : (div = document.createElement("div"), div.setAttribute("class", "ce-console"), 
-        divText = document.createElement("div"), divText.setAttribute("class", "ce-console-text"), 
-        "undefined" != typeof _ceOutput && null !== _ceOutput && (divText.innerHTML = _ceOutput), 
+        return null == window._ceOutput && this.overrideConsole(), existingElement = document.querySelector(".ce-console"), 
+        null != existingElement ? (document.body.removeChild(existingElement), existingStyle = document.head.querySelector(".ce-console-style"), 
+        null != existingStyle && document.head.removeChild(existingStyle), !1) : (div = document.createElement("div"), 
+        div.setAttribute("class", "ce-console"), divText = document.createElement("div"), 
+        divText.setAttribute("class", "ce-console-text"), "undefined" != typeof _ceOutput && null !== _ceOutput && (divText.innerHTML = _ceOutput), 
         style = document.createElement("style"), style.setAttribute("class", "ce-console-style"), 
         style.setAttribute("type", "text/css"), style.setAttribute("media", "all"), style.innerHTML = ".ce-console { position: absolute; top: 0px; left: 0px; width: 100%; z-index: 3; background-color: gray; } .ce-console-text { height: 120px; padding: 5px; overflow-y: scroll; white-space: pre; color: black; }", 
         document.head.appendChild(style), div.appendChild(divText), document.body.appendChild(div), 
@@ -16518,6 +16599,7 @@ JsonModelManager = function() {
             })) : void 0;
         }, JsonModelManager.prototype.initAnimations = function(mesh) {
             var anim, animation, i, len, ref;
+            if (null == mesh) throw new Error("missing param mesh");
             if (mesh.animations = [], mesh.animationsMixer = new THREE.AnimationMixer(mesh), 
             null != mesh.geometry.animations) for (ref = mesh.geometry.animations, i = 0, len = ref.length; len > i; i++) anim = ref[i], 
             animation = mesh.animationsMixer.clipAction(anim), animation.setEffectiveWeight(1), 
@@ -16535,6 +16617,12 @@ JsonModelManager = function() {
         }, JsonModelManager;
     }(), JsonModelManager.get = function() {
         return null != instance ? instance : instance = new Singleton.JsonModelManager();
+    }, JsonModelManager.clone = function(key) {
+        return this.get().clone(key);
+    }, JsonModelManager.load = function(key, url, callback) {
+        return this.get().load(key, url, callback);
+    }, JsonModelManager.initAnimations = function(mesh) {
+        return this.get().initAnimations(mesh);
     }, JsonModelManager;
 }(), exports.JsonModelManager = JsonModelManager;
 
@@ -16566,6 +16654,10 @@ TextureManager = function() {
         }, TextureManager;
     }(), TextureManager.get = function() {
         return null != instance ? instance : instance = new Singleton.TextureManager();
+    }, TextureManager.load = function(key, url, callback) {
+        return this.get().load(key, url, callback);
+    }, TextureManager.hasFinishedLoading = function() {
+        return this.get().hasFinishedLoading();
     }, TextureManager;
 }();
 
@@ -16578,9 +16670,15 @@ MaterialManager = function() {
         function MaterialManager() {}
         return MaterialManager.prototype.items = {}, MaterialManager.prototype.load = function(key, material) {
             return this.items[key] = material, this;
+        }, MaterialManager.prototype.item = function(key) {
+            throw new Error(key + " not found in MaterialManager");
         }, MaterialManager;
     }(), MaterialManager.get = function() {
         return null != instance ? instance : instance = new Singleton.MaterialManager();
+    }, MaterialManager.load = function(key, material) {
+        return this.get().load(key, material);
+    }, MaterialManager.item = function(key) {
+        return this.get().item(key);
     }, MaterialManager;
 }();
 
@@ -16673,7 +16771,7 @@ BaseModel = function() {
             }
         }
     }, BaseModel.prototype.isHovered = function(raycaster) {
-        return raycaster.intersectObject(this.mesh).length > 0 || raycaster.intersectObjects(this.mesh.children).length > 0;
+        return raycaster.intersectObject(this.mesh, !0).length > 0;
     }, BaseModel.prototype.animate = function(animationName, options) {
         var anim;
         return null == options && (options = {}), null == options.loop && (options.loop = !0), 
@@ -16876,7 +16974,7 @@ Config = function() {
         }, Config.prototype.toggleAnaglyph = function() {
             return this.anaglyph = !this.anaglyph;
         }, Config.prototype.toggleStats = function() {
-            return StatsManager.get().toggle();
+            return StatsManager.toggle();
         }, Config.prototype.toggleSound = function() {
             return this.soundEnabled = !this.soundEnabled;
         }, Config.prototype.toggleDebug = function() {
@@ -16886,6 +16984,18 @@ Config = function() {
         }, Config;
     }(), Config.get = function() {
         return null != instance ? instance : instance = new Singleton.Config();
+    }, Config.fillWindow = function() {
+        return this.get().fillWindow();
+    }, Config.toggleAnaglyph = function() {
+        return this.get().toggleAnaglyph();
+    }, Config.toggleStats = function() {
+        return this.get().toggleStats();
+    }, Config.toggleSound = function() {
+        return this.get().toggleSound();
+    }, Config.toggleDebug = function() {
+        return this.get().toggleDebug();
+    }, Config.toggleFullscreen = function() {
+        return this.get().toggleFullscreen();
     }, Config;
 }(), exports.Config = Config;
 
@@ -16949,7 +17059,7 @@ Helper = function() {
         }), new THREE.Mesh(box, mat);
     }, Helper.model = function(options) {
         if (null == options && (options = {}), null == options.key) throw new Error("key missing for: " + JSON.stringify(options));
-        return JsonModelManager.get().clone(options.key);
+        return JsonModelManager.clone(options.key);
     }, Helper.terrain = function(options) {
         return null == options && (options = {}), Terrain.fromJson(options);
     }, Helper.particle = function(options) {
@@ -17008,8 +17118,8 @@ Helper = function() {
             depthWrite: !1,
             side: THREE.BackSide
         }), new THREE.Mesh(new THREE.BoxGeometry(size, size, size), aSkyBoxMaterial);
-    }, Helper.sampleShader = function() {
-        var itemMaterial, mesh, shader;
+    }, Helper.sampleShaderMaterial = function() {
+        var shader;
         return shader = {
             uniforms: {
                 time: {
@@ -17023,12 +17133,15 @@ Helper = function() {
             },
             fragment: [ "uniform float time;", "varying vec2 vUv;", "", "void main() {", "  vec2 position = -1.0 + 2.0 * vUv;", "", "  float red = abs(sin(position.x * position.y + time / 5.0));", "  float green = abs(sin(position.x * position.y + time / 4.0));", "  float blue = abs(sin(position.x * position.y + time / 3.0 ));", "  gl_FragColor = vec4(red, green, blue, 1.0);", "}" ].join("\n"),
             vertex: [ "varying vec2 vUv;", "", "void main() {", "  vUv = uv;", "  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n")
-        }, itemMaterial = new THREE.ShaderMaterial({
+        }, new THREE.ShaderMaterial({
             uniforms: shader.uniforms,
             vertexShader: shader.vertex,
             fragmentShader: shader.fragment
-        }), mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), itemMaterial), mesh.shaderSrc = shader, 
-        mesh;
+        });
+    }, Helper.sampleShader = function() {
+        var itemMaterial, mesh;
+        return itemMaterial = this.sampleShaderMaterial(), mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), itemMaterial), 
+        mesh.shaderSrc = itemMaterial, mesh;
     }, Helper.orbitControls = function(engine) {
         return new THREE.OrbitControls(engine.camera, engine.renderer.domElement);
     }, Helper.fog = function(options) {
@@ -17122,7 +17235,7 @@ Helper = function() {
         var cube, scene, vector;
         return null == options && (options = {}), cube = this.cube({
             size: .5
-        }), scene = SceneManager.get().currentScene(), scene.vrPointer = cube, vector = new THREE.Vector3(), 
+        }), scene = SceneManager.currentScene(), scene.vrPointer = cube, vector = new THREE.Vector3(), 
         camera.getWorldDirection(vector), cube.translateZ(-1), scene.scene.add(cube);
     }, Helper.forest = function(options) {
         var attr, attrHash, base, base1, base10, base11, base12, base13, base14, base15, base16, base17, base2, base3, base4, base5, base6, base7, base8, base9, coords, i, item, j, k, l, len, len1, model, node, ref, ref1, ref2, singleGeometry;
@@ -17144,7 +17257,7 @@ Helper = function() {
             return s = "" + attr + which, null != item[s] && null != item[s][coord] ? item[s][coord] : options[s][coord];
         }, singleGeometry = new THREE.Geometry(), ref = options.items, j = 0, len = ref.length; len > j; j++) for (item = ref[j], 
         null == item.count && (item.count = 1), i = k = 0, ref1 = item.count; ref1 >= 0 ? ref1 > k : k > ref1; i = ref1 >= 0 ? ++k : --k) {
-            for (model = JsonModelManager.get().clone(item.type), ref2 = [ "scale", "position", "rotation" ], 
+            for (model = JsonModelManager.clone(item.type), ref2 = [ "scale", "position", "rotation" ], 
             l = 0, len1 = ref2.length; len1 > l; l++) attr = ref2[l], attrHash = {
                 x: Helper.random(coords(item, options, attr, "x", "Min"), coords(item, options, attr, "x", "Max"), 1e3) / 1e3,
                 y: Helper.random(coords(item, options, attr, "y", "Min"), coords(item, options, attr, "y", "Max"), 1e3) / 1e3,
@@ -17153,6 +17266,11 @@ Helper = function() {
             node.add(model);
         }
         return node;
+    }, Helper.basicMaterial = function(key) {
+        return new THREE.MeshBasicMaterial({
+            map: TextureManager.get().items[key],
+            transparent: !0
+        });
     }, Helper.dissolveMaterial = function(texture) {
         return new THREE.ShaderMaterial({
             uniforms: {
@@ -17174,6 +17292,10 @@ Helper = function() {
             fragmentShader: THREE.ShaderLib.dissolve.fragmentShader,
             shading: THREE.SmoothShading
         });
+    }, Helper.setDissolveMaterialColor = function(dm, r, g, b) {
+        return null == dm && new Error("missing dm param"), r = parseFloat(r).toFixed(1), 
+        g = parseFloat(g).toFixed(1), b = parseFloat(b).toFixed(1), dm.fragmentShader = dm.fragmentShader.replace("    color.r = 1.0; color.g = 0.5; color.b = 0.0;", "    color.r = " + r + "; color.g = " + g + "; color.b = " + b + ";"), 
+        dm;
     }, Helper.networkReload = function() {
         var nm;
         return nm = NetworkManager.get(), nm._hasListener("reload") || nm.on("reload", function(data) {
@@ -17181,8 +17303,125 @@ Helper = function() {
         }), nm.emit({
             type: "reload"
         });
+    }, Helper.tendToZero = function(n, amount) {
+        return 0 === n ? n : (n > 0 ? (n -= amount, 0 > n && (n = 0)) : (n += amount, n > 0 && (n = 0)), 
+        n);
+    }, Helper.addWithMinMax = function(n, amount, min, max) {
+        return n += amount, n > max && (n = max), min > n && (n = min), n;
     }, Helper;
+}(), THREE.ShaderLib.dissolve = {
+    vertexShader: [ "varying vec2 vUv;", "uniform float morphTargetInfluences[ 8 ];", "void main() {", "  vUv = uv;", "  vec3 morphed = vec3( 0.0 );", "  morphed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];", "  morphed += ( morphTarget1 - position ) * morphTargetInfluences[ 1 ];", "  morphed += ( morphTarget2 - position ) * morphTargetInfluences[ 2 ];", "  morphed += ( morphTarget3 - position ) * morphTargetInfluences[ 3 ];", "  morphed += ( morphTarget4 - position ) * morphTargetInfluences[ 4 ];", "  morphed += ( morphTarget5 - position ) * morphTargetInfluences[ 5 ];", "  morphed += ( morphTarget6 - position ) * morphTargetInfluences[ 6 ];", "  morphed += ( morphTarget7 - position ) * morphTargetInfluences[ 7 ];", "  morphed += position;", "  vec4 mvPosition;", "  mvPosition = modelViewMatrix * vec4( morphed, 1.0 );", "  gl_Position = projectionMatrix * mvPosition;", "  //vec4 worldPosition = modelMatrix * vec4( morphed, 1.0 );", "}" ].join("\n"),
+    fragmentShader: [ "varying vec2 vUv;", "uniform sampler2D texture;", "uniform sampler2D noise;", "uniform float dissolve;", "void main()", "{", "  vec4 color = texture2D( texture, vUv );", "  float n = texture2D( noise, vUv ).x;", "  n = ( n - dissolve ) * 50.0;", "  if (n < 0.0) {", "    discard;", "  }", "  if (n < 1.0) {", "    color.r = 1.0; color.g = 0.5; color.b = 0.0;", "  }", "  gl_FragColor = color;", "}" ].join("\n")
+};
+
+var PoolManager;
+
+PoolManager = function() {
+    function PoolManager() {}
+    var instance;
+    return instance = null, Singleton.PoolManager = function() {
+        function PoolManager() {}
+        return PoolManager.prototype.validEvents = [ "spawn", "release" ], PoolManager.prototype.items = {}, 
+        PoolManager.prototype.itemsInUse = {}, PoolManager.prototype.spawnEvents = {}, PoolManager.prototype.releaseEvents = {}, 
+        PoolManager.prototype.spawn = function(type) {
+            var item;
+            return this._validation(type), item = this.items[type].isEmpty() ? new type() : this.items[type].shift(), 
+            this.itemsInUse[type].push(item), null != this.spawnEvents[type] && this.spawnEvents[type](item), 
+            item;
+        }, PoolManager.prototype.release = function(item) {
+            var type;
+            if ("object" != typeof item || null == item.constructor) throw new Error("item " + item + " can not be released. wront type");
+            if (type = this._validation(item.constructor), -1 === this.itemsInUse[type].indexOf(item)) throw new Error("item (" + type + ") was not spawned from the pool");
+            this.itemsInUse[type].remove(item), this.items[type].push(item), null != this.releaseEvents[type] && this.releaseEvents[type](item);
+        }, PoolManager.prototype.on = function(which, type, func) {
+            var base;
+            if (!("function" == typeof (base = this.validEvents).includes ? base.includes(which) : void 0)) throw new Error(which + " invalid. Allowed: " + this.validEvents.join(", "));
+            return this[which + "Events"][type] = func;
+        }, PoolManager.prototype.onSpawn = function(type, func) {
+            return this.on("spawn", type, func);
+        }, PoolManager.prototype.onRelease = function(type, func) {
+            return this.on("release", type, func);
+        }, PoolManager.prototype._validation = function(type) {
+            if (!(type.prototype instanceof BaseModel)) throw new Error("type " + type + " not instance of base model");
+            return null == this.items[type] && (this.items[type] = []), null == this.itemsInUse[type] && (this.itemsInUse[type] = []), 
+            type;
+        }, PoolManager.prototype._count = function(items) {
+            var count, key;
+            count = 0;
+            for (key in items) count += items[key].size();
+            return count;
+        }, PoolManager.prototype.toString = function() {
+            var inPool, inUse;
+            return inUse = this._count(this.itemsInUse), inPool = this._count(this.items), inUse + " items in use\n" + inPool + " items waiting in all pools\n" + (inUse + inPool) + " total items";
+        }, PoolManager.prototype.releaseAll = function() {
+            var i, item, j, key, len, len1, ref, toRelease;
+            toRelease = [];
+            for (key in this.itemsInUse) for (ref = this.itemsInUse[key], i = 0, len = ref.length; len > i; i++) item = ref[i], 
+            toRelease.push(item);
+            for (j = 0, len1 = toRelease.length; len1 > j; j++) item = toRelease[j], this.release(item);
+            return toRelease;
+        }, PoolManager;
+    }(), PoolManager.get = function() {
+        return null != instance ? instance : instance = new Singleton.PoolManager();
+    }, PoolManager.spawn = function(type) {
+        return this.get().spawn(type);
+    }, PoolManager.release = function(item) {
+        return this.get().release(item);
+    }, PoolManager.on = function(which, type, func) {
+        return this.get().on(which, type, func);
+    }, PoolManager.onSpawn = function(type, func) {
+        return this.get().on("spawn", type, func);
+    }, PoolManager.onRelease = function(type, func) {
+        return this.get().on("release", type, func);
+    }, PoolManager.releaseAll = function() {
+        return this.get().releaseAll();
+    }, PoolManager;
 }();
+
+var BaseText, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+BaseText = function(superClass) {
+    function BaseText(options) {
+        var geom, material;
+        null == options && (options = {}), BaseText.__super__.constructor.call(this), this.canvasW = options.canvasW || 500, 
+        this.canvasH = options.canvasH || 500, this.w = options.w || 4, this.h = options.h || 4, 
+        this.margin = options.margin, this.lineHeight = options.lineHeight, this.align = options.align, 
+        this.font = options.font, this.fillStyle = options.fillStyle, this.fillLineWidth = options.fillLineWidth, 
+        this.strokeStyle = options.strokeStyle, this.strokeLineWidth = options.strokeLineWidth, 
+        this.text = options.text, this.x = options.x, this.y = options.y, this.dynamicTexture = new THREEx.DynamicTexture(this.canvasW, this.canvasH), 
+        this.setText(this.text), geom = new THREE.PlaneGeometry(this.w, this.h), material = new THREE.MeshBasicMaterial({
+            map: this.dynamicTexture.texture,
+            transparent: !0
+        }), this.mesh = new THREE.Mesh(geom, material);
+    }
+    return extend(BaseText, superClass), BaseText.prototype.setText = function(text) {
+        return "" !== text && null != text || (text = " "), this.text = text, this.clear(), 
+        this.dynamicTexture.drawTextCooked({
+            text: this.text,
+            margin: this.margin,
+            lineHeight: this.lineHeight,
+            align: this.align,
+            fillStyle: this.fillStyle,
+            fillLineWidth: this.fillLineWidth,
+            strokeStyle: this.strokeStyle,
+            strokeLineWidth: this.strokeLineWidth,
+            x: this.x,
+            y: this.y,
+            font: this.font
+        });
+    }, BaseText.prototype.clear = function() {
+        return this.dynamicTexture.clear();
+    }, BaseText.prototype.getTextWidth = function(s) {
+        return this.dynamicTexture.context.measureText(s).width;
+    }, BaseText;
+}(BaseModel);
 
 var Terrain, extend = function(child, parent) {
     function ctor() {
@@ -17219,7 +17458,7 @@ Terrain = function(superClass) {
                 var terrain;
                 return hm.heightData = Terrain.getHeightData(hm.image, scale), null == wSegments && (wSegments = hm.image.width - 1), 
                 null == hSegments && (hSegments = hm.image.height - 1), terrain = new Terrain(textureUrl, width, height, wSegments, hSegments), 
-                terrain.applyHeightmap(hm.heightData), null == scene && (scene = SceneManager.get().currentScene()), 
+                terrain.applyHeightmap(hm.heightData), null == scene && (scene = SceneManager.currentScene()), 
                 scene.terrain = terrain, scene.scene.add(terrain.mesh);
             };
         }(this));
@@ -17246,6 +17485,41 @@ Terrain = function(superClass) {
         null == json.hSegments && (json.hSegments = hm.image.height - 1), terrain = new Terrain(json), 
         terrain.applyHeightmap(hm.heightData), terrain;
     }, Terrain;
+}(BaseModel);
+
+var Tree, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+Tree = function(superClass) {
+    function Tree(material, size, children) {
+        var sizeModifier;
+        null == size && (size = 1), null == children && (children = 5), this.mesh = new THREE.Object3D(), 
+        null == material && (material = Helper.sampleShaderMaterial()), sizeModifier = .65, 
+        this.branchPivots = [], this.mesh = this.createBranch(size, material, children, !1, sizeModifier);
+    }
+    return extend(Tree, superClass), Tree.prototype.createBranch = function(size, material, children, isChild, sizeModifier) {
+        var branch, branchEnd, branchPivot, c, child, endSize, length;
+        if (branchPivot = new THREE.Object3D(), branchEnd = new THREE.Object3D(), this.branchPivots.push(branchPivot), 
+        length = Math.random() * size * 10 + 5 * size, endSize = 0 === children ? 0 : size * sizeModifier, 
+        branch = new THREE.Mesh(new THREE.CylinderGeometry(endSize, size, length, 5, 1, !0), material), 
+        branchPivot.add(branch), branch.add(branchEnd), branch.position.y = length / 2, 
+        branchEnd.position.y = length / 2 - .4 * size, isChild ? (branchPivot.rotation.z += 1.5 * Math.random() - 1.05 * sizeModifier, 
+        branchPivot.rotation.x += 1.5 * Math.random() - 1.05 * sizeModifier) : (branchPivot.rotation.z += .1 * Math.random() - .05, 
+        branchPivot.rotation.x += .1 * Math.random() - .05), children > 0) for (c = 0; children > c; ) child = this.createBranch(size * sizeModifier, material, children - 1, !0, sizeModifier), 
+        branchEnd.add(child), c++;
+        return branchPivot;
+    }, Tree.prototype.wind = function(wind) {
+        var b, i, len, ref, results;
+        for (ref = this.branchPivots, results = [], i = 0, len = ref.length; len > i; i++) b = ref[i], 
+        results.push(b.rotation.z += 5e-4 * Math.cos(wind * Math.random()));
+        return results;
+    }, Tree;
 }(BaseModel);
 
 var SpotLight, extend = function(child, parent) {
@@ -17350,7 +17624,7 @@ LoadingScene = function(superClass) {
         url.endsWithAny(Utils.SAVE_URLS) ? this._loadSaveObject(url) : url.endsWithAny(Utils.JSON_URLS) ? this._loadJsonModel(url) : url.endsWithAny(Utils.IMG_URLS) ? this._loadTexture(url) : url.endsWithAny(Utils.AUDIO_URLS) ? this._loadAudio(url) : console.log("WARNING: " + url + " is not a valid format");
         return interval = setInterval(function(_this) {
             return function() {
-                return _this.isLoadingDone() ? (clearInterval(interval), _this.config.debug && console.log("Finished loading"), 
+                return _this.isLoadingDone() ? (clearInterval(interval), console.ce("Finished loading"), 
                 _this.hasFinishedLoading()) : void 0;
             };
         }(this), 100);
@@ -17358,19 +17632,19 @@ LoadingScene = function(superClass) {
         return this.jmm.hasFinishedLoading() && this.tm.hasFinishedLoading() && this.som.hasFinishedLoading() && this.sm.hasFinishedLoading();
     }, LoadingScene.prototype._loadJsonModel = function(url) {
         var name;
-        return name = Utils.getKeyName(url, Utils.JSON_URLS), this.config.debug && console.log("Loading model '" + name + "' from '" + url + "'"), 
+        return name = Utils.getKeyName(url, Utils.JSON_URLS), console.ce("Loading model '" + name + "' from '" + url + "'"), 
         this.jmm.load(name, url);
     }, LoadingScene.prototype._loadTexture = function(url) {
         var name;
-        return name = Utils.getKeyName(url, Utils.IMG_URLS), this.config.debug && console.log("Loading texture '" + name + "' from '" + url + "'"), 
+        return name = Utils.getKeyName(url, Utils.IMG_URLS), console.ce("Loading texture '" + name + "' from '" + url + "'"), 
         this.tm.load(name, url);
     }, LoadingScene.prototype._loadSaveObject = function(url) {
         var name;
-        return name = Utils.getKeyName(url, Utils.SAVE_URLS), this.config.debug && console.log("Loading save object '" + name + "' from '" + url + "'"), 
+        return name = Utils.getKeyName(url, Utils.SAVE_URLS), console.ce("Loading save object '" + name + "' from '" + url + "'"), 
         this.som.load(name, url);
     }, LoadingScene.prototype._loadAudio = function(url) {
         var name;
-        return name = Utils.getKeyName(url, Utils.AUDIO_URLS), this.config.debug && console.log("Loading audio '" + name + "' from '" + url + "'"), 
+        return name = Utils.getKeyName(url, Utils.AUDIO_URLS), console.ce("Loading audio '" + name + "' from '" + url + "'"), 
         this.sm.load(name, url);
     }, LoadingScene.prototype.init = function() {}, LoadingScene.prototype.tick = function(tpf) {}, 
     LoadingScene.prototype.doMouseEvent = function(event, raycaster) {}, LoadingScene.prototype.doKeyboardEvent = function(event) {}, 
@@ -17406,7 +17680,7 @@ Cinematic = function() {
         so = SaveObjectManager.get().items[key], art = new ArtGenerator({
             width: so.width,
             height: so.height
-        }), art.fromJson(so), material = Helper.materialFromCanvas(art.canvas), results.push(MaterialManager.get().load(key, material))) : results.push(void 0);
+        }), art.fromJson(so), material = Helper.materialFromCanvas(art.canvas), results.push(MaterialManager.load(key, material))) : results.push(void 0);
         return results;
     }, Cinematic.prototype._loadCameras = function() {
         var camera, i, item, len, ref, results, vector;
@@ -17625,63 +17899,80 @@ ArtGenerator = function() {
     }, ArtGenerator;
 }();
 
-var FadeInModifier, FadeModifier, NoticeMeModifier, ShakeModifier;
+var BaseModifier, FadeInModifier, FadeModifier, NoticeMeModifier, ScaleModifier, ShakeModifier, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
 
-FadeInModifier = function() {
+BaseModifier = function() {
+    function BaseModifier() {}
+    return BaseModifier.prototype.start = function() {
+        return this.tween.start();
+    }, BaseModifier.prototype.delay = function(delay) {
+        return null == delay && (delay = 0), this.tween.delay(delay), this;
+    }, BaseModifier;
+}(), FadeInModifier = function(superClass) {
     function FadeInModifier(model) {
-        var tween;
-        tween = new TWEEN.Tween({
+        this.tween = new TWEEN.Tween({
             x: .5
         }).to({
             x: 1
-        }, 700).easing(TWEEN.Easing.Exponential.Out), tween.onUpdate(function() {
+        }, 700).easing(TWEEN.Easing.Exponential.Out), this.tween.onUpdate(function() {
             return model.setOpacity(this.x);
-        }).start();
+        });
     }
-    return FadeInModifier;
-}(), FadeModifier = function() {
+    return extend(FadeInModifier, superClass), FadeInModifier;
+}(BaseModifier), FadeModifier = function(superClass) {
     function FadeModifier(model, srcX, destX, t) {
-        var tween;
-        tween = new TWEEN.Tween({
+        this.tween = new TWEEN.Tween({
             x: srcX
         }).to({
             x: destX
-        }, t).easing(TWEEN.Easing.Exponential.Out), tween.onUpdate(function() {
+        }, t).easing(TWEEN.Easing.Exponential.Out), this.tween.onUpdate(function() {
             return model.setOpacity(this.x);
-        }).start();
+        });
     }
-    return FadeModifier;
-}(), ShakeModifier = function() {
+    return extend(FadeModifier, superClass), FadeModifier;
+}(BaseModifier), ShakeModifier = function(superClass) {
     function ShakeModifier(model, t) {
-        var ease, originalRZ, tween;
-        ease = TWEEN.Easing.Linear.None, originalRZ = model.mesh.rotation.z, tween = new TWEEN.Tween({
+        var ease, originalRZ;
+        ease = TWEEN.Easing.Linear.None, originalRZ = model.mesh.rotation.z, this.tween = new TWEEN.Tween({
             x: 0
         }).to({
             x: t
-        }, t).easing(ease), tween.onUpdate(function() {
+        }, t).easing(ease), this.tween.onUpdate(function() {
             return model.mesh.rotation.z += Math.random() - .5, 1 === this.x ? model.mesh.rotation.z = originalRZ : void 0;
-        }).start();
+        });
     }
-    return ShakeModifier;
-}(), NoticeMeModifier = function() {
+    return extend(ShakeModifier, superClass), ShakeModifier;
+}(BaseModifier), ScaleModifier = function(superClass) {
+    function ScaleModifier(model, srcX, destX, t) {
+        var ease;
+        ease = TWEEN.Easing.Linear.None, this.tween = new TWEEN.Tween({
+            x: srcX
+        }).to({
+            x: destX
+        }, t).easing(ease), this.tween.onUpdate(function() {
+            return model.mesh.scale.set(this.x, this.x, this.x);
+        });
+    }
+    return extend(ScaleModifier, superClass), ScaleModifier;
+}(BaseModifier), NoticeMeModifier = function(superClass) {
     function NoticeMeModifier(model, srcX, destX, t) {
-        var ease, tween;
-        ease = TWEEN.Easing.Linear.None, tween = new TWEEN.Tween({
-            x: srcX
-        }).to({
-            x: destX
-        }, t / 2).easing(ease), tween.onUpdate(function() {
-            return model.mesh.scale.set(this.x, this.x, this.x);
-        }).start(), tween = new TWEEN.Tween({
-            x: destX
-        }).to({
-            x: srcX
-        }, t / 2).easing(ease), tween.onUpdate(function() {
-            return model.mesh.scale.set(this.x, this.x, this.x);
-        }).delay(t / 2).start();
+        this.scale1 = new ScaleModifier(model, srcX, destX, t / 2), this.scale2 = new ScaleModifier(model, destX, srcX, t / 2), 
+        this.t = t;
     }
-    return NoticeMeModifier;
-}();
+    return extend(NoticeMeModifier, superClass), NoticeMeModifier.prototype.start = function() {
+        return this.scale1.start(), this.scale2.start();
+    }, NoticeMeModifier.prototype.delay = function(delay) {
+        return null == delay && (delay = 0), this.scale1.delay(delay), this.scale2.delay(delay + this.t / 2), 
+        this;
+    }, NoticeMeModifier;
+}(BaseModifier);
 
 var VRControls, extend = function(child, parent) {
     function ctor() {
@@ -17806,7 +18097,7 @@ Engine3D = function() {
         this.renderer.domElement.addEventListener("touchcancel", this.touchHandler, !1), 
         this.config.contextMenuDisabled && document.addEventListener("contextmenu", function(e) {
             return e.preventDefault();
-        }, !1), this.statsManager = StatsManager.get(), this.config.showStatsOnLoad && this.statsManager.toggle();
+        }, !1), this.config.showStatsOnLoad && StatsManager.toggle();
     }
     return Engine3D.prototype.setWidthHeight = function(width, height) {
         return this.width = width, this.height = height, this.config.width = width, this.config.height = height, 
@@ -17864,7 +18155,7 @@ Engine3D = function() {
         var now, tpf;
         if (!this.stop) return requestAnimationFrame(this.render), this.width = window.innerWidth, 
         this.height = window.innerHeight, now = new Date().getTime(), tpf = (now - (this.time || now)) / 1e3, 
-        this.time = now, this.uptime += tpf, this.sceneManager.tick(tpf), this.statsManager.update(this.renderer), 
+        this.time = now, this.uptime += tpf, this.sceneManager.tick(tpf), StatsManager.update(this.renderer), 
         TWEEN.update(), this.config.anaglyph ? this.anaglyphEffect.render(this.sceneManager.currentScene().scene, this.camera) : this.config.stereoVR ? this.stereoEffect.render(this.sceneManager.currentScene().scene, this.camera) : this.renderer.render(this.sceneManager.currentScene().scene, this.camera);
     }, Engine3D.prototype.implode = function() {
         return this.stop = !0, this.removeDom();
@@ -17873,7 +18164,7 @@ Engine3D = function() {
         return mouseX = x / this.width * 2 - 1, mouseY = 2 * -(y / this.height) + 1, vector = new THREE.Vector3(mouseX, mouseY, .5), 
         vector.unproject(this.camera), new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
     }, Engine3D.prototype.removeDom = function() {
-        var e, error;
+        var e;
         if (null !== this.renderer.domElement.parentNode) try {
             return document.body.removeChild(this.renderer.domElement);
         } catch (error) {
@@ -17947,8 +18238,8 @@ Array.prototype.isEmpty = function() {
         return i.id === id;
     });
 }, Array.prototype.sum = function() {
-    var e, j, len, sum;
-    for (sum = 0, j = 0, len = this.length; len > j; j++) e = this[j], sum += e;
+    var e, j, len, ref, sum;
+    for (sum = 0, ref = this, j = 0, len = ref.length; len > j; j++) e = ref[j], sum += e;
     return sum;
 }, Array.prototype.where = function(hash) {
     return this.filter(function(d) {
@@ -17966,6 +18257,8 @@ Array.prototype.isEmpty = function() {
     });
 }, Array.prototype.insert = function(index, item) {
     this.splice(index, 0, item);
+}, Array.prototype.toCyclicArray = function() {
+    return new CyclicArray(this);
 }, String.prototype.size = function(s) {
     return this.length;
 }, String.prototype.startsWith = function(s) {
@@ -17997,13 +18290,15 @@ Array.prototype.isEmpty = function() {
     for (j = 0, len = strings.length; len > j; j++) s = strings[j], this.contains(s) && (containsAny = !0);
     return containsAny;
 }, String.prototype.isPresent = function() {
-    return "undefined" != typeof this && null !== this && !this.isEmpty();
+    return null != this && !this.isEmpty();
 }, String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }, isNumeric = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }, Number.prototype.endsWith = function(s) {
     return this.toString().endsWith(s);
+}, console.ce = function(message) {
+    ("undefined" == typeof Config || null === Config || Config.get().debug) && console.log(message);
 }, CyclicArray = function() {
     function CyclicArray(items) {
         null == items && (items = []), this.items = items, this.index = 0;
@@ -18030,14 +18325,14 @@ Array.prototype.isEmpty = function() {
     function Playlist(keys) {
         var j, key, len;
         if (!(keys instanceof Array)) throw new Error("keys needs to be an array");
-        for (j = 0, len = keys.length; len > j; j++) if (key = keys[j], null == SoundManager.get().sounds[key]) throw new Error("key '" + key + "' not loaded in SoundManager");
+        for (j = 0, len = keys.length; len > j; j++) if (key = keys[j], !SoundManager.has(key)) throw new Error("key '" + key + "' not loaded in SoundManager");
         this.items = new CyclicArray(keys);
     }
     return Playlist.prototype.cmd = function(options) {
         var audio, item, j, len, ref;
         if (options.key = this.items.get(), "volumeAll" === options.type) for (options.type = "volume", 
         ref = this.items.items, j = 0, len = ref.length; len > j; j++) item = ref[j], options.key = item, 
-        SoundManager.get().cmd(options); else audio = SoundManager.get().cmd(options);
+        SoundManager.cmd(options); else audio = SoundManager.cmd(options);
         return [ "play", "fadeIn" ].includes(options.type) ? (audio._onend = [], audio.on("end", function(_this) {
             return function(data) {
                 return _this.items.next(), _this.cmd(options);
@@ -18046,7 +18341,7 @@ Array.prototype.isEmpty = function() {
     }, Playlist.prototype.getPlayingKey = function() {
         return this.items.get();
     }, Playlist.prototype.getPlayingAudio = function() {
-        return SoundManager.get().sounds[this.getPlayingKey()];
+        return SoundManager.get().items[this.getPlayingKey()];
     }, Playlist;
 }();
 
@@ -19904,3 +20199,33 @@ StackOverflow = StackOverflow || {}, StackOverflow.drawBezier = function(options
         }));
     }
 };
+
+var GameInstance, Utils, e, bind = function(fn, me) {
+    return function() {
+        return fn.apply(me, arguments);
+    };
+};
+
+try {
+    Utils = require("../shared/Utils.coffee").Utils;
+} catch (error) {
+    e = error, console.ce(e);
+}
+
+GameInstance = function() {
+    function GameInstance(config) {
+        null == config && (config = {}), this.tick = bind(this.tick, this), null == config.ticksPerSecond && (config.ticksPerSecond = 10), 
+        null == config.autoStart && (config.autoStart = !0), this.players = {}, this.sockets = {}, 
+        this.inputs = [], this.id = Utils.guid(), this.config = config, this.config.autoStart && this.setTickInterval(this.config.ticksPerSecond);
+    }
+    return GameInstance.prototype.tick = function() {
+        throw "tick needs to be implemented";
+    }, GameInstance.prototype.setTickInterval = function(tps) {
+        return null == tps && (tps = 10), this.config.ticksPerSecond = tps, null != this.tickInterval && clearInterval(this.tickInterval), 
+        this.tickInterval = setInterval(this.tick, 1e3 / this.config.ticksPerSecond);
+    }, GameInstance.prototype.startTicking = function() {
+        return this.setTickInterval(this.config.ticksPerSecond);
+    }, GameInstance.prototype.stopTicking = function() {
+        return null != this.tickInterval ? clearInterval(this.tickInterval) : void 0;
+    }, GameInstance;
+}(), exports.GameInstance = GameInstance;
