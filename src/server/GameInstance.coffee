@@ -10,14 +10,17 @@ catch e
 class GameInstance
 
   # Creates a new game and start ticking
-  constructor: (config) ->
+  constructor: (config = {}) ->
+    config.ticksPerSecond ?= 10
+    config.autoStart ?= true
+
     @players = {}
     @sockets = {}
     @inputs = []
 
     @id = Utils.guid()
     @config = config
-    @setTickInterval(@config.ticksPerSecond)
+    @setTickInterval(@config.ticksPerSecond) if @config.autoStart
 
   # This methods needs to be implemented by a class which extends the Game
   # It says what happens in a game tick.
@@ -27,10 +30,13 @@ class GameInstance
   # Change tick interval of the Game
   #
   # @param [Number] tps
-  setTickInterval: (tps) ->
+  setTickInterval: (tps = 10) ->
     @config.ticksPerSecond = tps
     clearInterval(@tickInterval) if @tickInterval?
     @tickInterval = setInterval @tick, 1000 / @config.ticksPerSecond
+
+  startTicking: ->
+    @setTickInterval(@config.ticksPerSecond)
 
   stopTicking: ->
     clearInterval(@tickInterval) if @tickInterval?
