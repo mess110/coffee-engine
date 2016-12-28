@@ -35,7 +35,7 @@ class BaseText extends BaseModel
   setText: (text) ->
     text = ' ' if text == '' || !text?
 
-    @text = text
+    @text = text.toString()
     @clear()
     @dynamicTexture.drawTextCooked(
       text: @text

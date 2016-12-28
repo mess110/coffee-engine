@@ -108,6 +108,11 @@ class Persist
       if !exceptions.includes(storage)
         @rm(storage)
 
+  @sessionStorage: ->
+    persist = new Persist()
+    persist.storage = sessionStorage
+    persist
+
   # @see get
   @getJson: (key) ->
     new Persist().getJson(key)

@@ -427,6 +427,7 @@ class Helper
     options.duration ?= Helper.defaultTweenDuration
     options.kind ?= 'Linear'
     options.direction ?= 'None'
+    options.delay ?= 0
 
     options.position ?= options.mesh.position.clone()
     options.position.rX = options.mesh.rotation.x
@@ -460,6 +461,7 @@ class Helper
         options.mesh.position.set(@x, @y, @z)
         options.mesh.rotation.set(@rX, @rY, @rZ)
       )
+    tween.delay(options.delay) if options.delay != 0
     tween
 
   # create a tween with a custom onUpdate and optional onComplete
