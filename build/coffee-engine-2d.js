@@ -420,6 +420,9 @@ Persist = function() {
         exceptions instanceof Array || (exceptions = [ exceptions ]), results = [];
         for (storage in this.storage) storage.endsWith("." + Persist.DEFAULT_SUFFIX) && withDefaults === !1 || (exceptions.includes(storage) ? results.push(void 0) : results.push(this.rm(storage)));
         return results;
+    }, Persist.sessionStorage = function() {
+        var persist;
+        return persist = new Persist(), persist.storage = sessionStorage, persist;
     }, Persist.getJson = function(key) {
         return new Persist().getJson(key);
     }, Persist.get = function(key) {

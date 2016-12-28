@@ -16395,6 +16395,9 @@ Persist = function() {
         exceptions instanceof Array || (exceptions = [ exceptions ]), results = [];
         for (storage in this.storage) storage.endsWith("." + Persist.DEFAULT_SUFFIX) && withDefaults === !1 || (exceptions.includes(storage) ? results.push(void 0) : results.push(this.rm(storage)));
         return results;
+    }, Persist.sessionStorage = function() {
+        var persist;
+        return persist = new Persist(), persist.storage = sessionStorage, persist;
     }, Persist.getJson = function(key) {
         return new Persist().getJson(key);
     }, Persist.get = function(key) {
@@ -17207,7 +17210,7 @@ Helper = function() {
         if (null == options.mesh) throw new Error("options.mesh missing");
         if (null == options.relative && (options.relative = !1), null == options.duration && (options.duration = Helper.defaultTweenDuration), 
         null == options.kind && (options.kind = "Linear"), null == options.direction && (options.direction = "None"), 
-        null == options.position && (options.position = options.mesh.position.clone()), 
+        null == options.delay && (options.delay = 0), null == options.position && (options.position = options.mesh.position.clone()), 
         options.position.rX = options.mesh.rotation.x, options.position.rY = options.mesh.rotation.y, 
         options.position.rZ = options.mesh.rotation.z, options.relative) {
             for (ref = [ "x", "y", "z" ], j = 0, len = ref.length; len > j; j++) e = ref[j], 
@@ -17220,7 +17223,7 @@ Helper = function() {
         if (options.position === options.target) throw new Error("target same as position");
         return tween = new TWEEN.Tween(options.position).to(options.target, options.duration).easing(TWEEN.Easing[options.kind][options.direction]).onUpdate(function() {
             return options.mesh.position.set(this.x, this.y, this.z), options.mesh.rotation.set(this.rX, this.rY, this.rZ);
-        });
+        }), 0 !== options.delay && tween.delay(options.delay), tween;
     }, Helper.tweenCustom = function(options) {
         var tween;
         if (null == options && (options = {}), null == options.src) throw new Error("options.src missing");
@@ -17402,8 +17405,8 @@ BaseText = function(superClass) {
         }), this.mesh = new THREE.Mesh(geom, material);
     }
     return extend(BaseText, superClass), BaseText.prototype.setText = function(text) {
-        return "" !== text && null != text || (text = " "), this.text = text, this.clear(), 
-        this.dynamicTexture.drawTextCooked({
+        return "" !== text && null != text || (text = " "), this.text = text.toString(), 
+        this.clear(), this.dynamicTexture.drawTextCooked({
             text: this.text,
             margin: this.margin,
             lineHeight: this.lineHeight,
