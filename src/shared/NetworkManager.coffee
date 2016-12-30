@@ -91,5 +91,8 @@ class NetworkManager
   @fakeEmit: (name, data) ->
     @get().fakeEmit(name, data)
 
+  @fake: (data) ->
+    @get().fake(data)
+
   @emit: (data) ->
     @get().emit(data)
