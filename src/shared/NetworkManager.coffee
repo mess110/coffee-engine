@@ -5,7 +5,7 @@ class NetworkManager
 
   # Uses socket.io for networking
   #
-  # TODO: inputId in base36 (maybe)
+  # TODO: clientInputId in base36 (maybe)
   #
   # @example
   #   nm = NetworkManager.get()
@@ -16,7 +16,7 @@ class NetworkManager
   #     console.log data
   class Singleton.NetworkManager
     socket: undefined
-    inputId: 0
+    clientInputId: 0
 
     # Connect to a namespace
     connect: (namespace = '/') ->
@@ -51,8 +51,8 @@ class NetworkManager
     # @nodoc
     _prepareData: (data={}) ->
       data.timestamp = new Date().getTime()
-      data.inputId = @inputId
-      @inputId += 1
+      data.clientInputId = @clientInputId
+      @clientInputId += 1
       data
 
     # Emit an event
