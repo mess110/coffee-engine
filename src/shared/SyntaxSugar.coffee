@@ -110,6 +110,9 @@ Array::insert = (index, item) ->
 Array::toCyclicArray = ->
   new CyclicArray(@)
 
+Array::shallowClone = ->
+  JSON.parse(JSON.stringify(@))
+
 # Returns the length of a string
 String::size = (s) ->
   @.length

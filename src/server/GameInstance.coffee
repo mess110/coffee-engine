@@ -18,7 +18,7 @@ class GameInstance
     @sockets = {}
     @inputs = []
 
-    @id = Utils.guid()
+    @id = config.id or Utils.guid()
     @config = config
     @setTickInterval(@config.ticksPerSecond) if @config.autoStart
 
