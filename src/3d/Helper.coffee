@@ -28,6 +28,10 @@ class Helper
 
   @defaultTweenDuration = 1000
 
+  # This is here more as a reminder you can pass params to setTimeout
+  @delay: (fn, time, args...) ->
+    setTimeout fn, time, args...
+
   @toVector3: (json) ->
     new (THREE.Vector3)(json.x, json.y, json.z)
 
