@@ -15,6 +15,10 @@ class BaseModel
   setOpacity: (opacity) ->
     @mesh.material.opacity = opacity
 
+  # Get the current opaicty of the mesh
+  getOpacity: ->
+    @mesh.material.opacity
+
   # Set the position of the mesh
   #
   # @param [Vector3] pos

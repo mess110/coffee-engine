@@ -2,6 +2,9 @@ class BaseModifier
   start: ->
     @tween.start()
 
+  stop: ->
+    @tween.stop()
+
   delay: (delay = 0) ->
     @tween.delay(delay)
     @
