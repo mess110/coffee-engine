@@ -437,6 +437,9 @@ class Helper
     options.position.rX = options.mesh.rotation.x
     options.position.rY = options.mesh.rotation.y
     options.position.rZ = options.mesh.rotation.z
+    options.position.sX = options.mesh.scale.x
+    options.position.sY = options.mesh.scale.y
+    options.position.sZ = options.mesh.scale.z
 
     if options.relative
       for e in ['x', 'y', 'z']
@@ -449,6 +452,11 @@ class Helper
           options.target[e] += options.mesh.rotation[e.toLowerCase()[1]]
         else
           options.target[e] = options.mesh.rotation[e.toLowerCase()[1]]
+      for e in ['sX', 'sY', 'sZ']
+        if options.target[e]?
+          options.target[e] += options.mesh.scale[e.toLowerCase()[1]]
+        else
+          options.target[e] = options.mesh.scale[e.toLowerCase()[1]]
     else
       options.target.x ?= options.position.x
       options.target.y ?= options.position.y
@@ -456,6 +464,9 @@ class Helper
       options.target.rX ?= options.position.rX
       options.target.rY ?= options.position.rY
       options.target.rZ ?= options.position.rZ
+      options.target.sX ?= options.position.sX
+      options.target.sY ?= options.position.sY
+      options.target.sZ ?= options.position.sZ
 
     throw new Error('target same as position') if options.position == options.target
 
@@ -464,6 +475,7 @@ class Helper
       .onUpdate( ->
         options.mesh.position.set(@x, @y, @z)
         options.mesh.rotation.set(@rX, @rY, @rZ)
+        options.mesh.scale.set(@sX, @sY, @sZ)
       )
     tween.delay(options.delay) if options.delay != 0
     tween
