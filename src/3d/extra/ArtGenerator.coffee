@@ -94,9 +94,13 @@ class ArtGenerator
     options.font ?= '40px Helvetica'
     options.x ?= 0
     options.y ?= 0
+    options.angle ?= 0
 
     @ctx.save()
     @ctx.font = options.font
+
+    if options.angle != 0
+      @ctx.rotate(options.angle * Math.PI / 180)
 
     if options.strokeStyle?
       @ctx.miterLimit = 2
