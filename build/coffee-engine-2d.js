@@ -717,6 +717,8 @@ Array.prototype.isEmpty = function() {
     this.splice(index, 0, item);
 }, Array.prototype.toCyclicArray = function() {
     return new CyclicArray(this);
+}, Array.prototype.shallowClone = function() {
+    return JSON.parse(JSON.stringify(this));
 }, String.prototype.size = function(s) {
     return this.length;
 }, String.prototype.startsWith = function(s) {
@@ -2674,7 +2676,7 @@ GameInstance = function() {
     function GameInstance(config) {
         null == config && (config = {}), this.tick = bind(this.tick, this), null == config.ticksPerSecond && (config.ticksPerSecond = 10), 
         null == config.autoStart && (config.autoStart = !0), this.players = {}, this.sockets = {}, 
-        this.inputs = [], this.id = Utils.guid(), this.config = config, this.config.autoStart && this.setTickInterval(this.config.ticksPerSecond);
+        this.inputs = [], this.id = config.id || Utils.guid(), this.config = config, this.config.autoStart && this.setTickInterval(this.config.ticksPerSecond);
     }
     return GameInstance.prototype.tick = function() {
         throw "tick needs to be implemented";

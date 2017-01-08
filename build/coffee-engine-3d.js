@@ -16065,7 +16065,7 @@ NetworkManager = function() {
     var instance;
     return instance = null, Singleton.NetworkManager = function() {
         function NetworkManager() {}
-        return NetworkManager.prototype.socket = void 0, NetworkManager.prototype.inputId = 0, 
+        return NetworkManager.prototype.socket = void 0, NetworkManager.prototype.clientInputId = 0, 
         NetworkManager.prototype.connect = function(namespace) {
             return null == namespace && (namespace = "/"), this.socket = io.connect(namespace);
         }, NetworkManager.prototype.getSessionId = function() {
@@ -16077,8 +16077,8 @@ NetworkManager = function() {
         }, NetworkManager.prototype.fakeEmit = function(name, data) {
             return null == data && (data = {}), this._prepareData(data);
         }, NetworkManager.prototype._prepareData = function(data) {
-            return null == data && (data = {}), data.timestamp = new Date().getTime(), data.inputId = this.inputId, 
-            this.inputId += 1, data;
+            return null == data && (data = {}), data.timestamp = new Date().getTime(), data.clientInputId = this.clientInputId, 
+            this.clientInputId += 1, data;
         }, NetworkManager.prototype.emit = function(data) {
             if (null == data && null == data.type) throw "data.type missing";
             return this.rawEmit("data", data);
@@ -16100,6 +16100,8 @@ NetworkManager = function() {
         return this.get().rawEmit(name, data);
     }, NetworkManager.fakeEmit = function(name, data) {
         return this.get().fakeEmit(name, data);
+    }, NetworkManager.fake = function(data) {
+        return this.get().fake(data);
     }, NetworkManager.emit = function(data) {
         return this.get().emit(data);
     }, NetworkManager;
@@ -16739,6 +16741,8 @@ BaseModel = function() {
         return this.mesh.scale.set(i, i, i);
     }, BaseModel.prototype.setOpacity = function(opacity) {
         return this.mesh.material.opacity = opacity;
+    }, BaseModel.prototype.getOpacity = function() {
+        return this.mesh.material.opacity;
     }, BaseModel.prototype.setPosition = function(pos) {
         return this.mesh.position.set(pos.x, pos.y, pos.z);
     }, BaseModel.prototype.setVisible = function(value) {
@@ -17002,7 +17006,7 @@ Config = function() {
     }, Config;
 }(), exports.Config = Config;
 
-var Helper;
+var Helper, slice = [].slice;
 
 Helper = function() {
     function Helper() {}
@@ -17011,7 +17015,11 @@ Helper = function() {
     Helper.toggleFullscreen = Utils.toggleFullscreen, Helper.addCEButton = Utils.addCEButton, 
     Helper.orientation = Utils.orientation, Helper.fade = Utils.fade, Helper.guid = Utils.guid, 
     Helper.setCursor = Utils.setCursor, Helper.rgbToHex = Utils.rgbToHex, Helper.defaultTweenDuration = 1e3, 
-    Helper.toVector3 = function(json) {
+    Helper.delay = function() {
+        var args, fn, time;
+        return fn = arguments[0], time = arguments[1], args = 3 <= arguments.length ? slice.call(arguments, 2) : [], 
+        setTimeout.apply(null, [ fn, time ].concat(slice.call(args)));
+    }, Helper.toVector3 = function(json) {
         return new THREE.Vector3(json.x, json.y, json.z);
     }, Helper.shallowClone = function(json) {
         return JSON.parse(JSON.stringify(json));
@@ -17205,24 +17213,31 @@ Helper = function() {
             };
         }(this)), tweenArray[0].start(), tweenArray;
     }, Helper.tween = function(options) {
-        var base, base1, base2, base3, base4, base5, e, j, k, len, len1, ref, ref1, tween;
+        var base, base1, base2, base3, base4, base5, base6, base7, base8, e, j, k, l, len, len1, len2, ref, ref1, ref2, tween;
         if (null == options && (options = {}), null == options.target) throw new Error("options.target missing");
         if (null == options.mesh) throw new Error("options.mesh missing");
         if (null == options.relative && (options.relative = !1), null == options.duration && (options.duration = Helper.defaultTweenDuration), 
         null == options.kind && (options.kind = "Linear"), null == options.direction && (options.direction = "None"), 
         null == options.delay && (options.delay = 0), null == options.position && (options.position = options.mesh.position.clone()), 
         options.position.rX = options.mesh.rotation.x, options.position.rY = options.mesh.rotation.y, 
-        options.position.rZ = options.mesh.rotation.z, options.relative) {
+        options.position.rZ = options.mesh.rotation.z, options.position.sX = options.mesh.scale.x, 
+        options.position.sY = options.mesh.scale.y, options.position.sZ = options.mesh.scale.z, 
+        options.relative) {
             for (ref = [ "x", "y", "z" ], j = 0, len = ref.length; len > j; j++) e = ref[j], 
             null != options.target[e] ? options.target[e] += options.mesh.position[e] : options.target[e] = options.mesh.position[e];
             for (ref1 = [ "rX", "rY", "rZ" ], k = 0, len1 = ref1.length; len1 > k; k++) e = ref1[k], 
             null != options.target[e] ? options.target[e] += options.mesh.rotation[e.toLowerCase()[1]] : options.target[e] = options.mesh.rotation[e.toLowerCase()[1]];
+            for (ref2 = [ "sX", "sY", "sZ" ], l = 0, len2 = ref2.length; len2 > l; l++) e = ref2[l], 
+            null != options.target[e] ? options.target[e] += options.mesh.scale[e.toLowerCase()[1]] : options.target[e] = options.mesh.scale[e.toLowerCase()[1]];
         } else null == (base = options.target).x && (base.x = options.position.x), null == (base1 = options.target).y && (base1.y = options.position.y), 
         null == (base2 = options.target).z && (base2.z = options.position.z), null == (base3 = options.target).rX && (base3.rX = options.position.rX), 
-        null == (base4 = options.target).rY && (base4.rY = options.position.rY), null == (base5 = options.target).rZ && (base5.rZ = options.position.rZ);
+        null == (base4 = options.target).rY && (base4.rY = options.position.rY), null == (base5 = options.target).rZ && (base5.rZ = options.position.rZ), 
+        null == (base6 = options.target).sX && (base6.sX = options.position.sX), null == (base7 = options.target).sY && (base7.sY = options.position.sY), 
+        null == (base8 = options.target).sZ && (base8.sZ = options.position.sZ);
         if (options.position === options.target) throw new Error("target same as position");
         return tween = new TWEEN.Tween(options.position).to(options.target, options.duration).easing(TWEEN.Easing[options.kind][options.direction]).onUpdate(function() {
-            return options.mesh.position.set(this.x, this.y, this.z), options.mesh.rotation.set(this.rX, this.rY, this.rZ);
+            return options.mesh.position.set(this.x, this.y, this.z), options.mesh.rotation.set(this.rX, this.rY, this.rZ), 
+            options.mesh.scale.set(this.sX, this.sY, this.sZ);
         }), 0 !== options.delay && tween.delay(options.delay), tween;
     }, Helper.tweenCustom = function(options) {
         var tween;
@@ -17883,7 +17898,8 @@ ArtGenerator = function() {
         return null == options.fillStyle && (options.fillStyle = "white"), null == options.fillLineWidth && (options.fillLineWidth = 1), 
         null == options.strokeLineWidth && (options.strokeLineWidth = 7), null == options.strokeStyle && (options.strokeStyle = void 0), 
         null == options.font && (options.font = "40px Helvetica"), null == options.x && (options.x = 0), 
-        null == options.y && (options.y = 0), this.ctx.save(), this.ctx.font = options.font, 
+        null == options.y && (options.y = 0), null == options.angle && (options.angle = 0), 
+        this.ctx.save(), this.ctx.font = options.font, 0 !== options.angle && this.ctx.rotate(options.angle * Math.PI / 180), 
         null != options.strokeStyle && (this.ctx.miterLimit = 2, this.ctx.lineJoin = "circle", 
         this.ctx.strokeStyle = options.strokeStyle, this.ctx.lineWidth = options.strokeLineWidth, 
         this.ctx.strokeText(options.text, options.x, options.y)), this.ctx.lineWidth = options.fillLineWidth, 
@@ -17915,6 +17931,8 @@ BaseModifier = function() {
     function BaseModifier() {}
     return BaseModifier.prototype.start = function() {
         return this.tween.start();
+    }, BaseModifier.prototype.stop = function() {
+        return this.tween.stop();
     }, BaseModifier.prototype.delay = function(delay) {
         return null == delay && (delay = 0), this.tween.delay(delay), this;
     }, BaseModifier;
@@ -18262,6 +18280,8 @@ Array.prototype.isEmpty = function() {
     this.splice(index, 0, item);
 }, Array.prototype.toCyclicArray = function() {
     return new CyclicArray(this);
+}, Array.prototype.shallowClone = function() {
+    return JSON.parse(JSON.stringify(this));
 }, String.prototype.size = function(s) {
     return this.length;
 }, String.prototype.startsWith = function(s) {
@@ -20219,7 +20239,7 @@ GameInstance = function() {
     function GameInstance(config) {
         null == config && (config = {}), this.tick = bind(this.tick, this), null == config.ticksPerSecond && (config.ticksPerSecond = 10), 
         null == config.autoStart && (config.autoStart = !0), this.players = {}, this.sockets = {}, 
-        this.inputs = [], this.id = Utils.guid(), this.config = config, this.config.autoStart && this.setTickInterval(this.config.ticksPerSecond);
+        this.inputs = [], this.id = config.id || Utils.guid(), this.config = config, this.config.autoStart && this.setTickInterval(this.config.ticksPerSecond);
     }
     return GameInstance.prototype.tick = function() {
         throw "tick needs to be implemented";
