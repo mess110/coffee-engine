@@ -33,6 +33,9 @@ class BaseModel
       object.visible = value
     @visible = value
 
+  isVisible: ->
+    @visible
+
   # attach a mesh to a bone
   #
   # @param [String] boneName

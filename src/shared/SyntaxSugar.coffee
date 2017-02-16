@@ -211,6 +211,9 @@ class CyclicArray
     @index = @items.size() - 1 if @index < 0
     @get()
 
+  size: ->
+    @items.size()
+
 whichAnimationEvent = ->
   el = document.createElement('fakeelement')
   animations =
