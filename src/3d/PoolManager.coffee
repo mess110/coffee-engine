@@ -116,3 +116,15 @@ class PoolManager
 
   @releaseAll: ->
     @get().releaseAll()
+
+  @items: (type) ->
+    if type?
+      @get().items[type] || []
+    else
+      @get().items
+
+  @itemsInUse: (type) ->
+    if type?
+      @get().itemsInUse[type] || []
+    else
+      @get().itemsInUse

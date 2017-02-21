@@ -46,6 +46,7 @@ class Utils
 
   @ORIENTATIONS = ['all', 'landscape', 'portrait']
 
+  @FADE_COLOR = 'black'
   @FADE_DEFAULT_DURATION = 1000
 
   # Requires a user action like pressing a button. Does not work if placed in
@@ -349,7 +350,7 @@ class Utils
   left: 0px;
   width: 100%;
   height: 100%;
-  background-color: black;
+  background-color: #{Utils.FADE_COLOR};
   z-index: #{Utils.CE_UI_Z_INDEX - 1};
   #{pointerEvents}
 

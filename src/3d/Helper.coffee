@@ -32,6 +32,9 @@ class Helper
   @delay: (fn, time, args...) ->
     setTimeout fn, time, args...
 
+  @interval: (fn, time, args...) ->
+    setInterval fn, time, args...
+
   @toVector3: (json) ->
     new (THREE.Vector3)(json.x, json.y, json.z)
 
@@ -55,6 +58,32 @@ class Helper
     dy = v1.y - (v2.y)
     dz = v1.z - (v2.z)
     Math.sqrt dx * dx + dy * dy + dz * dz
+
+  @tendToZero: (n, amount) ->
+    return n if n == 0
+    if n > 0
+      n -= amount
+      n = 0 if n < 0
+    else
+      n += amount
+      n = 0 if n > 0
+    n
+
+  @tendTo: (n, amount, target) ->
+    return n if n == target
+    if n > target
+      n -= amount
+      n = target if n < target
+    else
+      n += amount
+      n = target if n > target
+    n
+
+  @addWithMinMax: (n, amount, min, max) ->
+    n += amount
+    n = max if n > max
+    n = min if n < min
+    n
 
   # Create a new camera.
   #
@@ -123,6 +152,14 @@ class Helper
     options.decay ?= Utils.POINT_LIGHT_DEFAULT_DECAY
 
     new (THREE.PointLight)(options.color, options.intensity, options.distance, options.decay)
+
+  # Create ThreePointsLighting with THREEX
+  @threePointLight: ->
+    new THREEx.ThreePointsLighting()
+
+  # Create SunSetLighting with THREEX
+  @sunSetLight: ->
+    new THREEx.SunSetLighting()
 
   # Create cubes with lambert material
   #
@@ -672,19 +709,3 @@ class Helper
         location.reload()
 
     nm.emit(type: 'reload')
-
-  @tendToZero: (n, amount)->
-    return n if n == 0
-    if n > 0
-      n -= amount
-      n = 0 if n < 0
-    else
-      n += amount
-      n = 0 if n > 0
-    n
-
-  @addWithMinMax: (n, amount, min, max) ->
-    n += amount
-    n = max if n > max
-    n = min if n < min
-    n

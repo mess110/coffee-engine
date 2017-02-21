@@ -40,6 +40,8 @@ app.controller 'CinematicEditorController', ['$document', '$scope', ($document, 
     'model'
     'terrain'
     'skySphere'
+    'threePointLight'
+    'sunSetLight'
     'ambientLight'
     'pointLight'
     'light'
