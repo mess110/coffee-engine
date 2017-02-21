@@ -13,6 +13,11 @@
 #   PoolManager.release(item)
 #
 #   PoolManager.releaseAll()
+#
+#   PoolManager.spawn Card, {}
+#   PoolManager.onSpawn Card, (item, options) ->
+#     # do stuff
+#
 class PoolManager
 
   instance = null
@@ -27,7 +32,7 @@ class PoolManager
     releaseEvents: {}
 
     # @param [BaseModel Class] type
-    spawn: (type) ->
+    spawn: (type, options={}) ->
       @_validation(type)
 
       if @items[type].isEmpty()
@@ -36,7 +41,7 @@ class PoolManager
         item = @items[type].shift()
 
       @itemsInUse[type].push item
-      @spawnEvents[type](item) if @spawnEvents[type]?
+      @spawnEvents[type](item, options) if @spawnEvents[type]?
       item
 
     # @param [BaseModel] item
@@ -99,8 +104,8 @@ class PoolManager
   @get: () ->
     instance ?= new Singleton.PoolManager()
 
-  @spawn: (type) ->
-    @get().spawn(type)
+  @spawn: (type, options={}) ->
+    @get().spawn(type, options)
 
   @release: (item) ->
     @get().release(item)
