@@ -151,6 +151,10 @@ class Engine3D
   removeScene: (scene) ->
     @sceneManager.removeScene scene
 
+  render: =>
+    console.warn 'engine.render() is deprecated. Use engine.start() instead.'
+    @start()
+
   # Starts rendering
   #
   # Using requestAnimationFrame, this method will continously call itself. Think of
@@ -165,9 +169,9 @@ class Engine3D
   # * updating stats
   # * updating tweens
   # * rendering the scene
-  render: =>
+  start: =>
     return if @stop
-    requestAnimationFrame this.render
+    @frameId = requestAnimationFrame @start
 
     @width = window.innerWidth
     @height = window.innerHeight
@@ -186,6 +190,28 @@ class Engine3D
       @stereoEffect.render @sceneManager.currentScene().scene, @camera
     else
       @renderer.render @sceneManager.currentScene().scene, @camera
+
+  # pause/stop the render method
+  #
+  # @see @resume
+  pause: ->
+    cancelAnimationFrame @frameId
+    @frameId = undefined
+    @stop = true
+
+  # Resumes rendering
+  #
+  # @example
+  #
+  # document.addEventListener("visibilitychange", (event) ->
+  #   if document.hidden
+  #     engine.pause()
+  #   else
+  #     engine.resume()
+  # , false)
+  resume: ->
+    @stop = false
+    @render()
 
   implode: =>
     @stop = true

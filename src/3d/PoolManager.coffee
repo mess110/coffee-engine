@@ -44,19 +44,35 @@ class PoolManager
       @spawnEvents[type](item, options) if @spawnEvents[type]?
       item
 
+    spawnSpecific: (item, options={}) ->
+      type = item.constructor
+      @_validation(type)
+
+      unless @itemsInUse[type].includes(item)
+        removed = @items[type].remove(item)
+        if removed == null
+          throw 'item needs to be previously spawned by PoolManager'
+        @itemsInUse[type].push item
+
+      @spawnEvents[type](item, options) if @spawnEvents[type]?
+      item
+
     # @param [BaseModel] item
-    release: (item) ->
+    release: (item, options={}) ->
       if typeof item != 'object' || !item.constructor?
         throw new Error("item #{item} can not be released. wront type")
 
       type = @_validation(item.constructor)
 
       if @itemsInUse[type].indexOf(item) == -1
-        throw new Error("item (#{type}) was not spawned from the pool")
+        if @items[type].indexOf(item) == -1
+          throw new Error("item (#{type}) was not spawned from the pool")
 
-      @itemsInUse[type].remove(item)
-      @items[type].push item
-      @releaseEvents[type](item) if @releaseEvents[type]?
+      if @itemsInUse[type].indexOf(item) != -1
+        @itemsInUse[type].remove(item)
+      if @items[type].indexOf(item) == -1
+        @items[type].push item
+      @releaseEvents[type](item, options) if @releaseEvents[type]?
       return
 
     on: (which, type, func) ->
@@ -101,14 +117,22 @@ class PoolManager
 
       toRelease
 
+    getAll: ->
+      allItems = []
+      for itemSet in [@items, @itemsInUse]
+        for key of itemSet
+          for item in itemSet[key]
+            allItems.push item
+      allItems
+
   @get: () ->
     instance ?= new Singleton.PoolManager()
 
   @spawn: (type, options={}) ->
     @get().spawn(type, options)
 
-  @release: (item) ->
-    @get().release(item)
+  @release: (item, options={}) ->
+    @get().release(item, options)
 
   @on: (which, type, func) ->
     @get().on(which, type, func)
@@ -126,10 +150,19 @@ class PoolManager
     if type?
       @get().items[type] || []
     else
-      @get().items
+      results = []
+      for key of @get().items
+        results = results.concat(@get().items[key])
+      results
 
-  @itemsInUse: (type) ->
-    if type?
-      @get().itemsInUse[type] || []
+  @itemsInUse: (targetType) ->
+    results = []
+    if targetType?
+      type = [].concat(targetType)
+      for theType in type
+        results = results.concat(@get().itemsInUse[theType] || [])
+      results
     else
-      @get().itemsInUse
+      for key of @get().itemsInUse
+        results = results.concat(@get().itemsInUse[key])
+    results

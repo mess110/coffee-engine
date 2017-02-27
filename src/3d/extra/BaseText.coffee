@@ -3,8 +3,8 @@ class BaseText extends BaseModel
   constructor: (options={}) ->
     super()
 
-    @canvasW = options.canvasW || 500
-    @canvasH = options.canvasH || 500
+    @canvasW = options.canvasW || 512
+    @canvasH = options.canvasH || 512
 
     @w = options.w || 4
     @h = options.h || 4

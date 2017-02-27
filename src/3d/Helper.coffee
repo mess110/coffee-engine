@@ -59,6 +59,29 @@ class Helper
     dz = v1.z - (v2.z)
     Math.sqrt dx * dx + dy * dy + dz * dz
 
+  # Move towards a certain point
+  @moveTowards: (speed, tpf, src, dest) ->
+    start =
+      x: src.x
+      y: src.y
+      z: src.z
+    end =
+      x: dest.x
+      y: dest.y
+      z: dest.z
+
+    distance = Helper.distanceTo(start, end)
+    direction = new THREE.Vector3(end.x - start.x, end.y - start.y, end.z - start.z).normalize()
+
+    src.x += direction.x * speed * tpf
+    src.y += direction.y * speed * tpf
+    src.z += direction.z * speed * tpf
+    if Helper.distanceTo(start, src) >= distance
+      src.x = end.x
+      src.y = end.y
+      src.z = end.z
+    src
+
   @tendToZero: (n, amount) ->
     return n if n == 0
     if n > 0
