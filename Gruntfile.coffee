@@ -13,6 +13,7 @@ module.exports = (grunt) ->
     "bower_components/threejs/examples/js/controls/FirstPersonControls.js"
     "bower_components/threejs/examples/js/controls/PointerLockControls.js"
     "bower_components/threejs/examples/js/Mirror.js"
+    "bower_components/threejs/examples/js/Detector.js"
 
     "bower_components/threex.windowresize/threex.windowresize.js"
     "bower_components/threex.rendererstats/threex.rendererstats.js"
@@ -52,6 +53,7 @@ module.exports = (grunt) ->
     "src/3d/Helper.js"
     "src/3d/ShaderLib.js"
     "src/3d/PoolManager.js"
+    "src/3d/PolyfillRenderer.js"
 
     "src/3d/extra/BaseText.js"
     "src/3d/extra/Terrain.js"

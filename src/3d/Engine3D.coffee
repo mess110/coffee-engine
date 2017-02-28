@@ -6,11 +6,13 @@ class Engine3D
     @uptime = 0
     @time = undefined
     @config = Config.get()
+    @webgl = Detector.webgl
 
     @width = @config.width
     @height = @config.height
 
-    @renderer = new THREE.WebGLRenderer(
+    renderer = if @webgl then THREE.WebGLRenderer else PolyfillRenderer
+    @renderer = new renderer(
       antialias: @config.antialias
       alpha: @config.transparentBackground
       logarithmicDepthBuffer: false
