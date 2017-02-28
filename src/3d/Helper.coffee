@@ -198,7 +198,10 @@ class Helper
         transparent: true
         side: THREE.DoubleSide)
     else
-      mat = new (THREE[options.material])(color: options.color)
+      if options.material == 'MeshNormalMaterial'
+        mat = new (THREE[options.material])()
+      else
+        mat = new (THREE[options.material])(color: options.color)
     new (THREE.Mesh)(box, mat)
 
   # Clones a JsonModel from the JsonModelManager
