@@ -3,41 +3,31 @@ class ModelViewerScene extends BaseScene
   init: ->
     engine.setWidthHeight(window.innerWidth, window.innerHeight)
 
+    # Helper.desertScene(@scene)
+
     @light1 = Helper.ambientLight()
     @scene.add @light1
-    @light2 = Helper.ambientLight()
-    @scene.add @light2
+    hemiLight = Helper.hemiLight()
+    hemiLight.position.set 0, 500, 0
+    @scene.add hemiLight
 
-    @setLight()
+    dirLight = new (THREE.DirectionalLight)(0xffffff, 1)
+    dirLight.color.setHSL 0.1, 1, 0.95
+    dirLight.position.set -1, 1.75, 1
+    dirLight.position.multiplyScalar 50
+    @scene.add dirLight
 
-    @scene.fog = Helper.fog(far: 90, color: 'white')
+    @scene.fog = Helper.fog(near: 20, far: 90, color: 'white')
     @grid = Helper.grid(size: 200, step: 10, color: 'gray')
     @scene.add @grid
     @engine = EngineHolder.get().engine
 
-    engine.camera.position.set 0, 5, 25
+    @engine.camera.position.set 0, 5, 25
     @engine.setClearColor(@scene.fog.color.clone(), 1)
 
     @controls = Helper.orbitControls(@engine)
     @controls.enabled = true
     @controls.damping = 0.2
-
-  toggleFog: ->
-    if @scene.fog?
-      @scene.fog = undefined
-    else
-      @scene.fog = Helper.fog(far: 90, color: 'white')
-
-  setLight: (value = true) ->
-    if value
-      return if @light?
-      @light = Helper.light(position: { z: 20 })
-      @scene.add @light
-    else
-      return unless @light?
-      @scene.remove @light
-      @light = undefined
-    return
 
   uninit: ->
     super()

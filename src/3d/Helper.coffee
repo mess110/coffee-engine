@@ -184,6 +184,28 @@ class Helper
   @sunSetLight: ->
     new THREEx.SunSetLighting()
 
+  # Create a hemisphere light
+  @hemiLight: (options = {}) ->
+    options.skyColor ?= 0xffffff
+    options.groundColor ?= 0xffffff
+    options.intensity ?= 0.6
+
+    options.skyColorHSL ?= {}
+    options.skyColorHSL.hue ?= 0.6
+    options.skyColorHSL.saturation ?= 1
+    options.skyColorHSL.light ?= 0.6
+
+    options.groundColorHSL ?= {}
+    options.groundColorHSL.hue ?= 0.95
+    options.groundColorHSL.saturation ?= 1
+    options.groundColorHSL.light ?= 0.75
+
+    hemiLight = new (THREE.HemisphereLight)(options.skyColor, options.groundColor, options.intensity)
+    hemiLight.color.setHSL options.skyColorHSL.hue, options.skyColorHSL.saturation, options.skyColorHSL.light
+    hemiLight.groundColor.setHSL options.groundColorHSL.hue, options.groundColorHSL.saturation, options.groundColorHSL.light
+    # hemiLight.position.set 0, 500, 0
+    hemiLight
+
   # Create cubes with lambert material
   #
   # @param [Object] options containing size, material and color
@@ -735,3 +757,60 @@ class Helper
         location.reload()
 
     nm.emit(type: 'reload')
+
+  @desertScene = (inputScene) ->
+    scene = if inputScene instanceof BaseScene then inputScene.scene else inputScene
+
+    groundGeo = new (THREE.PlaneBufferGeometry)(10000, 10000)
+    groundMat = new (THREE.MeshPhongMaterial)(
+      color: 0xffffff
+      specular: 0x050505)
+    groundMat.color.setHSL 0.095, 1, 0.75
+    ground = new (THREE.Mesh)(groundGeo, groundMat)
+    ground.rotation.x = -Math.PI / 2
+    # ground.position.y = -33
+    scene.add ground
+    ground.receiveShadow = true
+
+    scene.fog = new (THREE.Fog)(0xffffff, 1, 5000)
+    scene.fog.color.setHSL 0.6, 0, 1
+
+    hemiLight = Helper.hemiLight()
+    hemiLight.position.set 0, 500, 0
+    scene.add hemiLight
+
+    dirLight = new (THREE.DirectionalLight)(0xffffff, 1)
+    dirLight.color.setHSL 0.1, 1, 0.95
+    dirLight.position.set -1, 1.75, 1
+    dirLight.position.multiplyScalar 50
+    scene.add dirLight
+    dirLight.castShadow = true
+    dirLight.shadow.mapSize.width = 2048
+    dirLight.shadow.mapSize.height = 2048
+    d = 50
+    dirLight.shadow.camera.left = -d
+    dirLight.shadow.camera.right = d
+    dirLight.shadow.camera.top = d
+    dirLight.shadow.camera.bottom = -d
+    dirLight.shadow.camera.far = 3500
+    dirLight.shadow.bias = -0.0001
+
+    vertexShader = THREE.ShaderLib['gradient'].vertexShader
+    fragmentShader = THREE.ShaderLib['gradient'].fragmentShader
+    uniforms =
+      topColor: value: new (THREE.Color)(0x0077ff)
+      bottomColor: value: new (THREE.Color)(0xffffff)
+      offset: value: 33
+      exponent: value: 0.6
+    uniforms.topColor.value.copy hemiLight.color
+    scene.fog.color.copy uniforms.bottomColor.value
+    skyGeo = new (THREE.SphereGeometry)(4000, 32, 15)
+    skyMat = new (THREE.ShaderMaterial)(
+      vertexShader: vertexShader
+      fragmentShader: fragmentShader
+      uniforms: uniforms
+      side: THREE.BackSide)
+    sky = new (THREE.Mesh)(skyGeo, skyMat)
+    scene.add sky
+
+    [ground, hemiLight, dirLight, sky]
