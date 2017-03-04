@@ -24,6 +24,7 @@ class Config
     debug: false
     preventDefaultMouseEvents: true
     transparentBackground: false
+    logarithmicDepthBuffer: true
 
     # by disabling this you are:
     #

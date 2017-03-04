@@ -15,7 +15,7 @@ class Engine3D
     @renderer = new renderer(
       antialias: @config.antialias
       alpha: @config.transparentBackground
-      logarithmicDepthBuffer: false
+      logarithmicDepthBuffer: @config.logarithmicDepthBuffer
     )
     # @renderer.context.disable(@renderer.context.DEPTH_TEST)
     @renderer.sortObjects = @config.sortObjects
