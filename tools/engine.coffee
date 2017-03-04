@@ -24,4 +24,4 @@ graffitiPainterScene = new GraffitiPainterScene()
 engine.addScene(graffitiPainterScene)
 
 EngineHolder.get().engine.removeDom()
-engine.render()
+engine.start()

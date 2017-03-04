@@ -28,4 +28,4 @@ Engine3D.scenify(engine, ->
   engine.initScene(scenes.get())
 )
 
-engine.render()
+engine.start()

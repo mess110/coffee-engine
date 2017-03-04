@@ -45,4 +45,4 @@ Engine3D.scenify(engine, ->
   scope.start()
 )
 
-engine.render()
+engine.start()

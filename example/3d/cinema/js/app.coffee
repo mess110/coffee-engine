@@ -8,4 +8,4 @@ Engine3D.scenify(engine, ->
   console.log 'cinematic started'
 )
 
-engine.render()
+engine.start()

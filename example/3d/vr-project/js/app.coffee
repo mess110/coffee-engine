@@ -17,7 +17,7 @@ app.controller 'MainController', ($scope, $location) ->
     config.fillWindow()
     engine = new Engine3D()
     Engine3D.scenify(engine, openHUD)
-    engine.render()
+    engine.start()
 
     return
 
