@@ -178,8 +178,9 @@ class Helper
   # @param [Color] color
   @ambientLight: (options = {}) ->
     options.color ?= Utils.AMBIENT_LIGHT_DEFAULT_COLOR
+    options.intensity ?= Utils.POINT_LIGHT_DEFAULT_INTENSITY
 
-    new (THREE.AmbientLight)(options.color)
+    new (THREE.AmbientLight)(options.color, options.intensity)
 
   # Create a point light similar to a lightbulb
   @pointLight: (options = {}) ->
