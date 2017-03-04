@@ -124,6 +124,34 @@ class Utils
     blob = new Blob([json], type: "#{format};charset=utf-8")
     saveAs blob, fileName
 
+  @saveScreenshot = (engine, fileName='screenshot.png') ->
+    try
+      isFileSaverSupported = ! !new Blob
+    catch e
+      throw 'FileSaver not supported'
+
+    content = engine.getScreenshot()
+    saveAs Utils.base64ToBlob(content), fileName
+
+  @base64ToBlob = (b64Data, contentType, sliceSize) ->
+    contentType = contentType or ''
+    sliceSize = sliceSize or 512
+    byteCharacters = atob(b64Data)
+    byteArrays = []
+    offset = 0
+    while offset < byteCharacters.length
+      slice = byteCharacters.slice(offset, offset + sliceSize)
+      byteNumbers = new Array(slice.length)
+      i = 0
+      while i < slice.length
+        byteNumbers[i] = slice.charCodeAt(i)
+        i++
+      byteArray = new Uint8Array(byteNumbers)
+      byteArrays.push byteArray
+      offset += sliceSize
+    blob = new Blob(byteArrays, type: contentType)
+    blob
+
   # Add a custom button at a given position.
   #
   # By default, it adds the fullscreen button. Valid types are:

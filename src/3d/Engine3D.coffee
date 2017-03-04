@@ -10,6 +10,7 @@ class Engine3D
 
     @width = @config.width
     @height = @config.height
+    @takeScreenshot = false
 
     renderer = if @webgl then THREE.WebGLRenderer else PolyfillRenderer
     @renderer = new renderer(
@@ -186,12 +187,35 @@ class Engine3D
     StatsManager.update(@renderer)
     TWEEN.update()
 
+    @_getActiveRenderer().render @sceneManager.currentScene().scene, @camera
+    @_takeScreenshot()
+
+  _getActiveRenderer: ->
     if @config.anaglyph
-      @anaglyphEffect.render @sceneManager.currentScene().scene, @camera
+      @anaglyphEffect
     else if @config.stereoVR
-      @stereoEffect.render @sceneManager.currentScene().scene, @camera
+      @stereoEffect
     else
-      @renderer.render @sceneManager.currentScene().scene, @camera
+      @renderer
+
+  # queue taking a screenshot.
+  # the screenshot is taken right after the render method is called
+  screenshot: ->
+    @takeScreenshot = true
+
+  # return an image string of the last screenshot
+  getScreenshot: (withMeta=false)->
+    throw 'use engine.screenshot() first' unless @screenshotData?
+    if withMeta
+      @screenshotData
+    else
+      data = @screenshotData
+      data.split(',')[1]
+
+  _takeScreenshot: ->
+    return unless @takeScreenshot
+    @takeScreenshot = false
+    @screenshotData = @_getActiveRenderer().domElement.toDataURL()
 
   # pause/stop the render method
   #
