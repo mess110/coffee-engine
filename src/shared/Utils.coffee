@@ -115,23 +115,23 @@ class Utils
   #
   # @see https://github.com/carlos-algms/FileSaver.js
   @saveFile = (content, fileName, format="application/json") ->
-    try
-      isFileSaverSupported = ! !new Blob
-    catch e
-      throw 'FileSaver not supported'
+    Utils._ensureBlobPresence()
 
     json = JSON.stringify(content, null, 2)
     blob = new Blob([json], type: "#{format};charset=utf-8")
     saveAs blob, fileName
 
   @saveScreenshot = (engine, fileName='screenshot.png') ->
+    Utils._ensureBlobPresence()
+
+    content = engine.getScreenshot()
+    saveAs Utils.base64ToBlob(content), fileName
+
+  @_ensureBlobPresence: ->
     try
       isFileSaverSupported = ! !new Blob
     catch e
       throw 'FileSaver not supported'
-
-    content = engine.getScreenshot()
-    saveAs Utils.base64ToBlob(content), fileName
 
   @base64ToBlob = (b64Data, contentType, sliceSize) ->
     contentType = contentType or ''
