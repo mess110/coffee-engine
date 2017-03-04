@@ -59,6 +59,9 @@ app.controller 'MainController', ['$document', '$scope', '$location', '$window',
   $scope.reload = ->
     gui.Window.get().reload()
 
+  $scope.screenshot = ->
+    Helper.screenshot()
+
   $scope.loadProject = (project) ->
     $scope.goTo("/game-maker/#{project}")
     $scope.refreshProjects()
@@ -78,6 +81,10 @@ app.controller 'MainController', ['$document', '$scope', '$location', '$window',
     )
 
   $document.bind 'keydown', (event) ->
+    if event.keyCode == 112 # F1
+      event.preventDefault()
+      $scope.screenshot()
+
     if event.keyCode == 116
       event.preventDefault()
       $scope.reload()

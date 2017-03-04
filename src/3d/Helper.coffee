@@ -108,6 +108,20 @@ class Helper
     n = min if n < min
     n
 
+  # Take a screenshot
+  @screenshot: (targetEngine) ->
+    if targetEngine?
+      eng = targetEngine
+    else if engine?
+      eng = engine
+    else
+      throw 'no engine found'
+
+    eng.screenshot()
+    setTimeout ->
+      Utils.saveScreenshot(eng)
+    , 1000
+
   # Create a new camera.
   #
   # By default, it creates a PerspectiveCamera
