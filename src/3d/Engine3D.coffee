@@ -184,11 +184,23 @@ class Engine3D
     @time = now
     @uptime += tpf
     @sceneManager.tick(tpf)
-    StatsManager.update(@renderer)
+    StatsManager.update(@_getActiveRenderer())
     TWEEN.update()
 
-    @_getActiveRenderer().render @sceneManager.currentScene().scene, @camera
+    if @composer?
+      @renderer.clear()
+      @composer.render(tpf)
+    else
+      @_getActiveRenderer().render @sceneManager.currentScene().scene, @camera
     @_takeScreenshot()
+
+  enableComposer: (composer) ->
+    @renderer.autoClear = false
+    @composer = composer
+
+  disableComposer: ->
+    @renderer.autoClear = true
+    @composer = undefined
 
   _getActiveRenderer: ->
     if @config.anaglyph

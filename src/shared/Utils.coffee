@@ -91,6 +91,9 @@ class Utils
     throw "Invalid color component"  if r > 255 or g > 255 or b > 255
     ((r << 16) | (g << 8) | b).toString 16
 
+  @degToRadians = (angle) ->
+    angle * Math.PI / 180
+
   # Returns key name used in texture manager or json model manager
   #
   # @example

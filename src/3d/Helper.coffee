@@ -829,3 +829,40 @@ class Helper
     scene.add sky
 
     [ground, hemiLight, dirLight, sky]
+
+  # Create a compsoer to use with the engine
+  #
+  # @example
+  #   composer = Helper.composer(scene.scene, engine)
+  #   engine.enableComposer composer
+  @composer: (scene, targetEngine) ->
+    renderModel = new (THREE.RenderPass)(scene, targetEngine.camera)
+    effectBloom = new (THREE.BloomPass)(1.3)
+    effectCopy = new (THREE.ShaderPass)(THREE.CopyShader)
+    effectFXAA = new (THREE.ShaderPass)(THREE.FXAAShader)
+    effectFXAA.uniforms['resolution'].value.set 1 / targetEngine.width, 1 / targetEngine.height
+    effectCopy.renderToScreen = true
+    composer = new (THREE.EffectComposer)(targetEngine.renderer)
+    composer.addPass renderModel
+    composer.addPass effectFXAA
+    composer.addPass effectBloom
+    composer.addPass effectCopy
+    composer
+
+  @filmComposer: (scene, targetEngine) ->
+    renderModel = new (THREE.RenderPass)(scene, targetEngine.camera)
+    bokehPass = new THREE.BokehPass(scene, targetEngine.camera, {})
+    filmPass = new THREE.FilmPass()
+    filmPass = new THREE.GlitchPass()
+    # effectBloom = new (THREE.BloomPass)(1.3)
+    effectCopy = new (THREE.ShaderPass)(THREE.CopyShader)
+    # effectFXAA = new (THREE.ShaderPass)(THREE.FXAAShader)
+    # effectFXAA.uniforms['resolution'].value.set 1 / targetEngine.width, 1 / targetEngine.height
+    effectCopy.renderToScreen = true
+    composer = new (THREE.EffectComposer)(targetEngine.renderer)
+    composer.addPass renderModel
+    composer.addPass filmPass
+    # composer.addPass effectFXAA
+    # composer.addPass effectBloom
+    composer.addPass effectCopy
+    composer
