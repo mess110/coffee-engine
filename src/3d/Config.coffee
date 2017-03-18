@@ -26,6 +26,16 @@ class Config
     transparentBackground: false
     logarithmicDepthBuffer: true
 
+    # https://github.com/spite/ccapture.js/#using-the-code
+    recorder:
+      verbose: false
+      display: true
+      framerate: 60
+      quality: 100
+      format: 'webm'
+      frameLimit: 0
+      autoSaveTime: 0
+
     # by disabling this you are:
     #
     #   (a) entering a world of pain

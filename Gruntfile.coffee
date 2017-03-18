@@ -4,6 +4,7 @@ module.exports = (grunt) ->
   files_3d = [
     "bower_components/stats.js/src/Stats.js"
     "bower_components/tweenjs/src/Tween.js"
+    "bower_components/ccapture.js/build/CCapture.all.min.js"
 
     "bower_components/threejs/build/three.js"
 
@@ -61,6 +62,7 @@ module.exports = (grunt) ->
     "src/shared/HighScoreManager.js"
     "src/shared/Persist.js"
     "src/shared/Utils.js"
+    "src/shared/VideoRecorderManager.js"
     "src/shared/VirtualController.js"
 
     "src/3d/JsonModelManager.js"

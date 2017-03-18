@@ -193,6 +193,7 @@ class Engine3D
     else
       @_getActiveRenderer().render @sceneManager.currentScene().scene, @camera
     @_takeScreenshot()
+    VideoRecorderManager.capture(@renderer.domElement)
 
   enableComposer: (composer) ->
     @renderer.autoClear = false

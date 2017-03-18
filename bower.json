@@ -38,7 +38,8 @@
     "angular-route": "1.4.8",
     "angular-aria": "1.4.8",
     "angular-material": "v1.0.8",
-    "threex.basiclighting": "*"
+    "threex.basiclighting": "*",
+    "ccapture.js": "^1.0.6"
   },
   "dependencies": {}
 }
