@@ -1,3 +1,49 @@
+function download(t, e, n) {
+    function i(t) {
+        var e = t.split(/[:;,]/), n = e[1], i = "base64" == e[2] ? atob : decodeURIComponent, r = i(e.pop()), o = r.length, a = 0, s = new Uint8Array(o);
+        for (a; o > a; ++a) s[a] = r.charCodeAt(a);
+        return new m([ s ], {
+            type: n
+        });
+    }
+    function r(t, e) {
+        if ("download" in l) return l.href = t, l.setAttribute("download", w), l.innerHTML = "downloading...", 
+        l.style.display = "none", f.body.appendChild(l), setTimeout(function() {
+            l.click(), f.body.removeChild(l), e === !0 && setTimeout(function() {
+                h.URL.revokeObjectURL(l.href);
+            }, 250);
+        }, 66), !0;
+        var n = f.createElement("iframe");
+        f.body.appendChild(n), e || (t = "data:" + t.replace(/^data:([\w\/\-\+]+)/, d)), 
+        n.src = t, setTimeout(function() {
+            f.body.removeChild(n);
+        }, 333);
+    }
+    var o, a, s, h = window, d = "application/octet-stream", u = n || d, c = t, f = document, l = f.createElement("a"), p = function(t) {
+        return String(t);
+    }, m = h.Blob || h.MozBlob || h.WebKitBlob || p, g = h.MSBlobBuilder || h.WebKitBlobBuilder || h.BlobBuilder, w = e || "download";
+    if ("true" === String(this) && (c = [ c, u ], u = c[0], c = c[1]), String(c).match(/^data\:[\w+\-]+\/[\w+\-]+[,;]/)) return navigator.msSaveBlob ? navigator.msSaveBlob(i(c), w) : r(c);
+    try {
+        o = c instanceof m ? c : new m([ c ], {
+            type: u
+        });
+    } catch (t) {
+        g && (a = new g(), a.append([ c ]), o = a.getBlob(u));
+    }
+    if (navigator.msSaveBlob) return navigator.msSaveBlob(o, w);
+    if (h.URL) r(h.URL.createObjectURL(o), !0); else {
+        if ("string" == typeof o || o.constructor === p) try {
+            return r("data:" + u + ";base64," + h.btoa(o));
+        } catch (t) {
+            return r("data:" + u + "," + encodeURIComponent(o));
+        }
+        s = new FileReader(), s.onload = function(t) {
+            r(this.result);
+        }, s.readAsDataURL(o);
+    }
+    return !0;
+}
+
 var Stats = function() {
     var startTime = Date.now(), prevTime = startTime, ms = 0, msMin = 1 / 0, msMax = 0, fps = 0, fpsMin = 1 / 0, fpsMax = 0, frames = 0, mode = 0, container = document.createElement("div");
     container.id = "stats", container.addEventListener("mousedown", function(event) {
@@ -327,7 +373,1029 @@ TWEEN.Tween = function(object) {
             return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
         }
     }
-}, function(global, factory) {
+}, window.Whammy = function() {
+    function t(t, n) {
+        for (var i = e(t), r = 3e4, o = [ {
+            id: 440786851,
+            data: [ {
+                data: 1,
+                id: 17030
+            }, {
+                data: 1,
+                id: 17143
+            }, {
+                data: 4,
+                id: 17138
+            }, {
+                data: 8,
+                id: 17139
+            }, {
+                data: "webm",
+                id: 17026
+            }, {
+                data: 2,
+                id: 17031
+            }, {
+                data: 2,
+                id: 17029
+            } ]
+        }, {
+            id: 408125543,
+            data: [ {
+                id: 357149030,
+                data: [ {
+                    data: 1e6,
+                    id: 2807729
+                }, {
+                    data: "whammy",
+                    id: 19840
+                }, {
+                    data: "whammy",
+                    id: 22337
+                }, {
+                    data: c(i.duration),
+                    id: 17545
+                } ]
+            }, {
+                id: 374648427,
+                data: [ {
+                    id: 174,
+                    data: [ {
+                        data: 1,
+                        id: 215
+                    }, {
+                        data: 1,
+                        id: 29637
+                    }, {
+                        data: 0,
+                        id: 156
+                    }, {
+                        data: "und",
+                        id: 2274716
+                    }, {
+                        data: "V_VP8",
+                        id: 134
+                    }, {
+                        data: "VP8",
+                        id: 2459272
+                    }, {
+                        data: 1,
+                        id: 131
+                    }, {
+                        id: 224,
+                        data: [ {
+                            data: i.width,
+                            id: 176
+                        }, {
+                            data: i.height,
+                            id: 186
+                        } ]
+                    } ]
+                } ]
+            }, {
+                id: 475249515,
+                data: []
+            } ]
+        } ], s = o[1], d = s.data[2], u = 0, f = 0; u < t.length; ) {
+            var l = {
+                id: 187,
+                data: [ {
+                    data: Math.round(f),
+                    id: 179
+                }, {
+                    id: 183,
+                    data: [ {
+                        data: 1,
+                        id: 247
+                    }, {
+                        data: 0,
+                        size: 8,
+                        id: 241
+                    } ]
+                } ]
+            };
+            d.data.push(l);
+            var p = [], m = 0;
+            do p.push(t[u]), m += t[u].duration, u++; while (u < t.length && r > m);
+            var g = 0, w = {
+                id: 524531317,
+                data: [ {
+                    data: Math.round(f),
+                    id: 231
+                } ].concat(p.map(function(t) {
+                    var e = h({
+                        discardable: 0,
+                        frame: t.data.slice(4),
+                        invisible: 0,
+                        keyframe: 1,
+                        lacing: 0,
+                        trackNum: 1,
+                        timecode: Math.round(g)
+                    });
+                    return g += t.duration, {
+                        data: e,
+                        id: 163
+                    };
+                }))
+            };
+            s.data.push(w), f += m;
+        }
+        for (var v = 0, y = 0; y < s.data.length; y++) {
+            y >= 3 && (d.data[y - 3].data[1].data[1].data = v);
+            var b = a([ s.data[y] ], n);
+            v += b.size || b.byteLength || b.length, 2 != y && (s.data[y] = b);
+        }
+        return a(o, n);
+    }
+    function e(t) {
+        for (var e = t[0].width, n = t[0].height, i = t[0].duration, r = 1; r < t.length; r++) {
+            if (t[r].width != e) throw "Frame " + (r + 1) + " has a different width";
+            if (t[r].height != n) throw "Frame " + (r + 1) + " has a different height";
+            if (t[r].duration < 0 || t[r].duration > 32767) throw "Frame " + (r + 1) + " has a weird duration (must be between 0 and 32767)";
+            i += t[r].duration;
+        }
+        return {
+            duration: i,
+            width: e,
+            height: n
+        };
+    }
+    function n(t) {
+        for (var e = []; t > 0; ) e.push(255 & t), t >>= 8;
+        return new Uint8Array(e.reverse());
+    }
+    function i(t, e) {
+        for (var n = new Uint8Array(e), i = e - 1; i >= 0; i--) n[i] = 255 & t, t >>= 8;
+        return n;
+    }
+    function r(t) {
+        for (var e = new Uint8Array(t.length), n = 0; n < t.length; n++) e[n] = t.charCodeAt(n);
+        return e;
+    }
+    function o(t) {
+        var e = [], n = t.length % 8 ? new Array(9 - t.length % 8).join("0") : "";
+        t = n + t;
+        for (var i = 0; i < t.length; i += 8) e.push(parseInt(t.substr(i, 8), 2));
+        return new Uint8Array(e);
+    }
+    function a(t, e) {
+        for (var h = [], d = 0; d < t.length; d++) if ("id" in t[d]) {
+            var u = t[d].data;
+            "object" == typeof u && (u = a(u, e)), "number" == typeof u && (u = "size" in t[d] ? i(u, t[d].size) : o(u.toString(2))), 
+            "string" == typeof u && (u = r(u)), u.length;
+            for (var c = u.size || u.byteLength || u.length, f = 0, l = 56; l > 0; l -= 7) if (c > Math.pow(2, l) - 2) {
+                f = l / 7;
+                break;
+            }
+            var p = c.toString(2), m = new Array(8 * (f + 1) + 1).join("0"), g = new Array(f + 1).join("0") + 1, w = m.substr(0, m.length - p.length - g.length) + p, v = g + w;
+            h.push(n(t[d].id)), h.push(o(v)), h.push(u);
+        } else h.push(t[d]);
+        if (e) {
+            var y = s(h);
+            return new Uint8Array(y);
+        }
+        return new Blob(h, {
+            type: "video/webm"
+        });
+    }
+    function s(t, e) {
+        null == e && (e = []);
+        for (var n = 0; n < t.length; n++) "object" == typeof t[n] ? s(t[n], e) : e.push(t[n]);
+        return e;
+    }
+    function h(t) {
+        var e = 0;
+        if (t.keyframe && (e |= 128), t.invisible && (e |= 8), t.lacing && (e |= t.lacing << 1), 
+        t.discardable && (e |= 1), t.trackNum > 127) throw "TrackNumber > 127 not supported";
+        var n = [ 128 | t.trackNum, t.timecode >> 8, 255 & t.timecode, e ].map(function(t) {
+            return String.fromCharCode(t);
+        }).join("") + t.frame;
+        return n;
+    }
+    function d(t) {
+        for (var e = t.RIFF[0].WEBP[0], n = e.indexOf("*"), i = 0, r = []; 4 > i; i++) r[i] = e.charCodeAt(n + 3 + i);
+        var o, a, s, h, d;
+        return d = r[1] << 8 | r[0], o = 16383 & d, a = d >> 14, d = r[3] << 8 | r[2], s = 16383 & d, 
+        h = d >> 14, {
+            width: o,
+            height: s,
+            data: e,
+            riff: t
+        };
+    }
+    function u(t) {
+        for (var e = 0, n = {}; e < t.length; ) {
+            var i = t.substr(e, 4);
+            if (n[i] = n[i] || [], "RIFF" == i || "LIST" == i) {
+                var r = parseInt(t.substr(e + 4, 4).split("").map(function(t) {
+                    var e = t.charCodeAt(0).toString(2);
+                    return new Array(8 - e.length + 1).join("0") + e;
+                }).join(""), 2), o = t.substr(e + 4 + 4, r);
+                e += 8 + r, n[i].push(u(o));
+            } else "WEBP" == i ? (n[i].push(t.substr(e + 8)), e = t.length) : (n[i].push(t.substr(e + 4)), 
+            e = t.length);
+        }
+        return n;
+    }
+    function c(t) {
+        return [].slice.call(new Uint8Array(new Float64Array([ t ]).buffer), 0).map(function(t) {
+            return String.fromCharCode(t);
+        }).reverse().join("");
+    }
+    function f(t, e) {
+        this.frames = [], this.duration = 1e3 / t, this.quality = e || .8;
+    }
+    return f.prototype.add = function(t, e) {
+        if ("undefined" != typeof e && this.duration) throw "you can't pass a duration if the fps is set";
+        if ("undefined" == typeof e && !this.duration) throw "if you don't have the fps set, you need to have durations here.";
+        if (t.canvas && (t = t.canvas), t.toDataURL) t = t.getContext("2d").getImageData(0, 0, t.width, t.height); else if ("string" != typeof t) throw "frame must be a a HTMLCanvasElement, a CanvasRenderingContext2D or a DataURI formatted string";
+        if ("string" == typeof t && !/^data:image\/webp;base64,/gi.test(t)) throw "Input must be formatted properly as a base64 encoded DataURI of type image/webp";
+        this.frames.push({
+            image: t,
+            duration: e || this.duration
+        });
+    }, f.prototype.encodeFrames = function(t) {
+        if (this.frames[0].image instanceof ImageData) {
+            var e = this.frames, n = document.createElement("canvas"), i = n.getContext("2d");
+            n.width = this.frames[0].image.width, n.height = this.frames[0].image.height;
+            var r = function(o) {
+                var a = e[o];
+                i.putImageData(a.image, 0, 0), a.image = n.toDataURL("image/webp", this.quality), 
+                o < e.length - 1 ? setTimeout(function() {
+                    r(o + 1);
+                }, 1) : t();
+            }.bind(this);
+            r(0);
+        } else t();
+    }, f.prototype.compile = function(e, n) {
+        this.encodeFrames(function() {
+            var i = new t(this.frames.map(function(t) {
+                var e = d(u(atob(t.image.slice(23))));
+                return e.duration = t.duration, e;
+            }), e);
+            n(i);
+        }.bind(this));
+    }, {
+        Video: f,
+        fromImageArray: function(e, n, i) {
+            return t(e.map(function(t) {
+                var e = d(u(atob(t.slice(23))));
+                return e.duration = 1e3 / n, e;
+            }), i);
+        },
+        toWebM: t
+    };
+}(), function() {
+    "use strict";
+    function t(t) {
+        var e, n = new Uint8Array(t);
+        for (e = 0; t > e; e += 1) n[e] = 0;
+        return n;
+    }
+    function e(e, n, i, r) {
+        var o = n + i, a = t((parseInt(o / r) + 1) * r);
+        return a.set(e), a;
+    }
+    function n(t, e, n) {
+        return t = t.toString(n || 8), "000000000000".substr(t.length + 12 - e) + t;
+    }
+    function i(e, n, i) {
+        var r, o;
+        for (n = n || t(e.length), i = i || 0, r = 0, o = e.length; o > r; r += 1) n[i] = e.charCodeAt(r), 
+        i += 1;
+        return n;
+    }
+    function r(t) {
+        function e(t) {
+            return o[t >> 18 & 63] + o[t >> 12 & 63] + o[t >> 6 & 63] + o[63 & t];
+        }
+        var n, i, r, a = t.length % 3, s = "";
+        for (n = 0, r = t.length - a; r > n; n += 3) i = (t[n] << 16) + (t[n + 1] << 8) + t[n + 2], 
+        s += e(i);
+        switch (s.length % 4) {
+          case 1:
+            s += "=";
+            break;
+
+          case 2:
+            s += "==";
+        }
+        return s;
+    }
+    var o = [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "/" ];
+    window.utils = {}, window.utils.clean = t, window.utils.pad = n, window.utils.extend = e, 
+    window.utils.stringToUint8 = i, window.utils.uint8ToBase64 = r;
+}(), function() {
+    "use strict";
+    function t(t, i) {
+        var r = n.clean(512), o = 0;
+        return e.forEach(function(e) {
+            var n, i, a = t[e.field] || "";
+            for (n = 0, i = a.length; i > n; n += 1) r[o] = a.charCodeAt(n), o += 1;
+            o += e.length - n;
+        }), "function" == typeof i ? i(r, o) : r;
+    }
+    var e, n = window.utils;
+    e = [ {
+        field: "fileName",
+        length: 100
+    }, {
+        field: "fileMode",
+        length: 8
+    }, {
+        field: "uid",
+        length: 8
+    }, {
+        field: "gid",
+        length: 8
+    }, {
+        field: "fileSize",
+        length: 12
+    }, {
+        field: "mtime",
+        length: 12
+    }, {
+        field: "checksum",
+        length: 8
+    }, {
+        field: "type",
+        length: 1
+    }, {
+        field: "linkName",
+        length: 100
+    }, {
+        field: "ustar",
+        length: 8
+    }, {
+        field: "owner",
+        length: 32
+    }, {
+        field: "group",
+        length: 32
+    }, {
+        field: "majorNumber",
+        length: 8
+    }, {
+        field: "minorNumber",
+        length: 8
+    }, {
+        field: "filenamePrefix",
+        length: 155
+    }, {
+        field: "padding",
+        length: 12
+    } ], window.header = {}, window.header.structure = e, window.header.format = t;
+}(), function() {
+    "use strict";
+    function t(t) {
+        this.written = 0, e = (t || 20) * r, this.out = i.clean(e), this.blocks = [], this.length = 0;
+    }
+    var e, n = window.header, i = window.utils, r = 512;
+    t.prototype.append = function(t, e, o, a) {
+        var s, h, d, u, c, f, l;
+        if ("string" == typeof e) e = i.stringToUint8(e); else if (e.constructor !== Uint8Array.prototype.constructor) throw "Invalid input type. You gave me: " + e.constructor.toString().match(/function\s*([$A-Za-z_][0-9A-Za-z_]*)\s*\(/)[1];
+        "function" == typeof o && (a = o, o = {}), o = o || {}, d = o.mode || 4095 & parseInt("777", 8), 
+        u = o.mtime || Math.floor(+new Date() / 1e3), c = o.uid || 0, f = o.gid || 0, s = {
+            fileName: t,
+            fileMode: i.pad(d, 7),
+            uid: i.pad(c, 7),
+            gid: i.pad(f, 7),
+            fileSize: i.pad(e.length, 11),
+            mtime: i.pad(u, 11),
+            checksum: "        ",
+            type: "0",
+            ustar: "ustar  ",
+            owner: o.owner || "",
+            group: o.group || ""
+        }, h = 0, Object.keys(s).forEach(function(t) {
+            var e, n, i = s[t];
+            for (e = 0, n = i.length; n > e; e += 1) h += i.charCodeAt(e);
+        }), s.checksum = i.pad(h, 6) + "\x00 ", l = n.format(s);
+        var p = Math.ceil(l.length / r) * r, m = Math.ceil(e.length / r) * r;
+        this.blocks.push({
+            header: l,
+            input: e,
+            headerLength: p,
+            inputLength: m
+        });
+    }, t.prototype.save = function() {
+        var t = [], e = [], n = 0, i = Math.pow(2, 20), o = [];
+        return this.blocks.forEach(function(t) {
+            n + t.headerLength + t.inputLength > i && (e.push({
+                blocks: o,
+                length: n
+            }), o = [], n = 0), o.push(t), n += t.headerLength + t.inputLength;
+        }), e.push({
+            blocks: o,
+            length: n
+        }), e.forEach(function(e) {
+            var n = new Uint8Array(e.length), i = 0;
+            e.blocks.forEach(function(t) {
+                n.set(t.header, i), i += t.headerLength, n.set(t.input, i), i += t.inputLength;
+            }), t.push(n);
+        }), t.push(new Uint8Array(2 * r)), new Blob(t, {
+            type: "octet/stream"
+        });
+    }, t.prototype.clear = function() {
+        this.written = 0, this.out = i.clean(e);
+    }, window.Tar = t;
+}(), function(t) {
+    function e(t, n) {
+        if ({}.hasOwnProperty.call(e.cache, t)) return e.cache[t];
+        var i = e.resolve(t);
+        if (!i) throw new Error("Failed to resolve module " + t);
+        var r = {
+            id: t,
+            require: e,
+            filename: t,
+            exports: {},
+            loaded: !1,
+            parent: n,
+            children: []
+        };
+        n && n.children.push(r);
+        var o = t.slice(0, t.lastIndexOf("/") + 1);
+        return e.cache[t] = r.exports, i.call(r.exports, r, r.exports, o, t), r.loaded = !0, 
+        e.cache[t] = r.exports;
+    }
+    e.modules = {}, e.cache = {}, e.resolve = function(t) {
+        return {}.hasOwnProperty.call(e.modules, t) ? e.modules[t] : void 0;
+    }, e.define = function(t, n) {
+        e.modules[t] = n;
+    };
+    var n = function(e) {
+        return e = "/", {
+            title: "browser",
+            version: "v0.10.26",
+            browser: !0,
+            env: {},
+            argv: [],
+            nextTick: t.setImmediate || function(t) {
+                setTimeout(t, 0);
+            },
+            cwd: function() {
+                return e;
+            },
+            chdir: function(t) {
+                e = t;
+            }
+        };
+    }();
+    e.define("/gif.coffee", function(t, n, i, r) {
+        function o(t, e) {
+            return {}.hasOwnProperty.call(t, e);
+        }
+        function a(t, e) {
+            for (var n = 0, i = e.length; i > n; ++n) if (n in e && e[n] === t) return !0;
+            return !1;
+        }
+        function s(t, e) {
+            function n() {
+                this.constructor = t;
+            }
+            for (var i in e) o(e, i) && (t[i] = e[i]);
+            return n.prototype = e.prototype, t.prototype = new n(), t.__super__ = e.prototype, 
+            t;
+        }
+        var h, d, u, c, f;
+        u = e("events", t).EventEmitter, h = e("/browser.coffee", t), f = function(t) {
+            function e(t) {
+                var e, n;
+                this.running = !1, this.options = {}, this.frames = [], this.freeWorkers = [], this.activeWorkers = [], 
+                this.setOptions(t);
+                for (e in d) n = d[e], null != this.options[e] ? this.options[e] : this.options[e] = n;
+            }
+            return s(e, t), d = {
+                workerScript: "gif.worker.js",
+                workers: 2,
+                repeat: 0,
+                background: "#fff",
+                quality: 10,
+                width: null,
+                height: null,
+                transparent: null
+            }, c = {
+                delay: 500,
+                copy: !1
+            }, e.prototype.setOption = function(t, e) {
+                return this.options[t] = e, null == this._canvas || "width" !== t && "height" !== t ? void 0 : this._canvas[t] = e;
+            }, e.prototype.setOptions = function(t) {
+                var e, n;
+                return function(i) {
+                    for (e in t) o(t, e) && (n = t[e], i.push(this.setOption(e, n)));
+                    return i;
+                }.call(this, []);
+            }, e.prototype.addFrame = function(t, e) {
+                var n, i;
+                null == e && (e = {}), n = {}, n.transparent = this.options.transparent;
+                for (i in c) n[i] = e[i] || c[i];
+                if (null != this.options.width || this.setOption("width", t.width), null != this.options.height || this.setOption("height", t.height), 
+                "undefined" != typeof ImageData && null != ImageData && t instanceof ImageData) n.data = t.data; else if ("undefined" != typeof CanvasRenderingContext2D && null != CanvasRenderingContext2D && t instanceof CanvasRenderingContext2D || "undefined" != typeof WebGLRenderingContext && null != WebGLRenderingContext && t instanceof WebGLRenderingContext) e.copy ? n.data = this.getContextData(t) : n.context = t; else {
+                    if (null == t.childNodes) throw new Error("Invalid image");
+                    e.copy ? n.data = this.getImageData(t) : n.image = t;
+                }
+                return this.frames.push(n);
+            }, e.prototype.render = function() {
+                var t, e;
+                if (this.running) throw new Error("Already running");
+                if (null == this.options.width || null == this.options.height) throw new Error("Width and height must be set prior to rendering");
+                this.running = !0, this.nextFrame = 0, this.finishedFrames = 0, this.imageParts = function(e) {
+                    for (var n = function() {
+                        var t;
+                        t = [];
+                        for (var e = 0; 0 <= this.frames.length ? e < this.frames.length : e > this.frames.length; 0 <= this.frames.length ? ++e : --e) t.push(e);
+                        return t;
+                    }.apply(this, arguments), i = 0, r = n.length; r > i; ++i) t = n[i], e.push(null);
+                    return e;
+                }.call(this, []), e = this.spawnWorkers();
+                for (var n = function() {
+                    var t;
+                    t = [];
+                    for (var n = 0; e >= 0 ? e > n : n > e; e >= 0 ? ++n : --n) t.push(n);
+                    return t;
+                }.apply(this, arguments), i = 0, r = n.length; r > i; ++i) t = n[i], this.renderNextFrame();
+                return this.emit("start"), this.emit("progress", 0);
+            }, e.prototype.abort = function() {
+                for (var t; t = this.activeWorkers.shift(), null != t; ) console.log("killing active worker"), 
+                t.terminate();
+                return this.running = !1, this.emit("abort");
+            }, e.prototype.spawnWorkers = function() {
+                var t;
+                return t = Math.min(this.options.workers, this.frames.length), function() {
+                    var e;
+                    e = [];
+                    for (var n = this.freeWorkers.length; this.freeWorkers.length <= t ? t > n : n > t; this.freeWorkers.length <= t ? ++n : --n) e.push(n);
+                    return e;
+                }.apply(this, arguments).forEach(function(t) {
+                    return function(e) {
+                        var n;
+                        return console.log("spawning worker " + e), n = new Worker(t.options.workerScript), 
+                        n.onmessage = function(t) {
+                            return function(e) {
+                                return t.activeWorkers.splice(t.activeWorkers.indexOf(n), 1), t.freeWorkers.push(n), 
+                                t.frameFinished(e.data);
+                            };
+                        }(t), t.freeWorkers.push(n);
+                    };
+                }(this)), t;
+            }, e.prototype.frameFinished = function(t) {
+                return console.log("frame " + t.index + " finished - " + this.activeWorkers.length + " active"), 
+                this.finishedFrames++, this.emit("progress", this.finishedFrames / this.frames.length), 
+                this.imageParts[t.index] = t, a(null, this.imageParts) ? this.renderNextFrame() : this.finishRendering();
+            }, e.prototype.finishRendering = function() {
+                var t, e, n, i, r, o, a;
+                r = 0;
+                for (var s = 0, h = this.imageParts.length; h > s; ++s) e = this.imageParts[s], 
+                r += (e.data.length - 1) * e.pageSize + e.cursor;
+                r += e.pageSize - e.cursor, console.log("rendering finished - filesize " + Math.round(r / 1e3) + "kb"), 
+                t = new Uint8Array(r), o = 0;
+                for (var d = 0, u = this.imageParts.length; u > d; ++d) {
+                    e = this.imageParts[d];
+                    for (var c = 0, f = e.data.length; f > c; ++c) a = e.data[c], n = c, t.set(a, o), 
+                    o += n === e.data.length - 1 ? e.cursor : e.pageSize;
+                }
+                return i = new Blob([ t ], {
+                    type: "image/gif"
+                }), this.emit("finished", i, t);
+            }, e.prototype.renderNextFrame = function() {
+                var t, e, n;
+                if (0 === this.freeWorkers.length) throw new Error("No free workers");
+                return this.nextFrame >= this.frames.length ? void 0 : (t = this.frames[this.nextFrame++], 
+                n = this.freeWorkers.shift(), e = this.getTask(t), console.log("starting frame " + (e.index + 1) + " of " + this.frames.length), 
+                this.activeWorkers.push(n), n.postMessage(e));
+            }, e.prototype.getContextData = function(t) {
+                return t.getImageData(0, 0, this.options.width, this.options.height).data;
+            }, e.prototype.getImageData = function(t) {
+                var e;
+                return null != this._canvas || (this._canvas = document.createElement("canvas"), 
+                this._canvas.width = this.options.width, this._canvas.height = this.options.height), 
+                e = this._canvas.getContext("2d"), e.setFill = this.options.background, e.fillRect(0, 0, this.options.width, this.options.height), 
+                e.drawImage(t, 0, 0), this.getContextData(e);
+            }, e.prototype.getTask = function(t) {
+                var e, n;
+                if (e = this.frames.indexOf(t), n = {
+                    index: e,
+                    last: e === this.frames.length - 1,
+                    delay: t.delay,
+                    transparent: t.transparent,
+                    width: this.options.width,
+                    height: this.options.height,
+                    quality: this.options.quality,
+                    repeat: this.options.repeat,
+                    canTransfer: "chrome" === h.name
+                }, null != t.data) n.data = t.data; else if (null != t.context) n.data = this.getContextData(t.context); else {
+                    if (null == t.image) throw new Error("Invalid frame");
+                    n.data = this.getImageData(t.image);
+                }
+                return n;
+            }, e;
+        }(u), t.exports = f;
+    }), e.define("/browser.coffee", function(t, e, n, i) {
+        var r, o, a, s, h;
+        s = navigator.userAgent.toLowerCase(), a = navigator.platform.toLowerCase(), h = s.match(/(opera|ie|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|$)/) || [ null, "unknown", 0 ], 
+        o = "ie" === h[1] && document.documentMode, r = {
+            name: "version" === h[1] ? h[3] : h[1],
+            version: o || parseFloat("opera" === h[1] && h[4] ? h[4] : h[2]),
+            platform: {
+                name: s.match(/ip(?:ad|od|hone)/) ? "ios" : (s.match(/(?:webos|android)/) || a.match(/mac|win|linux/) || [ "other" ])[0]
+            }
+        }, r[r.name] = !0, r[r.name + parseInt(r.version, 10)] = !0, r.platform[r.platform.name] = !0, 
+        t.exports = r;
+    }), e.define("events", function(t, e, i, r) {
+        n.EventEmitter || (n.EventEmitter = function() {});
+        var o = e.EventEmitter = n.EventEmitter, a = "function" == typeof Array.isArray ? Array.isArray : function(t) {
+            return "[object Array]" === Object.prototype.toString.call(t);
+        }, s = 10;
+        o.prototype.setMaxListeners = function(t) {
+            this._events || (this._events = {}), this._events.maxListeners = t;
+        }, o.prototype.emit = function(t) {
+            if ("error" === t && (!this._events || !this._events.error || a(this._events.error) && !this._events.error.length)) throw arguments[1] instanceof Error ? arguments[1] : new Error("Uncaught, unspecified 'error' event.");
+            if (!this._events) return !1;
+            var e = this._events[t];
+            if (!e) return !1;
+            if ("function" != typeof e) {
+                if (a(e)) {
+                    for (var n = Array.prototype.slice.call(arguments, 1), i = e.slice(), r = 0, o = i.length; o > r; r++) i[r].apply(this, n);
+                    return !0;
+                }
+                return !1;
+            }
+            switch (arguments.length) {
+              case 1:
+                e.call(this);
+                break;
+
+              case 2:
+                e.call(this, arguments[1]);
+                break;
+
+              case 3:
+                e.call(this, arguments[1], arguments[2]);
+                break;
+
+              default:
+                var n = Array.prototype.slice.call(arguments, 1);
+                e.apply(this, n);
+            }
+            return !0;
+        }, o.prototype.addListener = function(t, e) {
+            if ("function" != typeof e) throw new Error("addListener only takes instances of Function");
+            if (this._events || (this._events = {}), this.emit("newListener", t, e), this._events[t]) if (a(this._events[t])) {
+                if (!this._events[t].warned) {
+                    var n;
+                    n = void 0 !== this._events.maxListeners ? this._events.maxListeners : s, n && n > 0 && this._events[t].length > n && (this._events[t].warned = !0, 
+                    console.error("(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.", this._events[t].length), 
+                    console.trace());
+                }
+                this._events[t].push(e);
+            } else this._events[t] = [ this._events[t], e ]; else this._events[t] = e;
+            return this;
+        }, o.prototype.on = o.prototype.addListener, o.prototype.once = function(t, e) {
+            var n = this;
+            return n.on(t, function i() {
+                n.removeListener(t, i), e.apply(this, arguments);
+            }), this;
+        }, o.prototype.removeListener = function(t, e) {
+            if ("function" != typeof e) throw new Error("removeListener only takes instances of Function");
+            if (!this._events || !this._events[t]) return this;
+            var n = this._events[t];
+            if (a(n)) {
+                var i = n.indexOf(e);
+                if (0 > i) return this;
+                n.splice(i, 1), 0 == n.length && delete this._events[t];
+            } else this._events[t] === e && delete this._events[t];
+            return this;
+        }, o.prototype.removeAllListeners = function(t) {
+            return t && this._events && this._events[t] && (this._events[t] = null), this;
+        }, o.prototype.listeners = function(t) {
+            return this._events || (this._events = {}), this._events[t] || (this._events[t] = []), 
+            a(this._events[t]) || (this._events[t] = [ this._events[t] ]), this._events[t];
+        };
+    }), t.GIF = e("/gif.coffee");
+}.call(this, this), function() {
+    "use strict";
+    function t(t) {
+        return t && t.Object === Object ? t : null;
+    }
+    function e(t) {
+        return String("0000000" + t).slice(-7);
+    }
+    function n() {
+        function t() {
+            return Math.floor(65536 * (1 + Math.random())).toString(16).substring(1);
+        }
+        return t() + t() + "-" + t() + "-" + t() + "-" + t() + "-" + t() + t() + t();
+    }
+    function i(t) {
+        var e = {};
+        this.settings = t, this.on = function(t, n) {
+            e[t] = n;
+        }, this.emit = function(t) {
+            var n = e[t];
+            n && n.apply(null, Array.prototype.slice.call(arguments, 1));
+        }, this.filename = t.name || n(), this.extension = "", this.mimeType = "";
+    }
+    function r(t) {
+        i.call(this, t), this.extension = ".tar", this.mimeType = "application/x-tar", this.fileExtension = "", 
+        this.tape = null, this.count = 0;
+    }
+    function o(t) {
+        r.call(this, t), this.type = "image/png", this.fileExtension = ".png";
+    }
+    function a(t) {
+        r.call(this, t), this.type = "image/jpeg", this.fileExtension = ".jpg", this.quality = t.quality / 100 || .8;
+    }
+    function s(t) {
+        var e = document.createElement("canvas");
+        "image/webp" !== e.toDataURL("image/webp").substr(5, 10) && console.log("WebP not supported - try another export format"), 
+        i.call(this, t), t.quality = t.quality / 100 || .8, this.extension = ".webm", this.mimeType = "video/webm", 
+        this.baseFilename = this.filename, this.frames = [], this.part = 1;
+    }
+    function h(t) {
+        i.call(this, t), t.quality = t.quality / 100 || .8, this.encoder = new FFMpegServer.Video(t), 
+        this.encoder.on("process", function() {
+            this.emit("process");
+        }.bind(this)), this.encoder.on("finished", function(t, e) {
+            var n = this.callback;
+            n && (this.callback = void 0, n(t, e));
+        }.bind(this)), this.encoder.on("progress", function(t) {
+            this.settings.onProgress && this.settings.onProgress(t);
+        }.bind(this)), this.encoder.on("error", function(t) {
+            alert(JSON.stringify(t, null, 2));
+        }.bind(this));
+    }
+    function d(t) {
+        i.call(this, t), this.framerate = this.settings.framerate, this.type = "video/webm", 
+        this.extension = ".webm", this.stream = null, this.mediaRecorder = null, this.chunks = [];
+    }
+    function u(t) {
+        i.call(this, t), t.quality = 31 - (30 * t.quality / 100 || 10), t.workers = t.workers || 4, 
+        this.extension = ".gif", this.mimeType = "image/gif", this.canvas = document.createElement("canvas"), 
+        this.ctx = this.canvas.getContext("2d"), this.sizeSet = !1, this.encoder = new GIF({
+            workers: t.workers,
+            quality: t.quality,
+            workerScript: t.workersPath + "gif.worker.js"
+        }), this.encoder.on("progress", function(t) {
+            this.settings.onProgress && this.settings.onProgress(t);
+        }.bind(this)), this.encoder.on("finished", function(t) {
+            var e = this.callback;
+            e && (this.callback = void 0, e(t));
+        }.bind(this));
+    }
+    function c(t) {
+        function e() {
+            function t() {
+                return this._hooked || (this._hooked = !0, this._hookedTime = this.currentTime || 0, 
+                this.pause(), et.push(this)), this._hookedTime + S.startTime;
+            }
+            b("Capturer start"), A = window.Date.now(), L = A + S.startTime, D = window.performance.now(), 
+            E = D + S.startTime, window.Date.prototype.getTime = function() {
+                return L;
+            }, window.Date.now = function() {
+                return L;
+            }, window.setTimeout = function(t, e) {
+                var n = {
+                    callback: t,
+                    time: e,
+                    triggerTime: L + e
+                };
+                return B.push(n), b("Timeout set to " + n.time), n;
+            }, window.clearTimeout = function(t) {
+                for (var e = 0; e < B.length; e++) B[e] != t || (B.splice(e, 1), b("Timeout cleared"));
+            }, window.setInterval = function(t, e) {
+                var n = {
+                    callback: t,
+                    time: e,
+                    triggerTime: L + e
+                };
+                return j.push(n), b("Interval set to " + n.time), n;
+            }, window.clearInterval = function(t) {
+                return b("clear Interval"), null;
+            }, window.requestAnimationFrame = function(t) {
+                U.push(t);
+            }, window.performance.now = function() {
+                return E;
+            };
+            try {
+                Object.defineProperty(HTMLVideoElement.prototype, "currentTime", {
+                    get: t
+                }), Object.defineProperty(HTMLAudioElement.prototype, "currentTime", {
+                    get: t
+                });
+            } catch (t) {
+                b(t);
+            }
+        }
+        function n() {
+            e(), I.start(), M = !0;
+        }
+        function i() {
+            M = !1, I.stop(), f();
+        }
+        function r(t, e) {
+            Z(t, 0, e);
+        }
+        function c() {
+            r(v);
+        }
+        function f() {
+            b("Capturer stop"), window.setTimeout = Z, window.setInterval = J, window.clearTimeout = Y, 
+            window.requestAnimationFrame = $, window.Date.prototype.getTime = tt, window.Date.now = Q, 
+            window.performance.now = X;
+        }
+        function l() {
+            var t = R / S.framerate;
+            (S.frameLimit && R >= S.frameLimit || S.timeLimit && t >= S.timeLimit) && (i(), 
+            y());
+            var e = new Date(null);
+            e.setSeconds(t), S.motionBlurFrames > 2 ? P.textContent = "CCapture " + S.format + " | " + R + " frames (" + O + " inter) | " + e.toISOString().substr(11, 8) : P.textContent = "CCapture " + S.format + " | " + R + " frames | " + e.toISOString().substr(11, 8);
+        }
+        function p(t) {
+            N.width === t.width && N.height === t.height || (N.width = t.width, N.height = t.height, 
+            q = new Uint16Array(N.height * N.width * 4), V.fillStyle = "#0", V.fillRect(0, 0, N.width, N.height));
+        }
+        function m(t) {
+            V.drawImage(t, 0, 0), z = V.getImageData(0, 0, N.width, N.height);
+            for (var e = 0; e < q.length; e += 4) q[e] += z.data[e], q[e + 1] += z.data[e + 1], 
+            q[e + 2] += z.data[e + 2];
+            O++;
+        }
+        function g() {
+            for (var t = z.data, e = 0; e < q.length; e += 4) t[e] = 2 * q[e] / S.motionBlurFrames, 
+            t[e + 1] = 2 * q[e + 1] / S.motionBlurFrames, t[e + 2] = 2 * q[e + 2] / S.motionBlurFrames;
+            V.putImageData(z, 0, 0), I.add(N), R++, O = 0, b("Full MB Frame! " + R + " " + L);
+            for (var e = 0; e < q.length; e += 4) q[e] = 0, q[e + 1] = 0, q[e + 2] = 0;
+            gc();
+        }
+        function w(t) {
+            M && (S.motionBlurFrames > 2 ? (p(t), m(t), O >= .5 * S.motionBlurFrames ? g() : c()) : (I.add(t), 
+            R++, b("Full Frame! " + R)));
+        }
+        function v() {
+            var t = 1e3 / S.framerate, e = (R + O / S.motionBlurFrames) * t;
+            L = A + e, E = D + e, et.forEach(function(t) {
+                t._hookedTime = e / 1e3;
+            }), l(), b("Frame: " + R + " " + O);
+            for (var n = 0; n < B.length; n++) L >= B[n].triggerTime && (r(B[n].callback), B.splice(n, 1));
+            for (var n = 0; n < j.length; n++) L >= j[n].triggerTime && (r(j[n].callback), j[n].triggerTime += j[n].time);
+            U.forEach(function(t) {
+                r(t, L - k);
+            }), U = [];
+        }
+        function y(t) {
+            t || (t = function(t) {
+                return download(t, I.filename + I.extension, I.mimeType), !1;
+            }), I.save(t);
+        }
+        function b(t) {
+            _ && console.log(t);
+        }
+        function x(t, e) {
+            W[t] = e;
+        }
+        function T(t) {
+            var e = W[t];
+            e && e.apply(null, Array.prototype.slice.call(arguments, 1));
+        }
+        function C(t) {
+            T("progress", t);
+        }
+        var _, F, L, A, E, D, c, I, S = t || {}, B = (new Date(), []), j = [], R = 0, O = 0, U = [], M = !1, W = {};
+        S.framerate = S.framerate || 60, S.motionBlurFrames = 2 * (S.motionBlurFrames || 1), 
+        _ = S.verbose || !1, F = S.display || !1, S.step = 1e3 / S.framerate, S.timeLimit = S.timeLimit || 0, 
+        S.frameLimit = S.frameLimit || 0, S.startTime = S.startTime || 0;
+        var P = document.createElement("div");
+        P.style.position = "absolute", P.style.left = P.style.top = 0, P.style.backgroundColor = "black", 
+        P.style.fontFamily = "monospace", P.style.fontSize = "11px", P.style.padding = "5px", 
+        P.style.color = "red", P.style.zIndex = 1e5, S.display && document.body.appendChild(P);
+        var q, z, N = document.createElement("canvas"), V = N.getContext("2d");
+        b("Step is set to " + S.step + "ms");
+        var H = {
+            gif: u,
+            webm: s,
+            ffmpegserver: h,
+            png: o,
+            jpg: a,
+            "webm-mediarecorder": d
+        }, G = H[S.format];
+        if (!G) throw "Error: Incorrect or missing format: Valid formats are " + Object.keys(H).join(", ");
+        if (I = new G(S), I.step = c, I.on("process", v), I.on("progress", C), "performance" in window == 0 && (window.performance = {}), 
+        Date.now = Date.now || function() {
+            return new Date().getTime();
+        }, "now" in window.performance == 0) {
+            var K = Date.now();
+            performance.timing && performance.timing.navigationStart && (K = performance.timing.navigationStart), 
+            window.performance.now = function() {
+                return Date.now() - K;
+            };
+        }
+        var Z = window.setTimeout, J = window.setInterval, Y = window.clearTimeout, $ = window.requestAnimationFrame, Q = window.Date.now, X = window.performance.now, tt = window.Date.prototype.getTime, et = [];
+        return {
+            start: n,
+            capture: w,
+            stop: i,
+            save: y,
+            on: x
+        };
+    }
+    var f = {
+        "function": !0,
+        object: !0
+    }, l = (parseFloat, parseInt, f[typeof exports] && exports && !exports.nodeType ? exports : void 0), p = f[typeof module] && module && !module.nodeType ? module : void 0, m = p && p.exports === l ? l : void 0, g = t(l && p && "object" == typeof global && global), w = t(f[typeof self] && self), v = t(f[typeof window] && window), y = t(f[typeof this] && this), b = g || v !== (y && y.window) && v || w || y || Function("return this")();
+    "gc" in window || (window.gc = function() {}), HTMLCanvasElement.prototype.toBlob || Object.defineProperty(HTMLCanvasElement.prototype, "toBlob", {
+        value: function(t, e, n) {
+            for (var i = atob(this.toDataURL(e, n).split(",")[1]), r = i.length, o = new Uint8Array(r), a = 0; r > a; a++) o[a] = i.charCodeAt(a);
+            t(new Blob([ o ], {
+                type: e || "image/png"
+            }));
+        }
+    }), function() {
+        if ("performance" in window == 0 && (window.performance = {}), Date.now = Date.now || function() {
+            return new Date().getTime();
+        }, "now" in window.performance == 0) {
+            var t = Date.now();
+            performance.timing && performance.timing.navigationStart && (t = performance.timing.navigationStart), 
+            window.performance.now = function() {
+                return Date.now() - t;
+            };
+        }
+    }();
+    var k = window.Date.now();
+    i.prototype.start = function() {}, i.prototype.stop = function() {}, i.prototype.add = function() {}, 
+    i.prototype.save = function() {}, i.prototype.dispose = function() {}, i.prototype.safeToProceed = function() {
+        return !0;
+    }, i.prototype.step = function() {
+        console.log("Step not set!");
+    }, r.prototype = Object.create(i.prototype), r.prototype.start = function() {
+        this.dispose();
+    }, r.prototype.add = function(t) {
+        var n = new FileReader();
+        n.onload = function() {
+            this.tape.append(e(this.count) + this.fileExtension, new Uint8Array(n.result)), 
+            this.count++, this.step();
+        }.bind(this), n.readAsArrayBuffer(t);
+    }, r.prototype.save = function(t) {
+        t(this.tape.save());
+    }, r.prototype.dispose = function() {
+        this.tape = new Tar(), this.count = 0;
+    }, o.prototype = Object.create(r.prototype), o.prototype.add = function(t) {
+        t.toBlob(function(t) {
+            r.prototype.add.call(this, t);
+        }.bind(this), this.type);
+    }, a.prototype = Object.create(r.prototype), a.prototype.add = function(t) {
+        t.toBlob(function(t) {
+            r.prototype.add.call(this, t);
+        }.bind(this), this.type, this.quality);
+    }, s.prototype = Object.create(i.prototype), s.prototype.start = function(t) {
+        this.dispose();
+    }, s.prototype.add = function(t) {
+        this.frames.push(t.toDataURL("image/webp", this.quality)), this.settings.autoSaveTime > 0 && this.frames.length / this.settings.framerate >= this.settings.autoSaveTime ? this.save(function(t) {
+            this.filename = this.baseFilename + "-part-" + e(this.part), download(t, this.filename + this.extension, this.mimeType), 
+            this.dispose(), this.part++, this.filename = this.baseFilename + "-part-" + e(this.part), 
+            this.step();
+        }.bind(this)) : this.step();
+    }, s.prototype.save = function(t) {
+        if (this.frames.length) {
+            var e = Whammy.fromImageArray(this.frames, this.settings.framerate), n = new Blob([ e ], {
+                type: "octet/stream"
+            });
+            t(n);
+        }
+    }, s.prototype.dispose = function(t) {
+        this.frames = [];
+    }, h.prototype = Object.create(i.prototype), h.prototype.start = function() {
+        this.encoder.start(this.settings);
+    }, h.prototype.add = function(t) {
+        this.encoder.add(t);
+    }, h.prototype.save = function(t) {
+        this.callback = t, this.encoder.end();
+    }, h.prototype.safeToProceed = function() {
+        return this.encoder.safeToProceed();
+    }, d.prototype = Object.create(i.prototype), d.prototype.add = function(t) {
+        this.stream || (this.stream = t.captureStream(this.framerate), this.mediaRecorder = new MediaRecorder(this.stream), 
+        this.mediaRecorder.start(), this.mediaRecorder.ondataavailable = function(t) {
+            this.chunks.push(t.data);
+        }.bind(this)), this.step();
+    }, d.prototype.save = function(t) {
+        this.mediaRecorder.onstop = function(e) {
+            var n = new Blob(this.chunks, {
+                type: "video/webm"
+            });
+            this.chunks = [], t(n);
+        }.bind(this), this.mediaRecorder.stop();
+    }, u.prototype = Object.create(i.prototype), u.prototype.add = function(t) {
+        this.sizeSet || (this.encoder.setOption("width", t.width), this.encoder.setOption("height", t.height), 
+        this.sizeSet = !0), this.canvas.width = t.width, this.canvas.height = t.height, 
+        this.ctx.drawImage(t, 0, 0), this.encoder.addFrame(this.ctx, {
+            copy: !0,
+            delay: this.settings.step
+        }), this.step();
+    }, u.prototype.save = function(t) {
+        this.callback = t, this.encoder.render();
+    }, (v || w || {}).CCapture = c, "function" == typeof define && "object" == typeof define.amd && define.amd ? define(function() {
+        return c;
+    }) : l && p ? (m && ((p.exports = c).CCapture = c), l.CCapture = c) : b.CCapture = c;
+}(), function(global, factory) {
     "object" == typeof exports && "undefined" != typeof module ? factory(exports) : "function" == typeof define && define.amd ? define([ "exports" ], factory) : factory(global.THREE = global.THREE || {});
 }(this, function(exports) {
     "use strict";
@@ -14553,6 +15621,36 @@ THREE.Mirror.prototype.renderWithMirror = function(otherMirror) {
     void 0 !== scene && scene instanceof THREE.Scene && this.renderer.render(scene, this.mirrorCamera, this.renderTarget2, !0);
 };
 
+var Detector = {
+    canvas: !!window.CanvasRenderingContext2D,
+    webgl: function() {
+        try {
+            var canvas = document.createElement("canvas");
+            return !(!window.WebGLRenderingContext || !canvas.getContext("webgl") && !canvas.getContext("experimental-webgl"));
+        } catch (e) {
+            return !1;
+        }
+    }(),
+    workers: !!window.Worker,
+    fileapi: window.File && window.FileReader && window.FileList && window.Blob,
+    getWebGLErrorMessage: function() {
+        var element = document.createElement("div");
+        return element.id = "webgl-error-message", element.style.fontFamily = "monospace", 
+        element.style.fontSize = "13px", element.style.fontWeight = "normal", element.style.textAlign = "center", 
+        element.style.background = "#fff", element.style.color = "#000", element.style.padding = "1.5em", 
+        element.style.width = "400px", element.style.margin = "5em auto 0", this.webgl || (element.innerHTML = window.WebGLRenderingContext ? [ 'Your graphics card does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation" style="color:#000">WebGL</a>.<br />', 'Find out how to get it <a href="http://get.webgl.org/" style="color:#000">here</a>.' ].join("\n") : [ 'Your browser does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation" style="color:#000">WebGL</a>.<br/>', 'Find out how to get it <a href="http://get.webgl.org/" style="color:#000">here</a>.' ].join("\n")), 
+        element;
+    },
+    addGetWebGLMessage: function(parameters) {
+        var parent, id, element;
+        parameters = parameters || {}, parent = void 0 !== parameters.parent ? parameters.parent : document.body, 
+        id = void 0 !== parameters.id ? parameters.id : "oldie", element = Detector.getWebGLErrorMessage(), 
+        element.id = id, parent.appendChild(element);
+    }
+};
+
+"object" == typeof module && (module.exports = Detector);
+
 var THREEx = THREEx || {};
 
 THREEx.WindowResize = function(renderer, camera, dimension) {
@@ -14711,6 +15809,27 @@ THREEx.VolumetricSpotLightMaterial = function() {
         depthWrite: !1
     });
     return material;
+};
+
+var THREEx = THREEx || {};
+
+THREEx.ThreePointsLighting = function() {
+    var container = new THREE.Object3D(), object3d = new THREE.AmbientLight(1052688);
+    object3d.name = "Ambient light", container.add(object3d);
+    var object3d = new THREE.DirectionalLight("white", .225);
+    object3d.position.set(2.6, 1, 3), object3d.name = "Back light", container.add(object3d);
+    var object3d = new THREE.DirectionalLight("white", .375);
+    object3d.position.set(-2, -1, 0), object3d.name = "Key light", container.add(object3d);
+    var object3d = new THREE.DirectionalLight("white", .75);
+    return object3d.position.set(3, 3, 2), object3d.name = "Fill light", container.add(object3d), 
+    container;
+}, THREEx.SunSetLighting = function() {
+    var object3d = new THREE.Object3D(), light = new THREE.AmbientLight(526344);
+    object3d.add(light);
+    var light = new THREE.DirectionalLight("midnightblue", 1);
+    light.position.set(5, 1, 0), object3d.add(light);
+    var light = new THREE.DirectionalLight("darkred", 1.5);
+    return object3d.add(light), object3d;
 }, THREE.ShaderLib.water = {
     uniforms: THREE.UniformsUtils.merge([ THREE.UniformsLib.fog, {
         normalSampler: {
@@ -15712,7 +16831,792 @@ THREEx = THREEx || {}, THREEx.DynamicTexture = function(width, height) {
     }, this.dispose = function() {
         this.disconnect();
     }, this.connect();
-};
+}, THREE.ConvolutionShader = {
+    defines: {
+        KERNEL_SIZE_FLOAT: "25.0",
+        KERNEL_SIZE_INT: "25"
+    },
+    uniforms: {
+        tDiffuse: {
+            value: null
+        },
+        uImageIncrement: {
+            value: new THREE.Vector2(.001953125, 0)
+        },
+        cKernel: {
+            value: []
+        }
+    },
+    vertexShader: [ "uniform vec2 uImageIncrement;", "varying vec2 vUv;", "void main() {", "vUv = uv - ( ( KERNEL_SIZE_FLOAT - 1.0 ) / 2.0 ) * uImageIncrement;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
+    fragmentShader: [ "uniform float cKernel[ KERNEL_SIZE_INT ];", "uniform sampler2D tDiffuse;", "uniform vec2 uImageIncrement;", "varying vec2 vUv;", "void main() {", "vec2 imageCoord = vUv;", "vec4 sum = vec4( 0.0, 0.0, 0.0, 0.0 );", "for( int i = 0; i < KERNEL_SIZE_INT; i ++ ) {", "sum += texture2D( tDiffuse, imageCoord ) * cKernel[ i ];", "imageCoord += uImageIncrement;", "}", "gl_FragColor = sum;", "}" ].join("\n"),
+    buildKernel: function(sigma) {
+        function gauss(x, sigma) {
+            return Math.exp(-(x * x) / (2 * sigma * sigma));
+        }
+        var i, values, sum, halfWidth, kMaxKernelSize = 25, kernelSize = 2 * Math.ceil(3 * sigma) + 1;
+        for (kernelSize > kMaxKernelSize && (kernelSize = kMaxKernelSize), halfWidth = .5 * (kernelSize - 1), 
+        values = new Array(kernelSize), sum = 0, i = 0; kernelSize > i; ++i) values[i] = gauss(i - halfWidth, sigma), 
+        sum += values[i];
+        for (i = 0; kernelSize > i; ++i) values[i] /= sum;
+        return values;
+    }
+}, THREE.CopyShader = {
+    uniforms: {
+        tDiffuse: {
+            value: null
+        },
+        opacity: {
+            value: 1
+        }
+    },
+    vertexShader: [ "varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
+    fragmentShader: [ "uniform float opacity;", "uniform sampler2D tDiffuse;", "varying vec2 vUv;", "void main() {", "vec4 texel = texture2D( tDiffuse, vUv );", "gl_FragColor = opacity * texel;", "}" ].join("\n")
+}, THREE.FXAAShader = {
+    uniforms: {
+        tDiffuse: {
+            value: null
+        },
+        resolution: {
+            value: new THREE.Vector2(1 / 1024, 1 / 512)
+        }
+    },
+    vertexShader: [ "void main() {", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
+    fragmentShader: [ "uniform sampler2D tDiffuse;", "uniform vec2 resolution;", "#define FXAA_REDUCE_MIN   (1.0/128.0)", "#define FXAA_REDUCE_MUL   (1.0/8.0)", "#define FXAA_SPAN_MAX     8.0", "void main() {", "vec3 rgbNW = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, -1.0 ) ) * resolution ).xyz;", "vec3 rgbNE = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, -1.0 ) ) * resolution ).xyz;", "vec3 rgbSW = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, 1.0 ) ) * resolution ).xyz;", "vec3 rgbSE = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, 1.0 ) ) * resolution ).xyz;", "vec4 rgbaM  = texture2D( tDiffuse,  gl_FragCoord.xy  * resolution );", "vec3 rgbM  = rgbaM.xyz;", "vec3 luma = vec3( 0.299, 0.587, 0.114 );", "float lumaNW = dot( rgbNW, luma );", "float lumaNE = dot( rgbNE, luma );", "float lumaSW = dot( rgbSW, luma );", "float lumaSE = dot( rgbSE, luma );", "float lumaM  = dot( rgbM,  luma );", "float lumaMin = min( lumaM, min( min( lumaNW, lumaNE ), min( lumaSW, lumaSE ) ) );", "float lumaMax = max( lumaM, max( max( lumaNW, lumaNE) , max( lumaSW, lumaSE ) ) );", "vec2 dir;", "dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));", "dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));", "float dirReduce = max( ( lumaNW + lumaNE + lumaSW + lumaSE ) * ( 0.25 * FXAA_REDUCE_MUL ), FXAA_REDUCE_MIN );", "float rcpDirMin = 1.0 / ( min( abs( dir.x ), abs( dir.y ) ) + dirReduce );", "dir = min( vec2( FXAA_SPAN_MAX,  FXAA_SPAN_MAX),", "max( vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),", "dir * rcpDirMin)) * resolution;", "vec4 rgbA = (1.0/2.0) * (", "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (1.0/3.0 - 0.5)) +", "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (2.0/3.0 - 0.5)));", "vec4 rgbB = rgbA * (1.0/2.0) + (1.0/4.0) * (", "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (0.0/3.0 - 0.5)) +", "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (3.0/3.0 - 0.5)));", "float lumaB = dot(rgbB, vec4(luma, 0.0));", "if ( ( lumaB < lumaMin ) || ( lumaB > lumaMax ) ) {", "gl_FragColor = rgbA;", "} else {", "gl_FragColor = rgbB;", "}", "}" ].join("\n")
+}, THREE.FilmShader = {
+    uniforms: {
+        tDiffuse: {
+            value: null
+        },
+        time: {
+            value: 0
+        },
+        nIntensity: {
+            value: .5
+        },
+        sIntensity: {
+            value: .05
+        },
+        sCount: {
+            value: 4096
+        },
+        grayscale: {
+            value: 1
+        }
+    },
+    vertexShader: [ "varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
+    fragmentShader: [ "#include <common>", "uniform float time;", "uniform bool grayscale;", "uniform float nIntensity;", "uniform float sIntensity;", "uniform float sCount;", "uniform sampler2D tDiffuse;", "varying vec2 vUv;", "void main() {", "vec4 cTextureScreen = texture2D( tDiffuse, vUv );", "float dx = rand( vUv + time );", "vec3 cResult = cTextureScreen.rgb + cTextureScreen.rgb * clamp( 0.1 + dx, 0.0, 1.0 );", "vec2 sc = vec2( sin( vUv.y * sCount ), cos( vUv.y * sCount ) );", "cResult += cTextureScreen.rgb * vec3( sc.x, sc.y, sc.x ) * sIntensity;", "cResult = cTextureScreen.rgb + clamp( nIntensity, 0.0,1.0 ) * ( cResult - cTextureScreen.rgb );", "if( grayscale ) {", "cResult = vec3( cResult.r * 0.3 + cResult.g * 0.59 + cResult.b * 0.11 );", "}", "gl_FragColor =  vec4( cResult, cTextureScreen.a );", "}" ].join("\n")
+}, THREE.BokehShader = {
+    uniforms: {
+        tColor: {
+            value: null
+        },
+        tDepth: {
+            value: null
+        },
+        focus: {
+            value: 1
+        },
+        aspect: {
+            value: 1
+        },
+        aperture: {
+            value: .025
+        },
+        maxblur: {
+            value: 1
+        }
+    },
+    vertexShader: [ "varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
+    fragmentShader: [ "varying vec2 vUv;", "uniform sampler2D tColor;", "uniform sampler2D tDepth;", "uniform float maxblur;", "uniform float aperture;", "uniform float focus;", "uniform float aspect;", "void main() {", "vec2 aspectcorrect = vec2( 1.0, aspect );", "vec4 depth1 = texture2D( tDepth, vUv );", "float factor = depth1.x - focus;", "vec2 dofblur = vec2 ( clamp( factor * aperture, -maxblur, maxblur ) );", "vec2 dofblur9 = dofblur * 0.9;", "vec2 dofblur7 = dofblur * 0.7;", "vec2 dofblur4 = dofblur * 0.4;", "vec4 col = vec4( 0.0 );", "col += texture2D( tColor, vUv.xy );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.0,   0.4  ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.15,  0.37 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.29,  0.29 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.37,  0.15 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.40,  0.0  ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.37, -0.15 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.29, -0.29 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.15, -0.37 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.0,  -0.4  ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.15,  0.37 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.29,  0.29 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.37,  0.15 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.4,   0.0  ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.37, -0.15 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.29, -0.29 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.15, -0.37 ) * aspectcorrect ) * dofblur );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.15,  0.37 ) * aspectcorrect ) * dofblur9 );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.37,  0.15 ) * aspectcorrect ) * dofblur9 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.37, -0.15 ) * aspectcorrect ) * dofblur9 );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.15, -0.37 ) * aspectcorrect ) * dofblur9 );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.15,  0.37 ) * aspectcorrect ) * dofblur9 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.37,  0.15 ) * aspectcorrect ) * dofblur9 );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.37, -0.15 ) * aspectcorrect ) * dofblur9 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.15, -0.37 ) * aspectcorrect ) * dofblur9 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.29,  0.29 ) * aspectcorrect ) * dofblur7 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.40,  0.0  ) * aspectcorrect ) * dofblur7 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.29, -0.29 ) * aspectcorrect ) * dofblur7 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.0,  -0.4  ) * aspectcorrect ) * dofblur7 );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.29,  0.29 ) * aspectcorrect ) * dofblur7 );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.4,   0.0  ) * aspectcorrect ) * dofblur7 );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.29, -0.29 ) * aspectcorrect ) * dofblur7 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.0,   0.4  ) * aspectcorrect ) * dofblur7 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.29,  0.29 ) * aspectcorrect ) * dofblur4 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.4,   0.0  ) * aspectcorrect ) * dofblur4 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.29, -0.29 ) * aspectcorrect ) * dofblur4 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.0,  -0.4  ) * aspectcorrect ) * dofblur4 );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.29,  0.29 ) * aspectcorrect ) * dofblur4 );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.4,   0.0  ) * aspectcorrect ) * dofblur4 );", "col += texture2D( tColor, vUv.xy + ( vec2( -0.29, -0.29 ) * aspectcorrect ) * dofblur4 );", "col += texture2D( tColor, vUv.xy + ( vec2(  0.0,   0.4  ) * aspectcorrect ) * dofblur4 );", "gl_FragColor = col / 41.0;", "gl_FragColor.a = 1.0;", "}" ].join("\n")
+}, THREE.DigitalGlitch = {
+    uniforms: {
+        tDiffuse: {
+            value: null
+        },
+        tDisp: {
+            value: null
+        },
+        byp: {
+            value: 0
+        },
+        amount: {
+            value: .08
+        },
+        angle: {
+            value: .02
+        },
+        seed: {
+            value: .02
+        },
+        seed_x: {
+            value: .02
+        },
+        seed_y: {
+            value: .02
+        },
+        distortion_x: {
+            value: .5
+        },
+        distortion_y: {
+            value: .6
+        },
+        col_s: {
+            value: .05
+        }
+    },
+    vertexShader: [ "varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
+    fragmentShader: [ "uniform int byp;", "uniform sampler2D tDiffuse;", "uniform sampler2D tDisp;", "uniform float amount;", "uniform float angle;", "uniform float seed;", "uniform float seed_x;", "uniform float seed_y;", "uniform float distortion_x;", "uniform float distortion_y;", "uniform float col_s;", "varying vec2 vUv;", "float rand(vec2 co){", "return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);", "}", "void main() {", "if(byp<1) {", "vec2 p = vUv;", "float xs = floor(gl_FragCoord.x / 0.5);", "float ys = floor(gl_FragCoord.y / 0.5);", "vec4 normal = texture2D (tDisp, p*seed*seed);", "if(p.y<distortion_x+col_s && p.y>distortion_x-col_s*seed) {", "if(seed_x>0.){", "p.y = 1. - (p.y + distortion_y);", "}", "else {", "p.y = distortion_y;", "}", "}", "if(p.x<distortion_y+col_s && p.x>distortion_y-col_s*seed) {", "if(seed_y>0.){", "p.x=distortion_x;", "}", "else {", "p.x = 1. - (p.x + distortion_x);", "}", "}", "p.x+=normal.x*seed_x*(seed/5.);", "p.y+=normal.y*seed_y*(seed/5.);", "vec2 offset = amount * vec2( cos(angle), sin(angle));", "vec4 cr = texture2D(tDiffuse, p + offset);", "vec4 cga = texture2D(tDiffuse, p);", "vec4 cb = texture2D(tDiffuse, p - offset);", "gl_FragColor = vec4(cr.r, cga.g, cb.b, cga.a);", "vec4 snow = 200.*amount*vec4(rand(vec2(xs * seed,ys * seed*50.))*0.2);", "gl_FragColor = gl_FragColor+ snow;", "}", "else {", "gl_FragColor=texture2D (tDiffuse, vUv);", "}", "}" ].join("\n")
+}, THREE.LuminosityHighPassShader = {
+    shaderID: "luminosityHighPass",
+    uniforms: {
+        tDiffuse: {
+            type: "t",
+            value: null
+        },
+        luminosityThreshold: {
+            type: "f",
+            value: 1
+        },
+        smoothWidth: {
+            type: "f",
+            value: 1
+        },
+        defaultColor: {
+            type: "c",
+            value: new THREE.Color(0)
+        },
+        defaultOpacity: {
+            type: "f",
+            value: 0
+        }
+    },
+    vertexShader: [ "varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
+    fragmentShader: [ "uniform sampler2D tDiffuse;", "uniform vec3 defaultColor;", "uniform float defaultOpacity;", "uniform float luminosityThreshold;", "uniform float smoothWidth;", "varying vec2 vUv;", "void main() {", "vec4 texel = texture2D( tDiffuse, vUv );", "vec3 luma = vec3( 0.299, 0.587, 0.114 );", "float v = dot( texel.xyz, luma );", "vec4 outputColor = vec4( defaultColor.rgb, defaultOpacity );", "float alpha = smoothstep( luminosityThreshold, luminosityThreshold + smoothWidth, v );", "gl_FragColor = mix( outputColor, texel, alpha );", "}" ].join("\n")
+}, THREE.EffectComposer = function(renderer, renderTarget) {
+    if (this.renderer = renderer, void 0 === renderTarget) {
+        var parameters = {
+            minFilter: THREE.LinearFilter,
+            magFilter: THREE.LinearFilter,
+            format: THREE.RGBAFormat,
+            stencilBuffer: !1
+        }, size = renderer.getSize();
+        renderTarget = new THREE.WebGLRenderTarget(size.width, size.height, parameters);
+    }
+    this.renderTarget1 = renderTarget, this.renderTarget2 = renderTarget.clone(), this.writeBuffer = this.renderTarget1, 
+    this.readBuffer = this.renderTarget2, this.passes = [], void 0 === THREE.CopyShader && console.error("THREE.EffectComposer relies on THREE.CopyShader"), 
+    this.copyPass = new THREE.ShaderPass(THREE.CopyShader);
+}, Object.assign(THREE.EffectComposer.prototype, {
+    swapBuffers: function() {
+        var tmp = this.readBuffer;
+        this.readBuffer = this.writeBuffer, this.writeBuffer = tmp;
+    },
+    addPass: function(pass) {
+        this.passes.push(pass);
+        var size = this.renderer.getSize();
+        pass.setSize(size.width, size.height);
+    },
+    insertPass: function(pass, index) {
+        this.passes.splice(index, 0, pass);
+    },
+    render: function(delta) {
+        var pass, i, maskActive = !1, il = this.passes.length;
+        for (i = 0; il > i; i++) if (pass = this.passes[i], pass.enabled !== !1) {
+            if (pass.render(this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive), 
+            pass.needsSwap) {
+                if (maskActive) {
+                    var context = this.renderer.context;
+                    context.stencilFunc(context.NOTEQUAL, 1, 4294967295), this.copyPass.render(this.renderer, this.writeBuffer, this.readBuffer, delta), 
+                    context.stencilFunc(context.EQUAL, 1, 4294967295);
+                }
+                this.swapBuffers();
+            }
+            void 0 !== THREE.MaskPass && (pass instanceof THREE.MaskPass ? maskActive = !0 : pass instanceof THREE.ClearMaskPass && (maskActive = !1));
+        }
+    },
+    reset: function(renderTarget) {
+        if (void 0 === renderTarget) {
+            var size = this.renderer.getSize();
+            renderTarget = this.renderTarget1.clone(), renderTarget.setSize(size.width, size.height);
+        }
+        this.renderTarget1.dispose(), this.renderTarget2.dispose(), this.renderTarget1 = renderTarget, 
+        this.renderTarget2 = renderTarget.clone(), this.writeBuffer = this.renderTarget1, 
+        this.readBuffer = this.renderTarget2;
+    },
+    setSize: function(width, height) {
+        this.renderTarget1.setSize(width, height), this.renderTarget2.setSize(width, height);
+        for (var i = 0; i < this.passes.length; i++) this.passes[i].setSize(width, height);
+    }
+}), THREE.Pass = function() {
+    this.enabled = !0, this.needsSwap = !0, this.clear = !1, this.renderToScreen = !1;
+}, Object.assign(THREE.Pass.prototype, {
+    setSize: function(width, height) {},
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        console.error("THREE.Pass: .render() must be implemented in derived pass.");
+    }
+}), THREE.MaskPass = function(scene, camera) {
+    THREE.Pass.call(this), this.scene = scene, this.camera = camera, this.clear = !0, 
+    this.needsSwap = !1, this.inverse = !1;
+}, THREE.MaskPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
+    constructor: THREE.MaskPass,
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        var context = renderer.context, state = renderer.state;
+        state.buffers.color.setMask(!1), state.buffers.depth.setMask(!1), state.buffers.color.setLocked(!0), 
+        state.buffers.depth.setLocked(!0);
+        var writeValue, clearValue;
+        this.inverse ? (writeValue = 0, clearValue = 1) : (writeValue = 1, clearValue = 0), 
+        state.buffers.stencil.setTest(!0), state.buffers.stencil.setOp(context.REPLACE, context.REPLACE, context.REPLACE), 
+        state.buffers.stencil.setFunc(context.ALWAYS, writeValue, 4294967295), state.buffers.stencil.setClear(clearValue), 
+        renderer.render(this.scene, this.camera, readBuffer, this.clear), renderer.render(this.scene, this.camera, writeBuffer, this.clear), 
+        state.buffers.color.setLocked(!1), state.buffers.depth.setLocked(!1), state.buffers.stencil.setFunc(context.EQUAL, 1, 4294967295), 
+        state.buffers.stencil.setOp(context.KEEP, context.KEEP, context.KEEP);
+    }
+}), THREE.ClearMaskPass = function() {
+    THREE.Pass.call(this), this.needsSwap = !1;
+}, THREE.ClearMaskPass.prototype = Object.create(THREE.Pass.prototype), Object.assign(THREE.ClearMaskPass.prototype, {
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        renderer.state.buffers.stencil.setTest(!1);
+    }
+}), THREE.RenderPass = function(scene, camera, overrideMaterial, clearColor, clearAlpha) {
+    THREE.Pass.call(this), this.scene = scene, this.camera = camera, this.overrideMaterial = overrideMaterial, 
+    this.clearColor = clearColor, this.clearAlpha = void 0 !== clearAlpha ? clearAlpha : 0, 
+    this.clear = !0, this.needsSwap = !1;
+}, THREE.RenderPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
+    constructor: THREE.RenderPass,
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        var oldAutoClear = renderer.autoClear;
+        renderer.autoClear = !1, this.scene.overrideMaterial = this.overrideMaterial;
+        var oldClearColor, oldClearAlpha;
+        this.clearColor && (oldClearColor = renderer.getClearColor().getHex(), oldClearAlpha = renderer.getClearAlpha(), 
+        renderer.setClearColor(this.clearColor, this.clearAlpha)), renderer.render(this.scene, this.camera, this.renderToScreen ? null : readBuffer, this.clear), 
+        this.clearColor && renderer.setClearColor(oldClearColor, oldClearAlpha), this.scene.overrideMaterial = null, 
+        renderer.autoClear = oldAutoClear;
+    }
+}), THREE.ShaderPass = function(shader, textureID) {
+    THREE.Pass.call(this), this.textureID = void 0 !== textureID ? textureID : "tDiffuse", 
+    shader instanceof THREE.ShaderMaterial ? (this.uniforms = shader.uniforms, this.material = shader) : shader && (this.uniforms = THREE.UniformsUtils.clone(shader.uniforms), 
+    this.material = new THREE.ShaderMaterial({
+        defines: shader.defines || {},
+        uniforms: this.uniforms,
+        vertexShader: shader.vertexShader,
+        fragmentShader: shader.fragmentShader
+    })), this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), this.scene = new THREE.Scene(), 
+    this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null), this.scene.add(this.quad);
+}, THREE.ShaderPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
+    constructor: THREE.ShaderPass,
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        this.uniforms[this.textureID] && (this.uniforms[this.textureID].value = readBuffer.texture), 
+        this.quad.material = this.material, this.renderToScreen ? renderer.render(this.scene, this.camera) : renderer.render(this.scene, this.camera, writeBuffer, this.clear);
+    }
+}), THREE.BloomPass = function(strength, kernelSize, sigma, resolution) {
+    THREE.Pass.call(this), strength = void 0 !== strength ? strength : 1, kernelSize = void 0 !== kernelSize ? kernelSize : 25, 
+    sigma = void 0 !== sigma ? sigma : 4, resolution = void 0 !== resolution ? resolution : 256;
+    var pars = {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat
+    };
+    this.renderTargetX = new THREE.WebGLRenderTarget(resolution, resolution, pars), 
+    this.renderTargetY = new THREE.WebGLRenderTarget(resolution, resolution, pars), 
+    void 0 === THREE.CopyShader && console.error("THREE.BloomPass relies on THREE.CopyShader");
+    var copyShader = THREE.CopyShader;
+    this.copyUniforms = THREE.UniformsUtils.clone(copyShader.uniforms), this.copyUniforms.opacity.value = strength, 
+    this.materialCopy = new THREE.ShaderMaterial({
+        uniforms: this.copyUniforms,
+        vertexShader: copyShader.vertexShader,
+        fragmentShader: copyShader.fragmentShader,
+        blending: THREE.AdditiveBlending,
+        transparent: !0
+    }), void 0 === THREE.ConvolutionShader && console.error("THREE.BloomPass relies on THREE.ConvolutionShader");
+    var convolutionShader = THREE.ConvolutionShader;
+    this.convolutionUniforms = THREE.UniformsUtils.clone(convolutionShader.uniforms), 
+    this.convolutionUniforms.uImageIncrement.value = THREE.BloomPass.blurX, this.convolutionUniforms.cKernel.value = THREE.ConvolutionShader.buildKernel(sigma), 
+    this.materialConvolution = new THREE.ShaderMaterial({
+        uniforms: this.convolutionUniforms,
+        vertexShader: convolutionShader.vertexShader,
+        fragmentShader: convolutionShader.fragmentShader,
+        defines: {
+            KERNEL_SIZE_FLOAT: kernelSize.toFixed(1),
+            KERNEL_SIZE_INT: kernelSize.toFixed(0)
+        }
+    }), this.needsSwap = !1, this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), 
+    this.scene = new THREE.Scene(), this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null), 
+    this.scene.add(this.quad);
+}, THREE.BloomPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
+    constructor: THREE.BloomPass,
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        maskActive && renderer.context.disable(renderer.context.STENCIL_TEST), this.quad.material = this.materialConvolution, 
+        this.convolutionUniforms.tDiffuse.value = readBuffer.texture, this.convolutionUniforms.uImageIncrement.value = THREE.BloomPass.blurX, 
+        renderer.render(this.scene, this.camera, this.renderTargetX, !0), this.convolutionUniforms.tDiffuse.value = this.renderTargetX.texture, 
+        this.convolutionUniforms.uImageIncrement.value = THREE.BloomPass.blurY, renderer.render(this.scene, this.camera, this.renderTargetY, !0), 
+        this.quad.material = this.materialCopy, this.copyUniforms.tDiffuse.value = this.renderTargetY.texture, 
+        maskActive && renderer.context.enable(renderer.context.STENCIL_TEST), renderer.render(this.scene, this.camera, readBuffer, this.clear);
+    }
+}), THREE.BloomPass.blurX = new THREE.Vector2(.001953125, 0), THREE.BloomPass.blurY = new THREE.Vector2(0, .001953125), 
+THREE.FilmPass = function(noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale) {
+    THREE.Pass.call(this), void 0 === THREE.FilmShader && console.error("THREE.FilmPass relies on THREE.FilmShader");
+    var shader = THREE.FilmShader;
+    this.uniforms = THREE.UniformsUtils.clone(shader.uniforms), this.material = new THREE.ShaderMaterial({
+        uniforms: this.uniforms,
+        vertexShader: shader.vertexShader,
+        fragmentShader: shader.fragmentShader
+    }), void 0 !== grayscale && (this.uniforms.grayscale.value = grayscale), void 0 !== noiseIntensity && (this.uniforms.nIntensity.value = noiseIntensity), 
+    void 0 !== scanlinesIntensity && (this.uniforms.sIntensity.value = scanlinesIntensity), 
+    void 0 !== scanlinesCount && (this.uniforms.sCount.value = scanlinesCount), this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), 
+    this.scene = new THREE.Scene(), this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null), 
+    this.scene.add(this.quad);
+}, THREE.FilmPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
+    constructor: THREE.FilmPass,
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        this.uniforms.tDiffuse.value = readBuffer.texture, this.uniforms.time.value += delta, 
+        this.quad.material = this.material, this.renderToScreen ? renderer.render(this.scene, this.camera) : renderer.render(this.scene, this.camera, writeBuffer, this.clear);
+    }
+}), THREE.BokehPass = function(scene, camera, params) {
+    THREE.Pass.call(this), this.scene = scene, this.camera = camera;
+    var focus = void 0 !== params.focus ? params.focus : 1, aspect = void 0 !== params.aspect ? params.aspect : camera.aspect, aperture = void 0 !== params.aperture ? params.aperture : .025, maxblur = void 0 !== params.maxblur ? params.maxblur : 1, width = params.width || window.innerWidth || 1, height = params.height || window.innerHeight || 1;
+    this.renderTargetColor = new THREE.WebGLRenderTarget(width, height, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBFormat
+    }), this.renderTargetDepth = this.renderTargetColor.clone(), this.materialDepth = new THREE.MeshDepthMaterial(), 
+    void 0 === THREE.BokehShader && console.error("THREE.BokehPass relies on THREE.BokehShader");
+    var bokehShader = THREE.BokehShader, bokehUniforms = THREE.UniformsUtils.clone(bokehShader.uniforms);
+    bokehUniforms.tDepth.value = this.renderTargetDepth.texture, bokehUniforms.focus.value = focus, 
+    bokehUniforms.aspect.value = aspect, bokehUniforms.aperture.value = aperture, bokehUniforms.maxblur.value = maxblur, 
+    this.materialBokeh = new THREE.ShaderMaterial({
+        uniforms: bokehUniforms,
+        vertexShader: bokehShader.vertexShader,
+        fragmentShader: bokehShader.fragmentShader
+    }), this.uniforms = bokehUniforms, this.needsSwap = !1, this.camera2 = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), 
+    this.scene2 = new THREE.Scene(), this.quad2 = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null), 
+    this.scene2.add(this.quad2);
+}, THREE.BokehPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
+    constructor: THREE.BokehPass,
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        this.quad2.material = this.materialBokeh, this.scene.overrideMaterial = this.materialDepth, 
+        renderer.render(this.scene, this.camera, this.renderTargetDepth, !0), this.uniforms.tColor.value = readBuffer.texture, 
+        this.renderToScreen ? renderer.render(this.scene2, this.camera2) : renderer.render(this.scene2, this.camera2, writeBuffer, this.clear), 
+        this.scene.overrideMaterial = null;
+    }
+}), THREE.GlitchPass = function(dt_size) {
+    THREE.Pass.call(this), void 0 === THREE.DigitalGlitch && console.error("THREE.GlitchPass relies on THREE.DigitalGlitch");
+    var shader = THREE.DigitalGlitch;
+    this.uniforms = THREE.UniformsUtils.clone(shader.uniforms), void 0 == dt_size && (dt_size = 64), 
+    this.uniforms.tDisp.value = this.generateHeightmap(dt_size), this.material = new THREE.ShaderMaterial({
+        uniforms: this.uniforms,
+        vertexShader: shader.vertexShader,
+        fragmentShader: shader.fragmentShader
+    }), this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), this.scene = new THREE.Scene(), 
+    this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null), this.scene.add(this.quad), 
+    this.goWild = !1, this.curF = 0, this.generateTrigger();
+}, THREE.GlitchPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
+    constructor: THREE.GlitchPass,
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        this.uniforms.tDiffuse.value = readBuffer.texture, this.uniforms.seed.value = Math.random(), 
+        this.uniforms.byp.value = 0, this.curF % this.randX == 0 || 1 == this.goWild ? (this.uniforms.amount.value = Math.random() / 30, 
+        this.uniforms.angle.value = THREE.Math.randFloat(-Math.PI, Math.PI), this.uniforms.seed_x.value = THREE.Math.randFloat(-1, 1), 
+        this.uniforms.seed_y.value = THREE.Math.randFloat(-1, 1), this.uniforms.distortion_x.value = THREE.Math.randFloat(0, 1), 
+        this.uniforms.distortion_y.value = THREE.Math.randFloat(0, 1), this.curF = 0, this.generateTrigger()) : this.curF % this.randX < this.randX / 5 ? (this.uniforms.amount.value = Math.random() / 90, 
+        this.uniforms.angle.value = THREE.Math.randFloat(-Math.PI, Math.PI), this.uniforms.distortion_x.value = THREE.Math.randFloat(0, 1), 
+        this.uniforms.distortion_y.value = THREE.Math.randFloat(0, 1), this.uniforms.seed_x.value = THREE.Math.randFloat(-.3, .3), 
+        this.uniforms.seed_y.value = THREE.Math.randFloat(-.3, .3)) : 0 == this.goWild && (this.uniforms.byp.value = 1), 
+        this.curF++, this.quad.material = this.material, this.renderToScreen ? renderer.render(this.scene, this.camera) : renderer.render(this.scene, this.camera, writeBuffer, this.clear);
+    },
+    generateTrigger: function() {
+        this.randX = THREE.Math.randInt(120, 240);
+    },
+    generateHeightmap: function(dt_size) {
+        for (var data_arr = new Float32Array(dt_size * dt_size * 3), length = dt_size * dt_size, i = 0; length > i; i++) {
+            var val = THREE.Math.randFloat(0, 1);
+            data_arr[3 * i + 0] = val, data_arr[3 * i + 1] = val, data_arr[3 * i + 2] = val;
+        }
+        var texture = new THREE.DataTexture(data_arr, dt_size, dt_size, THREE.RGBFormat, THREE.FloatType);
+        return texture.needsUpdate = !0, texture;
+    }
+}), THREE.UnrealBloomPass = function(resolution, strength, radius, threshold) {
+    THREE.Pass.call(this), this.strength = void 0 !== strength ? strength : 1, this.radius = radius, 
+    this.threshold = threshold, this.resolution = void 0 !== resolution ? new THREE.Vector2(resolution.x, resolution.y) : new THREE.Vector2(256, 256);
+    var pars = {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat
+    };
+    this.renderTargetsHorizontal = [], this.renderTargetsVertical = [], this.nMips = 5;
+    var resx = Math.round(this.resolution.x / 2), resy = Math.round(this.resolution.y / 2);
+    this.renderTargetBright = new THREE.WebGLRenderTarget(resx, resy, pars), this.renderTargetBright.texture.generateMipmaps = !1;
+    for (var i = 0; i < this.nMips; i++) {
+        var renderTarget = new THREE.WebGLRenderTarget(resx, resy, pars);
+        renderTarget.texture.generateMipmaps = !1, this.renderTargetsHorizontal.push(renderTarget);
+        var renderTarget = new THREE.WebGLRenderTarget(resx, resy, pars);
+        renderTarget.texture.generateMipmaps = !1, this.renderTargetsVertical.push(renderTarget), 
+        resx = Math.round(resx / 2), resy = Math.round(resy / 2);
+    }
+    void 0 === THREE.LuminosityHighPassShader && console.error("THREE.UnrealBloomPass relies on THREE.LuminosityHighPassShader");
+    var highPassShader = THREE.LuminosityHighPassShader;
+    this.highPassUniforms = THREE.UniformsUtils.clone(highPassShader.uniforms), this.highPassUniforms.luminosityThreshold.value = threshold, 
+    this.highPassUniforms.smoothWidth.value = .01, this.materialHighPassFilter = new THREE.ShaderMaterial({
+        uniforms: this.highPassUniforms,
+        vertexShader: highPassShader.vertexShader,
+        fragmentShader: highPassShader.fragmentShader,
+        defines: {}
+    }), this.separableBlurMaterials = [];
+    for (var kernelSizeArray = [ 3, 5, 7, 9, 11 ], resx = Math.round(this.resolution.x / 2), resy = Math.round(this.resolution.y / 2), i = 0; i < this.nMips; i++) this.separableBlurMaterials.push(this.getSeperableBlurMaterial(kernelSizeArray[i])), 
+    this.separableBlurMaterials[i].uniforms.texSize.value = new THREE.Vector2(resx, resy), 
+    resx = Math.round(resx / 2), resy = Math.round(resy / 2);
+    this.compositeMaterial = this.getCompositeMaterial(this.nMips), this.compositeMaterial.uniforms.blurTexture1.value = this.renderTargetsVertical[0].texture, 
+    this.compositeMaterial.uniforms.blurTexture2.value = this.renderTargetsVertical[1].texture, 
+    this.compositeMaterial.uniforms.blurTexture3.value = this.renderTargetsVertical[2].texture, 
+    this.compositeMaterial.uniforms.blurTexture4.value = this.renderTargetsVertical[3].texture, 
+    this.compositeMaterial.uniforms.blurTexture5.value = this.renderTargetsVertical[4].texture, 
+    this.compositeMaterial.uniforms.bloomStrength.value = strength, this.compositeMaterial.uniforms.bloomRadius.value = .1, 
+    this.compositeMaterial.needsUpdate = !0;
+    var bloomFactors = [ 1, .8, .6, .4, .2 ];
+    this.compositeMaterial.uniforms.bloomFactors.value = bloomFactors, this.bloomTintColors = [ new THREE.Vector3(1, 1, 1), new THREE.Vector3(1, 1, 1), new THREE.Vector3(1, 1, 1), new THREE.Vector3(1, 1, 1), new THREE.Vector3(1, 1, 1) ], 
+    this.compositeMaterial.uniforms.bloomTintColors.value = this.bloomTintColors, void 0 === THREE.CopyShader && console.error("THREE.BloomPass relies on THREE.CopyShader");
+    var copyShader = THREE.CopyShader;
+    this.copyUniforms = THREE.UniformsUtils.clone(copyShader.uniforms), this.copyUniforms.opacity.value = 1, 
+    this.materialCopy = new THREE.ShaderMaterial({
+        uniforms: this.copyUniforms,
+        vertexShader: copyShader.vertexShader,
+        fragmentShader: copyShader.fragmentShader,
+        blending: THREE.AdditiveBlending,
+        depthTest: !1,
+        depthWrite: !1,
+        transparent: !0
+    }), this.enabled = !0, this.needsSwap = !1, this.oldClearColor = new THREE.Color(), 
+    this.oldClearAlpha = 1, this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), 
+    this.scene = new THREE.Scene(), this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null), 
+    this.scene.add(this.quad);
+}, THREE.UnrealBloomPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
+    constructor: THREE.UnrealBloomPass,
+    dispose: function() {
+        for (var i = 0; i < this.renderTargetsHorizontal.length(); i++) this.renderTargetsHorizontal[i].dispose();
+        for (var i = 0; i < this.renderTargetsVertical.length(); i++) this.renderTargetsVertical[i].dispose();
+        this.renderTargetBright.dispose();
+    },
+    setSize: function(width, height) {
+        var resx = Math.round(width / 2), resy = Math.round(height / 2);
+        this.renderTargetBright.setSize(resx, resy);
+        for (var i = 0; i < this.nMips; i++) this.renderTargetsHorizontal[i].setSize(resx, resy), 
+        this.renderTargetsVertical[i].setSize(resx, resy), this.separableBlurMaterials[i].uniforms.texSize.value = new THREE.Vector2(resx, resy), 
+        resx = Math.round(resx / 2), resy = Math.round(resy / 2);
+    },
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        this.oldClearColor.copy(renderer.getClearColor()), this.oldClearAlpha = renderer.getClearAlpha();
+        var oldAutoClear = renderer.autoClear;
+        renderer.autoClear = !1, renderer.setClearColor(new THREE.Color(0, 0, 0), 0), maskActive && renderer.context.disable(renderer.context.STENCIL_TEST), 
+        this.highPassUniforms.tDiffuse.value = readBuffer.texture, this.highPassUniforms.luminosityThreshold.value = this.threshold, 
+        this.quad.material = this.materialHighPassFilter, renderer.render(this.scene, this.camera, this.renderTargetBright, !0);
+        for (var inputRenderTarget = this.renderTargetBright, i = 0; i < this.nMips; i++) this.quad.material = this.separableBlurMaterials[i], 
+        this.separableBlurMaterials[i].uniforms.colorTexture.value = inputRenderTarget.texture, 
+        this.separableBlurMaterials[i].uniforms.direction.value = THREE.UnrealBloomPass.BlurDirectionX, 
+        renderer.render(this.scene, this.camera, this.renderTargetsHorizontal[i], !0), this.separableBlurMaterials[i].uniforms.colorTexture.value = this.renderTargetsHorizontal[i].texture, 
+        this.separableBlurMaterials[i].uniforms.direction.value = THREE.UnrealBloomPass.BlurDirectionY, 
+        renderer.render(this.scene, this.camera, this.renderTargetsVertical[i], !0), inputRenderTarget = this.renderTargetsVertical[i];
+        this.quad.material = this.compositeMaterial, this.compositeMaterial.uniforms.bloomStrength.value = this.strength, 
+        this.compositeMaterial.uniforms.bloomRadius.value = this.radius, this.compositeMaterial.uniforms.bloomTintColors.value = this.bloomTintColors, 
+        renderer.render(this.scene, this.camera, this.renderTargetsHorizontal[0], !0), this.quad.material = this.materialCopy, 
+        this.copyUniforms.tDiffuse.value = this.renderTargetsHorizontal[0].texture, maskActive && renderer.context.enable(renderer.context.STENCIL_TEST), 
+        renderer.render(this.scene, this.camera, readBuffer, !1), renderer.setClearColor(this.oldClearColor, this.oldClearAlpha), 
+        renderer.autoClear = oldAutoClear;
+    },
+    getSeperableBlurMaterial: function(kernelRadius) {
+        return new THREE.ShaderMaterial({
+            defines: {
+                KERNEL_RADIUS: kernelRadius,
+                SIGMA: kernelRadius
+            },
+            uniforms: {
+                colorTexture: {
+                    value: null
+                },
+                texSize: {
+                    value: new THREE.Vector2(.5, .5)
+                },
+                direction: {
+                    value: new THREE.Vector2(.5, .5)
+                }
+            },
+            vertexShader: "varying vec2 vUv;\n				void main() {\n					vUv = uv;\n					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n				}",
+            fragmentShader: "#include <common>				varying vec2 vUv;\n				uniform sampler2D colorTexture;\n				uniform vec2 texSize;				uniform vec2 direction;								float gaussianPdf(in float x, in float sigma) {					return 0.39894 * exp( -0.5 * x * x/( sigma * sigma))/sigma;				}				void main() {\n					vec2 invSize = 1.0 / texSize;					float fSigma = float(SIGMA);					float weightSum = gaussianPdf(0.0, fSigma);					vec3 diffuseSum = texture2D( colorTexture, vUv).rgb * weightSum;					for( int i = 1; i < KERNEL_RADIUS; i ++ ) {						float x = float(i);						float w = gaussianPdf(x, fSigma);						vec2 uvOffset = direction * invSize * x;						vec3 sample1 = texture2D( colorTexture, vUv + uvOffset).rgb;						vec3 sample2 = texture2D( colorTexture, vUv - uvOffset).rgb;						diffuseSum += (sample1 + sample2) * w;						weightSum += 2.0 * w;					}					gl_FragColor = vec4(diffuseSum/weightSum, 1.0);\n				}"
+        });
+    },
+    getCompositeMaterial: function(nMips) {
+        return new THREE.ShaderMaterial({
+            defines: {
+                NUM_MIPS: nMips
+            },
+            uniforms: {
+                blurTexture1: {
+                    value: null
+                },
+                blurTexture2: {
+                    value: null
+                },
+                blurTexture3: {
+                    value: null
+                },
+                blurTexture4: {
+                    value: null
+                },
+                blurTexture5: {
+                    value: null
+                },
+                dirtTexture: {
+                    value: null
+                },
+                bloomStrength: {
+                    value: 1
+                },
+                bloomFactors: {
+                    value: null
+                },
+                bloomTintColors: {
+                    value: null
+                },
+                bloomRadius: {
+                    value: 0
+                }
+            },
+            vertexShader: "varying vec2 vUv;\n				void main() {\n					vUv = uv;\n					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n				}",
+            fragmentShader: "varying vec2 vUv;				uniform sampler2D blurTexture1;				uniform sampler2D blurTexture2;				uniform sampler2D blurTexture3;				uniform sampler2D blurTexture4;				uniform sampler2D blurTexture5;				uniform sampler2D dirtTexture;				uniform float bloomStrength;				uniform float bloomRadius;				uniform float bloomFactors[NUM_MIPS];				uniform vec3 bloomTintColors[NUM_MIPS];								float lerpBloomFactor(const in float factor) { 					float mirrorFactor = 1.2 - factor;					return mix(factor, mirrorFactor, bloomRadius);				}								void main() {					gl_FragColor = bloomStrength * ( lerpBloomFactor(bloomFactors[0]) * vec4(bloomTintColors[0], 1.0) * texture2D(blurTexture1, vUv) + 					 							 lerpBloomFactor(bloomFactors[1]) * vec4(bloomTintColors[1], 1.0) * texture2D(blurTexture2, vUv) + 												 lerpBloomFactor(bloomFactors[2]) * vec4(bloomTintColors[2], 1.0) * texture2D(blurTexture3, vUv) + 												 lerpBloomFactor(bloomFactors[3]) * vec4(bloomTintColors[3], 1.0) * texture2D(blurTexture4, vUv) + 												 lerpBloomFactor(bloomFactors[4]) * vec4(bloomTintColors[4], 1.0) * texture2D(blurTexture5, vUv) );				}"
+        });
+    }
+}), THREE.UnrealBloomPass.BlurDirectionX = new THREE.Vector2(1, 0), THREE.UnrealBloomPass.BlurDirectionY = new THREE.Vector2(0, 1), 
+THREE.OutlinePass = function(resolution, scene, camera, selectedObjects) {
+    this.renderScene = scene, this.renderCamera = camera, this.selectedObjects = void 0 !== selectedObjects ? selectedObjects : [], 
+    this.visibleEdgeColor = new THREE.Color(1, 1, 1), this.hiddenEdgeColor = new THREE.Color(.1, .04, .02), 
+    this.edgeGlow = 0, this.usePatternTexture = !1, this.edgeThickness = 1, this.edgeStrength = 3, 
+    this.downSampleRatio = 2, this.pulsePeriod = 0, THREE.Pass.call(this), this.resolution = void 0 !== resolution ? new THREE.Vector2(resolution.x, resolution.y) : new THREE.Vector2(256, 256);
+    var pars = {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat
+    }, resx = Math.round(this.resolution.x / this.downSampleRatio), resy = Math.round(this.resolution.y / this.downSampleRatio);
+    this.maskBufferMaterial = new THREE.MeshBasicMaterial({
+        color: 16777215
+    }), this.maskBufferMaterial.side = THREE.DoubleSide, this.renderTargetMaskBuffer = new THREE.WebGLRenderTarget(this.resolution.x, this.resolution.y, pars), 
+    this.renderTargetMaskBuffer.texture.generateMipmaps = !1, this.depthMaterial = new THREE.MeshDepthMaterial(), 
+    this.depthMaterial.side = THREE.DoubleSide, this.depthMaterial.depthPacking = THREE.RGBADepthPacking, 
+    this.depthMaterial.blending = THREE.NoBlending, this.prepareMaskMaterial = this.getPrepareMaskMaterial(), 
+    this.prepareMaskMaterial.side = THREE.DoubleSide, this.renderTargetDepthBuffer = new THREE.WebGLRenderTarget(this.resolution.x, this.resolution.y, pars), 
+    this.renderTargetDepthBuffer.texture.generateMipmaps = !1, this.renderTargetMaskDownSampleBuffer = new THREE.WebGLRenderTarget(resx, resy, pars), 
+    this.renderTargetMaskDownSampleBuffer.texture.generateMipmaps = !1, this.renderTargetBlurBuffer1 = new THREE.WebGLRenderTarget(resx, resy, pars), 
+    this.renderTargetBlurBuffer1.texture.generateMipmaps = !1, this.renderTargetBlurBuffer2 = new THREE.WebGLRenderTarget(Math.round(resx / 2), Math.round(resy / 2), pars), 
+    this.renderTargetBlurBuffer2.texture.generateMipmaps = !1, this.edgeDetectionMaterial = this.getEdgeDetectionMaterial(), 
+    this.renderTargetEdgeBuffer1 = new THREE.WebGLRenderTarget(resx, resy, pars), this.renderTargetEdgeBuffer1.texture.generateMipmaps = !1, 
+    this.renderTargetEdgeBuffer2 = new THREE.WebGLRenderTarget(Math.round(resx / 2), Math.round(resy / 2), pars), 
+    this.renderTargetEdgeBuffer2.texture.generateMipmaps = !1;
+    var MAX_EDGE_THICKNESS = 4, MAX_EDGE_GLOW = 4;
+    this.separableBlurMaterial1 = this.getSeperableBlurMaterial(MAX_EDGE_THICKNESS), 
+    this.separableBlurMaterial1.uniforms.texSize.value = new THREE.Vector2(resx, resy), 
+    this.separableBlurMaterial1.uniforms.kernelRadius.value = 1, this.separableBlurMaterial2 = this.getSeperableBlurMaterial(MAX_EDGE_GLOW), 
+    this.separableBlurMaterial2.uniforms.texSize.value = new THREE.Vector2(Math.round(resx / 2), Math.round(resy / 2)), 
+    this.separableBlurMaterial2.uniforms.kernelRadius.value = MAX_EDGE_GLOW, this.overlayMaterial = this.getOverlayMaterial(), 
+    void 0 === THREE.CopyShader && console.error("THREE.OutlinePass relies on THREE.CopyShader");
+    var copyShader = THREE.CopyShader;
+    this.copyUniforms = THREE.UniformsUtils.clone(copyShader.uniforms), this.copyUniforms.opacity.value = 1, 
+    this.materialCopy = new THREE.ShaderMaterial({
+        uniforms: this.copyUniforms,
+        vertexShader: copyShader.vertexShader,
+        fragmentShader: copyShader.fragmentShader,
+        blending: THREE.NoBlending,
+        depthTest: !1,
+        depthWrite: !1,
+        transparent: !0
+    }), this.enabled = !0, this.needsSwap = !1, this.oldClearColor = new THREE.Color(), 
+    this.oldClearAlpha = 1, this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), 
+    this.scene = new THREE.Scene(), this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null), 
+    this.scene.add(this.quad), this.tempPulseColor1 = new THREE.Color(), this.tempPulseColor2 = new THREE.Color(), 
+    this.textureMatrix = new THREE.Matrix4();
+}, THREE.OutlinePass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
+    constructor: THREE.OutlinePass,
+    dispose: function() {
+        this.renderTargetMaskBuffer.dispose(), this.renderTargetDepthBuffer.dispose(), this.renderTargetMaskDownSampleBuffer.dispose(), 
+        this.renderTargetBlurBuffer1.dispose(), this.renderTargetBlurBuffer2.dispose(), 
+        this.renderTargetEdgeBuffer1.dispose(), this.renderTargetEdgeBuffer2.dispose();
+    },
+    setSize: function(width, height) {
+        this.renderTargetMaskBuffer.setSize(width, height);
+        var resx = Math.round(width / this.downSampleRatio), resy = Math.round(height / this.downSampleRatio);
+        this.renderTargetMaskDownSampleBuffer.setSize(resx, resy), this.renderTargetBlurBuffer1.setSize(resx, resy), 
+        this.renderTargetEdgeBuffer1.setSize(resx, resy), this.separableBlurMaterial1.uniforms.texSize.value = new THREE.Vector2(resx, resy), 
+        resx = Math.round(resx / 2), resy = Math.round(resy / 2), this.renderTargetBlurBuffer2.setSize(resx, resy), 
+        this.renderTargetEdgeBuffer2.setSize(resx, resy), this.separableBlurMaterial2.uniforms.texSize.value = new THREE.Vector2(resx, resy);
+    },
+    changeVisibilityOfSelectedObjects: function(bVisible) {
+        for (var gatherSelectedMeshesCallBack = function(object) {
+            object instanceof THREE.Mesh && (object.visible = bVisible);
+        }, i = 0; i < this.selectedObjects.length; i++) {
+            var selectedObject = this.selectedObjects[i];
+            selectedObject.traverse(gatherSelectedMeshesCallBack);
+        }
+    },
+    changeVisibilityOfNonSelectedObjects: function(bVisible) {
+        for (var selectedMeshes = [], gatherSelectedMeshesCallBack = function(object) {
+            object instanceof THREE.Mesh && selectedMeshes.push(object);
+        }, i = 0; i < this.selectedObjects.length; i++) {
+            var selectedObject = this.selectedObjects[i];
+            selectedObject.traverse(gatherSelectedMeshesCallBack);
+        }
+        var VisibilityChangeCallBack = function(object) {
+            if (object instanceof THREE.Mesh) {
+                for (var bFound = !1, i = 0; i < selectedMeshes.length; i++) {
+                    var selectedObjectId = selectedMeshes[i].id;
+                    if (selectedObjectId === object.id) {
+                        bFound = !0;
+                        break;
+                    }
+                }
+                if (!bFound) {
+                    var visibility = object.visible;
+                    bVisible && !object.bVisible || (object.visible = bVisible), object.bVisible = visibility;
+                }
+            }
+        };
+        this.renderScene.traverse(VisibilityChangeCallBack);
+    },
+    updateTextureMatrix: function() {
+        this.textureMatrix.set(.5, 0, 0, .5, 0, .5, 0, .5, 0, 0, .5, .5, 0, 0, 0, 1), this.textureMatrix.multiply(this.renderCamera.projectionMatrix), 
+        this.textureMatrix.multiply(this.renderCamera.matrixWorldInverse);
+    },
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+        if (0 !== this.selectedObjects.length) {
+            this.oldClearColor.copy(renderer.getClearColor()), this.oldClearAlpha = renderer.getClearAlpha();
+            var oldAutoClear = renderer.autoClear;
+            if (renderer.autoClear = !1, maskActive && renderer.context.disable(renderer.context.STENCIL_TEST), 
+            renderer.setClearColor(16777215, 1), this.changeVisibilityOfSelectedObjects(!1), 
+            this.renderScene.overrideMaterial = this.depthMaterial, renderer.render(this.renderScene, this.renderCamera, this.renderTargetDepthBuffer, !0), 
+            this.changeVisibilityOfSelectedObjects(!0), this.updateTextureMatrix(), this.changeVisibilityOfNonSelectedObjects(!1), 
+            this.renderScene.overrideMaterial = this.prepareMaskMaterial, this.prepareMaskMaterial.uniforms.cameraNearFar.value = new THREE.Vector2(this.renderCamera.near, this.renderCamera.far), 
+            this.prepareMaskMaterial.uniforms.depthTexture.value = this.renderTargetDepthBuffer.texture, 
+            this.prepareMaskMaterial.uniforms.textureMatrix.value = this.textureMatrix, renderer.render(this.renderScene, this.renderCamera, this.renderTargetMaskBuffer, !0), 
+            this.renderScene.overrideMaterial = null, this.changeVisibilityOfNonSelectedObjects(!0), 
+            this.quad.material = this.materialCopy, this.copyUniforms.tDiffuse.value = this.renderTargetMaskBuffer.texture, 
+            renderer.render(this.scene, this.camera, this.renderTargetMaskDownSampleBuffer, !0), 
+            this.tempPulseColor1.copy(this.visibleEdgeColor), this.tempPulseColor2.copy(this.hiddenEdgeColor), 
+            this.pulsePeriod > 0) {
+                var scalar = .625 + .75 * Math.cos(.01 * performance.now() / this.pulsePeriod) / 2;
+                this.tempPulseColor1.multiplyScalar(scalar), this.tempPulseColor2.multiplyScalar(scalar);
+            }
+            this.quad.material = this.edgeDetectionMaterial, this.edgeDetectionMaterial.uniforms.maskTexture.value = this.renderTargetMaskDownSampleBuffer.texture, 
+            this.edgeDetectionMaterial.uniforms.texSize.value = new THREE.Vector2(this.renderTargetMaskDownSampleBuffer.width, this.renderTargetMaskDownSampleBuffer.height), 
+            this.edgeDetectionMaterial.uniforms.visibleEdgeColor.value = this.tempPulseColor1, 
+            this.edgeDetectionMaterial.uniforms.hiddenEdgeColor.value = this.tempPulseColor2, 
+            renderer.render(this.scene, this.camera, this.renderTargetEdgeBuffer1, !0), this.quad.material = this.separableBlurMaterial1, 
+            this.separableBlurMaterial1.uniforms.colorTexture.value = this.renderTargetEdgeBuffer1.texture, 
+            this.separableBlurMaterial1.uniforms.direction.value = THREE.OutlinePass.BlurDirectionX, 
+            this.separableBlurMaterial1.uniforms.kernelRadius.value = this.edgeThickness, renderer.render(this.scene, this.camera, this.renderTargetBlurBuffer1, !0), 
+            this.separableBlurMaterial1.uniforms.colorTexture.value = this.renderTargetBlurBuffer1.texture, 
+            this.separableBlurMaterial1.uniforms.direction.value = THREE.OutlinePass.BlurDirectionY, 
+            renderer.render(this.scene, this.camera, this.renderTargetEdgeBuffer1, !0), this.quad.material = this.separableBlurMaterial2, 
+            this.separableBlurMaterial2.uniforms.colorTexture.value = this.renderTargetEdgeBuffer1.texture, 
+            this.separableBlurMaterial2.uniforms.direction.value = THREE.OutlinePass.BlurDirectionX, 
+            renderer.render(this.scene, this.camera, this.renderTargetBlurBuffer2, !0), this.separableBlurMaterial2.uniforms.colorTexture.value = this.renderTargetBlurBuffer2.texture, 
+            this.separableBlurMaterial2.uniforms.direction.value = THREE.OutlinePass.BlurDirectionY, 
+            renderer.render(this.scene, this.camera, this.renderTargetEdgeBuffer2, !0), this.quad.material = this.overlayMaterial, 
+            this.overlayMaterial.uniforms.maskTexture.value = this.renderTargetMaskBuffer.texture, 
+            this.overlayMaterial.uniforms.edgeTexture1.value = this.renderTargetEdgeBuffer1.texture, 
+            this.overlayMaterial.uniforms.edgeTexture2.value = this.renderTargetEdgeBuffer2.texture, 
+            this.overlayMaterial.uniforms.patternTexture.value = this.patternTexture, this.overlayMaterial.uniforms.edgeStrength.value = this.edgeStrength, 
+            this.overlayMaterial.uniforms.edgeGlow.value = this.edgeGlow, this.overlayMaterial.uniforms.usePatternTexture.value = this.usePatternTexture, 
+            maskActive && renderer.context.enable(renderer.context.STENCIL_TEST), renderer.render(this.scene, this.camera, readBuffer, !1), 
+            renderer.setClearColor(this.oldClearColor, this.oldClearAlpha), renderer.autoClear = oldAutoClear;
+        }
+    },
+    getPrepareMaskMaterial: function() {
+        return new THREE.ShaderMaterial({
+            uniforms: {
+                depthTexture: {
+                    value: null
+                },
+                cameraNearFar: {
+                    value: new THREE.Vector2(.5, .5)
+                },
+                textureMatrix: {
+                    value: new THREE.Matrix4()
+                }
+            },
+            vertexShader: "varying vec2 vUv;				varying vec4 projTexCoord;				varying vec4 vPosition;				uniform mat4 textureMatrix;				void main() {					vUv = uv;					vPosition = modelViewMatrix * vec4( position, 1.0 );					vec4 worldPosition = modelMatrix * vec4( position, 1.0 );					projTexCoord = textureMatrix * worldPosition;					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n				}",
+            fragmentShader: "#include <packing>				varying vec2 vUv;				varying vec4 vPosition;				varying vec4 projTexCoord;				uniform sampler2D depthTexture;				uniform vec2 cameraNearFar;								void main() {					float depth = unpackRGBAToDepth(texture2DProj( depthTexture, projTexCoord ));					float viewZ = -perspectiveDepthToViewZ( depth, cameraNearFar.x, cameraNearFar.y );					float depthTest = (-vPosition.z > viewZ) ? 1.0 : 0.0;					gl_FragColor = vec4(0.0, depthTest, 1.0, 1.0);				}"
+        });
+    },
+    getEdgeDetectionMaterial: function() {
+        return new THREE.ShaderMaterial({
+            uniforms: {
+                maskTexture: {
+                    value: null
+                },
+                texSize: {
+                    value: new THREE.Vector2(.5, .5)
+                },
+                visibleEdgeColor: {
+                    value: new THREE.Vector3(1, 1, 1)
+                },
+                hiddenEdgeColor: {
+                    value: new THREE.Vector3(1, 1, 1)
+                }
+            },
+            vertexShader: "varying vec2 vUv;\n				void main() {\n					vUv = uv;\n					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n				}",
+            fragmentShader: "varying vec2 vUv;				uniform sampler2D maskTexture;				uniform vec2 texSize;				uniform vec3 visibleEdgeColor;				uniform vec3 hiddenEdgeColor;								void main() {\n					vec2 invSize = 1.0 / texSize;					vec4 uvOffset = vec4(1.0, 0.0, 0.0, 1.0) * vec4(invSize, invSize);					vec4 c1 = texture2D( maskTexture, vUv + uvOffset.xy);					vec4 c2 = texture2D( maskTexture, vUv - uvOffset.xy);					vec4 c3 = texture2D( maskTexture, vUv + uvOffset.yw);					vec4 c4 = texture2D( maskTexture, vUv - uvOffset.yw);					float diff1 = (c1.r - c2.r)*0.5;					float diff2 = (c3.r - c4.r)*0.5;					float d = length( vec2(diff1, diff2) );					float a1 = min(c1.g, c2.g);					float a2 = min(c3.g, c4.g);					float visibilityFactor = min(a1, a2);					vec3 edgeColor = 1.0 - visibilityFactor > 0.001 ? visibleEdgeColor : hiddenEdgeColor;					gl_FragColor = vec4(edgeColor, 1.0) * vec4(d);				}"
+        });
+    },
+    getSeperableBlurMaterial: function(maxRadius) {
+        return new THREE.ShaderMaterial({
+            defines: {
+                MAX_RADIUS: maxRadius
+            },
+            uniforms: {
+                colorTexture: {
+                    value: null
+                },
+                texSize: {
+                    value: new THREE.Vector2(.5, .5)
+                },
+                direction: {
+                    value: new THREE.Vector2(.5, .5)
+                },
+                kernelRadius: {
+                    value: 1
+                }
+            },
+            vertexShader: "varying vec2 vUv;\n				void main() {\n					vUv = uv;\n					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n				}",
+            fragmentShader: "#include <common>				varying vec2 vUv;				uniform sampler2D colorTexture;				uniform vec2 texSize;				uniform vec2 direction;				uniform float kernelRadius;								float gaussianPdf(in float x, in float sigma) {					return 0.39894 * exp( -0.5 * x * x/( sigma * sigma))/sigma;				}				void main() {					vec2 invSize = 1.0 / texSize;					float weightSum = gaussianPdf(0.0, kernelRadius);					vec3 diffuseSum = texture2D( colorTexture, vUv).rgb * weightSum;					vec2 delta = direction * invSize * kernelRadius/float(MAX_RADIUS);					vec2 uvOffset = delta;					for( int i = 1; i <= MAX_RADIUS; i ++ ) {						float w = gaussianPdf(uvOffset.x, kernelRadius);						vec3 sample1 = texture2D( colorTexture, vUv + uvOffset).rgb;						vec3 sample2 = texture2D( colorTexture, vUv - uvOffset).rgb;						diffuseSum += ((sample1 + sample2) * w);						weightSum += (2.0 * w);						uvOffset += delta;					}					gl_FragColor = vec4(diffuseSum/weightSum, 1.0);				}"
+        });
+    },
+    getOverlayMaterial: function() {
+        return new THREE.ShaderMaterial({
+            uniforms: {
+                maskTexture: {
+                    value: null
+                },
+                edgeTexture1: {
+                    value: null
+                },
+                edgeTexture2: {
+                    value: null
+                },
+                patternTexture: {
+                    value: null
+                },
+                edgeStrength: {
+                    value: 1
+                },
+                edgeGlow: {
+                    value: 1
+                },
+                usePatternTexture: {
+                    value: 0
+                }
+            },
+            vertexShader: "varying vec2 vUv;\n				void main() {\n					vUv = uv;\n					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n				}",
+            fragmentShader: "varying vec2 vUv;				uniform sampler2D maskTexture;				uniform sampler2D edgeTexture1;				uniform sampler2D edgeTexture2;				uniform sampler2D patternTexture;				uniform float edgeStrength;				uniform float edgeGlow;				uniform bool usePatternTexture;								void main() {					vec4 edgeValue1 = texture2D(edgeTexture1, vUv);					vec4 edgeValue2 = texture2D(edgeTexture2, vUv);					vec4 maskColor = texture2D(maskTexture, vUv);					vec4 patternColor = texture2D(patternTexture, 6.0 * vUv);					float visibilityFactor = 1.0 - maskColor.g > 0.0 ? 1.0 : 0.5;					vec4 edgeValue = edgeValue1 + edgeValue2 * edgeGlow;					vec4 finalColor = edgeStrength * maskColor.r * edgeValue;					if(usePatternTexture)						finalColor += + visibilityFactor * (1.0 - maskColor.r) * (1.0 - patternColor.r);					gl_FragColor = finalColor;				}",
+            blending: THREE.AdditiveBlending,
+            depthTest: !1,
+            depthWrite: !1,
+            transparent: !0
+        });
+    }
+}), THREE.OutlinePass.BlurDirectionX = new THREE.Vector2(1, 0), THREE.OutlinePass.BlurDirectionY = new THREE.Vector2(0, 1);
 
 var saveAs = saveAs || function(view) {
     "use strict";
@@ -16437,7 +18341,7 @@ Utils = function() {
     Utils.MIRROR_DEFAULT_CLIP_BIAS = .003, Utils.WATER_DEFAULT_WATER_COLOR = "#001e0f", 
     Utils.WATER_DEFAULT_ALPHA = 1, Utils.CE_BUTTON_POSITIONS = [ "top-right", "bottom-right", "top-left", "bottom-left" ], 
     Utils.CE_BUTTON_TYPES = [ "fullscreen", "reinit" ], Utils.CE_UI_Z_INDEX = 1e3, Utils.ORIENTATIONS = [ "all", "landscape", "portrait" ], 
-    Utils.FADE_DEFAULT_DURATION = 1e3, Utils.toggleFullscreen = function() {
+    Utils.FADE_COLOR = "black", Utils.FADE_DEFAULT_DURATION = 1e3, Utils.toggleFullscreen = function() {
         document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }, Utils.guid = function() {
         var s4;
@@ -16449,6 +18353,8 @@ Utils = function() {
     }, Utils.rgbToHex = function(r, g, b) {
         if (r > 255 || g > 255 || b > 255) throw "Invalid color component";
         return (r << 16 | g << 8 | b).toString(16);
+    }, Utils.degToRadians = function(angle) {
+        return angle * Math.PI / 180;
     }, Utils.getKeyName = function(url, array) {
         return url.replaceAny(array, "").split("/").last();
     }, Utils.encrypt = function(json) {
@@ -16457,16 +18363,33 @@ Utils = function() {
     }, Utils.decrypt = function(s) {
         return JSON.parse(window.atob(s));
     }, Utils.saveFile = function(content, fileName, format) {
-        var blob, e, isFileSaverSupported, json;
-        null == format && (format = "application/json");
+        var blob, json;
+        return null == format && (format = "application/json"), Utils._ensureBlobPresence(), 
+        json = JSON.stringify(content, null, 2), blob = new Blob([ json ], {
+            type: format + ";charset=utf-8"
+        }), saveAs(blob, fileName);
+    }, Utils.saveScreenshot = function(engine, fileName) {
+        var content;
+        return null == fileName && (fileName = "screenshot.png"), Utils._ensureBlobPresence(), 
+        content = engine.getScreenshot(), saveAs(Utils.base64ToBlob(content), fileName);
+    }, Utils._ensureBlobPresence = function() {
+        var e, isFileSaverSupported;
         try {
-            isFileSaverSupported = !!new Blob();
+            return isFileSaverSupported = !!new Blob();
         } catch (error) {
             throw e = error, "FileSaver not supported";
         }
-        return json = JSON.stringify(content, null, 2), blob = new Blob([ json ], {
-            type: format + ";charset=utf-8"
-        }), saveAs(blob, fileName);
+    }, Utils.base64ToBlob = function(b64Data, contentType, sliceSize) {
+        var blob, byteArray, byteArrays, byteCharacters, byteNumbers, i, offset, slice;
+        for (contentType = contentType || "", sliceSize = sliceSize || 512, byteCharacters = atob(b64Data), 
+        byteArrays = [], offset = 0; offset < byteCharacters.length; ) {
+            for (slice = byteCharacters.slice(offset, offset + sliceSize), byteNumbers = new Array(slice.length), 
+            i = 0; i < slice.length; ) byteNumbers[i] = slice.charCodeAt(i), i++;
+            byteArray = new Uint8Array(byteNumbers), byteArrays.push(byteArray), offset += sliceSize;
+        }
+        return blob = new Blob(byteArrays, {
+            type: contentType
+        });
     }, Utils.addCEButton = function(options) {
         var img, posArray;
         if (null == options && (options = {}), null == options.size && (options.size = "32px"), 
@@ -16545,13 +18468,45 @@ Utils = function() {
         existingStyle = document.head.querySelector(".ce-fader-style"), null != existingStyle && document.head.removeChild(existingStyle)), 
         div = document.createElement("div"), div.setAttribute("class", "ce-fader"), options.clickThrough && (pointerEvents = "  pointer-events: none;"), 
         style = document.createElement("style"), style.setAttribute("class", "ce-fader-style"), 
-        style.setAttribute("type", "text/css"), style.setAttribute("media", "all"), style.innerHTML = ".ce-fader { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: black; z-index: " + (Utils.CE_UI_Z_INDEX - 1) + "; " + pointerEvents + " -webkit-animation: fade-animation " + options.duration + "s; /* Safari, Chrome and Opera > 12.1 */ -moz-animation: fade-animation " + options.duration + "s; /* Firefox < 16 */ -ms-animation: fade-animation " + options.duration + "s; /* Internet Explorer */ -o-animation: fade-animation " + options.duration + "s; /* Opera < 12.1 */ animation: fade-animation " + options.duration + "s; } @keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Firefox < 16 */ @-moz-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Safari, Chrome and Opera > 12.1 */ @-webkit-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Internet Explorer */ @-ms-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Opera < 12.1 */ @-o-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } }", 
+        style.setAttribute("type", "text/css"), style.setAttribute("media", "all"), style.innerHTML = ".ce-fader { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: " + Utils.FADE_COLOR + "; z-index: " + (Utils.CE_UI_Z_INDEX - 1) + "; " + pointerEvents + " -webkit-animation: fade-animation " + options.duration + "s; /* Safari, Chrome and Opera > 12.1 */ -moz-animation: fade-animation " + options.duration + "s; /* Firefox < 16 */ -ms-animation: fade-animation " + options.duration + "s; /* Internet Explorer */ -o-animation: fade-animation " + options.duration + "s; /* Opera < 12.1 */ animation: fade-animation " + options.duration + "s; } @keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Firefox < 16 */ @-moz-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Safari, Chrome and Opera > 12.1 */ @-webkit-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Internet Explorer */ @-ms-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Opera < 12.1 */ @-o-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } }", 
         document.head.appendChild(style), document.body.appendChild(div), 0 === options.opacityTo && (animationEvent = whichAnimationEvent(), 
         animationEvent && div.addEventListener(animationEvent, function() {
             document.body.removeChild(div), document.head.removeChild(style);
         })), !0;
     }, Utils;
 }(), exports.Utils = Utils;
+
+var VideoRecorderManager;
+
+VideoRecorderManager = function() {
+    function VideoRecorderManager() {}
+    var instance;
+    return instance = null, Singleton.VideoRecorderManager = function() {
+        function VideoRecorderManager() {
+            this.recording = !1;
+        }
+        return VideoRecorderManager.prototype.capture = function(domElement) {
+            return this.recording !== !1 ? this.recorder.capture(domElement) : void 0;
+        }, VideoRecorderManager.prototype.start = function() {
+            return null == this.recorder && (this.recorder = new CCapture(Config.get().recorder)), 
+            this.recorder.start(), this.recording = !0;
+        }, VideoRecorderManager.prototype.stop = function() {
+            return this.recorder.stop(), this.recording = !1;
+        }, VideoRecorderManager.prototype.save = function() {
+            return this.recorder.save();
+        }, VideoRecorderManager;
+    }(), VideoRecorderManager.get = function() {
+        return null != instance ? instance : instance = new Singleton.VideoRecorderManager();
+    }, VideoRecorderManager.start = function() {
+        return this.get().start();
+    }, VideoRecorderManager.stop = function() {
+        return this.get().stop();
+    }, VideoRecorderManager.save = function() {
+        return this.get().save();
+    }, VideoRecorderManager.capture = function(domElement) {
+        return this.get().capture(domElement);
+    }, VideoRecorderManager;
+}();
 
 var VirtualController;
 
@@ -16749,6 +18704,8 @@ BaseModel = function() {
         return this.mesh.traverse(function(object) {
             return object.visible = value;
         }), this.visible = value;
+    }, BaseModel.prototype.isVisible = function() {
+        return this.visible;
     }, BaseModel.prototype.attachToBone = function(boneName, mesh) {
         var added;
         return added = !1, this.mesh instanceof THREE.SkinnedMesh ? this.mesh.traverse(function(object) {
@@ -16975,8 +18932,16 @@ Config = function() {
         Config.prototype.antialias = !0, Config.prototype.anaglyph = !1, Config.prototype.stereoVR = !1, 
         Config.prototype.resize = !1, Config.prototype.width = 1280, Config.prototype.height = 1024, 
         Config.prototype.soundEnabled = !1, Config.prototype.debug = !1, Config.prototype.preventDefaultMouseEvents = !0, 
-        Config.prototype.transparentBackground = !1, Config.prototype.sortObjects = !0, 
-        Config.prototype.fillWindow = function() {
+        Config.prototype.transparentBackground = !1, Config.prototype.logarithmicDepthBuffer = !0, 
+        Config.prototype.recorder = {
+            verbose: !1,
+            display: !0,
+            framerate: 60,
+            quality: 100,
+            format: "webm",
+            frameLimit: 0,
+            autoSaveTime: 0
+        }, Config.prototype.sortObjects = !0, Config.prototype.fillWindow = function() {
             return this.resize = !0, this.width = window.innerWidth, this.height = window.innerHeight;
         }, Config.prototype.toggleAnaglyph = function() {
             return this.anaglyph = !this.anaglyph;
@@ -17019,6 +18984,10 @@ Helper = function() {
         var args, fn, time;
         return fn = arguments[0], time = arguments[1], args = 3 <= arguments.length ? slice.call(arguments, 2) : [], 
         setTimeout.apply(null, [ fn, time ].concat(slice.call(args)));
+    }, Helper.interval = function() {
+        var args, fn, time;
+        return fn = arguments[0], time = arguments[1], args = 3 <= arguments.length ? slice.call(arguments, 2) : [], 
+        setInterval.apply(null, [ fn, time ].concat(slice.call(args)));
     }, Helper.toVector3 = function(json) {
         return new THREE.Vector3(json.x, json.y, json.z);
     }, Helper.shallowClone = function(json) {
@@ -17029,6 +18998,37 @@ Helper = function() {
     }, Helper.distanceTo = function(v1, v2) {
         var dx, dy, dz;
         return dx = v1.x - v2.x, dy = v1.y - v2.y, dz = v1.z - v2.z, Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }, Helper.moveTowards = function(speed, tpf, src, dest) {
+        var direction, distance, end, start;
+        return start = {
+            x: src.x,
+            y: src.y,
+            z: src.z
+        }, end = {
+            x: dest.x,
+            y: dest.y,
+            z: dest.z
+        }, distance = Helper.distanceTo(start, end), direction = new THREE.Vector3(end.x - start.x, end.y - start.y, end.z - start.z).normalize(), 
+        src.x += direction.x * speed * tpf, src.y += direction.y * speed * tpf, src.z += direction.z * speed * tpf, 
+        Helper.distanceTo(start, src) >= distance && (src.x = end.x, src.y = end.y, src.z = end.z), 
+        src;
+    }, Helper.tendToZero = function(n, amount) {
+        return 0 === n ? n : (n > 0 ? (n -= amount, 0 > n && (n = 0)) : (n += amount, n > 0 && (n = 0)), 
+        n);
+    }, Helper.tendTo = function(n, amount, target) {
+        return n === target ? n : (n > target ? (n -= amount, target > n && (n = target)) : (n += amount, 
+        n > target && (n = target)), n);
+    }, Helper.addWithMinMax = function(n, amount, min, max) {
+        return n += amount, n > max && (n = max), min > n && (n = min), n;
+    }, Helper.screenshot = function(targetEngine) {
+        var eng;
+        if (null != targetEngine) eng = targetEngine; else {
+            if ("undefined" == typeof engine || null === engine) throw "no engine found";
+            eng = engine;
+        }
+        return eng.screenshot(), setTimeout(function() {
+            return Utils.saveScreenshot(eng);
+        }, 1e3);
     }, Helper.camera = function(options) {
         var config;
         return null == options && (options = {}), config = Config.get(), null == options.view_angle && (options.view_angle = Utils.CAMERA_DEFAULT_VIEW_ANGLE), 
@@ -17051,12 +19051,29 @@ Helper = function() {
         return null == options && (options = {}), this.light(options);
     }, Helper.ambientLight = function(options) {
         return null == options && (options = {}), null == options.color && (options.color = Utils.AMBIENT_LIGHT_DEFAULT_COLOR), 
-        new THREE.AmbientLight(options.color);
+        null == options.intensity && (options.intensity = Utils.POINT_LIGHT_DEFAULT_INTENSITY), 
+        new THREE.AmbientLight(options.color, options.intensity);
     }, Helper.pointLight = function(options) {
         return null == options && (options = {}), null == options.color && (options.color = Utils.POINT_LIGHT_DEFAULT_COLOR), 
         null == options.intensity && (options.intensity = Utils.POINT_LIGHT_DEFAULT_INTENSITY), 
         null == options.distance && (options.distance = Utils.POINT_LIGHT_DEFAULT_DISTANCE), 
         null == options.decay && (options.decay = Utils.POINT_LIGHT_DEFAULT_DECAY), new THREE.PointLight(options.color, options.intensity, options.distance, options.decay);
+    }, Helper.threePointLight = function() {
+        return new THREEx.ThreePointsLighting();
+    }, Helper.sunSetLight = function() {
+        return new THREEx.SunSetLighting();
+    }, Helper.hemiLight = function(options) {
+        var base, base1, base2, base3, base4, base5, hemiLight;
+        return null == options && (options = {}), null == options.skyColor && (options.skyColor = 16777215), 
+        null == options.groundColor && (options.groundColor = 16777215), null == options.intensity && (options.intensity = .6), 
+        null == options.skyColorHSL && (options.skyColorHSL = {}), null == (base = options.skyColorHSL).hue && (base.hue = .6), 
+        null == (base1 = options.skyColorHSL).saturation && (base1.saturation = 1), null == (base2 = options.skyColorHSL).light && (base2.light = .6), 
+        null == options.groundColorHSL && (options.groundColorHSL = {}), null == (base3 = options.groundColorHSL).hue && (base3.hue = .95), 
+        null == (base4 = options.groundColorHSL).saturation && (base4.saturation = 1), null == (base5 = options.groundColorHSL).light && (base5.light = .75), 
+        hemiLight = new THREE.HemisphereLight(options.skyColor, options.groundColor, options.intensity), 
+        hemiLight.color.setHSL(options.skyColorHSL.hue, options.skyColorHSL.saturation, options.skyColorHSL.light), 
+        hemiLight.groundColor.setHSL(options.groundColorHSL.hue, options.groundColorHSL.saturation, options.groundColorHSL.light), 
+        hemiLight;
     }, Helper.cube = function(options) {
         var box, mat;
         return null == options && (options = {}), null == options.size && (options.size = 1), 
@@ -17065,7 +19082,7 @@ Helper = function() {
             map: TextureManager.get().items[options.map],
             transparent: !0,
             side: THREE.DoubleSide
-        }) : new THREE[options.material]({
+        }) : "MeshNormalMaterial" === options.material ? new THREE[options.material]() : new THREE[options.material]({
             color: options.color
         }), new THREE.Mesh(box, mat);
     }, Helper.model = function(options) {
@@ -17154,6 +19171,7 @@ Helper = function() {
         return itemMaterial = this.sampleShaderMaterial(), mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), itemMaterial), 
         mesh.shaderSrc = itemMaterial, mesh;
     }, Helper.orbitControls = function(engine) {
+        if (!(engine instanceof Engine3D)) throw "not an instance of Engine3D";
         return new THREE.OrbitControls(engine.camera, engine.renderer.domElement);
     }, Helper.fog = function(options) {
         return null == options && (options = {}), null == options.color && (options.color = 0), 
@@ -17321,15 +19339,66 @@ Helper = function() {
         }), nm.emit({
             type: "reload"
         });
-    }, Helper.tendToZero = function(n, amount) {
-        return 0 === n ? n : (n > 0 ? (n -= amount, 0 > n && (n = 0)) : (n += amount, n > 0 && (n = 0)), 
-        n);
-    }, Helper.addWithMinMax = function(n, amount, min, max) {
-        return n += amount, n > max && (n = max), min > n && (n = min), n;
+    }, Helper.desertScene = function(inputScene) {
+        var d, dirLight, fragmentShader, ground, groundGeo, groundMat, hemiLight, scene, sky, skyGeo, skyMat, uniforms, vertexShader;
+        return scene = inputScene instanceof BaseScene ? inputScene.scene : inputScene, 
+        groundGeo = new THREE.PlaneBufferGeometry(1e4, 1e4), groundMat = new THREE.MeshPhongMaterial({
+            color: 16777215,
+            specular: 328965
+        }), groundMat.color.setHSL(.095, 1, .75), ground = new THREE.Mesh(groundGeo, groundMat), 
+        ground.rotation.x = -Math.PI / 2, scene.add(ground), ground.receiveShadow = !0, 
+        scene.fog = new THREE.Fog(16777215, 1, 5e3), scene.fog.color.setHSL(.6, 0, 1), hemiLight = Helper.hemiLight(), 
+        hemiLight.position.set(0, 500, 0), scene.add(hemiLight), dirLight = new THREE.DirectionalLight(16777215, 1), 
+        dirLight.color.setHSL(.1, 1, .95), dirLight.position.set(-1, 1.75, 1), dirLight.position.multiplyScalar(50), 
+        scene.add(dirLight), dirLight.castShadow = !0, dirLight.shadow.mapSize.width = 2048, 
+        dirLight.shadow.mapSize.height = 2048, d = 50, dirLight.shadow.camera.left = -d, 
+        dirLight.shadow.camera.right = d, dirLight.shadow.camera.top = d, dirLight.shadow.camera.bottom = -d, 
+        dirLight.shadow.camera.far = 3500, dirLight.shadow.bias = -1e-4, vertexShader = THREE.ShaderLib.gradient.vertexShader, 
+        fragmentShader = THREE.ShaderLib.gradient.fragmentShader, uniforms = {
+            topColor: {
+                value: new THREE.Color(30719)
+            },
+            bottomColor: {
+                value: new THREE.Color(16777215)
+            },
+            offset: {
+                value: 33
+            },
+            exponent: {
+                value: .6
+            }
+        }, uniforms.topColor.value.copy(hemiLight.color), scene.fog.color.copy(uniforms.bottomColor.value), 
+        skyGeo = new THREE.SphereGeometry(4e3, 32, 15), skyMat = new THREE.ShaderMaterial({
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            uniforms: uniforms,
+            side: THREE.BackSide
+        }), sky = new THREE.Mesh(skyGeo, skyMat), scene.add(sky), [ ground, hemiLight, dirLight, sky ];
+    }, Helper.composer = function(scene, targetEngine) {
+        var composer, effectBloom, effectCopy, effectFXAA, renderModel;
+        return renderModel = new THREE.RenderPass(scene, targetEngine.camera), effectBloom = new THREE.BloomPass(1.3), 
+        effectCopy = new THREE.ShaderPass(THREE.CopyShader), effectFXAA = new THREE.ShaderPass(THREE.FXAAShader), 
+        effectFXAA.uniforms.resolution.value.set(1 / targetEngine.width, 1 / targetEngine.height), 
+        effectCopy.renderToScreen = !0, composer = new THREE.EffectComposer(targetEngine.renderer), 
+        composer.addPass(renderModel), composer.addPass(effectFXAA), composer.addPass(effectBloom), 
+        composer.addPass(effectCopy), composer;
+    }, Helper.filmComposer = function(scene, targetEngine) {
+        var bokehPass, composer, effectCopy, filmPass, renderModel;
+        return renderModel = new THREE.RenderPass(scene, targetEngine.camera), bokehPass = new THREE.BokehPass(scene, targetEngine.camera, {}), 
+        filmPass = new THREE.FilmPass(), filmPass = new THREE.GlitchPass(), effectCopy = new THREE.ShaderPass(THREE.CopyShader), 
+        effectCopy.renderToScreen = !0, composer = new THREE.EffectComposer(targetEngine.renderer), 
+        composer.addPass(renderModel), composer.addPass(filmPass), composer.addPass(effectCopy), 
+        composer;
     }, Helper;
 }(), THREE.ShaderLib.dissolve = {
     vertexShader: [ "varying vec2 vUv;", "uniform float morphTargetInfluences[ 8 ];", "void main() {", "  vUv = uv;", "  vec3 morphed = vec3( 0.0 );", "  morphed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];", "  morphed += ( morphTarget1 - position ) * morphTargetInfluences[ 1 ];", "  morphed += ( morphTarget2 - position ) * morphTargetInfluences[ 2 ];", "  morphed += ( morphTarget3 - position ) * morphTargetInfluences[ 3 ];", "  morphed += ( morphTarget4 - position ) * morphTargetInfluences[ 4 ];", "  morphed += ( morphTarget5 - position ) * morphTargetInfluences[ 5 ];", "  morphed += ( morphTarget6 - position ) * morphTargetInfluences[ 6 ];", "  morphed += ( morphTarget7 - position ) * morphTargetInfluences[ 7 ];", "  morphed += position;", "  vec4 mvPosition;", "  mvPosition = modelViewMatrix * vec4( morphed, 1.0 );", "  gl_Position = projectionMatrix * mvPosition;", "  //vec4 worldPosition = modelMatrix * vec4( morphed, 1.0 );", "}" ].join("\n"),
     fragmentShader: [ "varying vec2 vUv;", "uniform sampler2D texture;", "uniform sampler2D noise;", "uniform float dissolve;", "void main()", "{", "  vec4 color = texture2D( texture, vUv );", "  float n = texture2D( noise, vUv ).x;", "  n = ( n - dissolve ) * 50.0;", "  if (n < 0.0) {", "    discard;", "  }", "  if (n < 1.0) {", "    color.r = 1.0; color.g = 0.5; color.b = 0.0;", "  }", "  gl_FragColor = color;", "}" ].join("\n")
+}, THREE.ShaderLib.gradient = {
+    vertexShader: [ "varying vec3 vWorldPosition;", "void main() {", "  vec4 worldPosition = modelMatrix * vec4( position, 1.0 );", "  vWorldPosition = worldPosition.xyz;", "  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}" ].join("\n"),
+    fragmentShader: [ "uniform vec3 topColor;", "uniform vec3 bottomColor;", "uniform float offset;", "uniform float exponent;", "varying vec3 vWorldPosition;", "void main() {", "  float h = normalize( vWorldPosition + offset ).y;", "  gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );", "}" ].join("\n")
+}, THREE.ShaderLib.sample = {
+    vertexShader: [ "" ].join("\n"),
+    fragmentShader: [ "" ].join("\n")
 };
 
 var PoolManager;
@@ -17341,16 +19410,26 @@ PoolManager = function() {
         function PoolManager() {}
         return PoolManager.prototype.validEvents = [ "spawn", "release" ], PoolManager.prototype.items = {}, 
         PoolManager.prototype.itemsInUse = {}, PoolManager.prototype.spawnEvents = {}, PoolManager.prototype.releaseEvents = {}, 
-        PoolManager.prototype.spawn = function(type) {
+        PoolManager.prototype.spawn = function(type, options) {
             var item;
-            return this._validation(type), item = this.items[type].isEmpty() ? new type() : this.items[type].shift(), 
-            this.itemsInUse[type].push(item), null != this.spawnEvents[type] && this.spawnEvents[type](item), 
+            return null == options && (options = {}), this._validation(type), item = this.items[type].isEmpty() ? new type() : this.items[type].shift(), 
+            this.itemsInUse[type].push(item), null != this.spawnEvents[type] && this.spawnEvents[type](item, options), 
             item;
-        }, PoolManager.prototype.release = function(item) {
+        }, PoolManager.prototype.spawnSpecific = function(item, options) {
+            var removed, type;
+            if (null == options && (options = {}), type = item.constructor, this._validation(type), 
+            !this.itemsInUse[type].includes(item)) {
+                if (removed = this.items[type].remove(item), null === removed) throw "item needs to be previously spawned by PoolManager";
+                this.itemsInUse[type].push(item);
+            }
+            return null != this.spawnEvents[type] && this.spawnEvents[type](item, options), 
+            item;
+        }, PoolManager.prototype.release = function(item, options) {
             var type;
-            if ("object" != typeof item || null == item.constructor) throw new Error("item " + item + " can not be released. wront type");
-            if (type = this._validation(item.constructor), -1 === this.itemsInUse[type].indexOf(item)) throw new Error("item (" + type + ") was not spawned from the pool");
-            this.itemsInUse[type].remove(item), this.items[type].push(item), null != this.releaseEvents[type] && this.releaseEvents[type](item);
+            if (null == options && (options = {}), "object" != typeof item || null == item.constructor) throw new Error("item " + item + " can not be released. wront type");
+            if (type = this._validation(item.constructor), -1 === this.itemsInUse[type].indexOf(item) && -1 === this.items[type].indexOf(item)) throw new Error("item (" + type + ") was not spawned from the pool");
+            -1 !== this.itemsInUse[type].indexOf(item) && this.itemsInUse[type].remove(item), 
+            -1 === this.items[type].indexOf(item) && this.items[type].push(item), null != this.releaseEvents[type] && this.releaseEvents[type](item, options);
         }, PoolManager.prototype.on = function(which, type, func) {
             var base;
             if (!("function" == typeof (base = this.validEvents).includes ? base.includes(which) : void 0)) throw new Error(which + " invalid. Allowed: " + this.validEvents.join(", "));
@@ -17378,13 +19457,21 @@ PoolManager = function() {
             toRelease.push(item);
             for (j = 0, len1 = toRelease.length; len1 > j; j++) item = toRelease[j], this.release(item);
             return toRelease;
+        }, PoolManager.prototype.getAll = function() {
+            var allItems, i, item, itemSet, j, key, len, len1, ref, ref1;
+            for (allItems = [], ref = [ this.items, this.itemsInUse ], i = 0, len = ref.length; len > i; i++) {
+                itemSet = ref[i];
+                for (key in itemSet) for (ref1 = itemSet[key], j = 0, len1 = ref1.length; len1 > j; j++) item = ref1[j], 
+                allItems.push(item);
+            }
+            return allItems;
         }, PoolManager;
     }(), PoolManager.get = function() {
         return null != instance ? instance : instance = new Singleton.PoolManager();
-    }, PoolManager.spawn = function(type) {
-        return this.get().spawn(type);
-    }, PoolManager.release = function(item) {
-        return this.get().release(item);
+    }, PoolManager.spawn = function(type, options) {
+        return null == options && (options = {}), this.get().spawn(type, options);
+    }, PoolManager.release = function(item, options) {
+        return null == options && (options = {}), this.get().release(item, options);
     }, PoolManager.on = function(which, type, func) {
         return this.get().on(which, type, func);
     }, PoolManager.onSpawn = function(type, func) {
@@ -17393,7 +19480,77 @@ PoolManager = function() {
         return this.get().on("release", type, func);
     }, PoolManager.releaseAll = function() {
         return this.get().releaseAll();
+    }, PoolManager.items = function(type) {
+        var key, results;
+        if (null != type) return this.get().items[type] || [];
+        results = [];
+        for (key in this.get().items) results = results.concat(this.get().items[key]);
+        return results;
+    }, PoolManager.itemsInUse = function(targetType) {
+        var i, key, len, results, theType, type;
+        if (results = [], null != targetType) for (type = [].concat(targetType), i = 0, 
+        len = type.length; len > i; i++) theType = type[i], results = results.concat(this.get().itemsInUse[theType] || []); else for (key in this.get().itemsInUse) results = results.concat(this.get().itemsInUse[key]);
+        return results;
     }, PoolManager;
+}();
+
+var PolyfillRenderer;
+
+PolyfillRenderer = function() {
+    function PolyfillRenderer() {
+        this.domElement = PolyfillRenderer.makeDomElement();
+    }
+    return PolyfillRenderer.prototype.getPixelRatio = function() {
+        return 1;
+    }, PolyfillRenderer.prototype.setSize = function(width, height) {}, PolyfillRenderer.prototype.render = function(scene, camera) {}, 
+    PolyfillRenderer.makeDomElement = function() {
+        var element;
+        return element = document.createElement("div"), element.innerHTML = "WebGL not supported", 
+        element.style.display = "flex", element.style.position = "absolute", element.style.width = "100%", 
+        element.style.height = "100%", element.style["align-items"] = "center", element.style["text-align"] = "center", 
+        element.style["background-color"] = "black", element.style.color = "white", element.style["z-index"] = 10 * Utils.CE_UI_Z_INDEX, 
+        element;
+    }, PolyfillRenderer;
+}();
+
+var ArtGenerator;
+
+ArtGenerator = function() {
+    function ArtGenerator(options) {
+        this.options = options, this.tm = TextureManager.get(), this.canvas = document.createElement("canvas"), 
+        this.canvas.width = options.width, this.canvas.height = options.height, this.ctx = this.canvas.getContext("2d");
+    }
+    return ArtGenerator.prototype.fromJson = function(json) {
+        var i, item, len, ref, results;
+        for (this.clear(), ref = json.items, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
+        null != item.asset && null != item.asset.key && (item.key = item.asset.key), "image" === item.type && this.drawImage(item), 
+        "text" === item.type && this.drawText(item), "bezier" === item.type ? results.push(this.drawBezier(item)) : results.push(void 0);
+        return results;
+    }, ArtGenerator.prototype.drawBezier = function(options) {
+        return StackOverflow.drawBezier(options, this.ctx);
+    }, ArtGenerator.prototype.drawText = function(options) {
+        if (null == options && (options = {}), null == options.text) throw "options.text missing";
+        return null == options.fillStyle && (options.fillStyle = "white"), null == options.fillLineWidth && (options.fillLineWidth = 1), 
+        null == options.strokeLineWidth && (options.strokeLineWidth = 7), null == options.strokeStyle && (options.strokeStyle = void 0), 
+        null == options.font && (options.font = "40px Helvetica"), null == options.x && (options.x = 0), 
+        null == options.y && (options.y = 0), null == options.angle && (options.angle = 0), 
+        this.ctx.save(), this.ctx.font = options.font, 0 !== options.angle && this.ctx.rotate(options.angle * Math.PI / 180), 
+        null != options.strokeStyle && (this.ctx.miterLimit = 2, this.ctx.lineJoin = "circle", 
+        this.ctx.strokeStyle = options.strokeStyle, this.ctx.lineWidth = options.strokeLineWidth, 
+        this.ctx.strokeText(options.text, options.x, options.y)), this.ctx.lineWidth = options.fillLineWidth, 
+        this.ctx.fillStyle = options.fillStyle, this.ctx.fillText(options.text, options.x, options.y), 
+        this.ctx.restore();
+    }, ArtGenerator.prototype.drawImage = function(options) {
+        var image, x, y;
+        if (null == options && (options = {}), null == options.key) throw "key not found";
+        return null == options.x && (options.x = 0), null == options.y && (options.y = 0), 
+        null == options.angle && (options.angle = 0), x = options.x, y = options.y, image = this.tm.items[options.key].image, 
+        0 !== options.angle && (this.ctx.save(), this.ctx.translate(options.x + image.width / 2, options.y + image.height / 2), 
+        this.ctx.rotate(options.angle * Math.PI / 180), x = -(image.width / 2), y = -(image.height / 2)), 
+        this.ctx.drawImage(image, x, y), 0 !== options.angle ? this.ctx.restore() : void 0;
+    }, ArtGenerator.prototype.clear = function() {
+        return this.ctx.clearRect(0, 0, this.options.width, this.options.height);
+    }, ArtGenerator;
 }();
 
 var BaseText, extend = function(child, parent) {
@@ -17408,8 +19565,8 @@ var BaseText, extend = function(child, parent) {
 BaseText = function(superClass) {
     function BaseText(options) {
         var geom, material;
-        null == options && (options = {}), BaseText.__super__.constructor.call(this), this.canvasW = options.canvasW || 500, 
-        this.canvasH = options.canvasH || 500, this.w = options.w || 4, this.h = options.h || 4, 
+        null == options && (options = {}), BaseText.__super__.constructor.call(this), this.canvasW = options.canvasW || 512, 
+        this.canvasH = options.canvasH || 512, this.w = options.w || 4, this.h = options.h || 4, 
         this.margin = options.margin, this.lineHeight = options.lineHeight, this.align = options.align, 
         this.font = options.font, this.fillStyle = options.fillStyle, this.fillLineWidth = options.fillLineWidth, 
         this.strokeStyle = options.strokeStyle, this.strokeLineWidth = options.strokeLineWidth, 
@@ -17440,237 +19597,6 @@ BaseText = function(superClass) {
         return this.dynamicTexture.context.measureText(s).width;
     }, BaseText;
 }(BaseModel);
-
-var Terrain, extend = function(child, parent) {
-    function ctor() {
-        this.constructor = child;
-    }
-    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
-    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
-    child;
-}, hasProp = {}.hasOwnProperty;
-
-Terrain = function(superClass) {
-    function Terrain(textureUrl, width, height, wSegments, hSegments) {
-        var geom, json, key, mat;
-        1 === arguments.length ? (json = textureUrl, key = Utils.getKeyName(json.texture.destPath, Utils.IMG_URLS), 
-        mat = new THREE.MeshLambertMaterial({
-            map: TextureManager.get().items[key]
-        }), geom = new THREE.PlaneGeometry(json.width, json.height, json.wSegments, json.hSegments)) : (mat = new THREE.MeshLambertMaterial({
-            map: THREE.ImageUtils.loadTexture(textureUrl)
-        }), geom = new THREE.PlaneGeometry(width, height, wSegments, hSegments)), this.mesh = new THREE.Mesh(geom, mat), 
-        this.mesh.rotation.x -= Math.PI / 2, this.raycaster = new THREE.Raycaster();
-    }
-    return extend(Terrain, superClass), Terrain.prototype.getHeightAt = function(position) {
-        var intersects;
-        return this.raycaster.set(new THREE.Vector3(position.x, 1e3, position.z), Helper.down), 
-        intersects = this.raycaster.intersectObject(this.mesh), null != intersects[0] ? intersects[0].point.y : 0;
-    }, Terrain.prototype.applyHeightmap = function(imageData) {
-        var i, k, len, ref, results, vertice;
-        for (i = 0, ref = this.mesh.geometry.vertices, results = [], k = 0, len = ref.length; len > k; k++) vertice = ref[k], 
-        vertice.z = imageData[i], results.push(i++);
-        return results;
-    }, Terrain.heightmap = function(textureUrl, heightmapUrl, width, height, wSegments, hSegments, scale, scene) {
-        return null == scale && (scale = 1), THREE.ImageUtils.loadTexture(heightmapUrl, THREE.UVMapping, function(_this) {
-            return function(hm) {
-                var terrain;
-                return hm.heightData = Terrain.getHeightData(hm.image, scale), null == wSegments && (wSegments = hm.image.width - 1), 
-                null == hSegments && (hSegments = hm.image.height - 1), terrain = new Terrain(textureUrl, width, height, wSegments, hSegments), 
-                terrain.applyHeightmap(hm.heightData), null == scene && (scene = SceneManager.currentScene()), 
-                scene.terrain = terrain, scene.scene.add(terrain.mesh);
-            };
-        }(this));
-    }, Terrain.getHeightData = function(img, scale) {
-        var all, canvas, context, data, i, imgd, j, pix, size;
-        for (null == scale && (scale = 1), canvas = document.createElement("canvas"), canvas.width = img.width, 
-        canvas.height = img.height, context = canvas.getContext("2d"), size = img.width * img.height, 
-        data = new Float32Array(size), context.drawImage(img, 0, 0), i = 0; size > i; ) data[i] = 0, 
-        i++;
-        for (imgd = context.getImageData(0, 0, img.width, img.height), pix = imgd.data, 
-        j = 0, i = 0; i < pix.length; ) all = pix[i] + pix[i + 1] + pix[i + 2], data[j++] = all / (12 * scale), 
-        i += 4;
-        return data;
-    }, Terrain.fromJson = function(assetJson) {
-        var hm, json, k, key, l, len, len1, ref, ref1, terrain;
-        if ("terrain" !== assetJson.type) throw new Error("not a terrain");
-        if (null == assetJson.key) throw new Error("key missing");
-        for (json = SaveObjectManager.get().items[assetJson.key], ref = [ "width", "height", "scale", "texture", "heightmap" ], 
-        k = 0, len = ref.length; len > k; k++) if (key = ref[k], null == json[key]) throw new Error(key + " missing for terrain");
-        for (ref1 = [ "texture", "heightmap" ], l = 0, len1 = ref1.length; len1 > l; l++) if (key = ref1[l], 
-        null == json[key].destPath) throw new Error(key + ".destPath missing for terrain");
-        return key = Utils.getKeyName(json.heightmap.destPath, Utils.IMG_URLS), hm = TextureManager.get().items[key], 
-        hm.heightData = Terrain.getHeightData(hm.image, json.scale), null == json.wSegments && (json.wSegments = hm.image.width - 1), 
-        null == json.hSegments && (json.hSegments = hm.image.height - 1), terrain = new Terrain(json), 
-        terrain.applyHeightmap(hm.heightData), terrain;
-    }, Terrain;
-}(BaseModel);
-
-var Tree, extend = function(child, parent) {
-    function ctor() {
-        this.constructor = child;
-    }
-    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
-    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
-    child;
-}, hasProp = {}.hasOwnProperty;
-
-Tree = function(superClass) {
-    function Tree(material, size, children) {
-        var sizeModifier;
-        null == size && (size = 1), null == children && (children = 5), this.mesh = new THREE.Object3D(), 
-        null == material && (material = Helper.sampleShaderMaterial()), sizeModifier = .65, 
-        this.branchPivots = [], this.mesh = this.createBranch(size, material, children, !1, sizeModifier);
-    }
-    return extend(Tree, superClass), Tree.prototype.createBranch = function(size, material, children, isChild, sizeModifier) {
-        var branch, branchEnd, branchPivot, c, child, endSize, length;
-        if (branchPivot = new THREE.Object3D(), branchEnd = new THREE.Object3D(), this.branchPivots.push(branchPivot), 
-        length = Math.random() * size * 10 + 5 * size, endSize = 0 === children ? 0 : size * sizeModifier, 
-        branch = new THREE.Mesh(new THREE.CylinderGeometry(endSize, size, length, 5, 1, !0), material), 
-        branchPivot.add(branch), branch.add(branchEnd), branch.position.y = length / 2, 
-        branchEnd.position.y = length / 2 - .4 * size, isChild ? (branchPivot.rotation.z += 1.5 * Math.random() - 1.05 * sizeModifier, 
-        branchPivot.rotation.x += 1.5 * Math.random() - 1.05 * sizeModifier) : (branchPivot.rotation.z += .1 * Math.random() - .05, 
-        branchPivot.rotation.x += .1 * Math.random() - .05), children > 0) for (c = 0; children > c; ) child = this.createBranch(size * sizeModifier, material, children - 1, !0, sizeModifier), 
-        branchEnd.add(child), c++;
-        return branchPivot;
-    }, Tree.prototype.wind = function(wind) {
-        var b, i, len, ref, results;
-        for (ref = this.branchPivots, results = [], i = 0, len = ref.length; len > i; i++) b = ref[i], 
-        results.push(b.rotation.z += 5e-4 * Math.cos(wind * Math.random()));
-        return results;
-    }, Tree;
-}(BaseModel);
-
-var SpotLight, extend = function(child, parent) {
-    function ctor() {
-        this.constructor = child;
-    }
-    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
-    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
-    child;
-}, hasProp = {}.hasOwnProperty;
-
-SpotLight = function(superClass) {
-    function SpotLight(x, y, z) {
-        var geometry;
-        geometry = new THREE.CylinderGeometry(.1, 2.5, 5, 64, 40, !0), geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, -geometry.parameters.height / 2, 0)), 
-        geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2)), this.material = new THREEx.VolumetricSpotLightMaterial(), 
-        this.mesh = new THREE.Mesh(geometry, this.material), this.mesh.position.set(x, y, z), 
-        this.mesh.lookAt(new THREE.Vector3(0, 0, 0)), this.setColor("white"), this.material.uniforms.spotPosition.value = this.mesh.position, 
-        this.spotLight = new THREE.SpotLight(), this.spotLight.position.copy(this.mesh.position), 
-        this.spotLight.color = this.mesh.material.uniforms.lightColor.value, this.spotLight.exponent = 30, 
-        this.spotLight.angle = Math.PI / 3, this.spotLight.intensity = 3, this.spotLight.castShadow = !0, 
-        this.spotLight.shadow.camera.near = .01, this.spotLight.shadow.camera.far = 100, 
-        this.spotLight.shadow.camera.fov = 45, this.spotLight.shadow.camera.left = -8, this.spotLight.shadow.camera.right = 8, 
-        this.spotLight.shadow.camera.top = 8, this.spotLight.shadow.camera.bottom = -8, 
-        this.spotLight.shadow.bias = .1, this.spotLight.shadow.darkness = .5, this.spotLight.shadow.mapSize.width = 1024, 
-        this.spotLight.shadow.mapSize.height = 1024, this.direction = new THREE.Vector3(0, 0, 0), 
-        this.lastDir = 0;
-    }
-    return extend(SpotLight, superClass), SpotLight.prototype.lookAt = function(node) {
-        var target;
-        return target = node.position, this.mesh.lookAt(target), this.spotLight.target.position.copy(target);
-    }, SpotLight.prototype.addToScene = function(scene) {
-        return scene.add(this.mesh), scene.add(this.spotLight), scene.add(this.spotLight.target);
-    }, SpotLight.prototype.setColor = function(color) {
-        return this.material.uniforms.lightColor.value.set(color);
-    }, SpotLight;
-}(BaseModel);
-
-var Mirror, extend = function(child, parent) {
-    function ctor() {
-        this.constructor = child;
-    }
-    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
-    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
-    child;
-}, hasProp = {}.hasOwnProperty;
-
-Mirror = function(superClass) {
-    function Mirror(engine, options) {
-        var base, base1, base2, base3, planeGeo;
-        null == options && (options = {}), null == options.width && (options.width = Utils.PLANE_DEFAULT_WIDTH), 
-        null == options.height && (options.height = Utils.PLANE_DEFAULT_HEIGHT), null == options.mirror && (options.mirror = {}), 
-        null == (base = options.mirror).clipBias && (base.clipBias = Utils.MIRROR_DEFAULT_CLIP_BIAS), 
-        null == (base1 = options.mirror).textureWidth && (base1.textureWidth = Utils.MIRROR_DEFAULT_TEXTURE_WIDTH), 
-        null == (base2 = options.mirror).textureHeight && (base2.textureHeight = Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT), 
-        null == (base3 = options.mirror).color && (base3.color = Utils.MIRROR_DEFAULT_COLOR), 
-        planeGeo = new THREE.PlaneBufferGeometry(options.width, options.height), this.mirror = new THREE.Mirror(engine.renderer, engine.camera, options.mirror), 
-        this.mesh = new THREE.Mesh(planeGeo, this.mirror.material), this.mesh.add(this.mirror), 
-        this.mesh.rotateX(-Math.PI / 2);
-    }
-    return extend(Mirror, superClass), Mirror.prototype.tick = function() {
-        return this.mirror.render();
-    }, Mirror;
-}(BaseModel);
-
-var LookAtTimer;
-
-LookAtTimer = function() {
-    function LookAtTimer(from, mesh) {
-        this.mesh = mesh, this.walker = new Walker(from), this.amount = 0, this.enabled = !0;
-    }
-    return LookAtTimer.prototype.tick = function(tpf) {
-        var intersection;
-        if (this.enabled) return intersection = this.walker.fromWorldDirection().intersects(this.mesh).first(), 
-        null != intersection ? (this.amount += tpf, this.amount > 1 && (this.amount = 1)) : (this.amount -= tpf, 
-        this.amount < 0 && (this.amount = 0)), this._transform(tpf);
-    }, LookAtTimer.prototype.isSelected = function() {
-        return 1 === this.amount;
-    }, LookAtTimer.prototype._transform = function(tpf) {
-        return this.mesh.scale.set(1 + this.amount, 1 + this.amount, 1 + this.amount);
-    }, LookAtTimer;
-}();
-
-var LoadingScene, extend = function(child, parent) {
-    function ctor() {
-        this.constructor = child;
-    }
-    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
-    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
-    child;
-}, hasProp = {}.hasOwnProperty;
-
-LoadingScene = function(superClass) {
-    function LoadingScene(urls, hasFinishedLoading) {
-        if (null == hasFinishedLoading && (hasFinishedLoading = void 0), LoadingScene.__super__.constructor.call(this), 
-        !(urls instanceof Array)) throw "urls needs to be an array";
-        this.hasFinishedLoading = hasFinishedLoading, this.preStart(), this.loadAssets(urls);
-    }
-    return extend(LoadingScene, superClass), LoadingScene.prototype.loadAssets = function(assets) {
-        var asset, i, interval, len, url;
-        for (i = 0, len = assets.length; len > i; i++) asset = assets[i], url = "string" == typeof asset ? asset : asset.destPath, 
-        url.endsWithAny(Utils.SAVE_URLS) ? this._loadSaveObject(url) : url.endsWithAny(Utils.JSON_URLS) ? this._loadJsonModel(url) : url.endsWithAny(Utils.IMG_URLS) ? this._loadTexture(url) : url.endsWithAny(Utils.AUDIO_URLS) ? this._loadAudio(url) : console.log("WARNING: " + url + " is not a valid format");
-        return interval = setInterval(function(_this) {
-            return function() {
-                return _this.isLoadingDone() ? (clearInterval(interval), console.ce("Finished loading"), 
-                _this.hasFinishedLoading()) : void 0;
-            };
-        }(this), 100);
-    }, LoadingScene.prototype.preStart = function() {}, LoadingScene.prototype.isLoadingDone = function() {
-        return this.jmm.hasFinishedLoading() && this.tm.hasFinishedLoading() && this.som.hasFinishedLoading() && this.sm.hasFinishedLoading();
-    }, LoadingScene.prototype._loadJsonModel = function(url) {
-        var name;
-        return name = Utils.getKeyName(url, Utils.JSON_URLS), console.ce("Loading model '" + name + "' from '" + url + "'"), 
-        this.jmm.load(name, url);
-    }, LoadingScene.prototype._loadTexture = function(url) {
-        var name;
-        return name = Utils.getKeyName(url, Utils.IMG_URLS), console.ce("Loading texture '" + name + "' from '" + url + "'"), 
-        this.tm.load(name, url);
-    }, LoadingScene.prototype._loadSaveObject = function(url) {
-        var name;
-        return name = Utils.getKeyName(url, Utils.SAVE_URLS), console.ce("Loading save object '" + name + "' from '" + url + "'"), 
-        this.som.load(name, url);
-    }, LoadingScene.prototype._loadAudio = function(url) {
-        var name;
-        return name = Utils.getKeyName(url, Utils.AUDIO_URLS), console.ce("Loading audio '" + name + "' from '" + url + "'"), 
-        this.sm.load(name, url);
-    }, LoadingScene.prototype.init = function() {}, LoadingScene.prototype.tick = function(tpf) {}, 
-    LoadingScene.prototype.doMouseEvent = function(event, raycaster) {}, LoadingScene.prototype.doKeyboardEvent = function(event) {}, 
-    LoadingScene.prototype.hasFinishedLoading = function() {
-        if (null != this.hasFinishedLoading) return this.hasFinishedLoading();
-        throw "not implemented";
-    }, LoadingScene;
-}(BaseScene);
 
 var Cinematic;
 
@@ -17734,6 +19660,8 @@ Cinematic = function() {
           case "cube":
           case "plane":
           case "model":
+          case "threePointLight":
+          case "sunSetLight":
           case "ambientLight":
           case "light":
           case "pointLight":
@@ -17878,45 +19806,215 @@ CinematicScene = function(superClass) {
     }, CinematicScene;
 }(BaseScene);
 
-var ArtGenerator;
-
-ArtGenerator = function() {
-    function ArtGenerator(options) {
-        this.options = options, this.tm = TextureManager.get(), this.canvas = document.createElement("canvas"), 
-        this.canvas.width = options.width, this.canvas.height = options.height, this.ctx = this.canvas.getContext("2d");
+var Bolt, BranchLightning, LightningBolt, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
     }
-    return ArtGenerator.prototype.fromJson = function(json) {
-        var i, item, len, ref, results;
-        for (this.clear(), ref = json.items, results = [], i = 0, len = ref.length; len > i; i++) item = ref[i], 
-        null != item.asset && null != item.asset.key && (item.key = item.asset.key), "image" === item.type && this.drawImage(item), 
-        "text" === item.type && this.drawText(item), "bezier" === item.type ? results.push(this.drawBezier(item)) : results.push(void 0);
-        return results;
-    }, ArtGenerator.prototype.drawBezier = function(options) {
-        return StackOverflow.drawBezier(options, this.ctx);
-    }, ArtGenerator.prototype.drawText = function(options) {
-        if (null == options && (options = {}), null == options.text) throw "options.text missing";
-        return null == options.fillStyle && (options.fillStyle = "white"), null == options.fillLineWidth && (options.fillLineWidth = 1), 
-        null == options.strokeLineWidth && (options.strokeLineWidth = 7), null == options.strokeStyle && (options.strokeStyle = void 0), 
-        null == options.font && (options.font = "40px Helvetica"), null == options.x && (options.x = 0), 
-        null == options.y && (options.y = 0), null == options.angle && (options.angle = 0), 
-        this.ctx.save(), this.ctx.font = options.font, 0 !== options.angle && this.ctx.rotate(options.angle * Math.PI / 180), 
-        null != options.strokeStyle && (this.ctx.miterLimit = 2, this.ctx.lineJoin = "circle", 
-        this.ctx.strokeStyle = options.strokeStyle, this.ctx.lineWidth = options.strokeLineWidth, 
-        this.ctx.strokeText(options.text, options.x, options.y)), this.ctx.lineWidth = options.fillLineWidth, 
-        this.ctx.fillStyle = options.fillStyle, this.ctx.fillText(options.text, options.x, options.y), 
-        this.ctx.restore();
-    }, ArtGenerator.prototype.drawImage = function(options) {
-        var image, x, y;
-        if (null == options && (options = {}), null == options.key) throw "key not found";
-        return null == options.x && (options.x = 0), null == options.y && (options.y = 0), 
-        null == options.angle && (options.angle = 0), x = options.x, y = options.y, image = this.tm.items[options.key].image, 
-        0 !== options.angle && (this.ctx.save(), this.ctx.translate(options.x + image.width / 2, options.y + image.height / 2), 
-        this.ctx.rotate(options.angle * Math.PI / 180), x = -(image.width / 2), y = -(image.height / 2)), 
-        this.ctx.drawImage(image, x, y), 0 !== options.angle ? this.ctx.restore() : void 0;
-    }, ArtGenerator.prototype.clear = function() {
-        return this.ctx.clearRect(0, 0, this.options.width, this.options.height);
-    }, ArtGenerator;
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+Bolt = function(superClass) {
+    function Bolt(src, dest, thickness, color, density, circumference) {
+        var geometry, material, results;
+        null == thickness && (thickness = 1), null == color && (color = 255), null == density && (density = 1), 
+        null == circumference && (circumference = 1), Bolt.__super__.constructor.call(this), 
+        this.src = src, this.dest = dest, this.color = color, this.thickness = thickness, 
+        this.density = density, this.circumference = circumference, material = new THREE.LineBasicMaterial({
+            transparent: !0,
+            color: this.color,
+            linewidth: this.thickness
+        }), geometry = new THREE.Geometry(), this.mesh = new THREE.Line(geometry, material), 
+        results = LightningBolt.createBolt(this.src, this.dest, this.thickness, this.density, this.circumference), 
+        this.setSegments(results);
+    }
+    return extend(Bolt, superClass), Bolt.prototype.strike = function(src, dest) {
+        return null == src && (src = this.src), null == dest && (dest = this.dest), this.src = src, 
+        this.dest = dest, this.setSegments(LightningBolt.createBolt(src, dest, this.thickness, this.density, this.circumference));
+    }, Bolt.prototype.setSegments = function(lines) {
+        var geometry, k, len1, line, vertices;
+        for (geometry = new THREE.Geometry(), vertices = [], k = 0, len1 = lines.length; len1 > k; k++) line = lines[k], 
+        -1 === vertices.indexOf(line.src) && vertices.push(line.src), -1 === vertices.indexOf(line.dest) && vertices.push(line.dest);
+        return geometry.vertices = vertices, geometry.verticesNeedUpdate = !0, this.mesh.geometry = geometry;
+    }, Bolt.prototype.getPointOnBolt = function(percentage) {
+        var dest, pointIndex, rounded, src;
+        return pointIndex = percentage * (this.mesh.geometry.vertices.size() - 1), rounded = Math.round(pointIndex), 
+        parseInt(pointIndex) === rounded ? (0 === rounded && (rounded = 1), src = this.mesh.geometry.vertices[rounded - 1], 
+        dest = this.mesh.geometry.vertices[rounded]) : (rounded === this.mesh.geometry.vertices.size() - 1 && (rounded = this.mesh.geometry.vertices.size() - 2), 
+        src = this.mesh.geometry.vertices[rounded], dest = this.mesh.geometry.vertices[rounded + 1]), 
+        this.getPointInBetweenByPerc(src, dest, .5);
+    }, Bolt.prototype.getPointInBetweenByPerc = function(pointA, pointB, percentage) {
+        var dir, len;
+        return dir = pointB.clone().sub(pointA), len = dir.length(), dir = dir.normalize().multiplyScalar(len * percentage), 
+        pointA.clone().add(dir);
+    }, Bolt.createBolt = function(src, dest, thickness, density, circumference) {
+        var displacement, displacementZ, envelope, i, jaggedness, k, l, len1, length, normal, point, pos, positions, prevDisplacement, prevDisplacementZ, prevPoint, ref, results, scale, sway, tangent, x, y, z;
+        for (results = [], tangent = dest.clone().sub(src.clone()), normal = new THREE.Vector3(tangent.y, -tangent.x, tangent.z).normalize(), 
+        length = Helper.distanceTo(src, dest), positions = [ 0 ], i = k = 0, ref = length / 4 * density; ref >= 0 ? ref > k : k > ref; i = ref >= 0 ? ++k : --k) positions.push(Math.random());
+        for (positions = positions.sort(), sway = 80, jaggedness = 1 / sway / circumference, 
+        prevPoint = src.clone(), prevDisplacement = 0, prevDisplacementZ = 0, i = 0, l = 0, 
+        len1 = positions.length; len1 > l; l++) pos = positions[l], 0 !== i ? (scale = length * jaggedness * (pos - positions[i - 1]), 
+        envelope = pos > .95 ? 20 * (1 - pos) : 1, displacement = Helper.random(-sway, sway) + Math.random(), 
+        displacement -= (displacement - prevDisplacement) * (1 - scale), displacement *= envelope, 
+        displacementZ = Helper.random(-sway, sway) + Math.random(), displacementZ -= (displacementZ - prevDisplacementZ) * (1 - scale), 
+        displacementZ *= envelope, x = src.x + pos * tangent.x + displacement * normal.x, 
+        y = src.y + pos * tangent.y + displacement * normal.y, z = src.z + pos * tangent.z + displacement * normal.z, 
+        z = displacementZ, point = new THREE.Vector3(x, y, z), results.push({
+            src: prevPoint,
+            dest: point
+        }), prevPoint = point, prevDisplacement = displacement, prevDisplacementZ = displacementZ, 
+        i += 1) : i += 1;
+        return results.push({
+            src: prevPoint,
+            dest: dest
+        }), results;
+    }, Bolt;
+}(BaseModel), LightningBolt = function(superClass) {
+    function LightningBolt(src, dest, thickness, color, density, circumference) {
+        null == thickness && (thickness = 1), null == color && (color = 255), null == density && (density = 1), 
+        LightningBolt.__super__.constructor.call(this, src, dest, thickness, color, density, circumference), 
+        this.opacity = 0, this.bolts = [], this.numBranches = 0;
+    }
+    return extend(LightningBolt, superClass), LightningBolt.prototype.addBranch = function(thickness, color, density, circumference) {
+        var newBolt;
+        return this.numBranches += 1, newBolt = new LightningBolt(new THREE.Vector3(), new THREE.Vector3(), thickness, color, density, circumference), 
+        this.bolts.push(newBolt), this.mesh.add(newBolt.mesh), newBolt;
+    }, LightningBolt.prototype._getBranchPoints = function() {
+        var branchPoints, i, k, ref;
+        for (branchPoints = [], i = k = 0, ref = this.numBranches; ref >= 0 ? ref > k : k > ref; i = ref >= 0 ? ++k : --k) branchPoints.push(Math.random());
+        return branchPoints.sort();
+    }, LightningBolt.prototype._getTargetBranchPoint = function(bolt) {
+        var branchPoints;
+        return branchPoints = this._getBranchPoints(), branchPoints[this.bolts.indexOf(bolt)];
+    }, LightningBolt.prototype.getChildBoltStart = function(bolt) {
+        var targetBranchPoint;
+        return targetBranchPoint = this._getTargetBranchPoint(bolt), this.getPointOnBolt(targetBranchPoint);
+    }, LightningBolt.prototype.getChildBoltEnd = function(bolt) {
+        var boltSrc, diff, targetBranchPoint, x, y, z;
+        return targetBranchPoint = this._getTargetBranchPoint(bolt), boltSrc = this.getChildBoltStart(bolt), 
+        diff = new THREE.Vector3(this.dest.x - this.src.x, this.dest.y - this.src.y, this.dest.z - this.src.z), 
+        x = diff.x * (1 - targetBranchPoint) + boltSrc.x, y = diff.y * (1 - targetBranchPoint) + boltSrc.y, 
+        z = diff.z * (1 - targetBranchPoint) + boltSrc.z, new THREE.Vector3(x, y, z);
+    }, LightningBolt.prototype.strike = function(src, dest) {
+        var bolt, boltEnd, boltSrc, k, len1, ref, results1;
+        for (LightningBolt.__super__.strike.call(this, src, dest), ref = this.bolts, results1 = [], 
+        k = 0, len1 = ref.length; len1 > k; k++) bolt = ref[k], boltSrc = this.getChildBoltStart(bolt), 
+        boltEnd = this.getChildBoltEnd(bolt), results1.push(bolt.strike(boltSrc, boltEnd));
+        return results1;
+    }, LightningBolt;
+}(Bolt), BranchLightning = function(superClass) {
+    function BranchLightning(src, dest, thickness, color, density, circumference, addBranches) {
+        BranchLightning.__super__.constructor.call(this, src, dest, thickness, color, density, circumference), 
+        null != addBranches ? addBranches(this) : this.addBranches(this), this.strike();
+    }
+    return extend(BranchLightning, superClass), BranchLightning.prototype.addBranches = function(parentBolt) {
+        var i, j, k, newBolt, results1;
+        for (results1 = [], i = k = 0; 4 > k; i = ++k) newBolt = parentBolt.addBranch(parentBolt.thickness / 2, "yellow", parentBolt.density / 2, parentBolt.circumference), 
+        results1.push(function() {
+            var l, results2;
+            for (results2 = [], j = l = 0; 2 > l; j = ++l) results2.push(newBolt.addBranch(newBolt.thickness / 3, "orange", newBolt.density / 3, newBolt.circumference));
+            return results2;
+        }());
+        return results1;
+    }, BranchLightning;
+}(LightningBolt);
+
+var LoadingScene, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+LoadingScene = function(superClass) {
+    function LoadingScene(urls, hasFinishedLoading) {
+        if (null == hasFinishedLoading && (hasFinishedLoading = void 0), LoadingScene.__super__.constructor.call(this), 
+        !(urls instanceof Array)) throw "urls needs to be an array";
+        this.hasFinishedLoading = hasFinishedLoading, this.preStart(), this.loadAssets(urls);
+    }
+    return extend(LoadingScene, superClass), LoadingScene.prototype.loadAssets = function(assets) {
+        var asset, i, interval, len, url;
+        for (i = 0, len = assets.length; len > i; i++) asset = assets[i], url = "string" == typeof asset ? asset : asset.destPath, 
+        url.endsWithAny(Utils.SAVE_URLS) ? this._loadSaveObject(url) : url.endsWithAny(Utils.JSON_URLS) ? this._loadJsonModel(url) : url.endsWithAny(Utils.IMG_URLS) ? this._loadTexture(url) : url.endsWithAny(Utils.AUDIO_URLS) ? this._loadAudio(url) : console.log("WARNING: " + url + " is not a valid format");
+        return interval = setInterval(function(_this) {
+            return function() {
+                return _this.isLoadingDone() ? (clearInterval(interval), console.ce("Finished loading"), 
+                _this.hasFinishedLoading()) : void 0;
+            };
+        }(this), 100);
+    }, LoadingScene.prototype.preStart = function() {}, LoadingScene.prototype.isLoadingDone = function() {
+        return this.jmm.hasFinishedLoading() && this.tm.hasFinishedLoading() && this.som.hasFinishedLoading() && this.sm.hasFinishedLoading();
+    }, LoadingScene.prototype._loadJsonModel = function(url) {
+        var name;
+        return name = Utils.getKeyName(url, Utils.JSON_URLS), console.ce("Loading model '" + name + "' from '" + url + "'"), 
+        this.jmm.load(name, url);
+    }, LoadingScene.prototype._loadTexture = function(url) {
+        var name;
+        return name = Utils.getKeyName(url, Utils.IMG_URLS), console.ce("Loading texture '" + name + "' from '" + url + "'"), 
+        this.tm.load(name, url);
+    }, LoadingScene.prototype._loadSaveObject = function(url) {
+        var name;
+        return name = Utils.getKeyName(url, Utils.SAVE_URLS), console.ce("Loading save object '" + name + "' from '" + url + "'"), 
+        this.som.load(name, url);
+    }, LoadingScene.prototype._loadAudio = function(url) {
+        var name;
+        return name = Utils.getKeyName(url, Utils.AUDIO_URLS), console.ce("Loading audio '" + name + "' from '" + url + "'"), 
+        this.sm.load(name, url);
+    }, LoadingScene.prototype.init = function() {}, LoadingScene.prototype.tick = function(tpf) {}, 
+    LoadingScene.prototype.doMouseEvent = function(event, raycaster) {}, LoadingScene.prototype.doKeyboardEvent = function(event) {}, 
+    LoadingScene.prototype.hasFinishedLoading = function() {
+        if (null != this.hasFinishedLoading) return this.hasFinishedLoading();
+        throw "not implemented";
+    }, LoadingScene;
+}(BaseScene);
+
+var LookAtTimer;
+
+LookAtTimer = function() {
+    function LookAtTimer(from, mesh) {
+        this.mesh = mesh, this.walker = new Walker(from), this.amount = 0, this.enabled = !0;
+    }
+    return LookAtTimer.prototype.tick = function(tpf) {
+        var intersection;
+        if (this.enabled) return intersection = this.walker.fromWorldDirection().intersects(this.mesh).first(), 
+        null != intersection ? (this.amount += tpf, this.amount > 1 && (this.amount = 1)) : (this.amount -= tpf, 
+        this.amount < 0 && (this.amount = 0)), this._transform(tpf);
+    }, LookAtTimer.prototype.isSelected = function() {
+        return 1 === this.amount;
+    }, LookAtTimer.prototype._transform = function(tpf) {
+        return this.mesh.scale.set(1 + this.amount, 1 + this.amount, 1 + this.amount);
+    }, LookAtTimer;
 }();
+
+var Mirror, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+Mirror = function(superClass) {
+    function Mirror(engine, options) {
+        var base, base1, base2, base3, planeGeo;
+        null == options && (options = {}), null == options.width && (options.width = Utils.PLANE_DEFAULT_WIDTH), 
+        null == options.height && (options.height = Utils.PLANE_DEFAULT_HEIGHT), null == options.mirror && (options.mirror = {}), 
+        null == (base = options.mirror).clipBias && (base.clipBias = Utils.MIRROR_DEFAULT_CLIP_BIAS), 
+        null == (base1 = options.mirror).textureWidth && (base1.textureWidth = Utils.MIRROR_DEFAULT_TEXTURE_WIDTH), 
+        null == (base2 = options.mirror).textureHeight && (base2.textureHeight = Utils.MIRROR_DEFAULT_TEXTURE_HEIGHT), 
+        null == (base3 = options.mirror).color && (base3.color = Utils.MIRROR_DEFAULT_COLOR), 
+        planeGeo = new THREE.PlaneBufferGeometry(options.width, options.height), this.mirror = new THREE.Mirror(engine.renderer, engine.camera, options.mirror), 
+        this.mesh = new THREE.Mesh(planeGeo, this.mirror.material), this.mesh.add(this.mirror), 
+        this.mesh.rotateX(-Math.PI / 2);
+    }
+    return extend(Mirror, superClass), Mirror.prototype.tick = function() {
+        return this.mirror.render();
+    }, Mirror;
+}(BaseModel);
 
 var BaseModifier, FadeInModifier, FadeModifier, NoticeMeModifier, ScaleModifier, ShakeModifier, extend = function(child, parent) {
     function ctor() {
@@ -17994,6 +20092,141 @@ BaseModifier = function() {
         this;
     }, NoticeMeModifier;
 }(BaseModifier);
+
+var SpotLight, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+SpotLight = function(superClass) {
+    function SpotLight(x, y, z) {
+        var geometry;
+        geometry = new THREE.CylinderGeometry(.1, 2.5, 5, 64, 40, !0), geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, -geometry.parameters.height / 2, 0)), 
+        geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2)), this.material = new THREEx.VolumetricSpotLightMaterial(), 
+        this.mesh = new THREE.Mesh(geometry, this.material), this.mesh.position.set(x, y, z), 
+        this.mesh.lookAt(new THREE.Vector3(0, 0, 0)), this.setColor("white"), this.material.uniforms.spotPosition.value = this.mesh.position, 
+        this.spotLight = new THREE.SpotLight(), this.spotLight.position.copy(this.mesh.position), 
+        this.spotLight.color = this.mesh.material.uniforms.lightColor.value, this.spotLight.exponent = 30, 
+        this.spotLight.angle = Math.PI / 3, this.spotLight.intensity = 3, this.spotLight.castShadow = !0, 
+        this.spotLight.shadow.camera.near = .01, this.spotLight.shadow.camera.far = 100, 
+        this.spotLight.shadow.camera.fov = 45, this.spotLight.shadow.camera.left = -8, this.spotLight.shadow.camera.right = 8, 
+        this.spotLight.shadow.camera.top = 8, this.spotLight.shadow.camera.bottom = -8, 
+        this.spotLight.shadow.bias = .1, this.spotLight.shadow.darkness = .5, this.spotLight.shadow.mapSize.width = 1024, 
+        this.spotLight.shadow.mapSize.height = 1024, this.direction = new THREE.Vector3(0, 0, 0), 
+        this.lastDir = 0;
+    }
+    return extend(SpotLight, superClass), SpotLight.prototype.lookAt = function(node) {
+        var target;
+        return target = node.position, this.mesh.lookAt(target), this.spotLight.target.position.copy(target);
+    }, SpotLight.prototype.addToScene = function(scene) {
+        return scene.add(this.mesh), scene.add(this.spotLight), scene.add(this.spotLight.target);
+    }, SpotLight.prototype.setColor = function(color) {
+        return this.material.uniforms.lightColor.value.set(color);
+    }, SpotLight;
+}(BaseModel);
+
+var Terrain, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+Terrain = function(superClass) {
+    function Terrain(textureUrl, width, height, wSegments, hSegments) {
+        var geom, json, key, mat;
+        1 === arguments.length ? (json = textureUrl, key = Utils.getKeyName(json.texture.destPath, Utils.IMG_URLS), 
+        mat = new THREE.MeshLambertMaterial({
+            map: TextureManager.get().items[key]
+        }), geom = new THREE.PlaneGeometry(json.width, json.height, json.wSegments, json.hSegments)) : (mat = new THREE.MeshLambertMaterial({
+            map: THREE.ImageUtils.loadTexture(textureUrl)
+        }), geom = new THREE.PlaneGeometry(width, height, wSegments, hSegments)), this.mesh = new THREE.Mesh(geom, mat), 
+        this.mesh.rotation.x -= Math.PI / 2, this.raycaster = new THREE.Raycaster();
+    }
+    return extend(Terrain, superClass), Terrain.prototype.getHeightAt = function(position) {
+        var intersects;
+        return this.raycaster.set(new THREE.Vector3(position.x, 1e3, position.z), Helper.down), 
+        intersects = this.raycaster.intersectObject(this.mesh), null != intersects[0] ? intersects[0].point.y : 0;
+    }, Terrain.prototype.applyHeightmap = function(imageData) {
+        var i, k, len, ref, results, vertice;
+        for (i = 0, ref = this.mesh.geometry.vertices, results = [], k = 0, len = ref.length; len > k; k++) vertice = ref[k], 
+        vertice.z = imageData[i], results.push(i++);
+        return results;
+    }, Terrain.heightmap = function(textureUrl, heightmapUrl, width, height, wSegments, hSegments, scale, scene) {
+        return null == scale && (scale = 1), THREE.ImageUtils.loadTexture(heightmapUrl, THREE.UVMapping, function(_this) {
+            return function(hm) {
+                var terrain;
+                return hm.heightData = Terrain.getHeightData(hm.image, scale), null == wSegments && (wSegments = hm.image.width - 1), 
+                null == hSegments && (hSegments = hm.image.height - 1), terrain = new Terrain(textureUrl, width, height, wSegments, hSegments), 
+                terrain.applyHeightmap(hm.heightData), null == scene && (scene = SceneManager.currentScene()), 
+                scene.terrain = terrain, scene.scene.add(terrain.mesh);
+            };
+        }(this));
+    }, Terrain.getHeightData = function(img, scale) {
+        var all, canvas, context, data, i, imgd, j, pix, size;
+        for (null == scale && (scale = 1), canvas = document.createElement("canvas"), canvas.width = img.width, 
+        canvas.height = img.height, context = canvas.getContext("2d"), size = img.width * img.height, 
+        data = new Float32Array(size), context.drawImage(img, 0, 0), i = 0; size > i; ) data[i] = 0, 
+        i++;
+        for (imgd = context.getImageData(0, 0, img.width, img.height), pix = imgd.data, 
+        j = 0, i = 0; i < pix.length; ) all = pix[i] + pix[i + 1] + pix[i + 2], data[j++] = all / (12 * scale), 
+        i += 4;
+        return data;
+    }, Terrain.fromJson = function(assetJson) {
+        var hm, json, k, key, l, len, len1, ref, ref1, terrain;
+        if ("terrain" !== assetJson.type) throw new Error("not a terrain");
+        if (null == assetJson.key) throw new Error("key missing");
+        for (json = SaveObjectManager.get().items[assetJson.key], ref = [ "width", "height", "scale", "texture", "heightmap" ], 
+        k = 0, len = ref.length; len > k; k++) if (key = ref[k], null == json[key]) throw new Error(key + " missing for terrain");
+        for (ref1 = [ "texture", "heightmap" ], l = 0, len1 = ref1.length; len1 > l; l++) if (key = ref1[l], 
+        null == json[key].destPath) throw new Error(key + ".destPath missing for terrain");
+        return key = Utils.getKeyName(json.heightmap.destPath, Utils.IMG_URLS), hm = TextureManager.get().items[key], 
+        hm.heightData = Terrain.getHeightData(hm.image, json.scale), null == json.wSegments && (json.wSegments = hm.image.width - 1), 
+        null == json.hSegments && (json.hSegments = hm.image.height - 1), terrain = new Terrain(json), 
+        terrain.applyHeightmap(hm.heightData), terrain;
+    }, Terrain;
+}(BaseModel);
+
+var Tree, extend = function(child, parent) {
+    function ctor() {
+        this.constructor = child;
+    }
+    for (var key in parent) hasProp.call(parent, key) && (child[key] = parent[key]);
+    return ctor.prototype = parent.prototype, child.prototype = new ctor(), child.__super__ = parent.prototype, 
+    child;
+}, hasProp = {}.hasOwnProperty;
+
+Tree = function(superClass) {
+    function Tree(material, size, children) {
+        var sizeModifier;
+        null == size && (size = 1), null == children && (children = 5), this.mesh = new THREE.Object3D(), 
+        null == material && (material = Helper.sampleShaderMaterial()), sizeModifier = .65, 
+        this.branchPivots = [], this.mesh = this.createBranch(size, material, children, !1, sizeModifier);
+    }
+    return extend(Tree, superClass), Tree.prototype.createBranch = function(size, material, children, isChild, sizeModifier) {
+        var branch, branchEnd, branchPivot, c, child, endSize, length;
+        if (branchPivot = new THREE.Object3D(), branchEnd = new THREE.Object3D(), this.branchPivots.push(branchPivot), 
+        length = Math.random() * size * 10 + 5 * size, endSize = 0 === children ? 0 : size * sizeModifier, 
+        branch = new THREE.Mesh(new THREE.CylinderGeometry(endSize, size, length, 5, 1, !0), material), 
+        branchPivot.add(branch), branch.add(branchEnd), branch.position.y = length / 2, 
+        branchEnd.position.y = length / 2 - .4 * size, isChild ? (branchPivot.rotation.z += 1.5 * Math.random() - 1.05 * sizeModifier, 
+        branchPivot.rotation.x += 1.5 * Math.random() - 1.05 * sizeModifier) : (branchPivot.rotation.z += .1 * Math.random() - .05, 
+        branchPivot.rotation.x += .1 * Math.random() - .05), children > 0) for (c = 0; children > c; ) child = this.createBranch(size * sizeModifier, material, children - 1, !0, sizeModifier), 
+        branchEnd.add(child), c++;
+        return branchPivot;
+    }, Tree.prototype.wind = function(wind) {
+        var b, i, len, ref, results;
+        for (ref = this.branchPivots, results = [], i = 0, len = ref.length; len > i; i++) b = ref[i], 
+        results.push(b.rotation.z += 5e-4 * Math.cos(wind * Math.random()));
+        return results;
+    }, Tree;
+}(BaseModel);
 
 var VRControls, extend = function(child, parent) {
     function ctor() {
@@ -18094,14 +20327,15 @@ var Engine3D, bind = function(fn, me) {
 
 Engine3D = function() {
     function Engine3D() {
-        this.implode = bind(this.implode, this), this.render = bind(this.render, this), 
+        this.implode = bind(this.implode, this), this.start = bind(this.start, this), this.render = bind(this.render, this), 
         this.keyboardHandler = bind(this.keyboardHandler, this), this.mouseHandler = bind(this.mouseHandler, this);
-        var camera;
-        this.uptime = 0, this.time = void 0, this.config = Config.get(), this.width = this.config.width, 
-        this.height = this.config.height, this.renderer = new THREE.WebGLRenderer({
+        var camera, renderer;
+        this.uptime = 0, this.time = void 0, this.config = Config.get(), this.webgl = Detector.webgl, 
+        this.width = this.config.width, this.height = this.config.height, this.takeScreenshot = !1, 
+        renderer = this.webgl ? THREE.WebGLRenderer : PolyfillRenderer, this.renderer = new renderer({
             antialias: this.config.antialias,
             alpha: this.config.transparentBackground,
-            logarithmicDepthBuffer: !1
+            logarithmicDepthBuffer: this.config.logarithmicDepthBuffer
         }), this.renderer.sortObjects = this.config.sortObjects, this.renderer.setSize(this.width, this.height), 
         this.appendDom(), this.renderer.domElement.setAttribute("id", "coffee-engine-dom"), 
         camera = Helper.camera({
@@ -18173,11 +20407,33 @@ Engine3D = function() {
     }, Engine3D.prototype.removeScene = function(scene) {
         return this.sceneManager.removeScene(scene);
     }, Engine3D.prototype.render = function() {
+        return console.warn("engine.render() is deprecated. Use engine.start() instead."), 
+        this.start();
+    }, Engine3D.prototype.start = function() {
         var now, tpf;
-        if (!this.stop) return requestAnimationFrame(this.render), this.width = window.innerWidth, 
+        if (!this.stop) return this.frameId = requestAnimationFrame(this.start), this.width = window.innerWidth, 
         this.height = window.innerHeight, now = new Date().getTime(), tpf = (now - (this.time || now)) / 1e3, 
-        this.time = now, this.uptime += tpf, this.sceneManager.tick(tpf), StatsManager.update(this.renderer), 
-        TWEEN.update(), this.config.anaglyph ? this.anaglyphEffect.render(this.sceneManager.currentScene().scene, this.camera) : this.config.stereoVR ? this.stereoEffect.render(this.sceneManager.currentScene().scene, this.camera) : this.renderer.render(this.sceneManager.currentScene().scene, this.camera);
+        this.time = now, this.uptime += tpf, this.sceneManager.tick(tpf), StatsManager.update(this._getActiveRenderer()), 
+        TWEEN.update(), null != this.composer ? (this.renderer.clear(), this.composer.render(tpf)) : this._getActiveRenderer().render(this.sceneManager.currentScene().scene, this.camera), 
+        this._takeScreenshot(), VideoRecorderManager.capture(this.renderer.domElement);
+    }, Engine3D.prototype.enableComposer = function(composer) {
+        return this.renderer.autoClear = !1, this.composer = composer;
+    }, Engine3D.prototype.disableComposer = function() {
+        return this.renderer.autoClear = !0, this.composer = void 0;
+    }, Engine3D.prototype._getActiveRenderer = function() {
+        return this.config.anaglyph ? this.anaglyphEffect : this.config.stereoVR ? this.stereoEffect : this.renderer;
+    }, Engine3D.prototype.screenshot = function() {
+        return this.takeScreenshot = !0;
+    }, Engine3D.prototype.getScreenshot = function(withMeta) {
+        var data;
+        if (null == withMeta && (withMeta = !1), null == this.screenshotData) throw "use engine.screenshot() first";
+        return withMeta ? this.screenshotData : (data = this.screenshotData, data.split(",")[1]);
+    }, Engine3D.prototype._takeScreenshot = function() {
+        return this.takeScreenshot ? (this.takeScreenshot = !1, this.screenshotData = this._getActiveRenderer().domElement.toDataURL()) : void 0;
+    }, Engine3D.prototype.pause = function() {
+        return cancelAnimationFrame(this.frameId), this.frameId = void 0, this.stop = !0;
+    }, Engine3D.prototype.resume = function() {
+        return this.stop = !1, this.render();
     }, Engine3D.prototype.implode = function() {
         return this.stop = !0, this.removeDom();
     }, Engine3D.prototype.unproject = function(x, y) {
@@ -18334,6 +20590,8 @@ Array.prototype.isEmpty = function() {
     }, CyclicArray.prototype.prev = function() {
         return this.index -= 1, this.index < 0 && (this.index = this.items.size() - 1), 
         this.get();
+    }, CyclicArray.prototype.size = function() {
+        return this.items.size();
     }, CyclicArray;
 }(), whichAnimationEvent = function() {
     var animations, el, t;

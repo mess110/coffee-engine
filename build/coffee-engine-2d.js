@@ -460,7 +460,7 @@ Utils = function() {
     Utils.MIRROR_DEFAULT_CLIP_BIAS = .003, Utils.WATER_DEFAULT_WATER_COLOR = "#001e0f", 
     Utils.WATER_DEFAULT_ALPHA = 1, Utils.CE_BUTTON_POSITIONS = [ "top-right", "bottom-right", "top-left", "bottom-left" ], 
     Utils.CE_BUTTON_TYPES = [ "fullscreen", "reinit" ], Utils.CE_UI_Z_INDEX = 1e3, Utils.ORIENTATIONS = [ "all", "landscape", "portrait" ], 
-    Utils.FADE_DEFAULT_DURATION = 1e3, Utils.toggleFullscreen = function() {
+    Utils.FADE_COLOR = "black", Utils.FADE_DEFAULT_DURATION = 1e3, Utils.toggleFullscreen = function() {
         document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }, Utils.guid = function() {
         var s4;
@@ -472,6 +472,8 @@ Utils = function() {
     }, Utils.rgbToHex = function(r, g, b) {
         if (r > 255 || g > 255 || b > 255) throw "Invalid color component";
         return (r << 16 | g << 8 | b).toString(16);
+    }, Utils.degToRadians = function(angle) {
+        return angle * Math.PI / 180;
     }, Utils.getKeyName = function(url, array) {
         return url.replaceAny(array, "").split("/").last();
     }, Utils.encrypt = function(json) {
@@ -480,16 +482,33 @@ Utils = function() {
     }, Utils.decrypt = function(s) {
         return JSON.parse(window.atob(s));
     }, Utils.saveFile = function(content, fileName, format) {
-        var blob, e, isFileSaverSupported, json;
-        null == format && (format = "application/json");
+        var blob, json;
+        return null == format && (format = "application/json"), Utils._ensureBlobPresence(), 
+        json = JSON.stringify(content, null, 2), blob = new Blob([ json ], {
+            type: format + ";charset=utf-8"
+        }), saveAs(blob, fileName);
+    }, Utils.saveScreenshot = function(engine, fileName) {
+        var content;
+        return null == fileName && (fileName = "screenshot.png"), Utils._ensureBlobPresence(), 
+        content = engine.getScreenshot(), saveAs(Utils.base64ToBlob(content), fileName);
+    }, Utils._ensureBlobPresence = function() {
+        var e, isFileSaverSupported;
         try {
-            isFileSaverSupported = !!new Blob();
+            return isFileSaverSupported = !!new Blob();
         } catch (error) {
             throw e = error, "FileSaver not supported";
         }
-        return json = JSON.stringify(content, null, 2), blob = new Blob([ json ], {
-            type: format + ";charset=utf-8"
-        }), saveAs(blob, fileName);
+    }, Utils.base64ToBlob = function(b64Data, contentType, sliceSize) {
+        var blob, byteArray, byteArrays, byteCharacters, byteNumbers, i, offset, slice;
+        for (contentType = contentType || "", sliceSize = sliceSize || 512, byteCharacters = atob(b64Data), 
+        byteArrays = [], offset = 0; offset < byteCharacters.length; ) {
+            for (slice = byteCharacters.slice(offset, offset + sliceSize), byteNumbers = new Array(slice.length), 
+            i = 0; i < slice.length; ) byteNumbers[i] = slice.charCodeAt(i), i++;
+            byteArray = new Uint8Array(byteNumbers), byteArrays.push(byteArray), offset += sliceSize;
+        }
+        return blob = new Blob(byteArrays, {
+            type: contentType
+        });
     }, Utils.addCEButton = function(options) {
         var img, posArray;
         if (null == options && (options = {}), null == options.size && (options.size = "32px"), 
@@ -568,7 +587,7 @@ Utils = function() {
         existingStyle = document.head.querySelector(".ce-fader-style"), null != existingStyle && document.head.removeChild(existingStyle)), 
         div = document.createElement("div"), div.setAttribute("class", "ce-fader"), options.clickThrough && (pointerEvents = "  pointer-events: none;"), 
         style = document.createElement("style"), style.setAttribute("class", "ce-fader-style"), 
-        style.setAttribute("type", "text/css"), style.setAttribute("media", "all"), style.innerHTML = ".ce-fader { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: black; z-index: " + (Utils.CE_UI_Z_INDEX - 1) + "; " + pointerEvents + " -webkit-animation: fade-animation " + options.duration + "s; /* Safari, Chrome and Opera > 12.1 */ -moz-animation: fade-animation " + options.duration + "s; /* Firefox < 16 */ -ms-animation: fade-animation " + options.duration + "s; /* Internet Explorer */ -o-animation: fade-animation " + options.duration + "s; /* Opera < 12.1 */ animation: fade-animation " + options.duration + "s; } @keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Firefox < 16 */ @-moz-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Safari, Chrome and Opera > 12.1 */ @-webkit-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Internet Explorer */ @-ms-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Opera < 12.1 */ @-o-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } }", 
+        style.setAttribute("type", "text/css"), style.setAttribute("media", "all"), style.innerHTML = ".ce-fader { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: " + Utils.FADE_COLOR + "; z-index: " + (Utils.CE_UI_Z_INDEX - 1) + "; " + pointerEvents + " -webkit-animation: fade-animation " + options.duration + "s; /* Safari, Chrome and Opera > 12.1 */ -moz-animation: fade-animation " + options.duration + "s; /* Firefox < 16 */ -ms-animation: fade-animation " + options.duration + "s; /* Internet Explorer */ -o-animation: fade-animation " + options.duration + "s; /* Opera < 12.1 */ animation: fade-animation " + options.duration + "s; } @keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Firefox < 16 */ @-moz-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Safari, Chrome and Opera > 12.1 */ @-webkit-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Internet Explorer */ @-ms-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Opera < 12.1 */ @-o-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } }", 
         document.head.appendChild(style), document.body.appendChild(div), 0 === options.opacityTo && (animationEvent = whichAnimationEvent(), 
         animationEvent && div.addEventListener(animationEvent, function() {
             document.body.removeChild(div), document.head.removeChild(style);
@@ -771,6 +790,8 @@ Array.prototype.isEmpty = function() {
     }, CyclicArray.prototype.prev = function() {
         return this.index -= 1, this.index < 0 && (this.index = this.items.size() - 1), 
         this.get();
+    }, CyclicArray.prototype.size = function() {
+        return this.items.size();
     }, CyclicArray;
 }(), whichAnimationEvent = function() {
     var animations, el, t;
