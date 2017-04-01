@@ -7,9 +7,20 @@ class ModelViewerScene extends BaseScene
 
     @light1 = Helper.ambientLight()
     @scene.add @light1
-    hemiLight = Helper.hemiLight()
-    hemiLight.position.set 0, 500, 0
-    @scene.add hemiLight
+
+    @light1 = Helper.ambientLight()
+    @scene.add @light1
+    # hemiLight = Helper.hemiLight()
+    # hemiLight.position.set 0, 500, 0
+    # @scene.add hemiLight
+
+    bulb = Helper.pointLight(distance: 10)
+    bulb.position.set 0, 0, 0
+    @scene.add bulb
+
+    bulb = Helper.pointLight(distance: 10)
+    bulb.position.set 0, 2, -3
+    @scene.add bulb
 
     dirLight = new (THREE.DirectionalLight)(0xffffff, 1)
     dirLight.color.setHSL 0.1, 1, 0.95
