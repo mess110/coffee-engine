@@ -6,16 +6,21 @@ class VideoRecorderManager
   class Singleton.VideoRecorderManager
 
     constructor: ->
-      @recorder = new CCapture(Config.get().recorder)
+      @recording = false
 
     capture: (domElement) ->
+      return if @recording == false
       @recorder.capture(domElement)
 
     start: ->
+      unless @recorder?
+        @recorder = new CCapture(Config.get().recorder)
       @recorder.start()
+      @recording = true
 
     stop: ->
       @recorder.stop()
+      @recording = false
 
     save: ->
       @recorder.save()

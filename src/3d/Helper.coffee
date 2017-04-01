@@ -430,6 +430,7 @@ class Helper
   # @see https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js
   # @see https://stackoverflow.com/questions/20058579/threejs-disable-orbit-camera-while-using-transform-control
   @orbitControls: (engine) ->
+    throw 'not an instance of Engine3D' unless engine instanceof Engine3D
     new (THREE.OrbitControls)(engine.camera, engine.renderer.domElement)
 
   # Create fog
