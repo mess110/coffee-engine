@@ -6,6 +6,7 @@ app.controller 'MainController', ['$document', '$scope', '$location', '$window',
     { name: 'Model Viewer', href: 'model-viewer' }
     { name: 'Particle Playground', href: 'particle-playground' }
     { name: 'Terrain Generator', href: 'terrain-generator' }
+    { name: 'Heightmap Generator', href: 'heightmap-generator' }
     { name: 'Shader Editor', href: 'shader-editor' }
     { name: 'Graffiti Painter', href: 'graffiti-painter' }
     { name: 'Bezier Helper', href: 'bezier-helper' }

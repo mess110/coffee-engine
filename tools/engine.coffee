@@ -14,6 +14,9 @@ engine.addScene(bezierScene)
 terrainGeneratorScene = new TerrainGeneratorScene()
 engine.addScene(terrainGeneratorScene)
 
+heightmapGeneratorScene = new HeightmapGeneratorScene()
+engine.addScene(heightmapGeneratorScene)
+
 particlePlaygroundScene = new ParticlePlaygroundScene()
 engine.addScene(particlePlaygroundScene)
 

@@ -19,6 +19,7 @@ app.config ['$routeProvider', ($routeProvider) ->
     .when('/model-viewer', templateUrl: 'model-viewer/index.html', controller: 'ModelViewerController')
     .when('/bezier-helper', templateUrl: 'bezier-helper/index.html', controller: 'BezierController')
     .when('/terrain-generator', templateUrl: 'terrain-generator/index.html', controller: 'TerrainGeneratorController')
+    .when('/heightmap-generator', templateUrl: 'heightmap-generator/index.html', controller: 'HeightmapGeneratorController')
     .when('/particle-playground', templateUrl: 'particle-playground/index.html', controller: 'ParticlePlaygroundController')
     .when('/cinematic-editor', templateUrl: 'cinematic-editor/index.html', controller: 'CinematicEditorController')
     .when('/shader-editor', templateUrl: 'shader-editor/index.html', controller: 'ShaderEditorController')
