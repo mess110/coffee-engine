@@ -1,98 +1,10 @@
 {
-  "group": {
-    "asset": {
+  "textures": [
+    {
       "libPath": "workspace/lib/textures/star.png",
       "destPath": "assets/star.png",
       "type": "texture"
-    },
-    "maxAge": 3,
-    "colorize": true,
-    "hasPerspective": true,
-    "blending": 2,
-    "transparent": true,
-    "alphaTest": 0.5,
-    "fixedTimeStep": 0.016,
-    "fog": true
-  },
-  "emitter": {
-    "type": "cube",
-    "position": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "positionSpread": {
-      "x": 0.5,
-      "y": 0,
-      "z": 0.5
-    },
-    "acceleration": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "accelerationSpread": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "velocity": {
-      "x": 0,
-      "y": 0.54,
-      "z": 0
-    },
-    "velocitySpread": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "radius": 10,
-    "radiusScale": {
-      "x": 1,
-      "y": 1,
-      "z": 1
-    },
-    "speed": 0,
-    "speedSpread": 0,
-    "sizeStart": 3,
-    "sizeStartSpread": 0,
-    "sizeMiddle": 2,
-    "sizeMiddleSpread": 0,
-    "sizeEnd": 1,
-    "sizeEndSpread": 0,
-    "angleStart": 0,
-    "angleStartSpread": 0,
-    "angleMiddle": 0,
-    "angleMiddleSpread": 0,
-    "angleEnd": 0,
-    "angleEndSpread": 0,
-    "angleAlignVelocity": false,
-    "colorStart": "#fbff21",
-    "colorStartSpread": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "colorMiddle": "#f2851a",
-    "colorMiddleSpread": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "colorEnd": "#ff0000",
-    "colorEndSpread": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "opacityStart": 1,
-    "opacityStartSpread": 0,
-    "opacityMiddle": 0.5,
-    "opacityMiddleSpread": 0,
-    "opacityEnd": 0,
-    "opacityEndSpread": 0,
-    "particlesPerSecond": 33,
-    "alive": 1,
-    "isStatic": false
-  }
+    }
+  ],
+  "particle": "[\n  {\n    texture: {\n      value: TextureManager.get().items['star'],\n      libPath: '../workspace/lib/textures/star.png'\n    },\n    depthTest: true,\n    depthWrite: false,\n    blending: THREE.AdditiveBlending,\n    emitters: [\n      {\n        type: SPE.distributions.CUBE,\n        particleCount: 500,\n        maxAge: {\n          value: 2,\n          spread: 1\n        },\n        position: {\n           value: new THREE.Vector3(0, 0, 0),\n           spread: new THREE.Vector3(0.5, 0, 0.5)\n        },\n        acceleration: {\n          value: new THREE.Vector3(0, 0.2, 0)\n        },\n        velocity: {\n          value: new THREE.Vector3(0, 0.2, 0)\n        },\n        size: {\n          value: [1, 2, 0.5, 0.2]\n        },\n        color: {\n          value: [new THREE.Color('#DAA520'), new THREE.Color('#FFD700'), new THREE.Color('#DAA520')]\n        },\n        opacity: {\n          value: [0.75, 0.5, 0]\n        }\n      }\n    ]\n  }\n]"
 }

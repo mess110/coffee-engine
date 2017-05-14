@@ -29,14 +29,3 @@ if typeof exports == 'undefined' or exports == null
 #
 # @see Config
 class Singleton
-
-# TODO: move this outside because it is not a hack
-THREE.Object3D::clear = ->
-  children = @children
-  i = children.length - 1
-  while i >= 0
-    child = children[i]
-    child.clear()
-    @remove child
-    i--
-  return

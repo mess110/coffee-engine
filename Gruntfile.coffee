@@ -101,6 +101,8 @@ module.exports = (grunt) ->
     "bower_components/stats.js/src/Stats.js"
     "bower_components/tweenjs/src/Tween.js"
 
+    "src/3d/Hack.js"
+
     "src/shared/SceneManager.js"
     "src/shared/Persist.js"
     "src/shared/Utils.js"

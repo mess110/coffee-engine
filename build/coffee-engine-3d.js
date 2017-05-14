@@ -17900,11 +17900,7 @@ exports = void 0, "undefined" != typeof exports && null !== exports || (exports 
 Singleton = function() {
     function Singleton() {}
     return Singleton;
-}(), THREE.Object3D.prototype.clear = function() {
-    var child, children, i;
-    for (children = this.children, i = children.length - 1; i >= 0; ) child = children[i], 
-    child.clear(), this.remove(child), i--;
-};
+}();
 
 var SceneManager;
 
@@ -20469,7 +20465,11 @@ Engine3D = function() {
     }, Engine3D.prototype.currentScene = function() {
         return this.sceneManager.currentScene();
     }, Engine3D;
-}();
+}(), THREE.Object3D.prototype.clear = function() {
+    var child, children, i;
+    for (children = this.children, i = children.length - 1; i >= 0; ) child = children[i], 
+    child.clear(), this.remove(child), i--;
+};
 
 var CyclicArray, Playlist, isNumeric, whichAnimationEvent;
 

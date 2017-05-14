@@ -16,6 +16,10 @@ class Engine2D
     document.addEventListener "mousemove", @onDocumentMouseEvent, false
     document.addEventListener "keydown", @onDocumentKeyboardEvent, false
     document.addEventListener "keyup", @onDocumentKeyboardEvent, false
+    document.addEventListener "touchstart", @touchHandler, false
+    document.addEventListener "touchmove", @touchHandler, false
+    document.addEventListener "touchend", @touchHandler, false
+    document.addEventListener "touchcancel", @touchHandler, false
 
     @canvas = document.getElementById(@canvasId)
     @canvas.width = width
@@ -48,6 +52,29 @@ class Engine2D
   # @nodoc
   onDocumentKeyboardEvent: (event) =>
       @sceneManager.currentScene().doKeyboardEvent(event)
+
+  # Delegate touches to mouse events
+  touchHandler: (event) ->
+    touches = event.changedTouches
+    first = touches[0]
+    type = ''
+    switch event.type
+      when 'touchstart'
+        type = 'mousedown'
+      when 'touchmove'
+        type = 'mousemove'
+      when 'touchend'
+        type = 'mouseup'
+      else
+        return
+    # initMouseEvent(type, canBubble, cancelable, view, clickCount, 
+    #                screenX, screenY, clientX, clientY, ctrlKey, 
+    #                altKey, shiftKey, metaKey, button, relatedTarget);
+    simulatedEvent = document.createEvent('MouseEvent')
+    simulatedEvent.initMouseEvent type, true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY, false, false, false, false, 0, null
+    first.target.dispatchEvent simulatedEvent
+    event.preventDefault()
+    return
 
   # TODO move this in BaseScene
   # @nodoc

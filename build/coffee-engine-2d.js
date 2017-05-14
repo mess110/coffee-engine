@@ -329,6 +329,14 @@ TWEEN.Tween = function(object) {
     }
 };
 
+var Singleton, exports;
+
+exports = void 0, "undefined" != typeof exports && null !== exports || (exports = {}), 
+Singleton = function() {
+    function Singleton() {}
+    return Singleton;
+}();
+
 var SceneManager;
 
 SceneManager = function() {
@@ -599,9 +607,11 @@ var BaseScene;
 
 BaseScene = function() {
     function BaseScene(engine) {
-        this.engine = engine, this.context = this.engine.context;
+        this.engine = engine, this.context = this.engine.context, this.loaded = !1, this.uptime = 0;
     }
-    return BaseScene.prototype.tick = function(tpf) {
+    return BaseScene.prototype.fullTick = function(tpf) {
+        return this.uptime += tpf, this.tick(tpf);
+    }, BaseScene.prototype.tick = function(tpf) {
         throw "scene.tick not implemented";
     }, BaseScene.prototype.doMouseEvent = function(event) {
         throw "scene.doMouseEvent not implemented";
@@ -648,7 +658,9 @@ Engine2D = function() {
         this.height = height, this.backgroundColor = "#FFFFFF", this.canvasId = canvasId, 
         document.addEventListener("mousedown", this.onDocumentMouseEvent, !1), document.addEventListener("mouseup", this.onDocumentMouseEvent, !1), 
         document.addEventListener("mousemove", this.onDocumentMouseEvent, !1), document.addEventListener("keydown", this.onDocumentKeyboardEvent, !1), 
-        document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), this.canvas = document.getElementById(this.canvasId), 
+        document.addEventListener("keyup", this.onDocumentKeyboardEvent, !1), document.addEventListener("touchstart", this.touchHandler, !1), 
+        document.addEventListener("touchmove", this.touchHandler, !1), document.addEventListener("touchend", this.touchHandler, !1), 
+        document.addEventListener("touchcancel", this.touchHandler, !1), this.canvas = document.getElementById(this.canvasId), 
         this.canvas.width = width, this.canvas.height = height, this.context = this.canvas.getContext("2d"), 
         windowResize && (window.addEventListener("resize", this.resize, !1), this.resize());
     }
@@ -662,6 +674,26 @@ Engine2D = function() {
         return this.sceneManager.currentScene().doMouseEvent(event);
     }, Engine2D.prototype.onDocumentKeyboardEvent = function(event) {
         return this.sceneManager.currentScene().doKeyboardEvent(event);
+    }, Engine2D.prototype.touchHandler = function(event) {
+        var first, simulatedEvent, touches, type;
+        switch (touches = event.changedTouches, first = touches[0], type = "", event.type) {
+          case "touchstart":
+            type = "mousedown";
+            break;
+
+          case "touchmove":
+            type = "mousemove";
+            break;
+
+          case "touchend":
+            type = "mouseup";
+            break;
+
+          default:
+            return;
+        }
+        simulatedEvent = document.createEvent("MouseEvent"), simulatedEvent.initMouseEvent(type, !0, !0, window, 1, first.screenX, first.screenY, first.clientX, first.clientY, !1, !1, !1, !1, 0, null), 
+        first.target.dispatchEvent(simulatedEvent), event.preventDefault();
     }, Engine2D.prototype.clear = function() {
         return this.context.fillStyle = this.backgroundColor, this.context.fillRect(0, 0, this.width, this.height);
     }, Engine2D.prototype.render = function() {
