@@ -33,6 +33,7 @@ class CinematicScene extends BaseScene
   # @nodoc
   # TODO we should reinit this variable
   init: (options) ->
+    @cinematic.init(@scene, options)
 
   @getAssets: (key) ->
     SaveObjectManager.get().items[key].assets

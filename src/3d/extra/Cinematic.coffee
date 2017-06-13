@@ -136,6 +136,10 @@ class Cinematic
         meshes.push item.mesh
     meshes
 
+  init: (scene, options={}) ->
+    # TODO: Might want to reset positions and modified states
+    @addAll(scene)
+
   # tick event
   tick: (tpf) ->
     return if @loaded != true

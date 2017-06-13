@@ -22,6 +22,7 @@ module.exports = (grunt) ->
     "bower_components/threex.keyboardstate/threex.keyboardstate.js"
     "bower_components/threex.volumetricspotlight/threex.volumetricspotlightmaterial.js"
     "bower_components/threex.basiclighting/threex.basiclighting.js"
+    "bower_components/THREE.Terrain/build/THREE.Terrain.min.js"
     "bower_components/ocean/water-material.js"
     "bower_components/ShaderParticleEngine/build/SPE.js"
     "src/vendor/threex.dynamictexture.js"
@@ -204,6 +205,7 @@ module.exports = (grunt) ->
   grunt.registerTask "compile:coffee:watch", ["shell:compile-coffee-watch"]
   grunt.registerTask "compile:coffee", ["shell:compile-coffee"]
   grunt.registerTask "compile:coffee:toolchain", ["shell:compile-coffee-src", "shell:compile-coffee-tools"]
+  grunt.registerTask "compile:coffee:src", ["shell:compile-coffee-src-watch"]
 
   grunt.registerTask "build", ["compile:coffee", "uglify:engine"]
   grunt.registerTask "dev", ["compile:coffee:watch"]

@@ -90,6 +90,7 @@ class LoadingScene extends BaseScene
 
   # @nodoc
   init: ->
+    @preStart()
 
   # @see BaseScene.tick
   tick: (tpf) ->

@@ -40,7 +40,8 @@
     "angular-material": "v1.0.8",
     "threex.basiclighting": "*",
     "simpleheat": "git@github.com:mourner/simpleheat.git#^0.4.0",
-    "ccapture.js": "^1.0.6"
+    "ccapture.js": "^1.0.6",
+    "THREE.Terrain": "^1.4.0"
   },
   "dependencies": {}
 }
