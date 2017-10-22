@@ -114,7 +114,6 @@ class BaseModel
     if options.reverse
       options.timeScale *= -1
 
-    @stopAnimations()
     anim = @animation(options.name)
     anim.setEffectiveTimeScale(options.timeScale)
 
@@ -126,6 +125,7 @@ class BaseModel
         anim.clampWhenFinished = true
         anim.setLoop(THREE.LoopOnce, 0)
 
+    @stopAnimations()
     anim.play()
 
     if options.reverse && options.loop == false
@@ -142,7 +142,8 @@ class BaseModel
   # stops all animations
   stopAnimations: ->
     for animation in @mesh.animations
-      animation.stop()
+      if animation.isRunning()
+        animation.stop()
 
   # checks if an animation is playing
   #
