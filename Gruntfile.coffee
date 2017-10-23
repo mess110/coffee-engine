@@ -135,17 +135,17 @@ module.exports = (grunt) ->
     pkg: grunt.file.readJSON("package.json")
     shell:
       "compile-coffee-watch":
-        command: "coffee --output . -b -c -w ."
+        command: "./node_modules/.bin/coffee --output . -b -c -w ."
       "compile-coffee":
-        command: "coffee --output . -b -c ."
+        command: "./node_modules/.bin/coffee --output . -b -c ."
       "compile-coffee-src-watch":
-        command: "coffee --output src/ -b -c -w src/"
+        command: "./node_modules/.bin/coffee --output src/ -b -c -w src/"
       "compile-coffee-src":
-        command: "coffee --output src/ -b -c src/"
+        command: "./node_modules/.bin/coffee --output src/ -b -c src/"
       "compile-coffee-tools-watch":
-        command: "coffee --output tools/ -b -c -w tools/"
+        command: "./node_modules/.bin/coffee --output tools/ -b -c -w tools/"
       "compile-coffee-tools":
-        command: "coffee --output tools/ -b -c tools/"
+        command: "./node_modules/.bin/coffee --output tools/ -b -c tools/"
       "doc-3d":
         command: "./node_modules/.bin/codo -u -o ./doc/3d/ -r README_3D.md src/3d/ src/shared/"
       "doc-2d":
