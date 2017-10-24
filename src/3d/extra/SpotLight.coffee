@@ -12,8 +12,8 @@ class SpotLight extends BaseModel
   # @param [Number] x - start z position
   # @param [Number] y - start y position
   # @param [Number] z - start x position
-  constructor: (x, y, z)->
-    geometry = new (THREE.CylinderGeometry)(0.1, 2.5, 5, 32 * 2, 40, true)
+  constructor: (x, y, z, r1=0.1, r2=2.5, height=5)->
+    geometry = new (THREE.CylinderGeometry)(r1, r2, height, 32 * 2, 40, true)
     geometry.applyMatrix (new (THREE.Matrix4)).makeTranslation(0, -geometry.parameters.height / 2, 0)
     geometry.applyMatrix (new (THREE.Matrix4)).makeRotationX(-Math.PI / 2)
     @material = new (THREEx.VolumetricSpotLightMaterial)
