@@ -41,7 +41,8 @@
     "threex.basiclighting": "*",
     "simpleheat": "git@github.com:mourner/simpleheat.git#^0.4.0",
     "ccapture.js": "^1.0.6",
-    "THREE.Terrain": "^1.4.0"
+    "THREE.Terrain": "^1.4.0",
+    "ammo.js": "git@github.com:kripken/ammo.js.git#f63e3d4"
   },
   "dependencies": {}
 }

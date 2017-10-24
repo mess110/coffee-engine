@@ -48,6 +48,7 @@ module.exports = (grunt) ->
     "bower_components/threejs/examples/js/postprocessing/UnrealBloomPass.js"
     "bower_components/threejs/examples/js/postprocessing/OutlinePass.js"
 
+    "bower_components/ammo.js/builds/ammo.js"
 
     "bower_components/file-saver/FileSaver.js"
     "bower_components/virtualjoystick.js/virtualjoystick.js"
