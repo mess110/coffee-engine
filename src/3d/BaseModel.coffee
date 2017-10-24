@@ -171,3 +171,5 @@ class BaseModel
     allAnimations = @mesh.animations.map (a) -> a.data.name
     throw "#{animationName} not found. Possible animations are: #{allAnimations}"
 
+  duration: (animationName) ->
+    @animation(animationName)._clip.duration * 1000
