@@ -41,4 +41,3 @@ class Box extends BaseModel
       q = @gameScene.TRANSFORM_AUX.getRotation()
       @mesh.position.set p.x(), p.y(), p.z()
       @mesh.quaternion.set q.x(), q.y(), q.z(), q.w()
-    return

@@ -27,7 +27,6 @@ Ammo().then((Ammo) ->
         'KeyS': 'braking'
         'KeyA': 'left'
         'KeyD': 'right'
-      @syncList = []
       @boxes = []
 
       engine.setClearColor( 0xbfd1e5 )
@@ -74,13 +73,10 @@ Ammo().then((Ammo) ->
       @vehicle = new Vehicle(new (THREE.Vector3)(0, 4, -20), @ZERO_QUATERNION, @)
 
     tick: (tpf) ->
-      i = 0
-      while i < @syncList.length
-        @syncList[i] tpf
-        i++
       for box in @boxes
         box.tick(tpf)
-      # @vehicle.tick(tpf) if @vehicle?
+      @vehicle.tick(tpf) if @vehicle?
+
       @physicsWorld.stepSimulation tpf, 10
 
     doMouseEvent: (event, raycaster) ->
