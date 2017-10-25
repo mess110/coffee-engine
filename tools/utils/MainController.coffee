@@ -22,7 +22,7 @@ app.controller 'MainController', ['$document', '$scope', '$location', '$window',
     )
 
   $scope.setScene = (scene, options = {}) ->
-    eng = EngineHolder.get().engine
+    eng = Hodler.get().engine
     if eng?
       eng.appendDom()
       eng.initScene(scene, options, false)

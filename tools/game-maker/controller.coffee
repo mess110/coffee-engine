@@ -1,5 +1,5 @@
 app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$window', '$routeParams', ($scope, $mdToast, $location, $window, $routeParams) ->
-  EngineHolder.get().engine.removeDom()
+  Hodler.get().engine.removeDom()
 
   $scope.workspace.lastOpenedProject = $routeParams.id
   $scope.saveWorkspace()
@@ -31,7 +31,7 @@ app.controller 'GameMakerController', ['$scope', '$mdToast', '$location', '$wind
 ]
 
 app.controller 'NewGameController', ['$scope', '$mdToast', '$location', ($scope, $mdToast, $location) ->
-  EngineHolder.get().engine.removeDom()
+  Hodler.get().engine.removeDom()
 
   $scope.ui.project.name = 'coffee-engine'
   $scope.json =

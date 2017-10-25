@@ -39,11 +39,18 @@ class TextureManager
       window.TextureManager.get().loadCount += 1
       callback(key)
 
+    item: (key) ->
+      throw new Error("#{key} not found in TextureManager") unless @items[key]?
+      @items[key]
+
   @get: () ->
     instance ?= new Singleton.TextureManager()
 
   @load: (key, url, callback) ->
     @get().load(key, url, callback)
+
+  @item: (key) ->
+    @get().item(key)
 
   @hasFinishedLoading: ->
     @get().hasFinishedLoading()

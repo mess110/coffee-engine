@@ -31,7 +31,7 @@ class ModelViewerScene extends BaseScene
     @scene.fog = Helper.fog(near: 20, far: 90, color: 'white')
     @grid = Helper.grid(size: 200, step: 10, color: 'gray')
     @scene.add @grid
-    @engine = EngineHolder.get().engine
+    @engine = Hodler.get().engine
 
     @engine.camera.position.set 0, 5, 25
     @engine.setClearColor(@scene.fog.color.clone(), 1)

@@ -4,7 +4,11 @@
   "assets": [
     {
       "type": "texture",
-      "destPath": "assets/heightmap-world.png"
+      "destPath": "assets/track00.png"
+    },
+    {
+      "type": "texture",
+      "destPath": "assets/track01.png"
     }
   ],
   "cameras": [],

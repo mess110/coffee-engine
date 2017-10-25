@@ -45,10 +45,10 @@ class PhysicsTerrain extends BaseModel
     @mesh = new (THREE.Mesh)(geometry, groundMaterial)
 
   generateHeight: (width, depth, minHeight, maxHeight) ->
-    hm = TextureManager.get().items['heightmap-world']
+    hm = TextureManager.item('track00')
     data = Terrain.getHeightData(hm.image, 10)
 
-    data = data.map (e) -> console.log(e); e
+    data = data.map (e) -> e
 
     return data
 

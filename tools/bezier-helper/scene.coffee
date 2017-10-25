@@ -3,7 +3,7 @@ class BezierScene extends BaseScene
   init: ->
     engine.setWidthHeight(window.innerWidth, window.innerHeight - 276 - 80)
 
-    @engine = EngineHolder.get().engine
+    @engine = Hodler.get().engine
 
     @light1 = Helper.ambientLight()
     @scene.add @light1

@@ -1,8 +1,8 @@
 config = Config.get()
 config.fillWindow()
 
-EngineHolder.get().engine = new Engine3D()
-engine = EngineHolder.get().engine
+Hodler.get().engine = new Engine3D()
+engine = Hodler.get().engine
 engine.camera.position.set 7.4, 11.8, 10.1
 
 modelViewerScene = new ModelViewerScene()
@@ -26,5 +26,5 @@ engine.addScene(shaderEditorScene)
 graffitiPainterScene = new GraffitiPainterScene()
 engine.addScene(graffitiPainterScene)
 
-EngineHolder.get().engine.removeDom()
+Hodler.get().engine.removeDom()
 engine.start()

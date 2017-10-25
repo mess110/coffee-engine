@@ -27,7 +27,7 @@ app.controller 'HeightmapGeneratorController', ($scope, $interval) ->
   $scope.ui.project.name = 'Heightmap Generator'
   $scope.options = defaultOptions
   $scope.heatCanvas = document.getElementById('heatmap')
-  EngineHolder.get().engine.removeDom()
+  Hodler.get().engine.removeDom()
   $scope.heat = simpleheat('heatmap').draw()
   $scope.heat.gradient($scope.options.gradient)
 

@@ -116,7 +116,7 @@ module.exports = (grunt) ->
 
   extras = [
     "src/shared/SyntaxSugar.js"
-    "src/shared/EngineHolder.js"
+    "src/shared/Hodler.js"
     "bower_components/howler.js/howler.js"
     "bower_components/socket.io-client/dist/socket.io.js"
     "src/vendor/drawBezier.js"

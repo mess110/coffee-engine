@@ -202,7 +202,7 @@ app.controller 'ParticlePlaygroundController', ($scope) ->
     $scope.jsonInput = angular.copy(json).particle
     $scope.refresh(json.particle)
 
-  eng = EngineHolder.get().engine
+  eng = Hodler.get().engine
   if eng?
     eng.appendDom()
     eng.initScene(particlePlaygroundScene, $scope.jsonInput, false)

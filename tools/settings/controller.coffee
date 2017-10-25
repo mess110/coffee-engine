@@ -1,5 +1,5 @@
 app.controller 'SettingsController', ['$scope', ($scope) ->
-  EngineHolder.get().engine.removeDom()
+  Hodler.get().engine.removeDom()
 
   $scope.ui.project.name = 'Settings'
   $scope.ui.updateOutput = "Update means stash/pull/stash pop.\nUse if extremely lazy."
