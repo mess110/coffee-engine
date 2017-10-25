@@ -3,6 +3,8 @@ class GameScene extends BaseScene
   init: (options) ->
     @ZERO_QUATERNION = new (THREE.Quaternion)(0, 0, 0, 1)
 
+    @setCamera(2)
+
     @actions = {}
     @keysActions =
       'KeyW': 'acceleration'
@@ -11,29 +13,12 @@ class GameScene extends BaseScene
       'KeyD': 'right'
     @boxes = []
 
-    # engine.setClearColor( 0xbfd1e5 )
+    Hodler.item('engine').setClearColor( 0xbfd1e5 )
 
-    # Helper.orbitControls(engine)
+    Helper.orbitControls(Hodler.item('engine'))
 
     @initGraphics()
     @physicsWorld = Helper.physicsWorld()
-    @createObjects()
-
-    @setCamera(2)
-
-  initGraphics: ->
-    ambientLight = new (THREE.AmbientLight)(0x404040)
-    @scene.add ambientLight
-
-    dirLight = new (THREE.DirectionalLight)(0xffffff, 1)
-    dirLight.position.set 10, 10, 5
-    @scene.add dirLight
-
-    MaterialManager.load('materialDynamic', new (THREE.MeshPhongMaterial)(color: 0xfca400))
-    MaterialManager.load('materialStatic', new (THREE.MeshPhongMaterial)(color: 0x999999))
-    MaterialManager.load('materialInteractive', new (THREE.MeshPhongMaterial)(color: 0x990000))
-
-  createObjects: ->
     @terrain = new PhysicsTerrain(@physicsWorld)
     @scene.add @terrain.mesh
 
@@ -60,10 +45,24 @@ class GameScene extends BaseScene
       @physicsWorld.addRigidBody box.body
 
     @vehicle = new Vehicle(new (THREE.Vector3)(0, 4, -20), @ZERO_QUATERNION, @physicsWorld)
-    @vehicle.chassis.add(camera2)
+    @vehicle.chassis.add(Hodler.item('camera2'))
     @scene.add @vehicle.chassis
     for wheel in @vehicle.wheels
       @scene.add wheel
+
+  initGraphics: ->
+    ambientLight = new (THREE.AmbientLight)(0x404040)
+    @scene.add ambientLight
+
+    dirLight = new (THREE.DirectionalLight)(0xffffff, 1)
+    dirLight.position.set 10, 10, 5
+    @scene.add dirLight
+
+    MaterialManager.load('materialDynamic', new (THREE.MeshPhongMaterial)(color: 0xfca400))
+    MaterialManager.load('materialStatic', new (THREE.MeshPhongMaterial)(color: 0x999999))
+    MaterialManager.load('materialInteractive', new (THREE.MeshPhongMaterial)(color: 0x990000))
+
+  createObjects: ->
 
   tick: (tpf) ->
     for box in @boxes
@@ -80,10 +79,15 @@ class GameScene extends BaseScene
       e.stopPropagation()
 
     console.log(e.code)
+    if e.type == 'keydown'
+      if (e.code == 'Digit1')
+        @setCamera(1)
+      if (e.code == 'Digit2')
+        @setCamera(2)
 
   setCamera: (id) ->
     switch id
       when 1
-        engine.setCamera(camera)
+        Hodler.item('engine').setCamera(Hodler.item('camera'))
       when 2
-        engine.setCamera(camera2)
+        Hodler.item('engine').setCamera(Hodler.item('camera2'))

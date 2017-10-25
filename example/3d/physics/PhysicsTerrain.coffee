@@ -52,7 +52,6 @@ class PhysicsTerrain extends BaseModel
 
     return data
 
-
   createTerrainShape: ->
     terrainWidthExtents = 100
     terrainDepthExtents = 100
