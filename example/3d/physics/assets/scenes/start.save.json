@@ -1,7 +1,12 @@
 {
   "id": "start",
   "engine": {},
-  "assets": [],
+  "assets": [
+    {
+      "type": "texture",
+      "destPath": "assets/heightmap-world.png"
+    }
+  ],
   "cameras": [],
   "items": [],
   "scripts": []

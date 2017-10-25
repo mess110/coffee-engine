@@ -49,6 +49,10 @@ class Utils
   @FADE_COLOR = 'black'
   @FADE_DEFAULT_DURATION = 1000
 
+  @PHYSICS = {
+    DISABLE_DEACTIVATION: 4
+  }
+
   # Requires a user action like pressing a button. Does not work if placed in
   # document ready or something similar.
   #

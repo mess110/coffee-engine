@@ -16,7 +16,7 @@ class MaterialManager
       @
 
     item: (key) ->
-      throw new Error("#{key} not found in MaterialManager")
+      throw new Error("#{key} not found in MaterialManager") unless @items[key]?
       @items[key]
 
   @get: () ->

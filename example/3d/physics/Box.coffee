@@ -1,10 +1,11 @@
 class Box extends BaseModel
-  constructor: (pos, quat, w, l, h, mass, friction, gameScene) ->
+  constructor: (pos, quat, w, l, h, mass, friction) ->
     super()
 
-    @gameScene = gameScene
+    @TRANSFORM_AUX = new (Ammo.btTransform)
 
-    material = if mass > 0 then @gameScene.materialDynamic else @gameScene.materialStatic
+    matKey = if mass > 0 then 'materialDynamic' else 'materialStatic'
+    material = MaterialManager.item(matKey)
     shape = new (THREE.BoxGeometry)(w, l, h, 1, 1, 1)
     geometry = new (Ammo.btBoxShape)(new (Ammo.btVector3)(w * 0.5, l * 0.5, h * 0.5))
 
@@ -12,10 +13,11 @@ class Box extends BaseModel
       mass = 0
     if !friction
       friction = 1
+
     @mesh = new (THREE.Mesh)(shape, material)
     @mesh.position.copy pos
     @mesh.quaternion.copy quat
-    @gameScene.scene.add @mesh
+
     transform = new (Ammo.btTransform)
     transform.setIdentity()
     transform.setOrigin new (Ammo.btVector3)(pos.x, pos.y, pos.z)
@@ -26,18 +28,16 @@ class Box extends BaseModel
     rbInfo = new (Ammo.btRigidBodyConstructionInfo)(mass, motionState, geometry, localInertia)
     @body = new (Ammo.btRigidBody)(rbInfo)
     @body.setFriction friction
-    #body.setRestitution(.9);
-    #body.setDamping(0.2, 0.2);
-    @gameScene.physicsWorld.addRigidBody @body
+    # @body.setRestitution(.9)
+    # @body.setDamping(0.2, 0.2)
     if mass > 0
-      @body.setActivationState @gameScene.DISABLE_DEACTIVATION
-    return
+      @body.setActivationState Utils.PHYSICS.DISABLE_DEACTIVATION
 
   tick: (tpf) ->
     ms = @body.getMotionState()
     if ms
-      ms.getWorldTransform @gameScene.TRANSFORM_AUX
-      p = @gameScene.TRANSFORM_AUX.getOrigin()
-      q = @gameScene.TRANSFORM_AUX.getRotation()
+      ms.getWorldTransform @TRANSFORM_AUX
+      p = @TRANSFORM_AUX.getOrigin()
+      q = @TRANSFORM_AUX.getRotation()
       @mesh.position.set p.x(), p.y(), p.z()
       @mesh.quaternion.set q.x(), q.y(), q.z(), q.w()

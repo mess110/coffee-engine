@@ -1,8 +1,8 @@
 class Vehicle extends BaseModel
-  constructor: (pos, quat, gameScene) ->
+  constructor: (pos, quat, physicsWorld) ->
     super()
 
-    @gameScene = gameScene
+    @physicsWorld = physicsWorld
 
     @chassisWidth = 1.8
     @chassisHeight = .6
@@ -23,9 +23,9 @@ class Vehicle extends BaseModel
     @suspensionDamping = 2.3
     @suspensionCompression = 4.4
     @suspensionRestLength = 0.6
-    @rollInfluence = 0.2
+    @rollInfluence = 0.1
     @steeringIncrement = .04
-    @steeringClamp = .5
+    @steeringClamp = .4
     @maxEngineForce = 2000
     @maxBreakingForce = 100
 
@@ -40,25 +40,27 @@ class Vehicle extends BaseModel
     geometry = new (Ammo.btBoxShape)(new (Ammo.btVector3)(@chassisWidth * .5, @chassisHeight * .5, @chassisLength * .5))
     geometry.calculateLocalInertia @massVehicle, localInertia
     @body = new (Ammo.btRigidBody)(new (Ammo.btRigidBodyConstructionInfo)(@massVehicle, motionState, geometry, localInertia))
-    @body.setActivationState @gameScene.DISABLE_DEACTIVATION
-    @gameScene.physicsWorld.addRigidBody @body
-    @chassisMesh = @createChassisMesh(@chassisWidth, @chassisHeight, @chassisLength)
+    @body.setActivationState Utils.PHYSICS.DISABLE_DEACTIVATION
+    @physicsWorld.addRigidBody @body
+    @material = MaterialManager.item('materialInteractive')
+    @chassis = @createChassisMesh(@chassisWidth, @chassisHeight, @chassisLength)
+
     # Raycast Vehicle
     @engineForce = 0
     @vehicleSteering = 0
     @breakingForce = 0
     @tuning = new (Ammo.btVehicleTuning)
-    rayCaster = new (Ammo.btDefaultVehicleRaycaster)(@gameScene.physicsWorld)
+    rayCaster = new (Ammo.btDefaultVehicleRaycaster)(@physicsWorld)
     @vehicle = new (Ammo.btRaycastVehicle)(@tuning, @body, rayCaster)
     @vehicle.setCoordinateSystem 0, 1, 2
-    @gameScene.physicsWorld.addAction @vehicle
+    @physicsWorld.addAction @vehicle
 
     # Wheels
     @FRONT_LEFT = 0
     @FRONT_RIGHT = 1
     @BACK_LEFT = 2
     @BACK_RIGHT = 3
-    @wheelMeshes = []
+    @wheels = []
     @wheelDirectionCS0 = new (Ammo.btVector3)(0, -1, 0)
     @wheelAxleCS = new (Ammo.btVector3)(-1, 0, 0)
     @addWheel true, new (Ammo.btVector3)(wheelHalfTrackFront, wheelAxisHeightFront, wheelAxisFrontPosition), wheelRadiusFront, wheelWidthFront, @FRONT_LEFT
@@ -69,37 +71,35 @@ class Vehicle extends BaseModel
   createWheelMesh: (radius, width) ->
     t = new (THREE.CylinderGeometry)(radius, radius, width, 24, 1)
     t.rotateZ Math.PI / 2
-    mesh = new (THREE.Mesh)(t, @gameScene.materialInteractive)
-    mesh.add new (THREE.Mesh)(new (THREE.BoxGeometry)(width * 1.5, radius * 1.75, radius * .25, 1, 1, 1), @gameScene.materialInteractive)
-    @gameScene.scene.add mesh
+    mesh = new (THREE.Mesh)(t, @material)
+    mesh.add new (THREE.Mesh)(new (THREE.BoxGeometry)(width * 1.5, radius * 1.75, radius * .25, 1, 1, 1), @material)
+    @wheels.push mesh
     mesh
 
   createChassisMesh: (w, l, h) ->
     shape = new (THREE.BoxGeometry)(w, l, h, 1, 1, 1)
-    mesh = new (THREE.Mesh)(shape, @gameScene.materialInteractive)
-    @gameScene.scene.add mesh
-    mesh
+    new (THREE.Mesh)(shape, @material)
 
-  tick: (tpf) ->
+  tick: (tpf, actions) ->
     speed = @vehicle.getCurrentSpeedKmHour()
     # speedometer.innerHTML = (if speed < 0 then '(R) ' else '') + Math.abs(speed).toFixed(1) + ' km/h'
     @breakingForce = 0
     @engineForce = 0
-    if @gameScene.actions.acceleration
+    if actions.acceleration
       if speed < -1
         @breakingForce = @maxBreakingForce
       else
         @engineForce = @maxEngineForce
-    if @gameScene.actions.braking
+    if actions.braking
       if speed > 1
         @breakingForce = @maxBreakingForce
       else
         @engineForce = -@maxEngineForce / 2
-    if @gameScene.actions.left
+    if actions.left
       if @vehicleSteering < @steeringClamp
         @vehicleSteering += @steeringIncrement
     else
-      if @gameScene.actions.right
+      if actions.right
         if @vehicleSteering > -@steeringClamp
           @vehicleSteering -= @steeringIncrement
       else
@@ -125,14 +125,14 @@ class Vehicle extends BaseModel
       tm = @vehicle.getWheelTransformWS(i)
       p = tm.getOrigin()
       q = tm.getRotation()
-      @wheelMeshes[i].position.set p.x(), p.y(), p.z()
-      @wheelMeshes[i].quaternion.set q.x(), q.y(), q.z(), q.w()
+      @wheels[i].position.set p.x(), p.y(), p.z()
+      @wheels[i].quaternion.set q.x(), q.y(), q.z(), q.w()
       i++
     tm = @vehicle.getChassisWorldTransform()
     p = tm.getOrigin()
     q = tm.getRotation()
-    @chassisMesh.position.set p.x(), p.y(), p.z()
-    @chassisMesh.quaternion.set q.x(), q.y(), q.z(), q.w()
+    @chassis.position.set p.x(), p.y(), p.z()
+    @chassis.quaternion.set q.x(), q.y(), q.z(), q.w()
     return
 
   addWheel: (isFront, pos, radius, width, index) ->
@@ -142,4 +142,4 @@ class Vehicle extends BaseModel
     wheelInfo.set_m_wheelsDampingCompression @suspensionCompression
     wheelInfo.set_m_frictionSlip @friction
     wheelInfo.set_m_rollInfluence @rollInfluence
-    @wheelMeshes[index] = @createWheelMesh(radius, width)
+    @wheels[index] = @createWheelMesh(radius, width)

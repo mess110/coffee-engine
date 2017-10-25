@@ -867,3 +867,12 @@ class Helper
     # composer.addPass effectBloom
     composer.addPass effectCopy
     composer
+
+  @physicsWorld: ->
+    collisionConfiguration = new (Ammo.btDefaultCollisionConfiguration)
+    dispatcher = new (Ammo.btCollisionDispatcher)(collisionConfiguration)
+    broadphase = new (Ammo.btDbvtBroadphase)
+    solver = new (Ammo.btSequentialImpulseConstraintSolver)
+    @physicsWorld = new (Ammo.btDiscreteDynamicsWorld)(dispatcher, broadphase, solver, collisionConfiguration)
+    @physicsWorld.setGravity new (Ammo.btVector3)(0, -9.82, 0)
+    @physicsWorld
