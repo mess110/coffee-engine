@@ -53,8 +53,6 @@ class Vehicle extends BaseModel
     @vehicle.setCoordinateSystem 0, 1, 2
     @gameScene.physicsWorld.addAction @vehicle
 
-    # NOTABLE: @body, @vehicle
-
     # Wheels
     @FRONT_LEFT = 0
     @FRONT_RIGHT = 1
@@ -67,7 +65,6 @@ class Vehicle extends BaseModel
     @addWheel true, new (Ammo.btVector3)(-wheelHalfTrackFront, wheelAxisHeightFront, wheelAxisFrontPosition), wheelRadiusFront, wheelWidthFront, @FRONT_RIGHT
     @addWheel false, new (Ammo.btVector3)(-wheelHalfTrackBack, wheelAxisHeightBack, wheelAxisPositionBack), wheelRadiusBack, wheelWidthBack, @BACK_LEFT
     @addWheel false, new (Ammo.btVector3)(wheelHalfTrackBack, wheelAxisHeightBack, wheelAxisPositionBack), wheelRadiusBack, wheelWidthBack, @BACK_RIGHT
-    return
 
   createWheelMesh: (radius, width) ->
     t = new (THREE.CylinderGeometry)(radius, radius, width, 24, 1)
@@ -121,10 +118,6 @@ class Vehicle extends BaseModel
     @vehicle.setBrake @breakingForce, @BACK_RIGHT
     @vehicle.setSteeringValue @vehicleSteering, @FRONT_LEFT
     @vehicle.setSteeringValue @vehicleSteering, @FRONT_RIGHT
-    tm = undefined
-    p = undefined
-    q = undefined
-    i = undefined
     n = @vehicle.getNumWheels()
     i = 0
     while i < n

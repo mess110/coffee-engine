@@ -2,7 +2,7 @@ Ammo().then((Ammo) ->
   config = Config.get()
 
   # config.toggleDebug()
-  # config.toggleStats()
+  config.toggleStats()
   config.fillWindow()
   engine = new Engine3D()
   engine.renderer.setPixelRatio( window.devicePixelRatio )
@@ -75,6 +75,7 @@ Ammo().then((Ammo) ->
     tick: (tpf) ->
       for box in @boxes
         box.tick(tpf)
+
       @vehicle.tick(tpf) if @vehicle?
 
       @physicsWorld.stepSimulation tpf, 10
