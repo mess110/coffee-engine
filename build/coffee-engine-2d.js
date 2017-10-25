@@ -37,8 +37,7 @@ var Stats = function() {
             fpsDiv.style.display = "none", msDiv.style.display = "block";
         }
     }, updateGraph = function(dom, value) {
-        var child = dom.appendChild(dom.firstChild);
-        child.style.height = value + "px";
+        dom.appendChild(dom.firstChild).style.height = value + "px";
     };
     return {
         REVISION: 11,
@@ -113,7 +112,7 @@ TWEEN.Tween = function(object) {
         return _isPlaying ? (TWEEN.remove(this), _isPlaying = !1, null !== _onStopCallback && _onStopCallback.call(_object), 
         this.stopChainedTweens(), this) : this;
     }, this.stopChainedTweens = function() {
-        for (var i = 0, numChainedTweens = _chainedTweens.length; numChainedTweens > i; i++) _chainedTweens[i].stop();
+        for (var i = 0, numChainedTweens = _chainedTweens.length; i < numChainedTweens; i++) _chainedTweens[i].stop();
     }, this.delay = function(amount) {
         return _delayTime = amount, this;
     }, this.repeat = function(times) {
@@ -136,8 +135,8 @@ TWEEN.Tween = function(object) {
         return _onStopCallback = callback, this;
     }, this.update = function(time) {
         var property;
-        if (_startTime > time) return !0;
-        _onStartCallbackFired === !1 && (null !== _onStartCallback && _onStartCallback.call(_object), 
+        if (time < _startTime) return !0;
+        !1 === _onStartCallbackFired && (null !== _onStartCallback && _onStartCallback.call(_object), 
         _onStartCallbackFired = !0);
         var elapsed = (time - _startTime) / _duration;
         elapsed = elapsed > 1 ? 1 : elapsed;
@@ -161,7 +160,7 @@ TWEEN.Tween = function(object) {
                 return _yoyo && (_reversed = !_reversed), _startTime = time + _delayTime, !0;
             }
             null !== _onCompleteCallback && _onCompleteCallback.call(_object);
-            for (var i = 0, numChainedTweens = _chainedTweens.length; numChainedTweens > i; i++) _chainedTweens[i].start(time);
+            for (var i = 0, numChainedTweens = _chainedTweens.length; i < numChainedTweens; i++) _chainedTweens[i].start(time);
             return !1;
         }
         return !0;
@@ -235,7 +234,7 @@ TWEEN.Tween = function(object) {
             return 1 === k ? 1 : 1 - Math.pow(2, -10 * k);
         },
         InOut: function(k) {
-            return 0 === k ? 0 : 1 === k ? 1 : (k *= 2) < 1 ? .5 * Math.pow(1024, k - 1) : .5 * (-Math.pow(2, -10 * (k - 1)) + 2);
+            return 0 === k ? 0 : 1 === k ? 1 : (k *= 2) < 1 ? .5 * Math.pow(1024, k - 1) : .5 * (2 - Math.pow(2, -10 * (k - 1)));
         }
     },
     Circular: {
@@ -252,18 +251,18 @@ TWEEN.Tween = function(object) {
     Elastic: {
         In: function(k) {
             var s, a = .1, p = .4;
-            return 0 === k ? 0 : 1 === k ? 1 : (!a || 1 > a ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
-            -(a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p)));
+            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
+            -a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
         },
         Out: function(k) {
             var s, a = .1, p = .4;
-            return 0 === k ? 0 : 1 === k ? 1 : (!a || 1 > a ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
+            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
             a * Math.pow(2, -10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
         },
         InOut: function(k) {
             var s, a = .1, p = .4;
-            return 0 === k ? 0 : 1 === k ? 1 : (!a || 1 > a ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
-            (k *= 2) < 1 ? -.5 * (a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p)) : a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * .5 + 1);
+            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
+            (k *= 2) < 1 ? a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * -.5 : a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * .5 + 1);
         }
     },
     Back: {
@@ -277,7 +276,7 @@ TWEEN.Tween = function(object) {
         },
         InOut: function(k) {
             var s = 2.5949095;
-            return (k *= 2) < 1 ? .5 * (k * k * ((s + 1) * k - s)) : .5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
+            return (k *= 2) < 1 ? k * k * ((s + 1) * k - s) * .5 : .5 * ((k -= 2) * k * ((s + 1) * k + s) + 2);
         }
     },
     Bounce: {
@@ -285,25 +284,25 @@ TWEEN.Tween = function(object) {
             return 1 - TWEEN.Easing.Bounce.Out(1 - k);
         },
         Out: function(k) {
-            return 1 / 2.75 > k ? 7.5625 * k * k : 2 / 2.75 > k ? 7.5625 * (k -= 1.5 / 2.75) * k + .75 : 2.5 / 2.75 > k ? 7.5625 * (k -= 2.25 / 2.75) * k + .9375 : 7.5625 * (k -= 2.625 / 2.75) * k + .984375;
+            return k < 1 / 2.75 ? 7.5625 * k * k : k < 2 / 2.75 ? 7.5625 * (k -= 1.5 / 2.75) * k + .75 : k < 2.5 / 2.75 ? 7.5625 * (k -= 2.25 / 2.75) * k + .9375 : 7.5625 * (k -= 2.625 / 2.75) * k + .984375;
         },
         InOut: function(k) {
-            return .5 > k ? .5 * TWEEN.Easing.Bounce.In(2 * k) : .5 * TWEEN.Easing.Bounce.Out(2 * k - 1) + .5;
+            return k < .5 ? .5 * TWEEN.Easing.Bounce.In(2 * k) : .5 * TWEEN.Easing.Bounce.Out(2 * k - 1) + .5;
         }
     }
 }, TWEEN.Interpolation = {
     Linear: function(v, k) {
         var m = v.length - 1, f = m * k, i = Math.floor(f), fn = TWEEN.Interpolation.Utils.Linear;
-        return 0 > k ? fn(v[0], v[1], f) : k > 1 ? fn(v[m], v[m - 1], m - f) : fn(v[i], v[i + 1 > m ? m : i + 1], f - i);
+        return k < 0 ? fn(v[0], v[1], f) : k > 1 ? fn(v[m], v[m - 1], m - f) : fn(v[i], v[i + 1 > m ? m : i + 1], f - i);
     },
     Bezier: function(v, k) {
         var i, b = 0, n = v.length - 1, pw = Math.pow, bn = TWEEN.Interpolation.Utils.Bernstein;
-        for (i = 0; n >= i; i++) b += pw(1 - k, n - i) * pw(k, i) * v[i] * bn(n, i);
+        for (i = 0; i <= n; i++) b += pw(1 - k, n - i) * pw(k, i) * v[i] * bn(n, i);
         return b;
     },
     CatmullRom: function(v, k) {
         var m = v.length - 1, f = m * k, i = Math.floor(f), fn = TWEEN.Interpolation.Utils.CatmullRom;
-        return v[0] === v[m] ? (0 > k && (i = Math.floor(f = m * (1 + k))), fn(v[(i - 1 + m) % m], v[i], v[(i + 1) % m], v[(i + 2) % m], f - i)) : 0 > k ? v[0] - (fn(v[0], v[0], v[1], v[1], -f) - v[0]) : k > 1 ? v[m] - (fn(v[m], v[m], v[m - 1], v[m - 1], f - m) - v[m]) : fn(v[i ? i - 1 : 0], v[i], v[i + 1 > m ? m : i + 1], v[i + 2 > m ? m : i + 2], f - i);
+        return v[0] === v[m] ? (k < 0 && (i = Math.floor(f = m * (1 + k))), fn(v[(i - 1 + m) % m], v[i], v[(i + 1) % m], v[(i + 2) % m], f - i)) : k < 0 ? v[0] - (fn(v[0], v[0], v[1], v[1], -f) - v[0]) : k > 1 ? v[m] - (fn(v[m], v[m], v[m - 1], v[m - 1], f - m) - v[m]) : fn(v[i ? i - 1 : 0], v[i], v[m < i + 1 ? m : i + 1], v[m < i + 2 ? m : i + 2], f - i);
     },
     Utils: {
         Linear: function(p0, p1, t) {
@@ -323,16 +322,15 @@ TWEEN.Tween = function(object) {
             };
         }(),
         CatmullRom: function(p0, p1, p2, p3, t) {
-            var v0 = .5 * (p2 - p0), v1 = .5 * (p3 - p1), t2 = t * t, t3 = t * t2;
-            return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
+            var v0 = .5 * (p2 - p0), v1 = .5 * (p3 - p1), t2 = t * t;
+            return (2 * p1 - 2 * p2 + v0 + v1) * (t * t2) + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
         }
     }
 };
 
 var Singleton, exports;
 
-exports = void 0, "undefined" != typeof exports && null !== exports || (exports = {}), 
-Singleton = function() {
+exports = void 0, void 0 !== exports && null !== exports || (exports = {}), Singleton = function() {
     function Singleton() {}
     return Singleton;
 }();
@@ -350,35 +348,34 @@ SceneManager = function() {
             if (this.isEmpty()) throw new Error("Requires at least one scene");
             return this.scenes[this.currentSceneIndex];
         }, SceneManager.prototype.addScene = function(scene) {
-            var i;
             if (null == scene) throw new Error("missing scene param");
-            return i = this.scenes.indexOf(scene), -1 === i ? this.scenes.push(scene) : void 0;
+            if (-1 === this.scenes.indexOf(scene)) return this.scenes.push(scene);
         }, SceneManager.prototype.removeScene = function(scene) {
             var i;
             if (null == scene) throw new Error("missing scene param");
             return i = this.scenes.indexOf(scene), this.removeSceneByIndex(i);
         }, SceneManager.prototype.removeSceneByIndex = function(i) {
-            return i >= 0 ? (i === this.currentSceneIndex && (this.currentSceneIndex = void 0), 
-            array.splice(i, 1)) : void 0;
+            if (i >= 0) return i === this.currentSceneIndex && (this.currentSceneIndex = void 0), 
+            array.splice(i, 1);
         }, SceneManager.prototype.setScene = function(scene) {
             var i;
             if (null == scene) throw new Error("missing scene param");
-            if (i = this.scenes.indexOf(scene), -1 === i) throw new Error("scene not added to SceneManager");
+            if (-1 === (i = this.scenes.indexOf(scene))) throw new Error("scene not added to SceneManager");
             return this.setSceneByIndex(i), this.currentScene();
         }, SceneManager.prototype.setSceneByIndex = function(i) {
-            var debugMsg, e, scene;
+            var debugMsg, scene;
             if (this.isEmpty() || !this.isValidIndex(i)) throw new Error("invalid scene index");
             this.currentSceneIndex = i, scene = this.currentScene(), debugMsg = "Changing to scene " + i;
             try {
                 debugMsg += ": " + scene.constructor.name;
             } catch (error) {
-                e = error;
+                error;
             }
             return console.ce(debugMsg), scene;
         }, SceneManager.prototype.isEmpty = function() {
             return 0 === this.scenes.length;
         }, SceneManager.prototype.isValidIndex = function(i) {
-            return i >= 0 && i < this.scenes.length;
+            return 0 <= i && i < this.scenes.length;
         }, SceneManager.prototype.hasScene = function(scene) {
             return this.scenes.includes(scene);
         }, SceneManager.prototype.tick = function(tpf) {
@@ -404,21 +401,21 @@ Persist = function() {
         this.set(key, value, def);
     }, Persist.prototype.set = function(key, value, def) {
         if (null == def && (def = void 0), null == key) throw "key missing";
-        return this.storage[Persist.PREFIX + "." + key] = value, null != def ? this["default"](key, def) : void 0;
+        if (this.storage[Persist.PREFIX + "." + key] = value, null != def) return this.default(key, def);
     }, Persist.prototype.defaultJson = function(key, value) {
-        return value = JSON.stringify(value), this["default"](key, value);
-    }, Persist.prototype["default"] = function(key, value) {
+        return value = JSON.stringify(value), this.default(key, value);
+    }, Persist.prototype.default = function(key, value) {
         return this.set(key + "." + Persist.DEFAULT_SUFFIX, value);
     }, Persist.prototype.getJson = function(key) {
         var item;
-        return item = this.get(key), null != item ? JSON.parse(item) : void 0;
+        if (null != (item = this.get(key))) return JSON.parse(item);
     }, Persist.prototype.get = function(key) {
         var value;
         return value = this._get(key), null == value ? this._get(key + "." + Persist.DEFAULT_SUFFIX) : value;
     }, Persist.prototype._get = function(key) {
         var value;
         if (null == key) throw "key missing";
-        return value = this.storage[Persist.PREFIX + "." + key], isNumeric(value) ? Number(value) : "true" === value ? !0 : "false" === value ? !1 : "undefined" !== value ? value : void 0;
+        return value = this.storage[Persist.PREFIX + "." + key], isNumeric(value) ? Number(value) : "true" === value || "false" !== value && ("undefined" !== value ? value : void 0);
     }, Persist.prototype.rm = function(key) {
         if (null == key) throw "key missing";
         return this.storage.removeItem(Persist.PREFIX + "." + key);
@@ -426,7 +423,7 @@ Persist = function() {
         var results, storage;
         null == exceptions && (exceptions = []), null == withDefaults && (withDefaults = !1), 
         exceptions instanceof Array || (exceptions = [ exceptions ]), results = [];
-        for (storage in this.storage) storage.endsWith("." + Persist.DEFAULT_SUFFIX) && withDefaults === !1 || (exceptions.includes(storage) ? results.push(void 0) : results.push(this.rm(storage)));
+        for (storage in this.storage) storage.endsWith("." + Persist.DEFAULT_SUFFIX) && !1 === withDefaults || (exceptions.includes(storage) ? results.push(void 0) : results.push(this.rm(storage)));
         return results;
     }, Persist.sessionStorage = function() {
         var persist;
@@ -439,8 +436,8 @@ Persist = function() {
         return new Persist().setJson(key, value, def);
     }, Persist.set = function(key, value, def) {
         return new Persist().set(key, value, def);
-    }, Persist["default"] = function(key, value) {
-        return new Persist()["default"](key, value);
+    }, Persist.default = function(key, value) {
+        return new Persist().default(key, value);
     }, Persist.defaultJson = function(key, value) {
         return new Persist().defaultJson(key, value);
     }, Persist.rm = function(key) {
@@ -468,13 +465,15 @@ Utils = function() {
     Utils.MIRROR_DEFAULT_CLIP_BIAS = .003, Utils.WATER_DEFAULT_WATER_COLOR = "#001e0f", 
     Utils.WATER_DEFAULT_ALPHA = 1, Utils.CE_BUTTON_POSITIONS = [ "top-right", "bottom-right", "top-left", "bottom-left" ], 
     Utils.CE_BUTTON_TYPES = [ "fullscreen", "reinit" ], Utils.CE_UI_Z_INDEX = 1e3, Utils.ORIENTATIONS = [ "all", "landscape", "portrait" ], 
-    Utils.FADE_COLOR = "black", Utils.FADE_DEFAULT_DURATION = 1e3, Utils.toggleFullscreen = function() {
+    Utils.FADE_COLOR = "black", Utils.FADE_DEFAULT_DURATION = 1e3, Utils.PHYSICS = {
+        DISABLE_DEACTIVATION: 4
+    }, Utils.toggleFullscreen = function() {
         document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement ? document.exitFullscreen ? document.exitFullscreen() : document.msExitFullscreen ? document.msExitFullscreen() : document.mozCancelFullScreen ? document.mozCancelFullScreen() : document.webkitExitFullscreen && document.webkitExitFullscreen() : document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : document.documentElement.msRequestFullscreen ? document.documentElement.msRequestFullscreen() : document.documentElement.mozRequestFullScreen ? document.documentElement.mozRequestFullScreen() : document.documentElement.webkitRequestFullscreen && document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }, Utils.guid = function() {
         var s4;
-        return s4 = function() {
+        return (s4 = function() {
             return Math.floor(65536 * (1 + Math.random())).toString(16).substring(1);
-        }, s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
+        })() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
     }, Utils.setCursor = function(url) {
         return document.body.style.cursor = "url('" + url + "'), auto";
     }, Utils.rgbToHex = function(r, g, b) {
@@ -500,21 +499,20 @@ Utils = function() {
         return null == fileName && (fileName = "screenshot.png"), Utils._ensureBlobPresence(), 
         content = engine.getScreenshot(), saveAs(Utils.base64ToBlob(content), fileName);
     }, Utils._ensureBlobPresence = function() {
-        var e, isFileSaverSupported;
         try {
-            return isFileSaverSupported = !!new Blob();
+            return !!new Blob();
         } catch (error) {
-            throw e = error, "FileSaver not supported";
+            throw error, "FileSaver not supported";
         }
     }, Utils.base64ToBlob = function(b64Data, contentType, sliceSize) {
-        var blob, byteArray, byteArrays, byteCharacters, byteNumbers, i, offset, slice;
+        var byteArray, byteArrays, byteCharacters, byteNumbers, i, offset, slice;
         for (contentType = contentType || "", sliceSize = sliceSize || 512, byteCharacters = atob(b64Data), 
         byteArrays = [], offset = 0; offset < byteCharacters.length; ) {
             for (slice = byteCharacters.slice(offset, offset + sliceSize), byteNumbers = new Array(slice.length), 
             i = 0; i < slice.length; ) byteNumbers[i] = slice.charCodeAt(i), i++;
             byteArray = new Uint8Array(byteNumbers), byteArrays.push(byteArray), offset += sliceSize;
         }
-        return blob = new Blob(byteArrays, {
+        return new Blob(byteArrays, {
             type: contentType
         });
     }, Utils.addCEButton = function(options) {
@@ -526,7 +524,7 @@ Utils = function() {
         if (!document.querySelector(".ce-button-" + options.type)) {
             if (!Utils.CE_BUTTON_POSITIONS.includes(options.position)) throw new Error("invalid position " + options.position);
             return posArray = options.position.split("-"), img = document.createElement("img"), 
-            img.style = "position: absolute; width: " + options.size + "; height: " + options.size + ";" + (posArray[0] + ": " + options.padding + "; " + posArray[1] + ": " + options.padding), 
+            img.style = "position: absolute; width: " + options.size + "; height: " + options.size + ";" + posArray[0] + ": " + options.padding + "; " + posArray[1] + ": " + options.padding, 
             img.setAttribute("class", "ce-button-" + options.type), "fullscreen" === options.type ? (img.setAttribute("onclick", "Utils.toggleFullscreen()"), 
             img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AYMDR07WbntUQAAAMZJREFUWMPtl7ENgzAQRR+IkhFYIdUVUTKP9wjswSCZIBHFVVmBEVKbNBTIMsFBcpLiXnlC9ke+7/suRGQinU5V23cfiEgLXFIXLPkxJqCK1J7AY0XcmLDmCAyRugcOQL0sFpEmvKvqOcffisgNOG0dQfnNI7cmNAEV0O2w2l564IphGEYwjsOMN6pqn2kcO6AJb8IwQA7zjZUDBxxtGJmALQE+434+ZsPpg1jeb1l0tppLjeWxd0EdRucFKWGiCa1mTfjXAl7JzisvsBIkfgAAAABJRU5ErkJggg==") : "reinit" === options.type && (img.setAttribute("onclick", "engine.initScene(SceneManager.currentScene())"), 
             img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfgBgwNMCmKKsb2AAACbklEQVRIx5XVz2tcVRQH8M971dZ01GppNWbhSHFjdJXTookiCOpGChKKVv8E68Yfiy6sol0J1l3ddCmIOxfBleBCyISqZ1BoxIUUuxCNJdVYiaEQdDF3zEzn1XG+m8u795zvvfec+77fSkHI3njEvCMeczQvGEI/YhiVnbR5C+7tL2Q1GhxP5WfX09wU73peeyT2e034MLY858tBktrbWv4eCV1pJLim7Xy8l2KAYFPb+ghFZ66JoAavxec7FHWyqe3X60/QbSJ4v4xPxHKfol/EM14djGwqIcQhF0yBM/l6IQjC18MlzAduQMBt1grFI86nmmSprP9UatFcQiRXzZaPjxN1iGfdA067v5SzuYSFIn90EtwXx0JFfOUwtnIq2OuSAx7KVf+J+FMLK7lQR8th8BalI5vj0nEazMettWfK1Llyx83tO43HuTI+WXsYXM7f+nf85tr4/Lzid/B4Xf6Db02KXuNnanfAyEscj3VwoC5vsZqYYBvsql0FBycmuAts1H4AcxMT9DIu1kUb9kd7kuxo299rR+3TMvfCRPv3o5cqIs3hr9w7wQk2TaGbsSvYcAw3z2z//MX/TH/D0+CVmdUK4hd3gwd9l+OSmdX7V9Zymppgsax2tWJcektf7RajJ5MpO86C3db/lYtmzFq3G3yQnezrbMiXLaOyx2qcuuH+p6zao0InTwyLqhTLFkrklnd8lJeG+v6iN93SF/18tG8u1aDzxVkvDWx4RddlHDRXno1y+BM73lQNm2fM+6R0pBlrFrMzbG2DistKTjuu0VV0Hc9pHUP22uTBUtzuqHDIPmy4KC3lH00G/w/Uq7TDOW+poQAAAABJRU5ErkJggg=="), 
@@ -592,14 +590,13 @@ Utils = function() {
         "in" === options.type ? (options.opacityFrom = 0, options.opacityTo = 1) : (options.opacityFrom = 1, 
         options.opacityTo = 0), null == options.clickThrough && (options.clickThrough = !0), 
         existingElement = document.querySelector(".ce-fader"), null != existingElement && (document.body.removeChild(existingElement), 
-        existingStyle = document.head.querySelector(".ce-fader-style"), null != existingStyle && document.head.removeChild(existingStyle)), 
+        null != (existingStyle = document.head.querySelector(".ce-fader-style")) && document.head.removeChild(existingStyle)), 
         div = document.createElement("div"), div.setAttribute("class", "ce-fader"), options.clickThrough && (pointerEvents = "  pointer-events: none;"), 
         style = document.createElement("style"), style.setAttribute("class", "ce-fader-style"), 
         style.setAttribute("type", "text/css"), style.setAttribute("media", "all"), style.innerHTML = ".ce-fader { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: " + Utils.FADE_COLOR + "; z-index: " + (Utils.CE_UI_Z_INDEX - 1) + "; " + pointerEvents + " -webkit-animation: fade-animation " + options.duration + "s; /* Safari, Chrome and Opera > 12.1 */ -moz-animation: fade-animation " + options.duration + "s; /* Firefox < 16 */ -ms-animation: fade-animation " + options.duration + "s; /* Internet Explorer */ -o-animation: fade-animation " + options.duration + "s; /* Opera < 12.1 */ animation: fade-animation " + options.duration + "s; } @keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Firefox < 16 */ @-moz-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Safari, Chrome and Opera > 12.1 */ @-webkit-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Internet Explorer */ @-ms-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } } /* Opera < 12.1 */ @-o-keyframes fade-animation { from { opacity: " + options.opacityFrom + "; } to   { opacity: " + options.opacityTo + "; } }", 
-        document.head.appendChild(style), document.body.appendChild(div), 0 === options.opacityTo && (animationEvent = whichAnimationEvent(), 
-        animationEvent && div.addEventListener(animationEvent, function() {
+        document.head.appendChild(style), document.body.appendChild(div), 0 === options.opacityTo && (animationEvent = whichAnimationEvent()) && div.addEventListener(animationEvent, function() {
             document.body.removeChild(div), document.head.removeChild(style);
-        })), !0;
+        }), !0;
     }, Utils;
 }(), exports.Utils = Utils;
 
@@ -640,7 +637,7 @@ BaseModel = function() {
         }(this);
     }
     return BaseModel.prototype.render = function(context) {
-        return this.loaded ? context.drawImage(this.image, this.position.x, this.position.y, this.width, this.height) : void 0;
+        if (this.loaded) return context.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
     }, BaseModel;
 }();
 
@@ -667,7 +664,7 @@ Engine2D = function() {
     return Engine2D.prototype.resize = function() {
         var canvasRatio, height, width, windowRatio;
         return canvasRatio = this.canvas.height / this.canvas.width, windowRatio = window.innerHeight / window.innerWidth, 
-        width = void 0, height = void 0, canvasRatio > windowRatio ? (height = window.innerHeight, 
+        width = void 0, height = void 0, windowRatio < canvasRatio ? (height = window.innerHeight, 
         width = height / canvasRatio) : (width = window.innerWidth, height = width * canvasRatio), 
         this.canvas.style.width = width + "px", this.canvas.style.height = height + "px";
     }, Engine2D.prototype.onDocumentMouseEvent = function(event) {
@@ -728,7 +725,7 @@ Array.prototype.isEmpty = function() {
     return array;
 }, Array.prototype.equalsArray = function(a) {
     var eq, i, j, ref;
-    for (eq = !0, i = j = 0, ref = a.size(); ref >= 0 ? ref >= j : j >= ref; i = ref >= 0 ? ++j : --j) if (a[i] !== this[i]) {
+    for (eq = !0, i = j = 0, ref = a.size(); 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) if (a[i] !== this[i]) {
         eq = !1;
         break;
     }
@@ -748,14 +745,14 @@ Array.prototype.isEmpty = function() {
     });
 }, Array.prototype.sum = function() {
     var e, j, len, ref, sum;
-    for (sum = 0, ref = this, j = 0, len = ref.length; len > j; j++) e = ref[j], sum += e;
+    for (sum = 0, ref = this, j = 0, len = ref.length; j < len; j++) e = ref[j], sum += e;
     return sum;
 }, Array.prototype.where = function(hash) {
     return this.filter(function(d) {
         var found, item, j, key, len, ok, ref;
         ok = !0;
         for (key in hash) if (found = !1, hash[key] instanceof Array) {
-            for (ref = hash[key], j = 0, len = ref.length; len > j; j++) if (item = ref[j], 
+            for (ref = hash[key], j = 0, len = ref.length; j < len; j++) if (item = ref[j], 
             d[key] === item) {
                 found = !0;
                 break;
@@ -776,7 +773,7 @@ Array.prototype.isEmpty = function() {
     return 0 === this.indexOf(s);
 }, String.prototype.startsWithAny = function(prefixes) {
     var j, len, prefix, startsWith;
-    for (startsWith = !1, j = 0, len = prefixes.length; len > j; j++) prefix = prefixes[j], 
+    for (startsWith = !1, j = 0, len = prefixes.length; j < len; j++) prefix = prefixes[j], 
     this.startsWith(prefix) && (startsWith = !0);
     return startsWith;
 }, String.prototype.endsWith = function(suffix) {
@@ -784,11 +781,11 @@ Array.prototype.isEmpty = function() {
 }, String.prototype.endsWithAny = function(suffixes) {
     var endsWith, j, len, suffix;
     if (endsWith = !1, null == suffixes) return !1;
-    for (j = 0, len = suffixes.length; len > j; j++) suffix = suffixes[j], this.endsWith(suffix) && (endsWith = !0);
+    for (j = 0, len = suffixes.length; j < len; j++) suffix = suffixes[j], this.endsWith(suffix) && (endsWith = !0);
     return endsWith;
 }, String.prototype.replaceAny = function(sources, dest) {
     var j, len, source, tmp;
-    for (tmp = this, j = 0, len = sources.length; len > j; j++) source = sources[j], 
+    for (tmp = this, j = 0, len = sources.length; j < len; j++) source = sources[j], 
     tmp = tmp.replace(source, dest);
     return tmp;
 }, String.prototype.isEmpty = function() {
@@ -798,7 +795,7 @@ Array.prototype.isEmpty = function() {
 }, String.prototype.containsAny = function(strings) {
     var containsAny, j, len, s;
     if (containsAny = !1, null == strings) return !1;
-    for (j = 0, len = strings.length; len > j; j++) s = strings[j], this.contains(s) && (containsAny = !0);
+    for (j = 0, len = strings.length; j < len; j++) s = strings[j], this.contains(s) && (containsAny = !0);
     return containsAny;
 }, String.prototype.isPresent = function() {
     return null != this && !this.isEmpty();
@@ -838,13 +835,13 @@ Array.prototype.isEmpty = function() {
     function Playlist(keys) {
         var j, key, len;
         if (!(keys instanceof Array)) throw new Error("keys needs to be an array");
-        for (j = 0, len = keys.length; len > j; j++) if (key = keys[j], !SoundManager.has(key)) throw new Error("key '" + key + "' not loaded in SoundManager");
+        for (j = 0, len = keys.length; j < len; j++) if (key = keys[j], !SoundManager.has(key)) throw new Error("key '" + key + "' not loaded in SoundManager");
         this.items = new CyclicArray(keys);
     }
     return Playlist.prototype.cmd = function(options) {
         var audio, item, j, len, ref;
         if (options.key = this.items.get(), "volumeAll" === options.type) for (options.type = "volume", 
-        ref = this.items.items, j = 0, len = ref.length; len > j; j++) item = ref[j], options.key = item, 
+        ref = this.items.items, j = 0, len = ref.length; j < len; j++) item = ref[j], options.key = item, 
         SoundManager.cmd(options); else audio = SoundManager.cmd(options);
         return [ "play", "fadeIn" ].includes(options.type) ? (audio._onend = [], audio.on("end", function(_this) {
             return function(data) {
@@ -858,17 +855,25 @@ Array.prototype.isEmpty = function() {
     }, Playlist;
 }();
 
-var EngineHolder;
+var Hodler;
 
-EngineHolder = function() {
-    function EngineHolder() {}
+Hodler = function() {
+    function Hodler() {}
     var instance;
-    return instance = null, Singleton.EngineHolder = function() {
-        function EngineHolder() {}
-        return EngineHolder;
-    }(), EngineHolder.get = function() {
-        return null != instance ? instance : instance = new Singleton.EngineHolder();
-    }, EngineHolder;
+    return instance = null, Singleton.Hodler = function() {
+        function Hodler() {}
+        return Hodler.prototype.items = {}, Hodler.prototype.add = function(key, item) {
+            return this.items[key] = item;
+        }, Hodler.prototype.item = function(key) {
+            return this.items[key];
+        }, Hodler;
+    }(), Hodler.get = function() {
+        return null != instance ? instance : instance = new Singleton.Hodler();
+    }, Hodler.add = function(key, item) {
+        return this.get().add(key, item);
+    }, Hodler.item = function(key) {
+        return this.get().item(key);
+    }, Hodler;
 }(), function() {
     var cache = {}, ctx = null, usingWebAudio = !0, noAudio = !1;
     try {
@@ -882,7 +887,7 @@ EngineHolder = function() {
         noAudio = !0;
     } else noAudio = !0;
     if (usingWebAudio) {
-        var masterGain = "undefined" == typeof ctx.createGain ? ctx.createGainNode() : ctx.createGain();
+        var masterGain = void 0 === ctx.createGain ? ctx.createGainNode() : ctx.createGain();
         masterGain.gain.value = 1, masterGain.connect(ctx.destination);
     }
     var HowlerGlobal = function(codecs) {
@@ -892,9 +897,9 @@ EngineHolder = function() {
     HowlerGlobal.prototype = {
         volume: function(vol) {
             var self = this;
-            if (vol = parseFloat(vol), vol >= 0 && 1 >= vol) {
+            if ((vol = parseFloat(vol)) >= 0 && vol <= 1) {
                 self._volume = vol, usingWebAudio && (masterGain.gain.value = vol);
-                for (var key in self._howls) if (self._howls.hasOwnProperty(key) && self._howls[key]._webAudio === !1) for (var i = 0; i < self._howls[key]._audioNode.length; i++) self._howls[key]._audioNode[i].volume = self._howls[key]._volume * self._volume;
+                for (var key in self._howls) if (self._howls.hasOwnProperty(key) && !1 === self._howls[key]._webAudio) for (var i = 0; i < self._howls[key]._audioNode.length; i++) self._howls[key]._audioNode[i].volume = self._howls[key]._volume * self._volume;
                 return self;
             }
             return usingWebAudio ? masterGain.gain.value : self._volume;
@@ -908,7 +913,7 @@ EngineHolder = function() {
         _setMuted: function(muted) {
             var self = this;
             self._muted = muted, usingWebAudio && (masterGain.gain.value = muted ? 0 : self._volume);
-            for (var key in self._howls) if (self._howls.hasOwnProperty(key) && self._howls[key]._webAudio === !1) for (var i = 0; i < self._howls[key]._audioNode.length; i++) self._howls[key]._audioNode[i].muted = muted;
+            for (var key in self._howls) if (self._howls.hasOwnProperty(key) && !1 === self._howls[key]._webAudio) for (var i = 0; i < self._howls[key]._audioNode.length; i++) self._howls[key]._audioNode[i].muted = muted;
         },
         codecs: function(ext) {
             return this._codecs[ext];
@@ -919,7 +924,7 @@ EngineHolder = function() {
                 self._iOSEnabled = !1;
                 var unlock = function() {
                     var buffer = ctx.createBuffer(1, 1, 22050), source = ctx.createBufferSource();
-                    source.buffer = buffer, source.connect(ctx.destination), "undefined" == typeof source.start ? source.noteOn(0) : source.start(0), 
+                    source.buffer = buffer, source.connect(ctx.destination), void 0 === source.start ? source.noteOn(0) : source.start(0), 
                     setTimeout(function() {
                         source.playbackState !== source.PLAYING_STATE && source.playbackState !== source.FINISHED_STATE || (self._iOSEnabled = !0, 
                         self.iOSAutoEnable = !1, window.removeEventListener("touchend", unlock, !1));
@@ -949,7 +954,7 @@ EngineHolder = function() {
         self._onload = [ o.onload || function() {} ], self._onloaderror = [ o.onloaderror || function() {} ], 
         self._onend = [ o.onend || function() {} ], self._onpause = [ o.onpause || function() {} ], 
         self._onplay = [ o.onplay || function() {} ], self._onendTimer = [], self._webAudio = usingWebAudio && !self._buffer, 
-        self._audioNode = [], self._webAudio && self._setupAudioNode(), "undefined" != typeof ctx && ctx && Howler.iOSAutoEnable && Howler._enableiOSAudio(), 
+        self._audioNode = [], self._webAudio && self._setupAudioNode(), void 0 !== ctx && ctx && Howler.iOSAutoEnable && Howler._enableiOSAudio(), 
         Howler._howls.push(self), self.load();
     };
     if (Howl.prototype = {
@@ -1017,7 +1022,7 @@ EngineHolder = function() {
                 }(), self._webAudio) {
                     var loopStart = self._sprite[sprite][0] / 1e3, loopEnd = self._sprite[sprite][1] / 1e3;
                     node.id = soundId, node.paused = !1, refreshBuffer(self, [ loop, loopStart, loopEnd ], soundId), 
-                    self._playStart = ctx.currentTime, node.gain.value = self._volume, "undefined" == typeof node.bufferSource.start ? loop ? node.bufferSource.noteGrainOn(0, pos, 86400) : node.bufferSource.noteGrainOn(0, pos, duration) : loop ? node.bufferSource.start(0, pos, 86400) : node.bufferSource.start(0, pos, duration);
+                    self._playStart = ctx.currentTime, node.gain.value = self._volume, void 0 === node.bufferSource.start ? loop ? node.bufferSource.noteGrainOn(0, pos, 86400) : node.bufferSource.noteGrainOn(0, pos, duration) : loop ? node.bufferSource.start(0, pos, 86400) : node.bufferSource.start(0, pos, duration);
                 } else {
                     if (4 !== node.readyState && (node.readyState || !navigator.isCocoonJS)) return self._clearEndTimer(soundId), 
                     function() {
@@ -1045,7 +1050,7 @@ EngineHolder = function() {
             var activeNode = id ? self._nodeById(id) : self._activeNode();
             if (activeNode) if (activeNode._pos = self.pos(null, id), self._webAudio) {
                 if (!activeNode.bufferSource || activeNode.paused) return self;
-                activeNode.paused = !0, "undefined" == typeof activeNode.bufferSource.stop ? activeNode.bufferSource.noteOff(0) : activeNode.bufferSource.stop(0);
+                activeNode.paused = !0, void 0 === activeNode.bufferSource.stop ? activeNode.bufferSource.noteOff(0) : activeNode.bufferSource.stop(0);
             } else activeNode.pause();
             return self.on("pause"), self;
         },
@@ -1058,7 +1063,7 @@ EngineHolder = function() {
             var activeNode = id ? self._nodeById(id) : self._activeNode();
             if (activeNode) if (activeNode._pos = 0, self._webAudio) {
                 if (!activeNode.bufferSource || activeNode.paused) return self;
-                activeNode.paused = !0, "undefined" == typeof activeNode.bufferSource.stop ? activeNode.bufferSource.noteOff(0) : activeNode.bufferSource.stop(0);
+                activeNode.paused = !0, void 0 === activeNode.bufferSource.stop ? activeNode.bufferSource.noteOff(0) : activeNode.bufferSource.stop(0);
             } else isNaN(activeNode.duration) || (activeNode.pause(), activeNode.currentTime = 0);
             return self;
         },
@@ -1082,7 +1087,7 @@ EngineHolder = function() {
         },
         volume: function(vol, id) {
             var self = this;
-            if (vol = parseFloat(vol), vol >= 0 && 1 >= vol) {
+            if ((vol = parseFloat(vol)) >= 0 && vol <= 1) {
                 if (self._volume = vol, !self._loaded) return self.on("play", function() {
                     self.volume(vol, id);
                 }), self;
@@ -1114,11 +1119,10 @@ EngineHolder = function() {
         },
         pos3d: function(x, y, z, id) {
             var self = this;
-            if (y = "undefined" != typeof y && y ? y : 0, z = "undefined" != typeof z && z ? z : -.5, 
-            !self._loaded) return self.on("play", function() {
+            if (y = void 0 !== y && y ? y : 0, z = void 0 !== z && z ? z : -.5, !self._loaded) return self.on("play", function() {
                 self.pos3d(x, y, z, id);
             }), self;
-            if (!(x >= 0 || 0 > x)) return self._pos3d;
+            if (!(x >= 0 || x < 0)) return self._pos3d;
             if (self._webAudio) {
                 var activeNode = id ? self._nodeById(id) : self._activeNode();
                 activeNode && (self._pos3d = [ x, y, z ], activeNode.panner.setPosition(x, y, z), 
@@ -1132,7 +1136,7 @@ EngineHolder = function() {
                 self.fade(from, to, len, callback, id);
             }), self;
             self.volume(from, id);
-            for (var i = 1; steps >= i; i++) !function() {
+            for (var i = 1; i <= steps; i++) !function() {
                 var change = self._volume + ("up" === dir ? .01 : -.01) * i, vol = Math.round(1e3 * change) / 1e3, toVol = to;
                 setTimeout(function() {
                     self.volume(vol, id), vol === toVol && callback && callback();
@@ -1181,7 +1185,7 @@ EngineHolder = function() {
         _drainPool: function() {
             var i, self = this, inactive = 0;
             for (i = 0; i < self._audioNode.length; i++) self._audioNode[i].paused && inactive++;
-            for (i = self._audioNode.length - 1; i >= 0 && !(5 >= inactive); i--) self._audioNode[i].paused && (self._webAudio && self._audioNode[i].disconnect(0), 
+            for (i = self._audioNode.length - 1; i >= 0 && !(inactive <= 5); i--) self._audioNode[i].paused && (self._webAudio && self._audioNode[i].disconnect(0), 
             inactive--, self._audioNode.splice(i, 1));
         },
         _clearEndTimer: function(soundId) {
@@ -1194,7 +1198,7 @@ EngineHolder = function() {
         },
         _setupAudioNode: function() {
             var self = this, node = self._audioNode, index = self._audioNode.length;
-            return node[index] = "undefined" == typeof ctx.createGain ? ctx.createGainNode() : ctx.createGain(), 
+            return node[index] = void 0 === ctx.createGain ? ctx.createGainNode() : ctx.createGain(), 
             node[index].gain.value = self._volume, node[index].paused = !0, node[index]._pos = 0, 
             node[index].readyState = 4, node[index].connect(masterGain), node[index].panner = ctx.createPanner(), 
             node[index].panner.panningModel = self._model || "equalpower", node[index].panner.setPosition(self._pos3d[0], self._pos3d[1], self._pos3d[2]), 
@@ -1263,8 +1267,8 @@ EngineHolder = function() {
             Howler: Howler,
             Howl: Howl
         };
-    }), "undefined" != typeof exports && (exports.Howler = Howler, exports.Howl = Howl), 
-    "undefined" != typeof window && (window.Howler = Howler, window.Howl = Howl);
+    }), void 0 !== exports && (exports.Howler = Howler, exports.Howl = Howl), "undefined" != typeof window && (window.Howler = Howler, 
+    window.Howl = Howl);
 }();
 
 var io = "undefined" == typeof module ? {} : module.exports;
@@ -1303,13 +1307,14 @@ var io = "undefined" == typeof module ? {} : module.exports;
             for (var part in query) query.hasOwnProperty(part) && components.push(part + "=" + query[part]);
             return components.length ? "?" + components.join("&") : "";
         }, util.chunkQuery = function(qs) {
-            for (var kv, query = {}, params = qs.split("&"), i = 0, l = params.length; l > i; ++i) kv = params[i].split("="), 
+            for (var kv, query = {}, params = qs.split("&"), i = 0, l = params.length; i < l; ++i) kv = params[i].split("="), 
             kv[0] && (query[kv[0]] = kv[1]);
             return query;
         };
         var pageLoaded = !1;
         util.load = function(fn) {
-            return "document" in global && "complete" === document.readyState || pageLoaded ? fn() : void util.on(global, "load", fn, !1);
+            if ("document" in global && "complete" === document.readyState || pageLoaded) return fn();
+            util.on(global, "load", fn, !1);
         }, util.on = function(element, event, fn, capture) {
             element.attachEvent ? element.attachEvent("on" + event, fn) : element.addEventListener && element.addEventListener(event, fn, capture);
         }, util.request = function(xdomain) {
@@ -1322,11 +1327,12 @@ var io = "undefined" == typeof module ? {} : module.exports;
         }, "undefined" != typeof window && util.load(function() {
             pageLoaded = !0;
         }), util.defer = function(fn) {
-            return util.ua.webkit && "undefined" == typeof importScripts ? void util.load(function() {
+            if (!util.ua.webkit || "undefined" != typeof importScripts) return fn();
+            util.load(function() {
                 setTimeout(fn, 100);
-            }) : fn();
+            });
         }, util.merge = function(target, additional, deep, lastseen) {
-            var prop, seen = lastseen || [], depth = "undefined" == typeof deep ? 2 : deep;
+            var prop, seen = lastseen || [], depth = void 0 === deep ? 2 : deep;
             for (prop in additional) additional.hasOwnProperty(prop) && util.indexOf(seen, prop) < 0 && ("object" == typeof target[prop] && depth ? util.merge(target[prop], additional[prop], depth - 1, seen) : (target[prop] = additional[prop], 
             seen.push(additional[prop])));
             return target;
@@ -1338,13 +1344,13 @@ var io = "undefined" == typeof module ? {} : module.exports;
         }, util.isArray = Array.isArray || function(obj) {
             return "[object Array]" === Object.prototype.toString.call(obj);
         }, util.intersect = function(arr, arr2) {
-            for (var ret = [], longest = arr.length > arr2.length ? arr : arr2, shortest = arr.length > arr2.length ? arr2 : arr, i = 0, l = shortest.length; l > i; i++) ~util.indexOf(longest, shortest[i]) && ret.push(shortest[i]);
+            for (var ret = [], longest = arr.length > arr2.length ? arr : arr2, shortest = arr.length > arr2.length ? arr2 : arr, i = 0, l = shortest.length; i < l; i++) ~util.indexOf(longest, shortest[i]) && ret.push(shortest[i]);
             return ret;
         }, util.indexOf = function(arr, o, i) {
-            for (var j = arr.length, i = 0 > i ? 0 > i + j ? 0 : i + j : i || 0; j > i && arr[i] !== o; i++) ;
-            return i >= j ? -1 : i;
+            for (var j = arr.length, i = i < 0 ? i + j < 0 ? 0 : i + j : i || 0; i < j && arr[i] !== o; i++) ;
+            return j <= i ? -1 : i;
         }, util.toArray = function(enu) {
-            for (var arr = [], i = 0, l = enu.length; l > i; i++) arr.push(enu[i]);
+            for (var arr = [], i = 0, l = enu.length; i < l; i++) arr.push(enu[i]);
             return arr;
         }, util.ua = {}, util.ua.hasCORS = "undefined" != typeof XMLHttpRequest && function() {
             try {
@@ -1355,7 +1361,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
             return void 0 != a.withCredentials;
         }(), util.ua.webkit = "undefined" != typeof navigator && /webkit/i.test(navigator.userAgent), 
         util.ua.iDevice = "undefined" != typeof navigator && /iPad|iPhone|iPod/i.test(navigator.userAgent);
-    }("undefined" != typeof io ? io : module.exports, this), function(exports, io) {
+    }(void 0 !== io ? io : module.exports, this), function(exports, io) {
         function EventEmitter() {}
         exports.EventEmitter = EventEmitter, EventEmitter.prototype.on = function(name, fn) {
             return this.$events || (this.$events = {}), this.$events[name] ? io.util.isArray(this.$events[name]) ? this.$events[name].push(fn) : this.$events[name] = [ this.$events[name], fn ] : this.$events[name] = fn, 
@@ -1370,11 +1376,11 @@ var io = "undefined" == typeof module ? {} : module.exports;
             if (this.$events && this.$events[name]) {
                 var list = this.$events[name];
                 if (io.util.isArray(list)) {
-                    for (var pos = -1, i = 0, l = list.length; l > i; i++) if (list[i] === fn || list[i].listener && list[i].listener === fn) {
+                    for (var pos = -1, i = 0, l = list.length; i < l; i++) if (list[i] === fn || list[i].listener && list[i].listener === fn) {
                         pos = i;
                         break;
                     }
-                    if (0 > pos) return this;
+                    if (pos < 0) return this;
                     list.splice(pos, 1), list.length || delete this.$events[name];
                 } else (list === fn || list.listener && list.listener === fn) && delete this.$events[name];
             }
@@ -1393,15 +1399,15 @@ var io = "undefined" == typeof module ? {} : module.exports;
             var args = Array.prototype.slice.call(arguments, 1);
             if ("function" == typeof handler) handler.apply(this, args); else {
                 if (!io.util.isArray(handler)) return !1;
-                for (var listeners = handler.slice(), i = 0, l = listeners.length; l > i; i++) listeners[i].apply(this, args);
+                for (var listeners = handler.slice(), i = 0, l = listeners.length; i < l; i++) listeners[i].apply(this, args);
             }
             return !0;
         };
-    }("undefined" != typeof io ? io : module.exports, "undefined" != typeof io ? io : module.parent.exports), 
+    }(void 0 !== io ? io : module.exports, void 0 !== io ? io : module.parent.exports), 
     function(exports, nativeJSON) {
         "use strict";
         function f(n) {
-            return 10 > n ? "0" + n : n;
+            return n < 10 ? "0" + n : n;
         }
         function date(d, key) {
             return isFinite(d.valueOf()) ? d.getUTCFullYear() + "-" + f(d.getUTCMonth() + 1) + "-" + f(d.getUTCDate()) + "T" + f(d.getUTCHours()) + ":" + f(d.getUTCMinutes()) + ":" + f(d.getUTCSeconds()) + "Z" : null;
@@ -1429,13 +1435,12 @@ var io = "undefined" == typeof module ? {} : module.exports;
               case "object":
                 if (!value) return "null";
                 if (gap += indent, partial = [], "[object Array]" === Object.prototype.toString.apply(value)) {
-                    for (length = value.length, i = 0; length > i; i += 1) partial[i] = str(i, value) || "null";
+                    for (length = value.length, i = 0; i < length; i += 1) partial[i] = str(i, value) || "null";
                     return v = 0 === partial.length ? "[]" : gap ? "[\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "]" : "[" + partial.join(",") + "]", 
                     gap = mind, v;
                 }
-                if (rep && "object" == typeof rep) for (length = rep.length, i = 0; length > i; i += 1) "string" == typeof rep[i] && (k = rep[i], 
-                v = str(k, value), v && partial.push(quote(k) + (gap ? ": " : ":") + v)); else for (k in value) Object.prototype.hasOwnProperty.call(value, k) && (v = str(k, value), 
-                v && partial.push(quote(k) + (gap ? ": " : ":") + v));
+                if (rep && "object" == typeof rep) for (length = rep.length, i = 0; i < length; i += 1) "string" == typeof rep[i] && (k = rep[i], 
+                (v = str(k, value)) && partial.push(quote(k) + (gap ? ": " : ":") + v)); else for (k in value) Object.prototype.hasOwnProperty.call(value, k) && (v = str(k, value)) && partial.push(quote(k) + (gap ? ": " : ":") + v);
                 return v = 0 === partial.length ? "{}" : gap ? "{\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "}" : "{" + partial.join(",") + "}", 
                 gap = mind, v;
             }
@@ -1446,7 +1451,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
         };
         var JSON = exports.JSON = {}, cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g, escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g, gap, indent, meta = {
             "\b": "\\b",
-            "	": "\\t",
+            "\t": "\\t",
             "\n": "\\n",
             "\f": "\\f",
             "\r": "\\r",
@@ -1455,7 +1460,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
         }, rep;
         JSON.stringify = function(value, replacer, space) {
             var i;
-            if (gap = "", indent = "", "number" == typeof space) for (i = 0; space > i; i += 1) indent += " "; else "string" == typeof space && (indent = space);
+            if (gap = "", indent = "", "number" == typeof space) for (i = 0; i < space; i += 1) indent += " "; else "string" == typeof space && (indent = space);
             if (rep = replacer, replacer && "function" != typeof replacer && ("object" != typeof replacer || "number" != typeof replacer.length)) throw new Error("JSON.stringify");
             return str("", {
                 "": value
@@ -1476,7 +1481,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
             }, "") : j;
             throw new SyntaxError("JSON.parse");
         };
-    }("undefined" != typeof io ? io : module.exports, "undefined" != typeof JSON ? JSON : void 0), 
+    }(void 0 !== io ? io : module.exports, "undefined" != typeof JSON ? JSON : void 0), 
     function(exports, io) {
         var parser = exports.parser = {}, packets = parser.packets = [ "disconnect", "connect", "heartbeat", "message", "json", "event", "ack", "error", "noop" ], reasons = parser.reasons = [ "transport not supported", "client not handshaken", "unauthorized" ], advice = parser.advice = [ "reconnect" ], JSON = io.JSON, indexOf = io.util.indexOf;
         parser.encodePacket = function(packet) {
@@ -1514,9 +1519,8 @@ var io = "undefined" == typeof module ? {} : module.exports;
         }, parser.encodePayload = function(packets) {
             var decoded = "";
             if (1 == packets.length) return packets[0];
-            for (var i = 0, l = packets.length; l > i; i++) {
-                var packet = packets[i];
-                decoded += "�" + packet.length + "�" + packets[i];
+            for (var i = 0, l = packets.length; i < l; i++) {
+                decoded += "�" + packets[i].length + "�" + packets[i];
             }
             return decoded;
         };
@@ -1562,10 +1566,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
                 if (pieces && (packet.ackId = pieces[1], packet.args = [], pieces[3])) try {
                     packet.args = pieces[3] ? JSON.parse(pieces[3]) : [];
                 } catch (e) {}
-                break;
-
-              case "disconnect":
-              case "heartbeat":            }
+            }
             return packet;
         }, parser.decodePayload = function(data) {
             if ("�" == data.charAt(0)) {
@@ -1575,7 +1576,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
             }
             return [ parser.decodePacket(data) ];
         };
-    }("undefined" != typeof io ? io : module.exports, "undefined" != typeof io ? io : module.parent.exports), 
+    }(void 0 !== io ? io : module.exports, void 0 !== io ? io : module.parent.exports), 
     function(exports, io) {
         function Transport(socket, sessid) {
             this.socket = socket, this.sessid = sessid;
@@ -1586,7 +1587,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
             if (this.clearCloseTimeout(), (this.socket.connected || this.socket.connecting || this.socket.reconnecting) && this.setCloseTimeout(), 
             "" !== data) {
                 var msgs = io.parser.decodePayload(data);
-                if (msgs && msgs.length) for (var i = 0, l = msgs.length; l > i; i++) this.onPacket(msgs[i]);
+                if (msgs && msgs.length) for (var i = 0, l = msgs.length; i < l; i++) this.onPacket(msgs[i]);
             }
             return this;
         }, Transport.prototype.onPacket = function(packet) {
@@ -1625,13 +1626,13 @@ var io = "undefined" == typeof module ? {} : module.exports;
         }, Transport.prototype.ready = function(socket, fn) {
             fn.call(this);
         };
-    }("undefined" != typeof io ? io : module.exports, "undefined" != typeof io ? io : module.parent.exports), 
+    }(void 0 !== io ? io : module.exports, void 0 !== io ? io : module.parent.exports), 
     function(exports, io, global) {
         function Socket(options) {
             if (this.options = {
                 port: 80,
                 secure: !1,
-                document: "document" in global ? document : !1,
+                document: "document" in global && document,
                 resource: "socket.io",
                 transports: io.transports,
                 "connect timeout": 1e4,
@@ -1692,8 +1693,9 @@ var io = "undefined" == typeof module ? {} : module.exports;
             var self = this;
             return self.connecting = !0, this.handshake(function(sid, heartbeat, close, transports) {
                 function connect(transports) {
-                    return self.transport && self.transport.clearTimeouts(), self.transport = self.getTransport(transports), 
-                    self.transport ? void self.transport.ready(self, function() {
+                    if (self.transport && self.transport.clearTimeouts(), self.transport = self.getTransport(transports), 
+                    !self.transport) return self.publish("connect_failed");
+                    self.transport.ready(self, function() {
                         self.connecting = !0, self.publish("connecting", self.transport.name), self.transport.open(), 
                         self.options["connect timeout"] && (self.connectTimeoutTimer = setTimeout(function() {
                             if (!self.connected && (self.connecting = !1, self.options["try multiple transports"])) {
@@ -1701,7 +1703,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
                                 remaining.length ? connect(remaining) : self.publish("connect_failed");
                             }
                         }, self.options["connect timeout"]));
-                    }) : self.publish("connect_failed");
+                    });
                 }
                 self.sessionid = sid, self.closeTimeout = 1e3 * close, self.heartbeatTimeout = 1e3 * heartbeat, 
                 self.transports || (self.transports = self.origTransports = transports ? io.util.intersect(transports.split(","), self.options.transports) : self.options.transports), 
@@ -1764,19 +1766,19 @@ var io = "undefined" == typeof module ? {} : module.exports;
                 self.options["try multiple transports"] = tryMultiple;
             }
             function maybeReconnect() {
-                return self.reconnecting ? self.connected ? reset() : self.connecting && self.reconnecting ? self.reconnectionTimer = setTimeout(maybeReconnect, 1e3) : void (self.reconnectionAttempts++ >= maxAttempts ? self.redoTransports ? (self.publish("reconnect_failed"), 
+                if (self.reconnecting) return self.connected ? reset() : self.connecting && self.reconnecting ? self.reconnectionTimer = setTimeout(maybeReconnect, 1e3) : void (self.reconnectionAttempts++ >= maxAttempts ? self.redoTransports ? (self.publish("reconnect_failed"), 
                 reset()) : (self.on("connect_failed", maybeReconnect), self.options["try multiple transports"] = !0, 
                 self.transports = self.origTransports, self.transport = self.getTransport(), self.redoTransports = !0, 
                 self.connect()) : (self.reconnectionDelay < limit && (self.reconnectionDelay *= 2), 
                 self.connect(), self.publish("reconnecting", self.reconnectionDelay, self.reconnectionAttempts), 
-                self.reconnectionTimer = setTimeout(maybeReconnect, self.reconnectionDelay))) : void 0;
+                self.reconnectionTimer = setTimeout(maybeReconnect, self.reconnectionDelay)));
             }
             this.reconnecting = !0, this.reconnectionAttempts = 0, this.reconnectionDelay = this.options["reconnection delay"];
             var self = this, maxAttempts = this.options["max reconnection attempts"], tryMultiple = this.options["try multiple transports"], limit = this.options["reconnection limit"];
             this.options["try multiple transports"] = !1, this.reconnectionTimer = setTimeout(maybeReconnect, this.reconnectionDelay), 
             this.on("connect", maybeReconnect);
         };
-    }("undefined" != typeof io ? io : module.exports, "undefined" != typeof io ? io : module.parent.exports, this), 
+    }(void 0 !== io ? io : module.exports, void 0 !== io ? io : module.parent.exports, this), 
     function(exports, io) {
         function SocketNamespace(socket, name) {
             this.socket = socket, this.name = name || "", this.flags = {}, this.json = new Flag(this, "json"), 
@@ -1854,7 +1856,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
         }, Flag.prototype.emit = function() {
             this.namespace.flags[this.name] = !0, this.namespace.emit.apply(this.namespace, arguments);
         };
-    }("undefined" != typeof io ? io : module.exports, "undefined" != typeof io ? io : module.parent.exports), 
+    }(void 0 !== io ? io : module.exports, void 0 !== io ? io : module.parent.exports), 
     function(exports, io, global) {
         function WS(socket) {
             io.Transport.apply(this, arguments);
@@ -1880,7 +1882,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
         } : WS.prototype.send = function(data) {
             return this.websocket.send(data), this;
         }, WS.prototype.payload = function(arr) {
-            for (var i = 0, l = arr.length; l > i; i++) this.packet(arr[i]);
+            for (var i = 0, l = arr.length; i < l; i++) this.packet(arr[i]);
             return this;
         }, WS.prototype.close = function() {
             return this.websocket.close(), this;
@@ -1893,7 +1895,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
         }, WS.xdomainCheck = function() {
             return !0;
         }, io.transports.push("websocket");
-    }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports, this), 
+    }(void 0 !== io ? io.Transport : module.exports, void 0 !== io ? io : module.parent.exports, this), 
     function(exports, io) {
         function Flashsocket() {
             io.Transport.websocket.apply(this, arguments);
@@ -1920,14 +1922,15 @@ var io = "undefined" == typeof module ? {} : module.exports;
                 WebSocket.__initialize(), Flashsocket.loaded = !0), fn.call(self);
             }
             var self = this;
-            return document.body ? init() : void io.util.load(init);
+            if (document.body) return init();
+            io.util.load(init);
         }, Flashsocket.check = function() {
-            return "undefined" != typeof WebSocket && "__initialize" in WebSocket && swfobject ? swfobject.getFlashPlayerVersion().major >= 10 : !1;
+            return !!("undefined" != typeof WebSocket && "__initialize" in WebSocket && swfobject) && swfobject.getFlashPlayerVersion().major >= 10;
         }, Flashsocket.xdomainCheck = function() {
             return !0;
         }, "undefined" != typeof window && (WEB_SOCKET_DISABLE_AUTO_INITIALIZATION = !0), 
         io.transports.push("flashsocket");
-    }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports), 
+    }(void 0 !== io ? io.Transport : module.exports, void 0 !== io ? io : module.parent.exports), 
     "undefined" != typeof window) var swfobject = function() {
         function f() {
             if (!J) {
@@ -1938,7 +1941,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
                     return;
                 }
                 J = !0;
-                for (var X = U.length, Y = 0; X > Y; Y++) U[Y]();
+                for (var X = U.length, Y = 0; Y < X; Y++) U[Y]();
             }
         }
         function K(X) {
@@ -1965,14 +1968,14 @@ var io = "undefined" == typeof module ? {} : module.exports;
                     if (typeof Z.GetVariable != D) {
                         var ab = Z.GetVariable("$version");
                         ab && (ab = ab.split(" ")[1].split(","), M.pv = [ parseInt(ab[0], 10), parseInt(ab[1], 10), parseInt(ab[2], 10) ]);
-                    } else if (10 > Y) return Y++, void setTimeout(arguments.callee, 10);
+                    } else if (Y < 10) return Y++, void setTimeout(arguments.callee, 10);
                     X.removeChild(aa), Z = null, H();
                 }();
             } else H();
         }
         function H() {
             var ag = o.length;
-            if (ag > 0) for (var af = 0; ag > af; af++) {
+            if (ag > 0) for (var af = 0; af < ag; af++) {
                 var Y = o[af].id, ab = o[af].callbackFn, aa = {
                     success: !1,
                     id: Y
@@ -1983,7 +1986,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
                         var ai = {};
                         ai.data = o[af].expressInstall, ai.width = ae.getAttribute("width") || "0", ai.height = ae.getAttribute("height") || "0", 
                         ae.getAttribute("class") && (ai.styleclass = ae.getAttribute("class")), ae.getAttribute("align") && (ai.align = ae.getAttribute("align"));
-                        for (var ah = {}, X = ae.getElementsByTagName("param"), ac = X.length, ad = 0; ac > ad; ad++) "movie" != X[ad].getAttribute("name").toLowerCase() && (ah[X[ad].getAttribute("name")] = X[ad].getAttribute("value"));
+                        for (var ah = {}, X = ae.getElementsByTagName("param"), ac = X.length, ad = 0; ad < ac; ad++) "movie" != X[ad].getAttribute("name").toLowerCase() && (ah[X[ad].getAttribute("name")] = X[ad].getAttribute("value"));
                         P(ai, ah, Y, ab);
                     } else p(ae), ab && ab(aa); else w(Y, !0), ab && (aa.success = !0, aa.ref = z(Y), 
                     ab(aa));
@@ -2040,7 +2043,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
                 var Y = ab.getElementsByTagName(r)[0];
                 if (Y) {
                     var ad = Y.childNodes;
-                    if (ad) for (var X = ad.length, Z = 0; X > Z; Z++) 1 == ad[Z].nodeType && "PARAM" == ad[Z].nodeName || 8 == ad[Z].nodeType || aa.appendChild(ad[Z].cloneNode(!0));
+                    if (ad) for (var X = ad.length, Z = 0; Z < X; Z++) 1 == ad[Z].nodeType && "PARAM" == ad[Z].nodeName || 8 == ad[Z].nodeType || aa.appendChild(ad[Z].cloneNode(!0));
                 }
             }
             return aa;
@@ -2121,18 +2124,16 @@ var io = "undefined" == typeof module ? {} : module.exports;
             }
         }
         function L(Y) {
-            var Z = /[\\\"<>\.;]/, X = null != Z.exec(Y);
-            return X && typeof encodeURIComponent != D ? encodeURIComponent(Y) : Y;
+            return null != /[\\\"<>\.;]/.exec(Y) && typeof encodeURIComponent != D ? encodeURIComponent(Y) : Y;
         }
         var l, Q, E, B, n, G, D = "undefined", r = "object", S = "Shockwave Flash", W = "ShockwaveFlash.ShockwaveFlash", q = "application/x-shockwave-flash", R = "SWFObjectExprInst", x = "onreadystatechange", O = window, j = document, t = navigator, T = !1, U = [ h ], o = [], N = [], I = [], J = !1, a = !1, m = !0, M = function() {
-            var aa = typeof j.getElementById != D && typeof j.getElementsByTagName != D && typeof j.createElement != D, ah = t.userAgent.toLowerCase(), Y = t.platform.toLowerCase(), ae = Y ? /win/.test(Y) : /win/.test(ah), ac = Y ? /mac/.test(Y) : /mac/.test(ah), af = /webkit/.test(ah) ? parseFloat(ah.replace(/^.*webkit\/(\d+(\.\d+)?).*$/, "$1")) : !1, X = !1, ag = [ 0, 0, 0 ], ab = null;
-            if (typeof t.plugins != D && typeof t.plugins[S] == r) ab = t.plugins[S].description, 
-            !ab || typeof t.mimeTypes != D && t.mimeTypes[q] && !t.mimeTypes[q].enabledPlugin || (T = !0, 
+            var aa = typeof j.getElementById != D && typeof j.getElementsByTagName != D && typeof j.createElement != D, ah = t.userAgent.toLowerCase(), Y = t.platform.toLowerCase(), ae = /win/.test(Y ? Y : ah), ac = /mac/.test(Y ? Y : ah), af = !!/webkit/.test(ah) && parseFloat(ah.replace(/^.*webkit\/(\d+(\.\d+)?).*$/, "$1")), X = !1, ag = [ 0, 0, 0 ], ab = null;
+            if (typeof t.plugins != D && typeof t.plugins[S] == r) !(ab = t.plugins[S].description) || typeof t.mimeTypes != D && t.mimeTypes[q] && !t.mimeTypes[q].enabledPlugin || (T = !0, 
             X = !1, ab = ab.replace(/^.*\s+(\S+\s+\S+$)/, "$1"), ag[0] = parseInt(ab.replace(/^(.*)\..*$/, "$1"), 10), 
             ag[1] = parseInt(ab.replace(/^.*\.(.*)\s.*$/, "$1"), 10), ag[2] = /[a-zA-Z]/.test(ab) ? parseInt(ab.replace(/^.*[a-zA-Z]+(.*)$/, "$1"), 10) : 0); else if (typeof O[[ "Active" ].concat("Object").join("X")] != D) try {
                 var ad = new (window[[ "Active" ].concat("Object").join("X")])(W);
-                ad && (ab = ad.GetVariable("$version"), ab && (X = !0, ab = ab.split(" ")[1].split(","), 
-                ag = [ parseInt(ab[0], 10), parseInt(ab[1], 10), parseInt(ab[2], 10) ]));
+                ad && (ab = ad.GetVariable("$version")) && (X = !0, ab = ab.split(" ")[1].split(","), 
+                ag = [ parseInt(ab[0], 10), parseInt(ab[1], 10), parseInt(ab[2], 10) ]);
             } catch (Z) {}
             return {
                 w3: aa,
@@ -2148,7 +2149,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
             J || (typeof j.addEventListener != D && j.addEventListener("DOMContentLoaded", f, !1), 
             M.ie && M.win && (j.attachEvent(x, function() {
                 "complete" == j.readyState && (j.detachEvent(x, arguments.callee), f());
-            }), O == top && !function() {
+            }), O == top && function() {
                 if (!J) {
                     try {
                         j.documentElement.doScroll("left");
@@ -2157,13 +2158,13 @@ var io = "undefined" == typeof module ? {} : module.exports;
                     }
                     f();
                 }
-            }()), M.wk && !function() {
-                return J ? void 0 : /loaded|complete/.test(j.readyState) ? void f() : void setTimeout(arguments.callee, 0);
+            }()), M.wk && function() {
+                if (!J) /loaded|complete/.test(j.readyState) ? f() : setTimeout(arguments.callee, 0);
             }(), s(f)));
         })(), function() {
             M.ie && M.win && window.attachEvent("onunload", function() {
-                for (var ac = I.length, ab = 0; ac > ab; ab++) I[ab][0].detachEvent(I[ab][1], I[ab][2]);
-                for (var Z = N.length, aa = 0; Z > aa; aa++) y(N[aa]);
+                for (var ac = I.length, ab = 0; ab < ac; ab++) I[ab][0].detachEvent(I[ab][1], I[ab][2]);
+                for (var Z = N.length, aa = 0; aa < Z; aa++) y(N[aa]);
                 for (var Y in M) M[Y] = null;
                 M = null;
                 for (var X in swfobject) swfobject[X] = null;
@@ -2182,7 +2183,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
                 });
             },
             getObjectById: function(X) {
-                return M.w3 ? z(X) : void 0;
+                if (M.w3) return z(X);
             },
             embedSWF: function(ab, ah, ae, ag, Y, aa, Z, ad, af, ac) {
                 var X = {
@@ -2270,7 +2271,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
             }, WebSocket.prototype.send = function(data) {
                 if (this.readyState == WebSocket.CONNECTING) throw "INVALID_STATE_ERR: Web Socket connection has not been established";
                 var result = WebSocket.__flash.send(this.__id, encodeURIComponent(data));
-                return 0 > result ? !0 : (this.bufferedAmount += result, !1);
+                return result < 0 || (this.bufferedAmount += result, !1);
             }, WebSocket.prototype.close = function() {
                 this.readyState != WebSocket.CLOSED && this.readyState != WebSocket.CLOSING && (this.readyState = WebSocket.CLOSING, 
                 WebSocket.__flash.close(this.__id));
@@ -2363,7 +2364,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
             }, WebSocket.__isFlashLite = function() {
                 if (!window.navigator || !window.navigator.mimeTypes) return !1;
                 var mimeType = window.navigator.mimeTypes["application/x-shockwave-flash"];
-                return mimeType && mimeType.enabledPlugin && mimeType.enabledPlugin.filename ? !!mimeType.enabledPlugin.filename.match(/flashlite/i) : !1;
+                return !!(mimeType && mimeType.enabledPlugin && mimeType.enabledPlugin.filename) && !!mimeType.enabledPlugin.filename.match(/flashlite/i);
             }, window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION || (window.addEventListener ? window.addEventListener("load", function() {
                 WebSocket.__initialize();
             }, !1) : window.attachEvent("onload", function() {
@@ -2379,7 +2380,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
             return this.socket.setBuffer(!1), this.onOpen(), this.get(), this.setCloseTimeout(), 
             this;
         }, XHR.prototype.payload = function(payload) {
-            for (var msgs = [], i = 0, l = payload.length; l > i; i++) msgs.push(io.parser.encodePacket(payload[i]));
+            for (var msgs = [], i = 0, l = payload.length; i < l; i++) msgs.push(io.parser.encodePacket(payload[i]));
             this.send(io.parser.encodePayload(msgs));
         }, XHR.prototype.send = function(data) {
             return this.post(data), this;
@@ -2412,7 +2413,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
         }, XHR.xdomainCheck = function(socket) {
             return XHR.check(socket, !0);
         };
-    }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports, this), 
+    }(void 0 !== io ? io.Transport : module.exports, void 0 !== io ? io : module.parent.exports, this), 
     function(exports, io) {
         function HTMLFile(socket) {
             io.Transport.XHR.apply(this, arguments);
@@ -2446,14 +2447,13 @@ var io = "undefined" == typeof module ? {} : module.exports;
             return this.destroy(), io.Transport.XHR.prototype.close.call(this);
         }, HTMLFile.check = function(socket) {
             if ("undefined" != typeof window && [ "Active" ].concat("Object").join("X") in window) try {
-                var a = new (window[[ "Active" ].concat("Object").join("X")])("htmlfile");
-                return a && io.Transport.XHR.check(socket);
+                return new (window[[ "Active" ].concat("Object").join("X")])("htmlfile") && io.Transport.XHR.check(socket);
             } catch (e) {}
             return !1;
         }, HTMLFile.xdomainCheck = function() {
             return !1;
         }, io.transports.push("htmlfile");
-    }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports), 
+    }(void 0 !== io ? io.Transport : module.exports, void 0 !== io ? io : module.parent.exports), 
     function(exports, io, global) {
         function XHRPolling() {
             io.Transport.XHR.apply(this, arguments);
@@ -2497,7 +2497,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
                 fn.call(self);
             });
         }, io.transports.push("xhr-polling");
-    }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports, this), 
+    }(void 0 !== io ? io.Transport : module.exports, void 0 !== io ? io : module.parent.exports, this), 
     function(exports, io, global) {
         function JSONPPolling(socket) {
             io.Transport["xhr-polling"].apply(this, arguments), this.index = io.j.length;
@@ -2551,15 +2551,16 @@ var io = "undefined" == typeof module ? {} : module.exports;
             return this.onData(msg), this.isOpen && this.get(), this;
         }, JSONPPolling.prototype.ready = function(socket, fn) {
             var self = this;
-            return indicator ? void io.util.load(function() {
+            if (!indicator) return fn.call(this);
+            io.util.load(function() {
                 fn.call(self);
-            }) : fn.call(this);
+            });
         }, JSONPPolling.check = function() {
             return "document" in global;
         }, JSONPPolling.xdomainCheck = function() {
             return !0;
         }, io.transports.push("jsonp-polling");
-    }("undefined" != typeof io ? io.Transport : module.exports, "undefined" != typeof io ? io : module.parent.exports, this), 
+    }(void 0 !== io ? io.Transport : module.exports, void 0 !== io ? io : module.parent.exports, this), 
     "function" == typeof define && define.amd && define([], function() {
         return io;
     });
@@ -2568,7 +2569,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
 var StackOverflow, bezier, bezier1, bezier2, bezierT;
 
 StackOverflow = StackOverflow || {}, StackOverflow.drawBezier = function(options, ctx) {
-    var a, b, c, cDist, curveSample, i, j, k, len, letterPadding, p, point, ref, ribbon, ribbonSpecs, textCurve, totalLength, totalPadding, w, ww, x1, x2, xDist, z;
+    var a, b, c, cDist, curveSample, i, j, k, len, letterPadding, p, ref, ribbon, ribbonSpecs, textCurve, totalLength, totalPadding, w, ww, x1, x2, z;
     if (null == options && (options = {}), options = Helper.shallowClone(options), null != options.curve && null == options.points && (options.points = options.curve.split(",")), 
     null == options.text && (options.text = "Text"), null == options.letterPadding && (options.letterPadding = .25), 
     null == options.fillStyle && (options.fillStyle = "white"), null == options.fillLineWidth && (options.fillLineWidth = 1), 
@@ -2579,8 +2580,8 @@ StackOverflow = StackOverflow || {}, StackOverflow.drawBezier = function(options
     null == options.y && (options.y = 0), 8 !== options.points.length) throw "needs 8 points";
     for (options.points = options.points.map(function(item) {
         return parseFloat(item);
-    }), i = 0, ref = options.points, k = 0, len = ref.length; len > k; k++) point = ref[k], 
-    i % 2 === 0 ? options.points[i] += options.x : options.points[i] += options.y, i += 1;
+    }), i = 0, ref = options.points, k = 0, len = ref.length; k < len; k++) ref[k], 
+    options.points[i] += i % 2 == 0 ? options.x : options.y, i += 1;
     if (ribbonSpecs = {
         maxChar: options.maxChar,
         startX: options.points[0],
@@ -2595,7 +2596,7 @@ StackOverflow = StackOverflow || {}, StackOverflow.drawBezier = function(options
     ctx.bezierCurveTo(ribbonSpecs.control1X, ribbonSpecs.control1Y, ribbonSpecs.control2X, ribbonSpecs.control2Y, ribbonSpecs.endX, ribbonSpecs.endY), 
     ctx.stroke(), ctx.restore()), options.drawText) {
         for (textCurve = [], ribbon = options.text.substring(0, ribbonSpecs.maxChar), curveSample = 1e3, 
-        xDist = 0, i = 0, i = 0; curveSample > i; ) a = new bezier2(i / curveSample, ribbonSpecs.startX, ribbonSpecs.startY, ribbonSpecs.control1X, ribbonSpecs.control1Y, ribbonSpecs.control2X, ribbonSpecs.control2Y, ribbonSpecs.endX, ribbonSpecs.endY), 
+        0, i = 0, i = 0; i < curveSample; ) a = new bezier2(i / curveSample, ribbonSpecs.startX, ribbonSpecs.startY, ribbonSpecs.control1X, ribbonSpecs.control1Y, ribbonSpecs.control2X, ribbonSpecs.control2Y, ribbonSpecs.endX, ribbonSpecs.endY), 
         b = new bezier2((i + 1) / curveSample, ribbonSpecs.startX, ribbonSpecs.startY, ribbonSpecs.control1X, ribbonSpecs.control1Y, ribbonSpecs.control2X, ribbonSpecs.control2Y, ribbonSpecs.endX, ribbonSpecs.endY), 
         c = new bezier(a, b), textCurve.push({
             bezier: a,
@@ -2604,20 +2605,20 @@ StackOverflow = StackOverflow || {}, StackOverflow.drawBezier = function(options
         for (letterPadding = ctx.measureText(" ").width * options.letterPadding, w = ribbon.length, 
         ww = Math.round(ctx.measureText(ribbon).width), totalPadding = (w - 1) * letterPadding, 
         totalLength = ww + totalPadding, p = 0, cDist = textCurve[curveSample - 1].curve.cDist, 
-        z = cDist / 2 - totalLength / 2, i = 0; curveSample > i; ) {
+        z = cDist / 2 - totalLength / 2, i = 0; i < curveSample; ) {
             if (textCurve[i].curve.cDist >= z) {
                 p = i;
                 break;
             }
             i++;
         }
-        for (i = 0; w > i; ) {
+        for (i = 0; i < w; ) {
             for (ctx.save(), ctx.translate(textCurve[p].bezier.point.x, textCurve[p].bezier.point.y), 
             ctx.rotate(textCurve[p].curve.rad), ctx.font = options.font, null != options.strokeStyle && (ctx.strokeStyle = options.strokeStyle, 
             ctx.lineWidth = options.strokeLineWidth, ctx.strokeText(ribbon[i], 0, 0)), ctx.fillStyle = options.fillStyle, 
             ctx.lineWidth = options.fillLineWidth, ctx.fillText(ribbon[i], 0, 0), ctx.restore(), 
-            x1 = ctx.measureText(ribbon[i]).width + letterPadding, x2 = 0, j = p; curveSample > j; ) {
-                if (x2 += textCurve[j].curve.dist, x2 >= x1) {
+            x1 = ctx.measureText(ribbon[i]).width + letterPadding, x2 = 0, j = p; j < curveSample; ) {
+                if ((x2 += textCurve[j].curve.dist) >= x1) {
                     p = j;
                     break;
                 }
@@ -2627,9 +2628,9 @@ StackOverflow = StackOverflow || {}, StackOverflow.drawBezier = function(options
         }
     }
 }, bezier = function(b1, b2) {
-    var dx, dx2, xDist;
-    this.rad = Math.atan(b1.point.mY / b1.point.mX), this.b2 = b2, this.b1 = b1, dx = b2.x - b1.x, 
-    dx2 = (b2.x - b1.x) * (b2.x - b1.x), this.dist = Math.sqrt((b2.x - b1.x) * (b2.x - b1.x) + (b2.y - b1.y) * (b2.y - b1.y)), 
+    var xDist;
+    this.rad = Math.atan(b1.point.mY / b1.point.mX), this.b2 = b2, this.b1 = b1, b2.x, 
+    b1.x, b2.x, b1.x, b2.x, b1.x, this.dist = Math.sqrt((b2.x - b1.x) * (b2.x - b1.x) + (b2.y - b1.y) * (b2.y - b1.y)), 
     xDist += this.dist, this.curve = {
         rad: this.rad,
         dist: this.dist,
@@ -2739,6 +2740,6 @@ GameInstance = function() {
     }, GameInstance.prototype.startTicking = function() {
         return this.setTickInterval(this.config.ticksPerSecond);
     }, GameInstance.prototype.stopTicking = function() {
-        return null != this.tickInterval ? clearInterval(this.tickInterval) : void 0;
+        if (null != this.tickInterval) return clearInterval(this.tickInterval);
     }, GameInstance;
 }(), exports.GameInstance = GameInstance;
