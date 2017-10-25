@@ -28,6 +28,7 @@ Ammo().then((Ammo) ->
         'KeyA': 'left'
         'KeyD': 'right'
       @syncList = []
+      @boxes = []
 
       engine.setClearColor( 0xbfd1e5 )
 
@@ -42,7 +43,6 @@ Ammo().then((Ammo) ->
       solver = new (Ammo.btSequentialImpulseConstraintSolver)
       @physicsWorld = new (Ammo.btDiscreteDynamicsWorld)(dispatcher, broadphase, solver, collisionConfiguration)
       @physicsWorld.setGravity new (Ammo.btVector3)(0, -9.82, 0)
-      return
 
     initGraphics: ->
       ambientLight = new (THREE.AmbientLight)(0x404040)
@@ -55,13 +55,12 @@ Ammo().then((Ammo) ->
       @materialDynamic = new (THREE.MeshPhongMaterial)(color: 0xfca400)
       @materialStatic = new (THREE.MeshPhongMaterial)(color: 0x999999)
       @materialInteractive = new (THREE.MeshPhongMaterial)(color: 0x990000)
-      return
 
     createObjects: ->
-      new Box(new (THREE.Vector3)(0, -0.5, 0), @ZERO_QUATERNION, 75, 1, 75, 0, 2, @)
+      @boxes.push(new Box(new (THREE.Vector3)(0, -0.5, 0), @ZERO_QUATERNION, 75, 1, 75, 0, 2, @))
       quaternion = new (THREE.Quaternion)(0, 0, 0, 1)
       quaternion.setFromAxisAngle new (THREE.Vector3)(1, 0, 0), -Math.PI / 18
-      new Box(new (THREE.Vector3)(0, -1.5, 0), quaternion, 8, 4, 10, 0, undefined, @)
+      @boxes.push(new Box(new (THREE.Vector3)(0, -1.5, 0), quaternion, 8, 4, 10, 0, undefined, @))
       size = .75
       nw = 8
       nh = 6
@@ -69,17 +68,19 @@ Ammo().then((Ammo) ->
       while j < nw
         i = 0
         while i < nh
-          new Box(new (THREE.Vector3)(size * j - (size * (nw - 1) / 2), size * i, 10), @ZERO_QUATERNION, size, size, size, 10, undefined, @)
+          @boxes.push(new Box(new (THREE.Vector3)(size * j - (size * (nw - 1) / 2), size * i, 10), @ZERO_QUATERNION, size, size, size, 10, undefined, @))
           i++
         j++
-      new Vehicle(new (THREE.Vector3)(0, 4, -20), @ZERO_QUATERNION, @)
-      return
+      @vehicle = new Vehicle(new (THREE.Vector3)(0, 4, -20), @ZERO_QUATERNION, @)
 
     tick: (tpf) ->
       i = 0
       while i < @syncList.length
         @syncList[i] tpf
         i++
+      for box in @boxes
+        box.tick(tpf)
+      # @vehicle.tick(tpf) if @vehicle?
       @physicsWorld.stepSimulation tpf, 10
 
     doMouseEvent: (event, raycaster) ->

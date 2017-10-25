@@ -154,3 +154,61 @@ class Vehicle extends BaseModel
     mesh = new (THREE.Mesh)(shape, @gameScene.materialInteractive)
     @gameScene.scene.add mesh
     mesh
+
+  tick: (tpf) ->
+    speed = vehicle.getCurrentSpeedKmHour()
+    # speedometer.innerHTML = (if speed < 0 then '(R) ' else '') + Math.abs(speed).toFixed(1) + ' km/h'
+    breakingForce = 0
+    engineForce = 0
+    if gameScene.actions.acceleration
+      if speed < -1
+        breakingForce = maxBreakingForce
+      else
+        engineForce = maxEngineForce
+    if gameScene.actions.braking
+      if speed > 1
+        breakingForce = maxBreakingForce
+      else
+        engineForce = -maxEngineForce / 2
+    if gameScene.actions.left
+      if vehicleSteering < steeringClamp
+        vehicleSteering += steeringIncrement
+    else
+      if gameScene.actions.right
+        if vehicleSteering > -steeringClamp
+          vehicleSteering -= steeringIncrement
+      else
+        if vehicleSteering < -steeringIncrement
+          vehicleSteering += steeringIncrement
+        else
+          if vehicleSteering > steeringIncrement
+            vehicleSteering -= steeringIncrement
+          else
+            vehicleSteering = 0
+    vehicle.applyEngineForce engineForce, BACK_LEFT
+    vehicle.applyEngineForce engineForce, BACK_RIGHT
+    vehicle.setBrake breakingForce / 2, FRONT_LEFT
+    vehicle.setBrake breakingForce / 2, FRONT_RIGHT
+    vehicle.setBrake breakingForce, BACK_LEFT
+    vehicle.setBrake breakingForce, BACK_RIGHT
+    vehicle.setSteeringValue vehicleSteering, FRONT_LEFT
+    vehicle.setSteeringValue vehicleSteering, FRONT_RIGHT
+    tm = undefined
+    p = undefined
+    q = undefined
+    i = undefined
+    n = vehicle.getNumWheels()
+    i = 0
+    while i < n
+      vehicle.updateWheelTransform i, true
+      tm = vehicle.getWheelTransformWS(i)
+      p = tm.getOrigin()
+      q = tm.getRotation()
+      wheelMeshes[i].position.set p.x(), p.y(), p.z()
+      wheelMeshes[i].quaternion.set q.x(), q.y(), q.z(), q.w()
+      i++
+    tm = vehicle.getChassisWorldTransform()
+    p = tm.getOrigin()
+    q = tm.getRotation()
+    chassisMesh.position.set p.x(), p.y(), p.z()
+    chassisMesh.quaternion.set q.x(), q.y(), q.z(), q.w()
