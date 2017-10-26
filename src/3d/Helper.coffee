@@ -226,7 +226,7 @@ class Helper
   # @param [Object] options containing size, material and color
   @cube: (options = {}) ->
     options.size = 1 unless options.size?
-    options.material = 'MeshNormalMaterial' unless options.material?
+    options.material = 'MeshPhongMaterial' unless options.material?
     options.color = 0xff0000 unless options.color?
     box = new (THREE.BoxGeometry)(options.size, options.size, options.size)
     if options.map?
@@ -235,10 +235,10 @@ class Helper
         transparent: true
         side: THREE.DoubleSide)
     else
-      if options.material == 'MeshNormalMaterial'
-        mat = new (THREE[options.material])()
-      else
+      if options.color?
         mat = new (THREE[options.material])(color: options.color)
+      else
+        mat = new (THREE[options.material])()
     new (THREE.Mesh)(box, mat)
 
   # Clones a JsonModel from the JsonModelManager

@@ -27,7 +27,7 @@ class JsonModelManager
       @loader.load "#{@baseUrl}#{url}", (geometry, materials) ->
         jmm = window.JsonModelManager.get()
 
-        mesh = new (THREE.SkinnedMesh)(geometry, new (THREE.MeshFaceMaterial)(materials))
+        mesh = new (THREE.SkinnedMesh)(geometry, materials)
         for mat in materials
           mat.skinning = true
 
@@ -66,13 +66,17 @@ class JsonModelManager
     # @nodoc
     # When cloning a SkinnedMesh, three.js doesn't clone the materials so
     # we need to do that
+    #
+    # TODO: find out if this is still true
     _hack: (mesh) ->
-      mesh.material = mesh.material.clone()
-      # mesh.material.needsUpdate = true
-      # mesh.material.materials[0] = mesh.material.materials[0].clone()
-      # mesh.material.materials[0].needsUpdate = true
-      mesh.material.materials[0].map = mesh.material.materials[0].map.clone()
-      mesh.material.materials[0].map.needsUpdate = true
+      materials = []
+      for mat in mesh.material
+        clone = mat.clone()
+        clone.map = clone.map.clone()
+        clone.map.needsUpdate = true
+        materials.push clone
+
+      mesh.material = materials
       mesh
 
     # Check if all objects which started loading have finished loading
