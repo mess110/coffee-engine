@@ -24,9 +24,12 @@ Ammo().then((Ammo) ->
   Hodler.add('menuScene', menuScene)
   gameScene = new GameScene()
   Hodler.add('gameScene', gameScene)
+  walkingScene = new WalkingScene()
+  Hodler.add('walkingScene', walkingScene)
 
   Engine3D.scenify(engine, ->
-    engine.initScene(menuScene)
+    # engine.initScene(menuScene)
+    engine.initScene(walkingScene)
   )
 
   engine.start()

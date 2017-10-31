@@ -9,6 +9,10 @@
     {
       "type": "texture",
       "destPath": "assets/track01.png"
+    },
+    {
+      "type": "model",
+      "destPath": "assets/dacia1310.json"
     }
   ],
   "cameras": [],

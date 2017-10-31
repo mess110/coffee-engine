@@ -135,6 +135,7 @@ class BaseModel
 
     return anim
 
+  # updates all animations
   updateAnimations: (tpf) ->
     if @mesh.animationsMixer?
       @mesh.animationsMixer.update(tpf)
@@ -171,5 +172,25 @@ class BaseModel
     allAnimations = @mesh.animations.map (a) -> a.data.name
     throw "#{animationName} not found. Possible animations are: #{allAnimations}"
 
+  # Gets the animation duration in seconds
+  #
+  # @param [String] animationName
   duration: (animationName) ->
     @animation(animationName)._clip.duration * 1000
+
+  # Move the mesh to the body position according to ammo.js
+  #
+  # @example
+  #
+  #   @TRANSFORM_AUX = new (Ammo.btTransform)
+  #
+  #   tick: (tpf) ->
+  #     @moveToBody(@TRANSFORM_AUX)
+  moveToBody: (transformAux) ->
+    ms = @body.getMotionState()
+    if ms
+      ms.getWorldTransform transformAux
+      p = transformAux.getOrigin()
+      q = transformAux.getRotation()
+      @mesh.position.set p.x(), p.y(), p.z()
+      @mesh.quaternion.set q.x(), q.y(), q.z(), q.w()

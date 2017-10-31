@@ -1,4 +1,4 @@
-class GameScene extends BaseScene
+class WalkingScene extends BaseScene
 
   init: (options) ->
     @ZERO_QUATERNION = new (THREE.Quaternion)(0, 0, 0, 1)
@@ -19,19 +19,21 @@ class GameScene extends BaseScene
 
     @initGraphics()
     @physicsWorld = Helper.physicsWorld()
-    @terrain = new PhysicsTerrain(@physicsWorld)
-    @scene.add @terrain.mesh
+    Hodler.add('physicsWorld', @physicsWorld)
 
-    @miniMap = new MiniMap()
-    @scene.add @miniMap.mesh
+    # @terrain = new PhysicsTerrain(@physicsWorld)
+    # @scene.add @terrain.mesh
+
+    # @miniMap = new MiniMap()
+    # @scene.add @miniMap.mesh
 
     # Shifts the terrain, since bullet re-centers it on its bounding box.
 
-    # @boxes.push(new Box(new (THREE.Vector3)(0, -0.5, 0), @ZERO_QUATERNION, 75, 1, 75, 0, 2))
+    @boxes.push(new Box(new (THREE.Vector3)(0, -0.5, 0), @ZERO_QUATERNION, 75, 1, 75, 0, 2))
 
-    # quaternion = new (THREE.Quaternion)(0, 0, 0, 1)
-    # quaternion.setFromAxisAngle new (THREE.Vector3)(1, 0, 0), -Math.PI / 18
-    # @boxes.push(new Box(new (THREE.Vector3)(0, -1.5, 0), quaternion, 8, 4, 10, 0, undefined))
+    quaternion = new (THREE.Quaternion)(0, 0, 0, 1)
+    quaternion.setFromAxisAngle new (THREE.Vector3)(1, 0, 0), -Math.PI / 18
+    @boxes.push(new Box(new (THREE.Vector3)(0, -1.5, 0), quaternion, 8, 4, 10, 0, undefined))
     # size = .75
     # nw = 8
     # nh = 6
@@ -43,15 +45,18 @@ class GameScene extends BaseScene
         # i++
       # j++
 
-    # for box in @boxes
-      # @scene.add box.mesh
-      # @physicsWorld.addRigidBody box.body
+    for box in @boxes
+      @scene.add box.mesh
+      @physicsWorld.addRigidBody box.body
 
-    @vehicle = new Vehicle(new (THREE.Vector3)(0, 30, -20), @ZERO_QUATERNION, @physicsWorld)
-    @vehicle.chassis.add(Hodler.item('camera2'))
-    @scene.add @vehicle.chassis
-    for wheel in @vehicle.wheels
-      @scene.add wheel
+    @vehicle = new Player()
+    @vehicle.mesh.add(Hodler.item('camera2'))
+    @scene.add @vehicle.mesh
+
+    # @vehicle = new Vehicle(new (THREE.Vector3)(0, 5, -20), @ZERO_QUATERNION, @physicsWorld)
+    # @scene.add @vehicle.chassis
+    # for wheel in @vehicle.wheels
+      # @scene.add wheel
 
   initGraphics: ->
     ambientLight = new (THREE.AmbientLight)(0x404040)
@@ -81,12 +86,13 @@ class GameScene extends BaseScene
       e.preventDefault()
       e.stopPropagation()
 
-    console.log(e.code)
     if e.type == 'keydown'
       if (e.code == 'Digit1')
         @setCamera(1)
       if (e.code == 'Digit2')
         @setCamera(2)
+      # if (e.code == 'Space')
+        # @vehicle.jump()
 
   setCamera: (id) ->
     switch id

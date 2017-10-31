@@ -79,6 +79,7 @@ class Vehicle extends BaseModel
   createChassisMesh: (w, l, h) ->
     shape = new (THREE.BoxGeometry)(w, l, h, 1, 1, 1)
     new (THREE.Mesh)(shape, @material)
+    JsonModelManager.clone('dacia1310')
 
   tick: (tpf, actions) ->
     speed = @vehicle.getCurrentSpeedKmHour()
