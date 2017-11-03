@@ -147,6 +147,10 @@ module.exports = (grunt) ->
         command: "./node_modules/.bin/coffee --output tools/ -b -c -w tools/"
       "compile-coffee-tools":
         command: "./node_modules/.bin/coffee --output tools/ -b -c tools/"
+      "compile-coffee-example":
+        command: "./node_modules/.bin/coffee --output example/ -b -c example/"
+      "compile-coffee-example-watch":
+        command: "./node_modules/.bin/coffee --output example/ -b -w -c example/"
       "doc-3d":
         command: "./node_modules/.bin/codo -u -o ./doc/3d/ -r README_3D.md src/3d/ src/shared/"
       "doc-2d":
@@ -207,6 +211,7 @@ module.exports = (grunt) ->
   grunt.registerTask "compile:coffee", ["shell:compile-coffee"]
   grunt.registerTask "compile:coffee:toolchain", ["shell:compile-coffee-src", "shell:compile-coffee-tools"]
   grunt.registerTask "compile:coffee:src", ["shell:compile-coffee-src-watch"]
+  grunt.registerTask "compile:coffee:example", ["shell:compile-coffee-example-watch"]
 
   grunt.registerTask "build", ["compile:coffee", "uglify:engine"]
   grunt.registerTask "dev", ["compile:coffee:watch"]
