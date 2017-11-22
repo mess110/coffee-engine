@@ -1,12 +1,30 @@
 # A helper scene which loads [models, images, save objects], and calls a
 # function once loading is done
 #
+# Basic configuration of the loading scene can be done though LOADING_OPTIONS
+#
+# @todo - look into
+#
+# THREE.DefaultLoadingManager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+#   console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+# };
+#
+# @example
+#   LoadingScene.LOADING_OPTIONS.fillStyle = 'red'
+#
 # @example
 #   gameScene = new GameScene()
 #   loadingScene = new LoadingScene(['sword.json'], () ->
 #     engine.sceneManager.setScene(gameScene)
 #   )
 class LoadingScene extends BaseScene
+
+  @LOADING_OPTIONS =
+    fillStyle: 'white'
+    font: '64px Arial'
+    align: 'center'
+    text: 'loading'
+    model: Helper.cube(color: 'white', size: 0.5)
 
   # You can either override the method hasFinishedLoading or you can
   # pass it as a param. It will be called once JsonModelManager has
@@ -51,18 +69,52 @@ class LoadingScene extends BaseScene
         console.log "WARNING: #{url} is not a valid format"
 
     interval = setInterval =>
+      console.log(@getLoadedPercent())
       if @isLoadingDone()
         clearInterval(interval)
         console.ce 'Finished loading'
         @hasFinishedLoading()
-    , 100
+    , 50
 
   # Override this to add more code which should be executed before loading starts
   preStart: ->
+    engine = Hodler.item('engine')
+    engine.setClearColor(0x000000)
+
+    cam = Helper.camera()
+    cam.position.set 0, 0, 10
+    engine.setCamera(cam)
+
+    @scene.add Helper.ambientLight()
+    @scene.add Helper.ambientLight()
+    @scene.add Helper.light()
+
+    @loadingAnimation = LoadingScene.LOADING_OPTIONS.model
+    @loadingAnimation.position.set(0, -0.5, 0)
+    @scene.add @loadingAnimation
+
+    @text = new BaseText(LoadingScene.LOADING_OPTIONS)
+    @text.mesh.position.set 0, -3, 0
+    @scene.add @text.mesh
 
   # checks if the managers have finished loading
   isLoadingDone: ->
     @jmm.hasFinishedLoading() and @tm.hasFinishedLoading() and @som.hasFinishedLoading() and @sm.hasFinishedLoading()
+
+  # Returns the total amount of loaded assets
+  getLoadedCount: ->
+    @jmm.loadCount + @tm.loadCount + @som.loadCount + @sm.loadCount
+
+  # Returns the total amount of assets
+  getAllAssetsCount: ->
+    count = 0
+    for loader in [@jmm, @tm, @som, @sm]
+      count += Object.keys(loader.items).size()
+    count
+
+  # Returns the percentage of assets loaded
+  getLoadedPercent: (decimals = 2)->
+    Math.round(@getLoadedCount() / @getAllAssetsCount() * 100, decimals)
 
   # assumes the url has been validated as a json model
   _loadJsonModel: (url) ->
@@ -94,6 +146,9 @@ class LoadingScene extends BaseScene
 
   # @see BaseScene.tick
   tick: (tpf) ->
+    if @loadingAnimation?
+      @loadingAnimation.rotation.x += tpf
+      @loadingAnimation.rotation.y += tpf
 
   # @nodoc
   doMouseEvent: (event, raycaster) ->
