@@ -69,7 +69,7 @@ class LoadingScene extends BaseScene
         console.log "WARNING: #{url} is not a valid format"
 
     interval = setInterval =>
-      console.log(@getLoadedPercent())
+      console.ce("Loaded #{@getLoadedPercent()}%")
       if @isLoadingDone()
         clearInterval(interval)
         console.ce 'Finished loading'
