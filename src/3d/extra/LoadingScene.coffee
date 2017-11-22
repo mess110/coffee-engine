@@ -25,6 +25,7 @@ class LoadingScene extends BaseScene
     align: 'center'
     text: 'loading'
     model: Helper.cube(color: 'white', size: 0.5)
+    camera: Helper.camera()
 
   # You can either override the method hasFinishedLoading or you can
   # pass it as a param. It will be called once JsonModelManager has
@@ -81,8 +82,9 @@ class LoadingScene extends BaseScene
     engine = Hodler.item('engine')
     engine.setClearColor(0x000000)
 
-    cam = Helper.camera()
+    cam = LoadingScene.LOADING_OPTIONS.camera
     cam.position.set 0, 0, 10
+    cam.lookAt Helper.zero
     engine.setCamera(cam)
 
     @scene.add Helper.ambientLight()
