@@ -15,7 +15,7 @@ class PhysicsTerrain extends BaseModel
     @terrainMaxHeight = 8
     @terrainMinHeight = -2
 
-    @heightData = @generateHeight( @terrainWidth, @terrainDepth, @terrainMinHeight, @terrainMaxHeight )
+    @heightData = @generateHeight(@terrainWidth, @terrainDepth, @terrainMinHeight, @terrainMaxHeight)
 
     groundShape = @createTerrainShape(@heightData)
     groundTransform = new (Ammo.btTransform)

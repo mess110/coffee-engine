@@ -2,7 +2,7 @@ config = Config.get()
 config.fillWindow()
 # config.toggleStats()
 
-engine = new Engine3D()
+engine = Hodler.add('engine', new Engine3D())
 
 class GameScene extends BaseScene
   init: (options) ->

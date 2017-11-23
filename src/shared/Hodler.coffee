@@ -8,6 +8,7 @@ class Hodler
 
     add: (key, item) ->
       @items[key] = item
+      @item(key)
 
     item: (key) ->
       @items[key]
