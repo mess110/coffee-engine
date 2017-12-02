@@ -80,6 +80,7 @@ module.exports = (grunt) ->
     "src/3d/PoolManager.js"
     "src/3d/PolyfillRenderer.js"
 
+    "src/3d/extra/AfterEffects.js"
     "src/3d/extra/ArtGenerator.js"
     "src/3d/extra/BaseText.js"
     "src/3d/extra/Cinematic.js"

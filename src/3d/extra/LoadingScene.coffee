@@ -17,6 +17,40 @@
 #   loadingScene = new LoadingScene(['sword.json'], () ->
 #     engine.sceneManager.setScene(gameScene)
 #   )
+#
+# @example
+#   class RealLoadingScene extends LoadingScene
+#     constructor: (urls) ->
+#       @engine = Hodler.item('engine')
+#       super(urls)
+#
+#     preStart: ->
+#       camera = LoadingScene.LOADING_OPTIONS.camera
+#       camera.position.set 0, 0, 10
+#       camera.lookAt Helper.zero
+#       @engine.setCamera(camera)
+#
+#       Hodler.item('afterEffects').enable(@scene, camera)
+#
+#     uninit: ->
+#       super()
+#       Hodler.item('afterEffects').disable()
+#
+#     hasFinishedLoading: ->
+#       @hasFinishedLoading = ->
+#         if engine.uptime > 2000
+#           arenaScene = new ArenaScene()
+#           @engine.initScene(arenaScene)
+#         else
+#           setTimeout =>
+#             arenaScene = new ArenaScene()
+#             @engine.initScene(arenaScene)
+#           , 2000 - engine.uptime
+#
+#       assets = CinematicScene.getAssets('start')
+#       # add stuff here once preload is done
+#       @loadAssets(assets)
+#
 class LoadingScene extends BaseScene
 
   @LOADING_OPTIONS =
@@ -25,7 +59,7 @@ class LoadingScene extends BaseScene
     align: 'center'
     text: 'loading'
     model: Helper.cube(color: 'white', size: 0.5)
-    camera: Helper.camera()
+    camera: Helper.camera(aspect: window.innerWidth / window.innerHeight)
 
   # You can either override the method hasFinishedLoading or you can
   # pass it as a param. It will be called once JsonModelManager has
@@ -38,7 +72,8 @@ class LoadingScene extends BaseScene
 
     throw 'urls needs to be an array' unless urls instanceof Array
 
-    @hasFinishedLoading = hasFinishedLoading
+    if hasFinishedLoading?
+      @hasFinishedLoading = hasFinishedLoading
 
     @preStart()
     @loadAssets(urls)
@@ -75,7 +110,7 @@ class LoadingScene extends BaseScene
         clearInterval(interval)
         console.ce 'Finished loading'
         @hasFinishedLoading()
-    , 50
+    , 100
 
   # Override this to add more code which should be executed before loading starts
   preStart: ->

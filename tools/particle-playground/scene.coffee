@@ -2,10 +2,11 @@ class ParticlePlaygroundScene extends BaseScene
   init: (options) ->
     engine.setWidthHeight(window.innerWidth / 2, window.innerHeight)
 
-    @scene.fog = Helper.fog(far: 100, color: 'black')
+    color = 'black'
+    # @scene.fog = Helper.fog(far: 100, color: color)
     @grid = Helper.grid(size: 200, step: 10, color: 'gray')
     @scene.add @grid
-    engine.setClearColor(@scene.fog.color, 1)
+    engine.setClearColor(color, 1)
     engine.camera.position.set 0, 40, 100
 
     @controls = Helper.orbitControls(engine)

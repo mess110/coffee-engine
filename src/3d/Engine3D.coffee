@@ -1,5 +1,6 @@
 # The Engine - vrummm
 class Engine3D
+  @loadingSceneAssets = ["assets/scenes/start.save.json"]
 
   # Starting point of the engine
   constructor: () ->
@@ -288,9 +289,7 @@ class Engine3D
 
   # @nodoc
   @scenify: (zeEngine, callback = -> {}) ->
-    loadingScene = new LoadingScene([
-      "assets/scenes/start.save.json"
-    ], ->
+    loadingScene = new LoadingScene(Engine3D.loadingSceneAssets, ->
       loadingScene.hasFinishedLoading = ->
         scene = CinematicScene.fromSaveObjectKey('start')
         zeEngine.addScene(scene)
