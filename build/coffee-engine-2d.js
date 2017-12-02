@@ -863,7 +863,7 @@ Hodler = function() {
     return instance = null, Singleton.Hodler = function() {
         function Hodler() {}
         return Hodler.prototype.items = {}, Hodler.prototype.add = function(key, item) {
-            return this.items[key] = item;
+            return this.items[key] = item, this.item(key);
         }, Hodler.prototype.item = function(key) {
             return this.items[key];
         }, Hodler;
