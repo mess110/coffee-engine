@@ -72,8 +72,9 @@ class JsonModelManager
       materials = []
       for mat in mesh.material
         clone = mat.clone()
-        clone.map = clone.map.clone()
-        clone.map.needsUpdate = true
+        if clone.map?
+          clone.map = clone.map.clone()
+          clone.map.needsUpdate = true
         materials.push clone
 
       mesh.material = materials

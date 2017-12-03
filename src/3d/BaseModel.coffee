@@ -13,7 +13,12 @@ class BaseModel
   #
   # @param [Number] opacity
   setOpacity: (opacity) ->
-    @mesh.material.opacity = opacity
+    if Array.isArray(@mesh.material)
+      for mat in @mesh.material
+        mat.transparent = true
+        mat.opacity = opacity
+    else
+      @mesh.material.opacity = opacity
 
   # Get the current opaicty of the mesh
   getOpacity: ->
