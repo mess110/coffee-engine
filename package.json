@@ -9,6 +9,7 @@
   "main": "tools/index.html",
   "scripts": {
     "postinstall": "grunt doc",
+    "prepublish": "grunt build",
     "start": "./node_modules/nw/bin/nw"
   },
   "window": {
