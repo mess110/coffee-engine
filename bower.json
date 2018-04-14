@@ -16,21 +16,6 @@
   ],
   "homepage": "https://github.com/mess110/coffee-engine",
   "devDependencies": {
-    "ShaderParticleEngine": "https://github.com/squarefeet/ShaderParticleEngine.git#v1.0.5",
-    "virtualjoystick.js": "https://github.com/mess110/virtualjoystick.js.git#patch-1",
-    "socket.io-client": "~0.9.16",
-    "howler.js": "howler#~1.1.29",
-    "md-color-picker": "~0.2.6",
-    "tinycolor": "~1.3.0",
-    "angular": "1.4.8",
-    "angular-animate": "1.4.8",
-    "angular-route": "1.4.8",
-    "angular-aria": "1.4.8",
-    "angular-material": "v1.0.8",
-    "simpleheat": "git@github.com:mourner/simpleheat.git#^0.4.0",
-    "ccapture.js": "^1.0.6",
-    "THREE.Terrain": "^1.4.0",
-    "ammo.js": "git@github.com:kripken/ammo.js.git#f63e3d4"
   },
   "dependencies": {}
 }

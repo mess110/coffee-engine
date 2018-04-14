@@ -4,7 +4,7 @@ module.exports = (grunt) ->
   files_3d = [
     "node_modules/stats.js/src/Stats.js"
     "node_modules/tween.js/src/Tween.js"
-    "bower_components/ccapture.js/build/CCapture.all.min.js"
+    "node_modules/ccapture.js/build/CCapture.all.min.js"
 
     "node_modules/three/build/three.js"
 
@@ -22,9 +22,9 @@ module.exports = (grunt) ->
     "src/vendor/threex.keyboardstate.js"
     "src/vendor/threex.volumetricspotlightmaterial.js"
     "src/vendor/threex.basiclighting.js"
-    "bower_components/THREE.Terrain/build/THREE.Terrain.min.js"
+    "node_modules/three.terrain.js/build/THREE.Terrain.min.js"
     "src/vendor/water-material.js"
-    "bower_components/ShaderParticleEngine/build/SPE.js"
+    "node_modules/shader-particle-engine/build/SPE.js"
     "src/vendor/threex.dynamictexture.js"
     "src/vendor/DeviceOrientationControls.js"
 
@@ -48,10 +48,10 @@ module.exports = (grunt) ->
     "node_modules/three/examples/js/postprocessing/UnrealBloomPass.js"
     "node_modules/three/examples/js/postprocessing/OutlinePass.js"
 
-    "bower_components/ammo.js/builds/ammo.js"
+    "node_modules/ammo.js/builds/ammo.js"
 
     "node_modules/file-saver/FileSaver.js"
-    "bower_components/virtualjoystick.js/virtualjoystick.js"
+    "src/vendor/virtualjoystick.js"
 
     # This NEEDS to be in this position
     "src/3d/Hack.js"
@@ -118,8 +118,8 @@ module.exports = (grunt) ->
   extras = [
     "src/shared/SyntaxSugar.js"
     "src/shared/Hodler.js"
-    "bower_components/howler.js/howler.js"
-    "bower_components/socket.io-client/dist/socket.io.js"
+    "node_modules/howler/howler.js"
+    "node_modules/socket.io-client/dist/socket.io.js"
     "src/vendor/drawBezier.js"
     "src/vendor/jnorthpole.js"
 
