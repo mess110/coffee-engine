@@ -37,7 +37,8 @@
     "file-saver": "*",
     "nw-dev": "^3.0.0",
     "tween.js": "v16.1.1",
-    "stats.js": "1.0.0"
+    "stats.js": "1.0.0",
+    "three": "0.87.1"
   },
   "engines": {
     "node": "0.10.x"

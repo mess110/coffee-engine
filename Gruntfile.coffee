@@ -6,15 +6,15 @@ module.exports = (grunt) ->
     "node_modules/tween.js/src/Tween.js"
     "bower_components/ccapture.js/build/CCapture.all.min.js"
 
-    "bower_components/threejs/build/three.js"
+    "node_modules/three/build/three.js"
 
-    "bower_components/threejs/examples/js/effects/StereoEffect.js"
-    "bower_components/threejs/examples/js/effects/AnaglyphEffect.js"
-    "bower_components/threejs/examples/js/controls/OrbitControls.js"
-    "bower_components/threejs/examples/js/controls/FirstPersonControls.js"
-    "bower_components/threejs/examples/js/controls/PointerLockControls.js"
-    "bower_components/threejs/examples/js/Mirror.js"
-    "bower_components/threejs/examples/js/Detector.js"
+    "node_modules/three/examples/js/effects/StereoEffect.js"
+    "node_modules/three/examples/js/effects/AnaglyphEffect.js"
+    "node_modules/three/examples/js/controls/OrbitControls.js"
+    "node_modules/three/examples/js/controls/FirstPersonControls.js"
+    "node_modules/three/examples/js/controls/PointerLockControls.js"
+    "node_modules/three/examples/js/Mirror.js"
+    "node_modules/three/examples/js/Detector.js"
 
     "bower_components/threex.windowresize/threex.windowresize.js"
     "bower_components/threex.rendererstats/threex.rendererstats.js"
@@ -29,24 +29,24 @@ module.exports = (grunt) ->
     "src/vendor/DeviceOrientationControls.js"
 
 
-    "bower_components/threejs/examples/js/shaders/ConvolutionShader.js"
-    "bower_components/threejs/examples/js/shaders/CopyShader.js"
-    "bower_components/threejs/examples/js/shaders/FXAAShader.js"
-    "bower_components/threejs/examples/js/shaders/FilmShader.js"
-    "bower_components/threejs/examples/js/shaders/BokehShader.js"
-    "bower_components/threejs/examples/js/shaders/DigitalGlitch.js"
-    "bower_components/threejs/examples/js/shaders/LuminosityHighPassShader.js"
+    "node_modules/three/examples/js/shaders/ConvolutionShader.js"
+    "node_modules/three/examples/js/shaders/CopyShader.js"
+    "node_modules/three/examples/js/shaders/FXAAShader.js"
+    "node_modules/three/examples/js/shaders/FilmShader.js"
+    "node_modules/three/examples/js/shaders/BokehShader.js"
+    "node_modules/three/examples/js/shaders/DigitalGlitch.js"
+    "node_modules/three/examples/js/shaders/LuminosityHighPassShader.js"
 
-    "bower_components/threejs/examples/js/postprocessing/EffectComposer.js"
-    "bower_components/threejs/examples/js/postprocessing/MaskPass.js"
-    "bower_components/threejs/examples/js/postprocessing/RenderPass.js"
-    "bower_components/threejs/examples/js/postprocessing/ShaderPass.js"
-    "bower_components/threejs/examples/js/postprocessing/BloomPass.js"
-    "bower_components/threejs/examples/js/postprocessing/FilmPass.js"
-    "bower_components/threejs/examples/js/postprocessing/BokehPass.js"
-    "bower_components/threejs/examples/js/postprocessing/GlitchPass.js"
-    "bower_components/threejs/examples/js/postprocessing/UnrealBloomPass.js"
-    "bower_components/threejs/examples/js/postprocessing/OutlinePass.js"
+    "node_modules/three/examples/js/postprocessing/EffectComposer.js"
+    "node_modules/three/examples/js/postprocessing/MaskPass.js"
+    "node_modules/three/examples/js/postprocessing/RenderPass.js"
+    "node_modules/three/examples/js/postprocessing/ShaderPass.js"
+    "node_modules/three/examples/js/postprocessing/BloomPass.js"
+    "node_modules/three/examples/js/postprocessing/FilmPass.js"
+    "node_modules/three/examples/js/postprocessing/BokehPass.js"
+    "node_modules/three/examples/js/postprocessing/GlitchPass.js"
+    "node_modules/three/examples/js/postprocessing/UnrealBloomPass.js"
+    "node_modules/three/examples/js/postprocessing/OutlinePass.js"
 
     "bower_components/ammo.js/builds/ammo.js"
 
@@ -167,9 +167,11 @@ module.exports = (grunt) ->
         command: ->
           [
             'echo'
-            'echo "grunt shell:compile-coffee-src"'
-            'echo "grunt shell:compile-coffee-tools"'
-            'echo "grunt shell:compile-coffee-example"'
+            'echo "grunt compile-coffee"'
+            'echo'
+            'echo "grunt shell:compile-coffee-src-watch"'
+            'echo "grunt shell:compile-coffee-tools-watch"'
+            'echo "grunt shell:compile-coffee-example-watch"'
           ].join(' && ')
       "new":
         command: ->

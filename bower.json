@@ -16,7 +16,6 @@
   ],
   "homepage": "https://github.com/mess110/coffee-engine",
   "devDependencies": {
-    "threejs": "r87",
     "threex.windowresize": "*",
     "threex.rendererstats": "*",
     "threex.universalloader": "*",
