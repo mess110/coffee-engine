@@ -2,7 +2,7 @@ fs = require('fs')
 
 module.exports = (grunt) ->
   files_3d = [
-    "bower_components/stats.js/src/Stats.js"
+    "node_modules/stats.js/src/Stats.js"
     "node_modules/tween.js/src/Tween.js"
     "bower_components/ccapture.js/build/CCapture.all.min.js"
 
@@ -101,7 +101,7 @@ module.exports = (grunt) ->
   ]
 
   files_2d = [
-    "bower_components/stats.js/src/Stats.js"
+    "node_modules/stats.js/src/Stats.js"
     "node_modules/tween.js/src/Tween.js"
 
     "src/3d/Hack.js"
@@ -140,14 +140,17 @@ module.exports = (grunt) ->
         command: "./node_modules/.bin/coffee --output src/ -b -c -w src/"
       "compile-coffee-src":
         command: "./node_modules/.bin/coffee --output src/ -b -c src/"
+
       "compile-coffee-tools-watch":
         command: "./node_modules/.bin/coffee --output tools/ -b -c -w tools/"
       "compile-coffee-tools":
         command: "./node_modules/.bin/coffee --output tools/ -b -c tools/"
-      "compile-coffee-example":
-        command: "./node_modules/.bin/coffee --output example/ -b -c example/"
+
       "compile-coffee-example-watch":
         command: "./node_modules/.bin/coffee --output example/ -b -w -c example/"
+      "compile-coffee-example":
+        command: "./node_modules/.bin/coffee --output example/ -b -c example/"
+
       "doc-3d":
         command: "./node_modules/.bin/codo -u -o ./doc/3d/ -r README_3D.md src/3d/ src/shared/"
       "doc-2d":
@@ -164,9 +167,9 @@ module.exports = (grunt) ->
         command: ->
           [
             'echo'
-            'echo "grunt compile:coffee:toolchain"'
-            'echo "grunt compile:coffee:src"'
-            'echo "grunt compile:coffee:example"'
+            'echo "grunt shell:compile-coffee-src"'
+            'echo "grunt shell:compile-coffee-tools"'
+            'echo "grunt shell:compile-coffee-example"'
           ].join(' && ')
       "new":
         command: ->
@@ -212,11 +215,12 @@ module.exports = (grunt) ->
           "build/coffee-engine-3d.js": all_3d_files
         ]
 
-  grunt.registerTask "compile:coffee:toolchain", ["shell:compile-coffee-src", "shell:compile-coffee-tools"]
-  grunt.registerTask "compile:coffee:src", ["shell:compile-coffee-src-watch"]
-  grunt.registerTask "compile:coffee:example", ["shell:compile-coffee-example-watch"]
+  # grunt.registerTask "compile:coffee:toolchain", ["shell:compile-coffee-src", "shell:compile-coffee-tools"]
+  # grunt.registerTask "compile:coffee:src", ["shell:compile-coffee-src-watch"]
+  # grunt.registerTask "compile:coffee:example", ["shell:compile-coffee-example-watch"]
 
-  grunt.registerTask "build", ["compile:coffee", "uglify:engine"]
+  grunt.registerTask "compile-coffee", ["shell:compile-coffee-src", "shell:compile-coffee-tools", "shell:compile-coffee-example"]
+  # grunt.registerTask "build", ["compile:coffee", "uglify:engine"]
 
   grunt.registerTask "new", ["shell:new"]
 
