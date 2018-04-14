@@ -23,7 +23,7 @@ module.exports = (grunt) ->
     "src/vendor/threex.volumetricspotlightmaterial.js"
     "src/vendor/threex.basiclighting.js"
     "bower_components/THREE.Terrain/build/THREE.Terrain.min.js"
-    "bower_components/ocean/water-material.js"
+    "src/vendor/water-material.js"
     "bower_components/ShaderParticleEngine/build/SPE.js"
     "src/vendor/threex.dynamictexture.js"
     "src/vendor/DeviceOrientationControls.js"

@@ -16,7 +16,6 @@
   ],
   "homepage": "https://github.com/mess110/coffee-engine",
   "devDependencies": {
-    "ocean": "https://github.com/jbouny/ocean.git",
     "ShaderParticleEngine": "https://github.com/squarefeet/ShaderParticleEngine.git#v1.0.5",
     "virtualjoystick.js": "https://github.com/mess110/virtualjoystick.js.git#patch-1",
     "socket.io-client": "~0.9.16",
