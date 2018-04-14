@@ -256,19 +256,19 @@ TWEEN.Tween = function(object) {
     },
     Elastic: {
         In: function(k) {
-            var s, a = .1, p = .4;
-            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
-            -a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
+            var s, a = .1;
+            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = .1) : s = .4 * Math.asin(1 / a) / (2 * Math.PI), 
+            -a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / .4));
         },
         Out: function(k) {
-            var s, a = .1, p = .4;
-            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
-            a * Math.pow(2, -10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
+            var s, a = .1;
+            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = .1) : s = .4 * Math.asin(1 / a) / (2 * Math.PI), 
+            a * Math.pow(2, -10 * k) * Math.sin((k - s) * (2 * Math.PI) / .4) + 1);
         },
         InOut: function(k) {
-            var s, a = .1, p = .4;
-            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
-            (k *= 2) < 1 ? a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * -.5 : a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * .5 + 1);
+            var s, a = .1;
+            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = .1) : s = .4 * Math.asin(1 / a) / (2 * Math.PI), 
+            (k *= 2) < 1 ? a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / .4) * -.5 : a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / .4) * .5 + 1);
         }
     },
     Back: {
@@ -2136,12 +2136,12 @@ var io = "undefined" == typeof module ? {} : module.exports;
         function L(Y) {
             return null != /[\\\"<>\.;]/.exec(Y) && typeof encodeURIComponent != D ? encodeURIComponent(Y) : Y;
         }
-        var l, Q, E, B, n, G, D = "undefined", r = "object", S = "Shockwave Flash", W = "ShockwaveFlash.ShockwaveFlash", q = "application/x-shockwave-flash", R = "SWFObjectExprInst", x = "onreadystatechange", O = window, j = document, t = navigator, T = !1, U = [ h ], o = [], N = [], I = [], J = !1, a = !1, m = !0, M = function() {
+        var l, Q, E, B, n, G, D = "undefined", r = "object", S = "Shockwave Flash", q = "application/x-shockwave-flash", R = "SWFObjectExprInst", x = "onreadystatechange", O = window, j = document, t = navigator, T = !1, U = [ h ], o = [], N = [], I = [], J = !1, a = !1, m = !0, M = function() {
             var aa = typeof j.getElementById != D && typeof j.getElementsByTagName != D && typeof j.createElement != D, ah = t.userAgent.toLowerCase(), Y = t.platform.toLowerCase(), ae = /win/.test(Y ? Y : ah), ac = /mac/.test(Y ? Y : ah), af = !!/webkit/.test(ah) && parseFloat(ah.replace(/^.*webkit\/(\d+(\.\d+)?).*$/, "$1")), X = !1, ag = [ 0, 0, 0 ], ab = null;
             if (typeof t.plugins != D && typeof t.plugins[S] == r) !(ab = t.plugins[S].description) || typeof t.mimeTypes != D && t.mimeTypes[q] && !t.mimeTypes[q].enabledPlugin || (T = !0, 
             X = !1, ab = ab.replace(/^.*\s+(\S+\s+\S+$)/, "$1"), ag[0] = parseInt(ab.replace(/^(.*)\..*$/, "$1"), 10), 
             ag[1] = parseInt(ab.replace(/^.*\.(.*)\s.*$/, "$1"), 10), ag[2] = /[a-zA-Z]/.test(ab) ? parseInt(ab.replace(/^.*[a-zA-Z]+(.*)$/, "$1"), 10) : 0); else if (typeof O[[ "Active" ].concat("Object").join("X")] != D) try {
-                var ad = new (window[[ "Active" ].concat("Object").join("X")])(W);
+                var ad = new (window[[ "Active" ].concat("Object").join("X")])("ShockwaveFlash.ShockwaveFlash");
                 ad && (ab = ad.GetVariable("$version")) && (X = !0, ab = ab.split(" ")[1].split(","), 
                 ag = [ parseInt(ab[0], 10), parseInt(ab[1], 10), parseInt(ab[2], 10) ]);
             } catch (Z) {}
