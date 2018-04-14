@@ -256,19 +256,19 @@ TWEEN.Tween = function(object) {
     },
     Elastic: {
         In: function(k) {
-            var s, a = .1;
-            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = .1) : s = .4 * Math.asin(1 / a) / (2 * Math.PI), 
-            -a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / .4));
+            var s, a = .1, p = .4;
+            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
+            -a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p));
         },
         Out: function(k) {
-            var s, a = .1;
-            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = .1) : s = .4 * Math.asin(1 / a) / (2 * Math.PI), 
-            a * Math.pow(2, -10 * k) * Math.sin((k - s) * (2 * Math.PI) / .4) + 1);
+            var s, a = .1, p = .4;
+            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
+            a * Math.pow(2, -10 * k) * Math.sin((k - s) * (2 * Math.PI) / p) + 1);
         },
         InOut: function(k) {
-            var s, a = .1;
-            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = .1) : s = .4 * Math.asin(1 / a) / (2 * Math.PI), 
-            (k *= 2) < 1 ? a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / .4) * -.5 : a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / .4) * .5 + 1);
+            var s, a = .1, p = .4;
+            return 0 === k ? 0 : 1 === k ? 1 : (!a || a < 1 ? (a = 1, s = p / 4) : s = p * Math.asin(1 / a) / (2 * Math.PI), 
+            (k *= 2) < 1 ? a * Math.pow(2, 10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * -.5 : a * Math.pow(2, -10 * (k -= 1)) * Math.sin((k - s) * (2 * Math.PI) / p) * .5 + 1);
         }
     },
     Back: {
@@ -1379,12 +1379,14 @@ Hodler = function() {
                 } catch (e) {}
                 if (void 0 !== process && "env" in process) return process.env.DEBUG;
             }
-            exports = module.exports = __webpack_require__(5), exports.log = log, exports.formatArgs = formatArgs, 
-            exports.save = save, exports.load = load, exports.useColors = useColors, exports.storage = "undefined" != typeof chrome && void 0 !== chrome.storage ? chrome.storage.local : function() {
+            function localstorage() {
                 try {
                     return window.localStorage;
                 } catch (e) {}
-            }(), exports.colors = [ "lightseagreen", "forestgreen", "goldenrod", "dodgerblue", "darkorchid", "crimson" ], 
+            }
+            exports = module.exports = __webpack_require__(5), exports.log = log, exports.formatArgs = formatArgs, 
+            exports.save = save, exports.load = load, exports.useColors = useColors, exports.storage = "undefined" != typeof chrome && void 0 !== chrome.storage ? chrome.storage.local : localstorage(), 
+            exports.colors = [ "lightseagreen", "forestgreen", "goldenrod", "dodgerblue", "darkorchid", "crimson" ], 
             exports.formatters.j = function(v) {
                 try {
                     return JSON.stringify(v);
@@ -1720,12 +1722,14 @@ Hodler = function() {
             } catch (e) {}
             return r;
         }
-        exports = module.exports = __webpack_require__(9), exports.log = log, exports.formatArgs = formatArgs, 
-        exports.save = save, exports.load = load, exports.useColors = useColors, exports.storage = "undefined" != typeof chrome && void 0 !== chrome.storage ? chrome.storage.local : function() {
+        function localstorage() {
             try {
                 return window.localStorage;
             } catch (e) {}
-        }(), exports.colors = [ "lightseagreen", "forestgreen", "goldenrod", "dodgerblue", "darkorchid", "crimson" ], 
+        }
+        exports = module.exports = __webpack_require__(9), exports.log = log, exports.formatArgs = formatArgs, 
+        exports.save = save, exports.load = load, exports.useColors = useColors, exports.storage = "undefined" != typeof chrome && void 0 !== chrome.storage ? chrome.storage.local : localstorage(), 
+        exports.colors = [ "lightseagreen", "forestgreen", "goldenrod", "dodgerblue", "darkorchid", "crimson" ], 
         exports.formatters.j = function(v) {
             return JSON.stringify(v);
         }, exports.enable(load());
@@ -1903,7 +1907,7 @@ Hodler = function() {
                         isExtended = -109252 == isExtended.getUTCFullYear() && 0 === isExtended.getUTCMonth() && 1 === isExtended.getUTCDate() && 10 == isExtended.getUTCHours() && 37 == isExtended.getUTCMinutes() && 6 == isExtended.getUTCSeconds() && 708 == isExtended.getUTCMilliseconds();
                     } catch (exception) {}
                     if (!has("json")) {
-                        var charIndexBuggy = has("bug-string-char-index");
+                        var functionClass = "[object Function]", dateClass = "[object Date]", numberClass = "[object Number]", stringClass = "[object String]", arrayClass = "[object Array]", booleanClass = "[object Boolean]", charIndexBuggy = has("bug-string-char-index");
                         if (!isExtended) var floor = Math.floor, Months = [ 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 ], getDay = function(year, month) {
                             return Months[month] + 365 * (year - 1970) + floor((year - 1969 + (month = +(month > 1))) / 4) - floor((year - 1901 + month) / 100) + floor((year - 1601 + month) / 400);
                         };
@@ -1925,15 +1929,15 @@ Hodler = function() {
                             }).prototype.valueOf = 0, members = new Properties();
                             for (property in members) isProperty.call(members, property) && size++;
                             return Properties = members = null, size ? forEach = 2 == size ? function(object, callback) {
-                                var property, members = {}, isFunction = "[object Function]" == getClass.call(object);
+                                var property, members = {}, isFunction = getClass.call(object) == functionClass;
                                 for (property in object) isFunction && "prototype" == property || isProperty.call(members, property) || !(members[property] = 1) || !isProperty.call(object, property) || callback(property);
                             } : function(object, callback) {
-                                var property, isConstructor, isFunction = "[object Function]" == getClass.call(object);
+                                var property, isConstructor, isFunction = getClass.call(object) == functionClass;
                                 for (property in object) isFunction && "prototype" == property || !isProperty.call(object, property) || (isConstructor = "constructor" === property) || callback(property);
                                 (isConstructor || isProperty.call(object, property = "constructor")) && callback(property);
                             } : (members = [ "valueOf", "toString", "toLocaleString", "propertyIsEnumerable", "isPrototypeOf", "hasOwnProperty", "constructor" ], 
                             forEach = function(object, callback) {
-                                var property, length, isFunction = "[object Function]" == getClass.call(object), hasProperty = !isFunction && "function" != typeof object.constructor && objectTypes[typeof object.hasOwnProperty] && object.hasOwnProperty || isProperty;
+                                var property, length, isFunction = getClass.call(object) == functionClass, hasProperty = !isFunction && "function" != typeof object.constructor && objectTypes[typeof object.hasOwnProperty] && object.hasOwnProperty || isProperty;
                                 for (property in object) isFunction && "prototype" == property || !hasProperty.call(object, property) || callback(property);
                                 for (length = members.length; property = members[--length]; hasProperty.call(object, property) && callback(property)) ;
                             }), forEach(object, callback);
@@ -1946,9 +1950,9 @@ Hodler = function() {
                                 10: "\\n",
                                 13: "\\r",
                                 9: "\\t"
-                            }, toPaddedString = function(width, value) {
-                                return ("000000" + (value || 0)).slice(-width);
-                            }, quote = function(value) {
+                            }, leadingZeroes = "000000", toPaddedString = function(width, value) {
+                                return (leadingZeroes + (value || 0)).slice(-width);
+                            }, unicodePrefix = "\\u00", quote = function(value) {
                                 for (var result = '"', index = 0, length = value.length, useCharIndex = !charIndexBuggy || length > 10, symbols = useCharIndex && (charIndexBuggy ? value.split("") : value); index < length; index++) {
                                     var charCode = value.charCodeAt(index);
                                     switch (charCode) {
@@ -1964,7 +1968,7 @@ Hodler = function() {
 
                                       default:
                                         if (charCode < 32) {
-                                            result += "\\u00" + toPaddedString(2, charCode.toString(16));
+                                            result += unicodePrefix + toPaddedString(2, charCode.toString(16));
                                             break;
                                         }
                                         result += useCharIndex ? symbols[index] : value.charAt(index);
@@ -1976,7 +1980,7 @@ Hodler = function() {
                                 try {
                                     value = object[property];
                                 } catch (exception) {}
-                                if ("object" == typeof value && value) if ("[object Date]" != (className = getClass.call(value)) || isProperty.call(value, "toJSON")) "function" == typeof value.toJSON && ("[object Number]" != className && "[object String]" != className && "[object Array]" != className || isProperty.call(value, "toJSON")) && (value = value.toJSON(property)); else if (value > -1 / 0 && value < 1 / 0) {
+                                if ("object" == typeof value && value) if ((className = getClass.call(value)) != dateClass || isProperty.call(value, "toJSON")) "function" == typeof value.toJSON && (className != numberClass && className != stringClass && className != arrayClass || isProperty.call(value, "toJSON")) && (value = value.toJSON(property)); else if (value > -1 / 0 && value < 1 / 0) {
                                     if (getDay) {
                                         for (date = floor(value / 864e5), year = floor(date / 365.2425) + 1970 - 1; getDay(year + 1, 0) <= date; year++) ;
                                         for (month = floor((date - getDay(year, 0)) / 30.42); getDay(year, month + 1) <= date; month++) ;
@@ -1988,13 +1992,13 @@ Hodler = function() {
                                     value = (year <= 0 || year >= 1e4 ? (year < 0 ? "-" : "+") + toPaddedString(6, year < 0 ? -year : year) : toPaddedString(4, year)) + "-" + toPaddedString(2, month + 1) + "-" + toPaddedString(2, date) + "T" + toPaddedString(2, hours) + ":" + toPaddedString(2, minutes) + ":" + toPaddedString(2, seconds) + "." + toPaddedString(3, milliseconds) + "Z";
                                 } else value = null;
                                 if (callback && (value = callback.call(object, property, value)), null === value) return "null";
-                                if ("[object Boolean]" == (className = getClass.call(value))) return "" + value;
-                                if ("[object Number]" == className) return value > -1 / 0 && value < 1 / 0 ? "" + value : "null";
-                                if ("[object String]" == className) return quote("" + value);
+                                if ((className = getClass.call(value)) == booleanClass) return "" + value;
+                                if (className == numberClass) return value > -1 / 0 && value < 1 / 0 ? "" + value : "null";
+                                if (className == stringClass) return quote("" + value);
                                 if ("object" == typeof value) {
                                     for (length = stack.length; length--; ) if (stack[length] === value) throw TypeError();
                                     if (stack.push(value), results = [], prefix = indentation, indentation += whitespace, 
-                                    "[object Array]" == className) {
+                                    className == arrayClass) {
                                         for (index = 0, length = value.length; index < length; index++) element = serialize(index, value, callback, properties, whitespace, indentation, stack), 
                                         results.push(element === undef ? "null" : element);
                                         result = results.length ? whitespace ? "[\n" + indentation + results.join(",\n" + indentation) + "\n" + prefix + "]" : "[" + results.join(",") + "]" : "[]";
@@ -2007,14 +2011,14 @@ Hodler = function() {
                             };
                             exports.stringify = function(source, filter, width) {
                                 var whitespace, callback, properties, className;
-                                if (objectTypes[typeof filter] && filter) if ("[object Function]" == (className = getClass.call(filter))) callback = filter; else if ("[object Array]" == className) {
+                                if (objectTypes[typeof filter] && filter) if ((className = getClass.call(filter)) == functionClass) callback = filter; else if (className == arrayClass) {
                                     properties = {};
                                     for (var value, index = 0, length = filter.length; index < length; value = filter[index++], 
-                                    ("[object String]" == (className = getClass.call(value)) || "[object Number]" == className) && (properties[value] = 1)) ;
+                                    ((className = getClass.call(value)) == stringClass || className == numberClass) && (properties[value] = 1)) ;
                                 }
-                                if (width) if ("[object Number]" == (className = getClass.call(width))) {
+                                if (width) if ((className = getClass.call(width)) == numberClass) {
                                     if ((width -= width % 1) > 0) for (whitespace = "", width > 10 && (width = 10); whitespace.length < width; whitespace += " ") ;
-                                } else "[object String]" == className && (whitespace = width.length <= 10 ? width : width.slice(0, 10));
+                                } else className == stringClass && (whitespace = width.length <= 10 ? width : width.slice(0, 10));
                                 return serialize("", (value = {}, value[""] = source, value), callback, properties, whitespace, "", []);
                             };
                         }
@@ -2121,7 +2125,7 @@ Hodler = function() {
                                 element === undef ? delete source[property] : source[property] = element;
                             }, walk = function(source, property, callback) {
                                 var length, value = source[property];
-                                if ("object" == typeof value && value) if ("[object Array]" == getClass.call(value)) for (length = value.length; length--; ) update(value, length, callback); else forEach(value, function(property) {
+                                if ("object" == typeof value && value) if (getClass.call(value) == arrayClass) for (length = value.length; length--; ) update(value, length, callback); else forEach(value, function(property) {
                                     update(value, property, callback);
                                 });
                                 return callback.call(source, property, value);
@@ -2129,7 +2133,7 @@ Hodler = function() {
                             exports.parse = function(source, callback) {
                                 var result, value;
                                 return Index = 0, Source = "" + source, result = get(lex()), "$" != lex() && abort(), 
-                                Index = Source = null, callback && "[object Function]" == getClass.call(callback) ? walk((value = {}, 
+                                Index = Source = null, callback && getClass.call(callback) == functionClass ? walk((value = {}, 
                                 value[""] = result, value), "", callback) : result;
                             };
                         }
@@ -3007,11 +3011,11 @@ Hodler = function() {
                 return data;
             }
             function map(ary, each, done) {
-                for (var result = new Array(ary.length), next = after(ary.length, done), i = 0; i < ary.length; i++) !function(i, el, cb) {
+                for (var result = new Array(ary.length), next = after(ary.length, done), eachWithIndex = function(i, el, cb) {
                     each(el, function(error, msg) {
                         result[i] = msg, cb(error, result);
                     });
-                }(i, ary[i], next);
+                }, i = 0; i < ary.length; i++) eachWithIndex(i, ary[i], next);
             }
             var base64encoder, keys = __webpack_require__(28), hasBinary = __webpack_require__(29), sliceBuffer = __webpack_require__(30), after = __webpack_require__(31), utf8 = __webpack_require__(32);
             global && global.ArrayBuffer && (base64encoder = __webpack_require__(33));
@@ -3303,6 +3307,7 @@ Hodler = function() {
                 }
                 var freeExports = "object" == typeof exports && exports, freeGlobal = ("object" == typeof module && module && module.exports, 
                 "object" == typeof global && global);
+                freeGlobal.global !== freeGlobal && freeGlobal.window;
                 var byteArray, byteCount, byteIndex, stringFromCharCode = String.fromCharCode, wtf8 = {
                     version: "1.0.0",
                     encode: wtf8encode,
@@ -3543,7 +3548,7 @@ Hodler = function() {
             inherit(WS, Transport), WS.prototype.name = "websocket", WS.prototype.supportsBinary = !0, 
             WS.prototype.doOpen = function() {
                 if (this.check()) {
-                    var uri = this.uri(), opts = {
+                    var uri = this.uri(), protocols = void 0, opts = {
                         agent: this.agent,
                         perMessageDeflate: this.perMessageDeflate
                     };
@@ -3551,7 +3556,7 @@ Hodler = function() {
                     opts.ca = this.ca, opts.ciphers = this.ciphers, opts.rejectUnauthorized = this.rejectUnauthorized, 
                     this.extraHeaders && (opts.headers = this.extraHeaders), this.localAddress && (opts.localAddress = this.localAddress);
                     try {
-                        this.ws = this.usingBrowserWebSocket ? new WebSocket(uri) : new WebSocket(uri, void 0, opts);
+                        this.ws = this.usingBrowserWebSocket ? new WebSocket(uri) : new WebSocket(uri, protocols, opts);
                     } catch (err) {
                         return this.emit("error", err);
                     }

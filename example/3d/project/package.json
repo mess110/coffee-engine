@@ -16,7 +16,7 @@
 
     "test": "echo \"Error: no test specified\" && exit 1",
 
-    "http": "python -m SimpleHTTPServer",
+    "http": "./node_modules/.bin/http-server",
 
     "compile": "npm run coffee-no-watch && npm run sass-no-watch"
   },
@@ -28,6 +28,7 @@
     "connect": "^3.4.1"
   },
   "devDependencies": {
+    "http-server": "^0.11.1",
     "node-sass": "^3.4.2",
     "nodemon": "^1.8.1"
   }
