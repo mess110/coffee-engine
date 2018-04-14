@@ -20,7 +20,6 @@ Project Structure
   * server/
     * Game.coffee - server side game logic
     * Server.coffee - server config
-* bower.json
 * index.html - landing page of your game
 * package.json
 * README.md - this file

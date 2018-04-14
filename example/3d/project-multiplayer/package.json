@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "install": "bower install",
-
     "sass-no-watch": "./node_modules/node-sass/bin/node-sass css/app.sass css/app.css",
     "sass": "nodemon -e sass -x \"npm run sass-no-watch\"",
 

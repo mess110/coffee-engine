@@ -3,14 +3,14 @@
 
 require 'json'
 
-bower = JSON.parse(File.read("bower.json"))
-version = bower['version']
+package = JSON.parse(File.read("package.json"))
+version = package['version']
 
-if `git diff bower.json | grep version`.empty?
-  fail 'bower.json version not incremented'
+if `git diff package.json | grep version`.empty?
+  fail 'package.json version not incremented'
 end
 
-`bower install`
+`npm install`
 `grunt build`
 `git rm \`git ls-files --deleted\``
 `git add .`

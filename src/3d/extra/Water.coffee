@@ -11,7 +11,7 @@ class Water extends BaseModel
   # Create water
   constructor: (engine, scene, options = {}) ->
     throw new Error('map missing. needs to be a TextureManager key') unless options.map?
-    # options.map ?= '/bower_components/ocean/assets/img/waternormals.jpg'
+    # options.map ?= '/node_modules/ocean/assets/img/waternormals.jpg'
     options.width ?= Utils.PLANE_DEFAULT_WIDTH
     options.height ?= Utils.PLANE_DEFAULT_HEIGHT
     options.wSegments ?= Utils.PLANE_DEFAULT_W_SEGMENTS

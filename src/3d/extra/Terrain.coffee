@@ -1,7 +1,7 @@
 # Creates and adds a heightmap to the current scene
 #
 # @example
-#   Terrain.heightmap('/bower_components/ocean/assets/img/waternormals.jpg', 'heightmap.png', 20, 20, 5, 5)
+#   Terrain.heightmap('/node_modules/ocean/assets/img/waternormals.jpg', 'heightmap.png', 20, 20, 5, 5)
 #
 # @example
 #   hm = THREE.ImageUtils.loadTexture(options.heightmapUrl)

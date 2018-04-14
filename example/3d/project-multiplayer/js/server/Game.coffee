@@ -1,5 +1,5 @@
 server = require('../../../../../src/server/server.coffee') # for dev
-# server = require('../../bower_components/coffee-engine/src/server/server.coffee')
+# server = require('../../node_modules/coffee-engine/src/server/server.coffee')
 common = require('../common.coffee').common
 
 class Game extends server.Game
