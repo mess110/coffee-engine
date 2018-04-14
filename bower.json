@@ -16,7 +16,6 @@
   ],
   "homepage": "https://github.com/mess110/coffee-engine",
   "devDependencies": {
-    "tweenjs": "r14",
     "stats.js": "r11",
     "threejs": "r87",
     "threex.windowresize": "*",

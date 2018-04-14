@@ -35,7 +35,8 @@
     "load-grunt-tasks": "^3.4.0",
     "nw": "^0.12.3",
     "file-saver": "*",
-    "nw-dev": "^3.0.0"
+    "nw-dev": "^3.0.0",
+    "tween.js": "v16.1.1"
   },
   "engines": {
     "node": "0.10.x"

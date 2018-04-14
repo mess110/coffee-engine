@@ -3,7 +3,7 @@ fs = require('fs')
 module.exports = (grunt) ->
   files_3d = [
     "bower_components/stats.js/src/Stats.js"
-    "bower_components/tweenjs/src/Tween.js"
+    "node_modules/tween.js/src/Tween.js"
     "bower_components/ccapture.js/build/CCapture.all.min.js"
 
     "bower_components/threejs/build/three.js"
@@ -102,7 +102,7 @@ module.exports = (grunt) ->
 
   files_2d = [
     "bower_components/stats.js/src/Stats.js"
-    "bower_components/tweenjs/src/Tween.js"
+    "node_modules/tween.js/src/Tween.js"
 
     "src/3d/Hack.js"
 
