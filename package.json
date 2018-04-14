@@ -41,7 +41,7 @@
     "three": "0.87.1",
     "tween.js": "v16.1.1",
     "shader-particle-engine": "1.0.5",
-    "socket.io-client": "0.9.16",
+    "socket.io-client": "0.9.17",
     "howler": "1.1.29",
     "md-color-picker": "~0.2.6",
     "tinycolor2": "~1.3.0",
