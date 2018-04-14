@@ -50,7 +50,7 @@ module.exports = (grunt) ->
 
     "bower_components/ammo.js/builds/ammo.js"
 
-    "bower_components/file-saver/FileSaver.js"
+    "node_modules/file-saver/FileSaver.js"
     "bower_components/virtualjoystick.js/virtualjoystick.js"
 
     # This NEEDS to be in this position
@@ -136,10 +136,6 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON("package.json")
     shell:
-      "compile-coffee-watch":
-        command: "./node_modules/.bin/coffee --output . -b -c -w ."
-      "compile-coffee":
-        command: "./node_modules/.bin/coffee --output . -b -c ."
       "compile-coffee-src-watch":
         command: "./node_modules/.bin/coffee --output src/ -b -c -w src/"
       "compile-coffee-src":
@@ -164,6 +160,14 @@ module.exports = (grunt) ->
         command: "./node_modules/.bin/http-server"
       "update":
         command: "git stash && git pull && git stash pop"
+      "help":
+        command: ->
+          [
+            'echo'
+            'echo "grunt compile:coffee:toolchain"'
+            'echo "grunt compile:coffee:src"'
+            'echo "grunt compile:coffee:example"'
+          ].join(' && ')
       "new":
         command: ->
           output = grunt.option('output')
@@ -208,14 +212,11 @@ module.exports = (grunt) ->
           "build/coffee-engine-3d.js": all_3d_files
         ]
 
-  grunt.registerTask "compile:coffee:watch", ["shell:compile-coffee-watch"]
-  grunt.registerTask "compile:coffee", ["shell:compile-coffee"]
   grunt.registerTask "compile:coffee:toolchain", ["shell:compile-coffee-src", "shell:compile-coffee-tools"]
   grunt.registerTask "compile:coffee:src", ["shell:compile-coffee-src-watch"]
   grunt.registerTask "compile:coffee:example", ["shell:compile-coffee-example-watch"]
 
   grunt.registerTask "build", ["compile:coffee", "uglify:engine"]
-  grunt.registerTask "dev", ["compile:coffee:watch"]
 
   grunt.registerTask "new", ["shell:new"]
 
@@ -223,6 +224,8 @@ module.exports = (grunt) ->
   grunt.registerTask "engine", ["shell:engine"]
   grunt.registerTask "server", ["shell:server"]
 
-  grunt.registerTask "default", ["dev"]
+  grunt.registerTask "help", ["shell:help"]
+
+  grunt.registerTask "default", ["help"]
 
   require('load-grunt-tasks')(grunt)

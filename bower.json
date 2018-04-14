@@ -27,7 +27,6 @@
     "threex.volumetricspotlight": "*",
     "ShaderParticleEngine": "https://github.com/squarefeet/ShaderParticleEngine.git#v1.0.5",
     "threex.dynamictexture": "*",
-    "file-saver": "*",
     "virtualjoystick.js": "https://github.com/mess110/virtualjoystick.js.git#patch-1",
     "socket.io-client": "~0.9.16",
     "howler.js": "howler#~1.1.29",
