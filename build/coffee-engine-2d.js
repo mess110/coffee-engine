@@ -40,7 +40,7 @@ var Stats = function() {
         dom.appendChild(dom.firstChild).style.height = value + "px";
     };
     return {
-        REVISION: 11,
+        REVISION: 12,
         domElement: container,
         setMode: setMode,
         begin: function() {
@@ -61,14 +61,20 @@ var Stats = function() {
     };
 };
 
-void 0 === Date.now && (Date.now = function() {
-    return new Date().valueOf();
-});
+"object" == typeof module && (module.exports = Stats), function() {
+    if ("performance" in window == !1 && (window.performance = {}), Date.now = Date.now || function() {
+        return new Date().getTime();
+    }, "now" in window.performance == !1) {
+        var offset = window.performance.timing && window.performance.timing.navigationStart ? window.performance.timing.navigationStart : Date.now();
+        window.performance.now = function() {
+            return Date.now() - offset;
+        };
+    }
+}();
 
 var TWEEN = TWEEN || function() {
     var _tweens = [];
     return {
-        REVISION: "14",
         getAll: function() {
             return _tweens;
         },
@@ -85,7 +91,7 @@ var TWEEN = TWEEN || function() {
         update: function(time) {
             if (0 === _tweens.length) return !1;
             var i = 0;
-            for (time = void 0 !== time ? time : "undefined" != typeof window && void 0 !== window.performance && void 0 !== window.performance.now ? window.performance.now() : Date.now(); i < _tweens.length; ) _tweens[i].update(time) ? i++ : _tweens.splice(i, 1);
+            for (time = void 0 !== time ? time : window.performance.now(); i < _tweens.length; ) _tweens[i].update(time) ? i++ : _tweens.splice(i, 1);
             return !0;
         }
     };
@@ -97,7 +103,7 @@ TWEEN.Tween = function(object) {
     this.to = function(properties, duration) {
         return void 0 !== duration && (_duration = duration), _valuesEnd = properties, this;
     }, this.start = function(time) {
-        TWEEN.add(this), _isPlaying = !0, _onStartCallbackFired = !1, _startTime = void 0 !== time ? time : "undefined" != typeof window && void 0 !== window.performance && void 0 !== window.performance.now ? window.performance.now() : Date.now(), 
+        TWEEN.add(this), _isPlaying = !0, _onStartCallbackFired = !1, _startTime = void 0 !== time ? time : window.performance.now(), 
         _startTime += _delayTime;
         for (var property in _valuesEnd) {
             if (_valuesEnd[property] instanceof Array) {
@@ -326,7 +332,11 @@ TWEEN.Tween = function(object) {
             return (2 * p1 - 2 * p2 + v0 + v1) * (t * t2) + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
         }
     }
-};
+}, function(root) {
+    "function" == typeof define && define.amd ? define([], function() {
+        return TWEEN;
+    }) : "object" == typeof exports ? module.exports = TWEEN : root.TWEEN = TWEEN;
+}(this);
 
 var Singleton, exports;
 
@@ -1276,7 +1286,7 @@ var io = "undefined" == typeof module ? {} : module.exports;
 !function() {
     if (function(exports, global) {
         var io = exports;
-        io.version = "0.9.17", io.protocol = 1, io.transports = [], io.j = [], io.sockets = {}, 
+        io.version = "0.9.16", io.protocol = 1, io.transports = [], io.j = [], io.sockets = {}, 
         io.connect = function(host, details) {
             var uuri, socket, uri = io.util.parseUri(host);
             global && global.location && (uri.protocol = uri.protocol || global.location.protocol.slice(0, -1), 

@@ -222,7 +222,7 @@ module.exports = (grunt) ->
   # grunt.registerTask "compile:coffee:example", ["shell:compile-coffee-example-watch"]
 
   grunt.registerTask "compile-coffee", ["shell:compile-coffee-src", "shell:compile-coffee-tools", "shell:compile-coffee-example"]
-  # grunt.registerTask "build", ["compile:coffee", "uglify:engine"]
+  grunt.registerTask "build", ["compile-coffee", "uglify:engine"]
 
   grunt.registerTask "new", ["shell:new"]
 
