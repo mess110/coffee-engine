@@ -48,7 +48,7 @@ module.exports = (grunt) ->
     "node_modules/three/examples/js/postprocessing/UnrealBloomPass.js"
     "node_modules/three/examples/js/postprocessing/OutlinePass.js"
 
-    "node_modules/ammo.js/builds/ammo.js"
+    # "node_modules/ammo.js/builds/ammo.js"
 
     "node_modules/file-saver/FileSaver.js"
     "src/vendor/virtualjoystick.js"
@@ -119,7 +119,7 @@ module.exports = (grunt) ->
     "src/shared/SyntaxSugar.js"
     "src/shared/Hodler.js"
     "node_modules/howler/howler.js"
-    "node_modules/socket.io-client/dist/socket.io.js"
+    # "node_modules/socket.io-client/dist/socket.io.js"
     "src/vendor/drawBezier.js"
     "src/vendor/jnorthpole.js"
 
