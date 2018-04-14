@@ -1,6 +1,6 @@
 {
   "name": "coffee-engine",
-  "version": "2.2.7",
+  "version": "2.2.8",
   "description": "game engine - thin layer over three.js in coffeescript",
   "homepage": "https://github.com/mess110/coffee-engine",
   "repository": "git@github.com:mess110/coffee-engine.git",
