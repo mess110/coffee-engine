@@ -58,6 +58,20 @@ class ScaleModifier extends BaseModifier
       model.mesh.scale.set(this.x, this.x, this.x)
     )
 
+# Changes the scale of a BaseModel
+class ScaleXYModifier extends BaseModifier
+  # @param [BaseModel] model
+  # @param [Number] srcX - original scale
+  # @param [Number] destX - destination scale
+  # @param [Number] t - duration
+  constructor: (model, srcX, destX, t) ->
+    ease = TWEEN.Easing.Linear.None
+    @tween = new TWEEN.Tween({x: srcX}).to({x: destX}, t).easing(ease)
+    @tween.onUpdate( ->
+      model.mesh.scale.x = this.x
+      model.mesh.scale.y = this.x
+    )
+
 # Notice animation to a BaseModel
 class NoticeMeModifier extends BaseModifier
   # @param [BaseModel] model
