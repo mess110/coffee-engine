@@ -160,7 +160,7 @@ module.exports = (grunt) ->
       "engine":
         command: "npm run start"
       "server":
-        command: "./node_modules/.bin/http-server"
+        command: "./node_modules/.bin/http-server -g -c-1"
       "update":
         command: "git stash && git pull && git stash pop"
       "help":
