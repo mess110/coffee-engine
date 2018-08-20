@@ -1,0 +1,10 @@
+{
+  "textures": [
+    {
+      "libPath": "workspace/lib/textures/bubble.png",
+      "destPath": "assets/bubble.png",
+      "type": "texture"
+    }
+  ],
+  "particle": "[\n  {\n    texture: {\n      value: TextureManager.get().items['bubble'],\n      libPath: '../workspace/lib/textures/bubble.png'\n    },\n    depthTest: true,\n    depthWrite: false,\n    blending: THREE.NormalBlending,\n    emitters: [\n      {\n        type: SPE.distributions.CUBE,\n        particleCount: 40,\n        maxAge: {\n          value: 2,\n          spread: 1.5\n        },\n        position: {\n           value: new THREE.Vector3(0, 0, 0),\n           spread: new THREE.Vector3(10, 0, 1)\n        },\n        acceleration: {\n          value: new THREE.Vector3(0, 0.5, 0),\n          spread: new THREE.Vector3(0.1, 0.1, 0.1)\n        },\n        velocity: {\n          value: new THREE.Vector3(0, 1, 0),\n          spread: new THREE.Vector3(0.8, 0.8, 0.8)\n        },\n        size: {\n          value: [2,5,5]\n        },\n        color: {\n          value: [new THREE.Color('#67baca'), new THREE.Color('#FFFFFF')]\n        },\n        opacity: {\n          value: [0.5, 0.9, 0.9, 0.9, 0.1]\n        }\n      }\n    ]\n  }\n]"
+}
